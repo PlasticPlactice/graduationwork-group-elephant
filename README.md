@@ -1,2 +1,2 @@
-# GraduationWork_Group_Elephant
+# graduationwork_group_elephant
 「修了・卒業制作_象と花_グループ象」のリポジトリです。
