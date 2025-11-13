@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+:root {
+  /* fonts */
+  --font-main: "Yu Gothic", "游ゴシック体";
+  --font-sab: "Yu Mincho", "游明朝";
+
+  /* colors */
+  --color-text: #000000;
+  --color-bg: #ffffff;
+  --color-input-bg: #6a8ca4;
+  --color-input-text: rgba(106, 140, 164, 0.5);
+  --color-main: #ff4463;
+  --color-sub: #6a8ca4;
+  --color-warning: #ff0000;
+  --color-accent: #faf443;
+
+  /* spacing / sizes */
+  --page-padding-sm: 16px;
+  --page-padding-lg: 24px;
+  --font-size-base: 16px;
+  --font-size-h1: 24px;
+  --font-size-small: 12px;
+  --control-height: 48px;
+  --control-radius: 5px;
+}
+
+/* Base */
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-main);
+  font-size: var(--font-size-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1 {
+  font-size: var(--font-size-h1);
+  margin: 0 0 0.5em 0;
+}
+
+/* small text */
+.text-small,
+small {
+  font-size: var(--font-size-small);
+}
+
+/* Utility: container with responsive horizontal padding (ページ余白) */
+.container {
+  padding-left: var(--page-padding-sm);
+  padding-right: var(--page-padding-sm);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--page-padding-lg);
+    padding-right: var(--page-padding-lg);
+  }
+}
+
+/* Links */
+a {
+  color: var(--color-main);
+  text-decoration: none;
+}
+
+/* Sub text */
+.text-sub {
+  color: var(--color-sub);
+}
+
+/* Alerts */
+.text-warning {
+  color: var(--color-warning);
+}
+
+/* Controls: inputs, textareas, selects */
+input,
+textarea,
+select,
+.input {
+  height: var(--control-height);
+  border-radius: var(--control-radius);
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
+  border: none;
+  padding: 0 12px;
+  box-sizing: border-box;
+  font-size: var(--font-size-base);
+}
+
+/* Focus - 視認性を確保 */
+input:focus,
+textarea:focus,
+select:focus,
+.input:focus {
+  outline: 2px solid rgba(255, 68, 99, 0.18); /* main color の淡いリング */
+  outline-offset: 2px;
+}
+
+/* Buttons */
+button,
+.btn {
+  height: var(--control-height);
+  border-radius: var(--control-radius);
+  background-color: var(--color-main);
+  color: #ffffff;
+  border: none;
+  padding: 0 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-base);
+}
