@@ -8,20 +8,20 @@ export default function Page() {
 
         <h1 className='text-center'>ログイン</h1>
 
-        <label className='block w-3/4 mx-auto text-left'>メールアドレス</label>{/*text-center */}
+        <label className='block w-3/4 mx-auto text-left'>メールアドレス</label>
         <div className='text-center mb-4'>
-          <Textbox name="title" placeholder="メールアドレスを入力してください" className=''/>{/*m-auto */}
+          <Textbox name="title" placeholder="メールアドレスを入力してください" className=''/>
         </div>
 
-        <label className='block w-3/4 mx-auto text-left'>パスワード</label>{/*text-center */}
+        <label className='block w-3/4 mx-auto text-left'>パスワード</label>
         <div className='text-center mb-2'>
-          <Textbox name="title" placeholder="パスワードを入力してください" className=''/>{/*m-auto */}
+          <Textbox name="title" placeholder="パスワードを入力してください" className=''/>
         </div>
 
         <a href="#" className='text-center mb-2'>パスワードを忘れた場合</a>
 
         <div className='text-center'>
-          <AdminButton label="ログイン" type="submit" className='' />{/*m-auto */}
+          <AdminButton label="ログイン" type="submit" className='' />
         </div>
       </form>
     </main>
