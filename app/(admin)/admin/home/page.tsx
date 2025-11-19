@@ -39,6 +39,22 @@ export default function Page() {
                 </div>
             </div>
 
+            {/* ユーザー管理 */}
+            <div style={{ border: "1px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
+                className='flex w-max p-2 pr-5 shadow-md'>
+                <div className='w-auto mx-1 flex justify-center items-center'>
+                    <Icon icon="mdi:people" width="50" height="50"
+                        style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
+                        className='rounded-full p-1' />
+                </div>
+                <div>
+                    <h2 className='text-center mb-1'
+                        style={{ fontSize: "var(--font-size-h1)" }}>ユーザー管理</h2>
+                    <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
+                    className='mb-1'>ユーザー情報閲覧・書評閲覧</p>
+                </div>
+            </div>
+
             {/* <Icon icon="mdi:calendar" style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}/> */}
                 {/* <Icon icon="ic:outline-people" style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}/> */}
                 {/* <Icon icon="mdi:love" style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}/> */}
