@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/layout/header";
+import { AdminHeader } from "@/components/layout/admin-header";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className="antialiased min-h-screen flex flex-col">
-        <Header />
+        <AdminHeader />
         <main className="flex-1">{children}</main>
       </body>
     </html>
