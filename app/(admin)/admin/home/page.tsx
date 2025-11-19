@@ -1,19 +1,20 @@
 import { Icon } from '@iconify/react';
-import { ColorLens } from '@material-ui/icons';
 
 export default function Page() {
     return (
         <main style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
 
-            <h1 style={{ fontSize: "var(--font-size-h1)" }}
-                className='text-center'>開催中のイベント</h1>
-            <div className='text-center'
-                 style={{border:"1px solid var(--color-main)"}}>
-                <p style={{fontSize:"var(--font-size-h1)"}}
-                   className='font-bold underline'>第1回文庫X</p>
-                <p className='font-extrabold '
-                    style={{ color: "#1E40AF", backgroundColor:"#DBEAFE"}}>二次審査中</p>
-                <p>2024年10月30日～2025年10月30日</p>
+            <div className='mt-10'>
+                <h1 style={{ fontSize: "var(--font-size-h1)" ,margin:0}}
+                    className='text-center'>開催中のイベント</h1>
+                <div className='text-center py-2 w-3/5 m-auto'
+                    style={{border:"1px solid var(--color-main)"}}>
+                    <p style={{fontSize:"var(--font-size-h1)"}}
+                    className='font-bold underline'>第1回文庫X</p>
+                    <p className='font-extrabold w-max m-auto px-7 py-0.5 rounded-2xl'
+                        style={{ color: "#1E40AF", backgroundColor:"#DBEAFE"}}>二次審査中</p>
+                    <p style={{fontSize:"--font-size-small"}}>2024年10月30日～2025年10月30日</p>
+                </div>
             </div>
             {/* todo:枠の大きさを変える */}
             {/* todo:枠に丸み */}
