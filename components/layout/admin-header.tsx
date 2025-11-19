@@ -27,7 +27,6 @@ export function AdminHeader() {
           className="ml-4 inline-flex h-20 w-20 cursor-pointer items-center justify-center rounded-md bg-white hover:bg-gray-50 focus:outline-none border border-gray-100"
           style={{ backgroundColor: "#ffffff" }}
         >
-          {/* Hamburger icon as explicit SVG (black strokes) */}
           <svg
             className="h-6 w-6"
             viewBox="0 0 24 24"
@@ -65,7 +64,6 @@ export function AdminHeader() {
               aria-label="Close menu"
               style={{ backgroundColor: "#ffffff" }}
             >
-              {/* Close icon as explicit SVG (black strokes) */}
               <svg
                 className="h-6 w-6"
                 viewBox="0 0 24 24"
