@@ -7,9 +7,9 @@ export default function Page() {
             {/* todo:枠に丸み */}
             {/* todo:枠に影 */}
 
-            {/* お知らせ管理 */}
+            {/* お知らせ・寄贈管理 */}
             <div style={{ border: "1px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
-                className='flex w-max p-2 pr-6 shadow-md'>
+                className='flex w-max p-2 shadow-md'>
                 <div className='w-auto mx-1 flex justify-center items-center'>
                     <Icon icon="mdi:megaphone" width="50" height="50"
                         style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
@@ -17,7 +17,7 @@ export default function Page() {
                 </div>
                 <div>
                     <h2 className='text-center mb-1'
-                        style={{ fontSize: "var(--font-size-h1)" }}>お知らせ管理</h2>
+                        style={{ fontSize: "var(--font-size-h1)" }}>お知らせ・寄贈管理</h2>
                     <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
                     className='mb-1'>お知らせの一覧・投稿・編集</p>
                 </div>
@@ -25,13 +25,13 @@ export default function Page() {
 
             {/* イベント管理 */}
             <div style={{ border: "1px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
-                className='flex w-max p-2 pr-9 shadow-md'>
+                className='flex w-max py-2 pl-2 shadow-md'>
                 <div className='w-auto mx-1 flex justify-center items-center'>
                     <Icon icon="mdi:calendar" width="50" height="50"
                         style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
                         className='rounded-full p-1' />
                 </div>
-                <div>
+                <div className='ml-4 mr-16'>
                     <h2 className='text-center mb-1'
                         style={{ fontSize: "var(--font-size-h1)" }}>イベント管理</h2>
                     <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
@@ -41,17 +41,33 @@ export default function Page() {
 
             {/* ユーザー管理 */}
             <div style={{ border: "1px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
-                className='flex w-max p-2 pr-5 shadow-md'>
+                className='flex w-max py-2 pl-2 pr-5 shadow-md'>
                 <div className='w-auto mx-1 flex justify-center items-center'>
                     <Icon icon="mdi:people" width="50" height="50"
                         style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
                         className='rounded-full p-1' />
                 </div>
-                <div>
+                <div className='ml-4 mr-7'>
                     <h2 className='text-center mb-1'
                         style={{ fontSize: "var(--font-size-h1)" }}>ユーザー管理</h2>
                     <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
                     className='mb-1'>ユーザー情報閲覧・書評閲覧</p>
+                </div>
+            </div>
+
+            {/* パスワード変更 */}
+            <div style={{ border: "1px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
+                className='flex w-max py-2 pl-2 pr-5 shadow-md'>
+                <div className='w-auto mx-1 flex justify-center items-center'>
+                    <Icon icon="material-symbols:key" width="50" height="50"
+                        style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
+                        className='rounded-full p-1' />
+                </div>
+                <div className='ml-4 mr-4'>
+                    <h2 className='text-center mb-1'
+                        style={{ fontSize: "var(--font-size-h1)" }}>パスワード変更</h2>
+                    <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
+                    className='mb-1'>パスワードを変更</p>
                 </div>
             </div>
 
