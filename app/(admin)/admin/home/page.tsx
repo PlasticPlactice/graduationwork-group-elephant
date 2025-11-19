@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
+
 import { Icon } from '@iconify/react';
+
+export const metadata: Metadata = {
+  title: "ホーム",
+};
 
 export default function Page() {
     return (
@@ -16,71 +22,70 @@ export default function Page() {
                     <p style={{fontSize:"--font-size-small"}}>2024年10月30日～2025年10月30日</p>
                 </div>
             </div>
-            {/* todo:枠の大きさを変える */}
-            {/* todo:枠に丸み */}
-            {/* todo:枠に影 */}
 
-            {/* お知らせ・寄贈管理 */}
-            <div style={{ border: "2px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
-                className='flex w-max p-2 shadow-md'>
-                <div className='w-auto mx-1 flex justify-center items-center'>
-                    <Icon icon="mdi:megaphone" width="50" height="50"
-                        style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
-                        className='rounded-full' />
+            <div className='grid grid-cols-2 grid-rows-2 w-max m-auto gap-x-14 gap-y-10 mt-18'>
+                {/* お知らせ・寄贈管理 */}
+                <div style={{ border: "2px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
+                    className='flex w-max p-2 shadow-md'>
+                    <div className='w-auto mx-1 flex justify-center items-center'>
+                        <Icon icon="mdi:megaphone" width="50" height="50"
+                            style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
+                            className='rounded-full' />
+                    </div>
+                    <div>
+                        <h2 className='text-center mb-1'
+                            style={{ fontSize: "var(--font-size-h1)" }}>お知らせ・寄贈管理</h2>
+                        <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
+                        className='mb-1'>お知らせの一覧・投稿・編集</p>
+                    </div>
                 </div>
-                <div>
-                    <h2 className='text-center mb-1'
-                        style={{ fontSize: "var(--font-size-h1)" }}>お知らせ・寄贈管理</h2>
-                    <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
-                    className='mb-1'>お知らせの一覧・投稿・編集</p>
-                </div>
-            </div>
 
-            {/* イベント管理 */}
-            <div style={{ border: "2px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
-                className='flex w-max py-2 pl-2 shadow-md'>
-                <div className='w-auto mx-1 flex justify-center items-center'>
-                    <Icon icon="mdi:calendar" width="50" height="50"
-                        style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
-                        className='rounded-full p-1' />
+                {/* イベント管理 */}
+                <div style={{ border: "2px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
+                    className='flex w-max py-2 pl-2 shadow-md'>
+                    <div className='w-auto mx-1 flex justify-center items-center'>
+                        <Icon icon="mdi:calendar" width="50" height="50"
+                            style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
+                            className='rounded-full p-1' />
+                    </div>
+                    <div className='ml-4 mr-16'>
+                        <h2 className='text-center mb-1'
+                            style={{ fontSize: "var(--font-size-h1)" }}>イベント管理</h2>
+                        <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
+                        className='mb-1'>イベントの作成・編集</p>
+                    </div>
                 </div>
-                <div className='ml-4 mr-16'>
-                    <h2 className='text-center mb-1'
-                        style={{ fontSize: "var(--font-size-h1)" }}>イベント管理</h2>
-                    <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
-                    className='mb-1'>イベントの作成・編集</p>
-                </div>
-            </div>
 
-            {/* ユーザー管理 */}
-            <div style={{ border: "2px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
-                className='flex w-max py-2 pl-2 pr-5 shadow-md'>
-                <div className='w-auto mx-1 flex justify-center items-center'>
-                    <Icon icon="mdi:people" width="50" height="50"
-                        style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
-                        className='rounded-full p-1' />
+                {/* ユーザー管理 */}
+                <div style={{ border: "2px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
+                    className='flex w-max py-2 pl-2 pr-5 shadow-md'>
+                    <div className='w-auto mx-1 flex justify-center items-center'>
+                        <Icon icon="mdi:people" width="50" height="50"
+                            style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
+                            className='rounded-full p-1' />
+                    </div>
+                    <div className='ml-4 mr-7'>
+                        <h2 className='text-center mb-1'
+                            style={{ fontSize: "var(--font-size-h1)" }}>ユーザー管理</h2>
+                        <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
+                        className='mb-1'>ユーザー情報閲覧・書評閲覧</p>
+                    </div>
                 </div>
-                <div className='ml-4 mr-7'>
-                    <h2 className='text-center mb-1'
-                        style={{ fontSize: "var(--font-size-h1)" }}>ユーザー管理</h2>
-                    <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
-                    className='mb-1'>ユーザー情報閲覧・書評閲覧</p>
-                </div>
-            </div>
 
-            {/* パスワード変更 */}
-            <div style={{ border: "2px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
-                className='flex w-max py-2 pl-2 pr-5 shadow-md'>
-                <div className='w-auto mx-1 flex justify-center items-center'>
-                    <Icon icon="material-symbols:key" width="50" height="50"
-                        style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
-                        className='rounded-full p-1' />
-                </div>
-                <div className='ml-4 mr-4'>
-                    <h2 className='text-center mb-1'
-                        style={{ fontSize: "var(--font-size-h1)" }}>パスワード変更</h2>
-                    <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
-                    className='mb-1'>パスワードを変更</p>
+                {/* パスワード変更 */}
+                <div style={{ border: "2px solid var(--color-main)", borderRadius: "var(--control-radius)" }}
+                    className='flex w-max py-2 pl-2 pr-5 shadow-md'>
+                    <div className='w-auto mx-1 flex justify-center items-center'>
+                        <Icon icon="material-symbols:key" width="50" height="50"
+                            style={{ backgroundColor: "var(--color-main)", color: "var(--color-bg)" }}
+                            className='rounded-full p-1' />
+                    </div>
+                    <div className='ml-4 mr-4'>
+                        <h2 className='text-center mb-1'
+                            style={{ fontSize: "var(--font-size-h1)" }}>パスワード変更</h2>
+                        <p style={{ color: "var(--color-input-bg)", fontSize: "var(--font-size-small)" }}
+                        className='mb-1'>パスワードを変更</p>
+                    </div>
                 </div>
             </div>
         </main>

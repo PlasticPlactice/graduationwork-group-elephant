@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import AdminButton from '@/components/ui/admin-button';
 import Textbox from '@/components/ui/admin-textbox';
+
+export const metadata: Metadata = {
+  title: "ログイン", 
+};
 
 export default function Page() {
   return (
