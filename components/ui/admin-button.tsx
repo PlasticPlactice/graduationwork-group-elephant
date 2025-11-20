@@ -1,11 +1,14 @@
 // components/admin-button.tsx
 "use client";
 import React from "react";
+import { Icon } from '@iconify/react';
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   label: string;
   color?: string;
   size?: 'sm' | 'md' | 'lg';
+  icon?: string; // アイコン名を受け取る
+  iconPosition?: 'left' | 'right'; // アイコンの位置
 };
 
 export default function Button({
@@ -13,6 +16,11 @@ export default function Button({
   color = 'var(--color-main)',
   size = 'lg',
   type = "button",
+  icon,
+  iconPosition = 'left',
+  className = "",
+  style = {},
+  ...props
   }: ButtonProps) {
   const sizeClass =
     size === 'sm'
@@ -24,11 +32,17 @@ export default function Button({
   return (
     <button
       type={type}
-      className={`${sizeClass} rounded text-white`}
-      style={{ backgroundColor: color }}
+      className={`${sizeClass} rounded text-white flex items-center justify-center gap-2 ${className}`}
+      style={{
+        backgroundColor: color,
+        ...style
+      }}
+      {...props}
       
     >
+      {icon && iconPosition === 'left' && <Icon icon={icon} />}
       {label}
+      {icon && iconPosition === 'right' && <Icon icon={icon} />}
     </button>
   );
 }
