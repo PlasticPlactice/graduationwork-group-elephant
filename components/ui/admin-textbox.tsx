@@ -17,22 +17,29 @@ export default function Textbox({
   fontcolor = "var(--color-text)",
   size = "lg",
   type = "text",
+  className = "",
+  style = {},
   ...props
 }: TextboxProps) {
     const sizeClass =
       size === 'sm'
-       ? 'px-2 py-1 text-sm'
+       ? 'px-2 py-1 text-sm h-8'
        : size === 'lg'
-       ? 'w-3/4 px-5 py-3 text-xl'
-       : 'px-4 py-2 text-base';
+       ? 'w-3/4 px-5 py-3 text-xl h-14'
+       : 'px-4 py-2 text-base h-12';
     
     return (
     <>
         <input
         type={type}
         placeholder={placeholder}
-        className={ `${sizeClass} rounded bg-white admin-textbox`}
-        style={{border:border,backgroundColor:backcolor,color:fontcolor}}
+        className={ `${sizeClass} rounded bg-white admin-textbox ${className}`}
+          style={{
+            border: border,
+            backgroundColor: backcolor,
+            color: fontcolor,
+            ...style
+          }}
         {...props}
             />
             <style jsx>{`
