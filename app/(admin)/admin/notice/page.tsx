@@ -16,7 +16,18 @@ export default function page() {
                     <Textbox size="lg" className="w-96"
                     style={{height:"2.5rem"}}></Textbox>
                 </div>
-                
+                <div className="ml-5">
+                    <p>公開期間</p>
+                    <div className="flex justify-center items-center">
+                        <Textbox type="date"
+                            className="w-40"
+                            style={{height:"2.5rem"}}></Textbox>
+                        <p>ー</p>
+                        <Textbox type="date"
+                            className="w-40"
+                            style={{height:"2.5rem"}}></Textbox>
+                    </div>
+                </div>
             </div>
         </main>
     );
