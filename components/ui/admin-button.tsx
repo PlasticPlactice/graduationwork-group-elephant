@@ -32,9 +32,9 @@ export default function Button({
   return (
     <button
       type={type}
-      className={`${sizeClass} rounded text-white flex items-center justify-center gap-2 ${className}`}
+      className={`${sizeClass} rounded text-white flex items-center justify-center gap-2 admin-button ${className}`}
       style={{
-        backgroundColor: color,
+        ['--btn-bg' as string]: color,
         ...style
       }}
       {...props}

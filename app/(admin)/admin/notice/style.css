@@ -1,0 +1,72 @@
+/* メインコンテナ */
+.notice-container {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* 検索ボックスエリア */
+.search-area {
+  border: 1px solid #8B8B8B;
+  border-radius: var(--control-radius);
+}
+
+/* 入力エリアの幅調整 (タイトル・公開期間) */
+.input-group {
+  width: 40%;
+}
+
+/* テキストボックスの高さ・幅強制上書き */
+.custom-input {
+  height: 2.5rem;
+}
+
+.custom-input-full {
+  height: 2.5rem ;
+  width: 100%;
+}
+
+/* 検索ボタン */
+.search-btn {
+  height: 2.5rem;
+}
+
+/* お知らせ登録ボタン */
+.register-btn {
+  width: 20%;
+  font-size: var(--page-padding-lg);
+  height: 3.5rem;
+}
+
+/* ステータス変更ボタンのラッパー */
+.status-wrapper {
+  background-color: var(--color-input-bg);
+  border-radius: var(--control-radius);
+}
+
+/* ステータス変更ボタン（共通） */
+.status-toggle {
+  border: 1px solid var(--color-bg);
+  font-size: var(--page-padding-lg);
+  background-color: transparent;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+/* ステータス変更ボタン（選択中） */
+.status-toggle.active {
+  background-color: var(--color-bg);
+  color: var(--color-input-bg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md相当 */
+}
+
+
+.admin-button{
+  background-color:var(--btn-bg, var(--color-main));
+  color:var(--color-bg);
+}
+.admin-button:hover {
+  /* ホバー時の色（例：背景を白、文字をメイン色にする） */
+  background-color: var(--color-bg);
+  color: var(--color-main);
+  border: 1px solid var(--color-main); /* 枠線をつけてみる */
+}
