@@ -9,9 +9,12 @@ export const metadata: Metadata = {
 
 export default function page() {
     return (
-        <main style={{backgroundColor:"var(--color-bg)" ,color:"var(--color-text)"}}>
+        <main style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
+            {/*---------------------------
+                検索ボックス
+               ---------------------------*/}
             <div style={{ border: "1px solid #8B8B8B" ,borderRadius:"var(--control-radius)"}}
-                className="mx-8 my-9 px-5 pt-3 pb-6 flex shadow-sm">
+                className="mx-8 my-6     px-5 pt-3 pb-6 flex shadow-sm">
                 
                 <div style={{width:"40%"}}>
                     <p>タイトル</p>
@@ -45,6 +48,19 @@ export default function page() {
                         height: "2.5rem",
                     }}
                 />
+            </div>
+
+            <div className="mx-8">
+                <AdminButton
+                    label="お知らせ登録"
+                    type="button"
+                    className=""
+                    style={{
+                        width: "20%",
+                        fontSize: "var(--page-padding-lg)",
+                        height:"3.5rem"
+                    }}
+                    />
             </div>
         </main>
     );
