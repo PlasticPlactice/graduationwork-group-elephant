@@ -1,13 +1,21 @@
-import type { Metadata } from "next";
+"use client"
+
+import React,{useState} from "react";
 import Textbox from '@/components/ui/admin-textbox';
 import AdminButton from '@/components/ui/admin-button';
 
 
-export const metadata: Metadata = {
-  title: "お知らせ・寄贈",
-};
+export default function Page() {
+    // 3. 選択状態を管理するstate (初期値は 'public')
+    const [selectedStatus, setSelectedStatus] = useState<string>("public");
 
-export default function page() {
+    // ボタンの定義
+    const statusButtons = [
+        { id: "draft", label: "下書き" },
+        { id: "private", label: "非公開" },
+        { id: "public", label: "公開中" },
+    ];
+    
     return (
         <main style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
             {/*---------------------------
@@ -73,34 +81,26 @@ export default function page() {
                         borderRadius:"var(--control-radius)"
                     }}
                     className="px-3 flex items-center justify-center">
-                    <button
-                        style={{
-                            backgroundColor: "var(--color-input-bg)",
-                            border: "1px solid var(--color-bg)",
-                            fontSize: "var(--page-padding-lg)",
-                        }}>
-                        下書き
-                    </button>
-                    <button
-                        style={{
-                            backgroundColor: "var(--color-input-bg)",
-                            border: "1px solid var(--color-bg)",
-                            fontSize: "var(--page-padding-lg)",
-                        }}
-                        className="mx-2">
-                        非公開
-                    </button>
-                    <button
-                        style={{
-                            backgroundColor: "var(--color-bg)",
-                            border: "1px solid var(--color-bg)",
-                            fontSize: "var(--page-padding-lg)",
-                            color:"var(--color-input-bg)"
-                        }}
-                        className="shadow-md">
-                        公開中
-                    </button>
-               </div>
+                    {statusButtons.map((btn) => {
+                        const isActive = selectedStatus === btn.id;
+                        return (
+                            <button
+                                key={btn.id}
+                                onClick={() => setSelectedStatus(btn.id)}
+                                className={`mx-2 px-2 py-1 rounded transition-colors ${isActive ? "shadow-md" : ""}`}
+                                style={{
+                                    // 選択時は背景白・文字色付き、非選択時は背景色付き・文字白
+                                    backgroundColor: isActive ? "var(--color-bg)" : "transparent",
+                                    color: isActive ? "var(--color-input-bg)" : "white",
+                                    border: "1px solid var(--color-bg)", // 枠線は常に白っぽくしておくか調整
+                                    fontSize: "var(--page-padding-lg)",
+                                }}
+                            >
+                                {btn.label}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
         </main>
     );
