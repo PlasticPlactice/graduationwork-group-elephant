@@ -50,7 +50,10 @@ export default function page() {
                 />
             </div>
 
-            <div className="mx-8">
+            <div className="mx-8 flex justify-between">
+                {/*---------------------------
+                お知らせ登録ボタン
+               ---------------------------*/}
                 <AdminButton
                     label="お知らせ登録"
                     type="button"
@@ -60,7 +63,44 @@ export default function page() {
                         fontSize: "var(--page-padding-lg)",
                         height:"3.5rem"
                     }}
-                    />
+                />
+                {/*---------------------------
+                ステータス変更ボタン
+               ---------------------------*/}
+                <div 
+                    style={{
+                        backgroundColor: "var(--color-input-bg)",
+                        borderRadius:"var(--control-radius)"
+                    }}
+                    className="px-3 flex items-center justify-center">
+                    <button
+                        style={{
+                            backgroundColor: "var(--color-input-bg)",
+                            border: "1px solid var(--color-bg)",
+                            fontSize: "var(--page-padding-lg)",
+                        }}>
+                        下書き
+                    </button>
+                    <button
+                        style={{
+                            backgroundColor: "var(--color-input-bg)",
+                            border: "1px solid var(--color-bg)",
+                            fontSize: "var(--page-padding-lg)",
+                        }}
+                        className="mx-2">
+                        非公開
+                    </button>
+                    <button
+                        style={{
+                            backgroundColor: "var(--color-bg)",
+                            border: "1px solid var(--color-bg)",
+                            fontSize: "var(--page-padding-lg)",
+                            color:"var(--color-input-bg)"
+                        }}
+                        className="shadow-md">
+                        公開中
+                    </button>
+               </div>
             </div>
         </main>
     );
