@@ -121,6 +121,6 @@ button,
   align-items: center;
   justify-content: center;
   font-size: var(--font-size-base);
-  font:bold;
+  font: bold;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
