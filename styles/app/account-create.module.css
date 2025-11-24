@@ -109,7 +109,15 @@
   height: 30px !important;
 }
 
-.copyButton:active {
-  background-color: #6a8ca4 !important;
-  transition: all 0.2s;
+.tooltip {
+  animation: fadeInOut 1.5s ease forwards;
+  background-color: var(--color-sub) !important;
+}
+
+@keyflames fadeInOut {
+  
+  0% { opacity: 0; transform: translateY(-5px); }
+  20% { opacity: 1; transform: translateY(0px); }
+  80% { opacity: 1; transform: translateY(0px); }
+  100% { opacity: 0; transform: translateY(-5px); }
 }
