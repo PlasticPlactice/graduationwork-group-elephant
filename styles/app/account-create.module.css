@@ -23,6 +23,33 @@
   --control-radius: 5px;
 }
 
+.mainColor {
+  color: var(--color-main) !important;
+}
+
+.subColor {
+  color: var(--color-sub) !important;
+}
+
+.text12px {
+  font-size: var(--font-size-small) !important;
+}
+
+.text16px {
+  font-size: var(--font-size-base) !important;
+}
+
+.text24px {
+  font-size: var(--font-size-h1) !important;
+}
+
+.posterContainer {
+  padding-left: var(--page-padding-lg) !important;
+  padding-right: var(--page-padding-lg) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 .colorButton {
   border-radius: 100% !important;
 }
@@ -37,9 +64,6 @@
   padding: 0.3rem 0.5rem !important;
 }
 
-.subColor {
-  color: var(--color-sub) !important;
-}
 
 .genderRadio {
   transform: scale(2.0);
@@ -55,4 +79,37 @@
 
 .inputSelectForm {
   width: 11.5rem !important;
+}
+
+.userId {
+  border: none !important;
+  font-size: var(--font-size-h1) !important;
+  width: 10rem !important;
+  text-align: center !important;
+}
+
+.userIdContainer {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-sub) !important;
+  border-radius: var(--control-radius) !important;
+}
+
+.alertImage {
+  border: 1px solid var(--color-sub) !important;
+  border-radius: var(--control-radius) !important;
+  width: 48px !important;
+  height: 48px !important;
+}
+
+.copyButton {
+  background-image: url("/public/app/content-copy.png");
+  background-color: white !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  height: 30px !important;
+}
+
+.copyButton:active {
+  background-color: #6a8ca4 !important;
+  transition: all 0.2s;
 }
