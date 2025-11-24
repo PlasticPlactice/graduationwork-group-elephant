@@ -55,7 +55,7 @@ export default function CreateViewerPage() {
 
     return (
         <>
-            <div className="container">
+            <div className={`${styles.posterContainer}`}>
                 <Image  src="/layout/logo.png" alt="logo" width={177} height={120} className="mx-auto" />
                 <h1 className="font-bold text-center">アカウント作成</h1>
                 <a href="" className={`block text-center font-bold ${styles.subColor}`}><span className="border-b">アカウントをお持ちの方はこちら</span></a>
