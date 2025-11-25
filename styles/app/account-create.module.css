@@ -24,93 +24,93 @@
 }
 
 .mainColor {
-  color: var(--color-main) !important;
+  color: var(--color-main);
 }
 
 .subColor {
-  color: var(--color-sub) !important;
+  color: var(--color-sub);
 }
 
 .text12px {
-  font-size: var(--font-size-small) !important;
+  font-size: var(--font-size-small);
 }
 
 .text16px {
-  font-size: var(--font-size-base) !important;
+  font-size: var(--font-size-base);
 }
 
 .text24px {
-  font-size: var(--font-size-h1) !important;
+  font-size: var(--font-size-h1);
 }
 
 .posterContainer {
-  padding-left: var(--page-padding-lg) !important;
-  padding-right: var(--page-padding-lg) !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  padding-left: var(--page-padding-lg);
+  padding-right: var(--page-padding-lg);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .colorButton {
-  border-radius: 100% !important;
+  border-radius: 100%;
 }
 
 .termsForm {
-  border-radius: var(--control-radius) !important;
-  height: 20rem !important;
+  border-radius: var(--control-radius);
+  height: 20rem;
 }
 
 .colsIntroduction {
-  height: 10rem !important;
-  padding: 0.3rem 0.5rem !important;
+  height: 10rem;
+  padding: 0.3rem 0.5rem;
 }
 
 
 .genderRadio {
   transform: scale(2.0);
-  height: auto !important;
-  outline: none !important;
+  height: auto;
+  outline: none;
 }
 
 .acceptCheckbox {
-  height: 1.5rem !important;
-  width: 1.5rem !important;
-  outline: none !important;
+  height: 1.5rem;
+  width: 1.5rem;
+  outline: none;
 }
 
 .inputSelectForm {
-  width: 11.5rem !important;
+  width: 11.5rem;
 }
 
 .userId {
-  border: none !important;
-  font-size: var(--font-size-h1) !important;
-  width: 10rem !important;
-  text-align: center !important;
+  border: none;
+  font-size: var(--font-size-h1);
+  width: 10rem;
+  text-align: center;
 }
 
 .userIdContainer {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--color-sub) !important;
-  border-radius: var(--control-radius) !important;
+  border: 1px solid var(--color-sub);
+  border-radius: var(--control-radius);
 }
 
 .alertImage {
-  border: 1px solid var(--color-sub) !important;
-  border-radius: var(--control-radius) !important;
-  width: 48px !important;
-  height: 48px !important;
+  border: 1px solid var(--color-sub);
+  border-radius: var(--control-radius);
+  width: 48px;
+  height: 48px;
 }
 
 .copyButton {
-  background-color: white !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  height: 30px !important;
+  background-color: white;
+  box-shadow: none;
+  padding: 0;
+  height: 30px;
 }
 
 .tooltip {
   animation: fadeInOut 1.5s ease forwards;
-  background-color: var(--color-sub) !important;
+  background-color: var(--color-sub);
 }
 
 @keyflames fadeInOut {
