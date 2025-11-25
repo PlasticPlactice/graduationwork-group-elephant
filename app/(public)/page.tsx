@@ -1,63 +1,336 @@
+"use client";
+
+import "@/styles/public/top.css";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+    <div>
+      <main>
+        <div className="hero">
+          {/* Desktop image */}
+          <div className="heroImage heroImage--desktop">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src="/top/top.jpg"
+              alt="Top Image Desktop"
+              fill
+              priority
+              sizes="(min-width: 768px) 100vw, 100vw"
+              style={{ objectFit: "contain" }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1A1A1A] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+          {/* Mobile image */}
+          <div className="heroImage heroImage--mobile">
+            <Image
+              src="/top/top.jpg"
+              alt="Top Image Mobile"
+              fill
+              priority
+              sizes="100vw"
+              style={{ objectFit: "contain" }}
+            />
+          </div>
         </div>
+        <section className="about">
+          <div className="about__inner">
+            <h2 className="about__title">
+              <span className="about__title-line"></span>
+              象と花プロジェクトとは？
+              <span className="about__title-line"></span>
+            </h2>
+            <div className="about__text">
+              <p>
+                象と花は古本販売の盛岡書房と、新刊書店のさわや書店が共同で行うプロジェクトです。
+              </p>
+              <p>
+                あなたに知識や情報、感動を与えてくれた本を循環させ、病気と戦う子供たちのための本に替えて贈ります。
+              </p>
+              <p>
+                身近な人に贈り物を手渡すような気持ちで、子供たちと読書のよろこびを分かち合える取り組みです。
+              </p>
+            </div>
+            <div className="about__button">
+              <Button href="/about" style={{ color: "#ffffff" }}>
+                くわしくはこちら
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <section className="bunko-x">
+          <div className="bunko-x__inner">
+            {/* 文庫Xについて */}
+            <div className="bunko-x__intro">
+              <h2 className="bunko-x__title">
+                文庫<span className="text-red">X</span>について
+              </h2>
+              <div className="bunko-x__text">
+                <p>
+                  この取り組みは、岩手県盛岡市の書店「さわや書店フェザン店」の書店員が2016年に始めました。SNSを通して話題が広まり全国の書店でも同様の取り組みが行われるようになりました。
+                </p>
+                <br></br>
+                <p>文庫Xの目的は、</p>
+                <ul className="bunko-x__list">
+                  <li>
+                    既に有名な作品だけでなく、本来埋もれてしまうかもしれない本の魅力を伝えること、
+                  </li>
+                  <li>
+                    読者が固定観念や先入観にとらわれず、純粋に本と出会う楽しさを感じることにあります。
+                  </li>
+                </ul>
+                <p>
+                  読者は、メッセージカードに書かれた「おすすめしたい想い」や「読むべき理由」を頼りに本を手に取ります。それにより、通常とは違う、少しミステリアスでワクワクする読書体験が生まれます。
+                </p>
+              </div>
+            </div>
+
+            {/* 現在投票可能なイベント */}
+            <div className="bunko-x__events">
+              <h3 className="bunko-x__subtitle">
+                <span className="bunko-x__subtitle-line"></span>
+                現在投票可能なイベント
+                <span className="bunko-x__subtitle-line"></span>
+              </h3>
+
+              <div className="event-cards">
+                {/* Card 1 */}
+                <div className="event-card">
+                  <div className="event-card__header">
+                    <h4 className="event-card__title">第2回 文庫Xイベント</h4>
+                    <div className="event-card__timer">
+                      <span className="timer-label">投票期間終了まであと</span>
+                      <span className="timer-days">10日</span>
+                    </div>
+                  </div>
+                  <p className="event-card__desc">
+                    投票期間中です！投票してみましょう！
+                  </p>
+                  <div className="event-card__action">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      style={{
+                        color: "#FF4463",
+                        border: "1px solid #FF4463",
+                        backgroundColor: "#FFFFFF",
+                        width: "100%",
+                      }}
+                    >
+                      投票へ
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Card 2 */}
+                <div className="event-card">
+                  <div className="event-card__header">
+                    <h4 className="event-card__title">第1回 文庫Xイベント</h4>
+                    <div className="event-card__timer">
+                      <span className="timer-label">投票期間終了まであと</span>
+                      <span className="timer-days">10日</span>
+                    </div>
+                  </div>
+                  <p className="event-card__desc">
+                    投票期間中です！投票してみましょう！
+                  </p>
+                  <div className="event-card__action">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      style={{
+                        color: "#FF4463",
+                        border: "1px solid #FF4463",
+                        backgroundColor: "#FFFFFF",
+                        width: "100%",
+                      }}
+                    >
+                      投票へ
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bunko-x__all-events">
+                <Button
+                  className="w-full"
+                  style={{
+                    backgroundColor: "#ff4d6d",
+                    color: "#ffffff",
+                    width: "100%",
+                    maxWidth: "400px",
+                  }}
+                >
+                  すべてのイベント
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="news">
+          <div className="news__inner">
+            <h2 className="news__title">
+              <span className="news__title-line"></span>
+              おしらせ
+              <span className="news__title-line"></span>
+            </h2>
+            <div className="news__list">
+              {/* News Item 1 */}
+              <div className="news-item">
+                <div className="news-item__image">
+                  <Image
+                    src="/top/image1.png"
+                    alt="News Image"
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div className="news-item__meta">
+                  <span className="news-item__date">2025-10-01</span>
+                  <span className="news-item__badge">NEW</span>
+                </div>
+                <p className="news-item__text">第１回文庫Xが開催されました！</p>
+              </div>
+
+              {/* News Item 2 */}
+              <div className="news-item">
+                <div className="news-item__image">
+                  <Image
+                    src="/top/image1.png"
+                    alt="News Image"
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div className="news-item__meta">
+                  <span className="news-item__date">2025-10-01</span>
+                  <span className="news-item__badge">NEW</span>
+                </div>
+                <p className="news-item__text">第１回文庫Xが開催されました！</p>
+              </div>
+            </div>
+            <div className="news__button">
+              <Button
+                className="w-full"
+                style={{
+                  backgroundColor: "#ff4d6d",
+                  color: "#ffffff",
+                  width: "100%",
+                  maxWidth: "400px",
+                }}
+              >
+                すべてのおしらせ
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <section
+          className="news"
+          style={{
+            backgroundColor: "#F1F0E8",
+            paddingTop: "20px",
+            paddingBottom: "20px",
+          }}
+        >
+          <div className="news__inner">
+            <h2 className="news__title">
+              <span className="news__title-line"></span>
+              寄贈について
+              <span className="news__title-line"></span>
+            </h2>
+            <div className="donation-text">
+              <p>
+                岩手医科大学附属病院の小児病棟をはじめ、子供食堂や自動養護施設などへ本の寄贈を行っています。
+              </p>
+              <p>
+                届けられた本は病院や施設の本棚に並び、その一冊が、子供たちの一歩を踏み出す勇気となっています。
+              </p>
+              <p>
+                この活動は、地元企業や地域の皆さまの温かいご協力によって支えられています。
+              </p>
+              <p>
+                本を通して生まれる「つながり」が、子どもたちの未来にそっと寄り添う力になると信じています。
+              </p>
+            </div>
+            <div className="donation-banner">
+              <div className="donation-banner__image">
+                <Image
+                  src="/top/image.png"
+                  alt="Donation Banner"
+                  fill
+                  style={{ objectFit: "cover", opacity: 0.4 }}
+                />
+              </div>
+              <div className="donation-banner__content">
+                <span className="donation-banner__text">私たちの取り組み</span>
+                <span className="donation-banner__arrow">&gt;</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="news">
+          <div className="news__inner">
+            <h2 className="news__title">
+              <span className="news__title-line"></span>
+              寄贈情報
+              <span className="news__title-line"></span>
+            </h2>
+            <div className="news__list">
+              {/* News Item 1 */}
+              <div className="news-item">
+                <div className="news-item__image">
+                  <Image
+                    src="/top/image1.png"
+                    alt="News Image"
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div className="news-item__meta">
+                  <span className="news-item__date">2025-10-01</span>
+                  <span className="news-item__badge">NEW</span>
+                </div>
+                <p className="news-item__text">
+                  ○○様より「ハリーポッター」を寄贈していただきました！
+                </p>
+              </div>
+
+              {/* News Item 2 */}
+              <div className="news-item">
+                <div className="news-item__image">
+                  <Image
+                    src="/top/image1.png"
+                    alt="News Image"
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div className="news-item__meta">
+                  <span className="news-item__date">2025-10-01</span>
+                  <span className="news-item__badge">NEW</span>
+                </div>
+                <p className="news-item__text">
+                  ○○様より「ハリーポッター」を寄贈していただきました！
+                </p>
+              </div>
+            </div>
+            <div className="news__button">
+              <Button
+                className="w-full"
+                style={{
+                  backgroundColor: "#ff4d6d",
+                  color: "#ffffff",
+                  width: "100%",
+                  maxWidth: "400px",
+                }}
+              >
+                すべての寄贈情報
+              </Button>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
