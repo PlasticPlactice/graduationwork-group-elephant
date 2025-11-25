@@ -2,7 +2,6 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { Item } from "@/components/features/item";
-import "@/styles/public/news.css";
 
 const newsItems = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
