@@ -11,11 +11,8 @@ export default function createCompletePage() {
     const copyToUserId = async () =>  {
         if (inputRef.current) {
             await navigator.clipboard.writeText(inputRef.current.value);
-
             setshowTooltip(true);
             setTimeout(() => setshowTooltip(false), 1500);
-
-            console.log("コピーしました");
         }
     }
 
