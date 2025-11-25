@@ -83,6 +83,16 @@ export default function Page() {
                     })}
                 </div>
             </div>
+
+            <div>
+                {/*---------------------------
+                お知らせ・寄贈タブ
+               ---------------------------*/}
+                <div className="tab border-b flex mx-8 mt-8">
+                    <p className="notice-tab mr-7 border-b-2 pb-3">お知らせ</p>
+                    <p className="">寄贈</p>
+                </div>
+            </div>
         </main>
     );
 }
