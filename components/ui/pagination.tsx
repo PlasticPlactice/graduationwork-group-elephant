@@ -1,4 +1,5 @@
 import React from "react";
+import "@/styles/components/pagination.css";
 
 export const Pagination = () => {
   return (
