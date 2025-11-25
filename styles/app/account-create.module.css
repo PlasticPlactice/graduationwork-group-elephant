@@ -102,7 +102,6 @@
 }
 
 .copyButton {
-  background-image: url("/public/app/content-copy.png");
   background-color: white !important;
   box-shadow: none !important;
   padding: 0 !important;
