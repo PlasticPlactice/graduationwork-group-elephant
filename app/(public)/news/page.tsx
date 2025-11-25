@@ -12,7 +12,7 @@ const newsItems = Array.from({ length: 10 }, (_, i) => ({
 
 export default function NewsPage() {
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto pt-8 px-4">
       <div className="mb-8">
         <Button
           variant="outline"
