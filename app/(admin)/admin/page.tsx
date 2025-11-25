@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AdminButton from '@/components/ui/admin-button';
 import Textbox from '@/components/ui/admin-textbox';
+import './style.css';
 
 export const metadata: Metadata = {
   title: "ログイン", 
@@ -8,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main style={{backgroundColor:"var(--color-bg)" ,color:"var(--color-text)"}} className="min-h-screen flex items-center justify-center">
-      <form action="#" method="post" className='shadow-md rounded-xl w-2/7 m-auto py-8 flex flex-col' style={{ border: "1px solid var(--color-input-bg)" }}>
+    <main className="min-h-screen flex items-center justify-center login-main">
+      <form action="#" method="post" className='shadow-md rounded-xl w-2/7 m-auto py-8 flex flex-col login-form'>
 
         <h1 className='text-center'>ログイン</h1>
 
@@ -26,7 +27,7 @@ export default function Page() {
         <a href="#" className='text-center mb-2'>パスワードを忘れた場合</a>
 
         <div className='text-center'>
-          <AdminButton label="ログイン" type="submit" className='' />
+          <AdminButton label="ログイン" type="submit" className='login-button' />
         </div>
       </form>
     </main>
