@@ -90,9 +90,9 @@ select,
 .input {
   height: var(--control-height);
   border-radius: var(--control-radius);
-  background-color: var(--color-input-bg);
-  color: var(--color-input-text);
-  border: none;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-input-bg);
   padding: 0 12px;
   box-sizing: border-box;
   font-size: var(--font-size-base);
@@ -104,7 +104,7 @@ textarea:focus,
 select:focus,
 .input:focus {
   outline: 2px solid rgba(255, 68, 99, 0.18); /* main color の淡いリング */
-  outline-offset: 2px;
+  /* outline-offset: px; */
 }
 
 /* Buttons */
@@ -121,4 +121,6 @@ button,
   align-items: center;
   justify-content: center;
   font-size: var(--font-size-base);
+  font: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }

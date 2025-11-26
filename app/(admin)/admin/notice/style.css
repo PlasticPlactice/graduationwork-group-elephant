@@ -77,3 +77,8 @@
 .notice-tab{
   border-color:var(--color-main);
 }
+.table-head{
+  background-color: var(--color-main);
+  font-size: var(--font-size-base);
+  color: var(--color-bg);
+}

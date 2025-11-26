@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Textbox from '@/components/ui/admin-textbox';
 import AdminButton from '@/components/ui/admin-button';
 import "./style.css"; // CSSファイルをインポート
+import { Icon } from "@iconify/react";
 
 export default function Page() {
     // 3. 選択状態を管理するstate (初期値は 'public')
@@ -21,7 +22,7 @@ export default function Page() {
             {/*---------------------------
                 検索ボックス
                ---------------------------*/}
-            <div className="mx-8 my-6 px-5 pt-3 pb-6 flex shadow-sm search-area">
+            <div className="flex px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-area">
                 
                 <div className="input-group">
                     <p>タイトル</p>
@@ -38,7 +39,7 @@ export default function Page() {
                             type="date"
                             className="custom-input"
                         />
-                        <p className="px-2 justify-center items-center">ー</p>
+                        <p className="items-center justify-center px-2">ー</p>
                         <Textbox 
                             type="date"
                             className="custom-input"
@@ -55,7 +56,7 @@ export default function Page() {
                 />
             </div>
 
-            <div className="mx-8 flex justify-between">
+            <div className="flex justify-between mx-8">
                 {/*---------------------------
                 お知らせ登録ボタン
                ---------------------------*/}
@@ -67,7 +68,7 @@ export default function Page() {
                 {/*---------------------------
                 ステータス変更ボタン
                ---------------------------*/}
-                <div className="px-3 flex items-center justify-center status-wrapper">
+                <div className="flex items-center justify-center px-3 status-wrapper">
                     {statusButtons.map((btn) => {
                         const isActive = selectedStatus === btn.id;
                         return (
@@ -88,10 +89,31 @@ export default function Page() {
                 {/*---------------------------
                 お知らせ・寄贈タブ
                ---------------------------*/}
-                <div className="tab border-b flex mx-8 mt-8">
-                    <p className="notice-tab mr-7 border-b-2 pb-3">お知らせ</p>
+                <div className="flex mx-8 mt-8 border-b tab">
+                    <p className="pb-3 border-b-2 notice-tab mr-7 text-h1">お知らせ</p>
                     <p className="">寄贈</p>
                 </div>
+            </div>
+
+            <div className="mx-8 mt-8">
+                <table className="w-full">
+                    <thead className="table-head">
+                        <tr className="flex mx-6 my-2">
+                            <th className="flex items-center w-2/7">タイトル<Icon icon="uil:arrow" rotate={1}></Icon></th>
+                            <th className="flex items-center w-2/7">詳細<Icon icon="uil:arrow" rotate={1}></Icon></th>
+                            <th className="flex items-center w-1/4">公開期間<Icon icon="uil:arrow" rotate={1}></Icon></th>
+                            <th className="flex items-center">ステータス<Icon icon="uil:arrow" rotate={1}></Icon></th>
+                        </tr>
+                    </thead>
+                    <tbody className="border">
+                        <tr className="flex mx-6 my-2">
+                            <td className="flex w-2/7">第2回文庫X開始！</td>
+                            <td className="flex w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
+                            <td className="flex w-1/4">2025-10-10 - 2026-10-10</td>
+                            <td className="flex items-center">公開中<Icon icon="weui:arrow-filled"></Icon></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </main>
     );
