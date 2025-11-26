@@ -9,6 +9,7 @@ import { Icon } from "@iconify/react";
 export default function Page() {
     // 3. 選択状態を管理するstate (初期値は 'public')
     const [selectedStatus, setSelectedStatus] = useState<string>("public");
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
     // ボタンの定義
     const statusButtons = [
@@ -122,43 +123,43 @@ export default function Page() {
                         </tr>
                     </thead>
                     <tbody className="border">
-                        <tr>
+                        <tr className="notice-record">
                             <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
                             <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
                             <td className="w-1/4">2025-10-10 - 2026-10-10</td>
                             <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
                         </tr>
-                        <tr>
+                        <tr className="notice-record">
                             <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
                             <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
                             <td className="w-1/4">2025-10-10 - 2026-10-10</td>
                             <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
                         </tr>
-                        <tr>
+                        <tr className="notice-record">
                             <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
                             <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
                             <td className="w-1/4">2025-10-10 - 2026-10-10</td>
                             <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
                         </tr>
-                        <tr>
+                        <tr className="notice-record">
                             <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
                             <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
                             <td className="w-1/4">2025-10-10 - 2026-10-10</td>
                             <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
                         </tr>
-                        <tr>
+                        <tr className="notice-record">
                             <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
                             <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
                             <td className="w-1/4">2025-10-10 - 2026-10-10</td>
                             <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
                         </tr>
-                        <tr>
+                        <tr className="notice-record">
                             <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
                             <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
                             <td className="w-1/4">2025-10-10 - 2026-10-10</td>
                             <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
                         </tr>
-                        <tr>
+                        <tr className="notice-record">
                             <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
                             <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
                             <td className="w-1/4">2025-10-10 - 2026-10-10</td>
@@ -166,6 +167,20 @@ export default function Page() {
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <div className="flex items-center justify-center my-5 page-section">
+                <Icon icon="weui:arrow-filled" rotate={2} width={20} className="page-arrow"></Icon>
+                <p className={`px-4 py-1 page-number ${currentPage === 1 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(1)}>1</p>
+                <p className={`px-4 py-1 page-number ${currentPage === 2 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(2)}>2</p>
+                <p className={`px-4 py-1 page-number ${currentPage === 3 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(3)}>3</p>
+                <p className="px-4 py-1 page-number">...</p>
+                <p className={`px-4 py-1 page-number ${currentPage === 5 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(5)}>5</p>
+                <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
             </div>
         </main>
     );
