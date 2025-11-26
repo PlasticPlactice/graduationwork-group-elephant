@@ -22,13 +22,13 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #ffffff;
-  color: #6b7280;
+  background-color: var(--color-bg);
+  color: var(--color-sub);
   box-shadow: none;
 }
 
 .pagination-arrow:hover {
-  color: #111827;
+  color: var(--color-text);
 }
 
 .pagination-arrow span {
@@ -41,11 +41,12 @@
   height: 32px;
   border-radius: 50%;
   font-weight: 500;
-  color: #374151;
-  background-color: #e5e7eb;
+  color: var(--color-text);
+  background-color: var(--color-border);
 }
 
-.pagination-number:hover {
-  background-color: #ff4463;
-  color: #ffffff;
+.pagination-number:hover,
+.pagination-number.active {
+  background-color: var(--color-main);
+  color: var(--color-bg);
 }
