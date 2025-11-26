@@ -7,7 +7,7 @@ import Image from "next/image"
 export default function LoginPage() {
     return (
         <div>
-            <a href="" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>＜ ファンサイトはこちら</a>
+            <a href="" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}><span>&lt;</span> ファンサイトはこちら</a>
             <div className={`mb-2 ${Styles.posterContainer}`}>
                 <div className="my-8">
                     <Image src="/layout/logo.png" alt="logo" width={177} height={120} className="mx-auto" />
