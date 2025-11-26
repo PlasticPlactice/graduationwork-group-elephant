@@ -1,5 +1,5 @@
 import React from "react";
-import { ListPageLayout } from "@/components/layouts/ListPageLayout";
+import { ListPageLayout } from "@/components/templates/ListPageLayout";
 
 const newsItems = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
