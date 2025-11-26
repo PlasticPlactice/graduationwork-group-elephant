@@ -96,21 +96,73 @@ export default function Page() {
             </div>
 
             <div className="mx-8 mt-8">
-                <table className="w-full">
+                <table className="w-full notice-table">
                     <thead className="table-head">
-                        <tr className="flex mx-6 my-2">
-                            <th className="flex items-center w-2/7">タイトル<Icon icon="uil:arrow" rotate={1}></Icon></th>
-                            <th className="flex items-center w-2/7">詳細<Icon icon="uil:arrow" rotate={1}></Icon></th>
-                            <th className="flex items-center w-1/4">公開期間<Icon icon="uil:arrow" rotate={1}></Icon></th>
-                            <th className="flex items-center">ステータス<Icon icon="uil:arrow" rotate={1}></Icon></th>
+                        <tr>
+                            <th className="py-2 pl-6 w-2/7">
+                                <div className="flex items-center">
+                                    タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className="w-2/7">
+                                <div className="flex items-center">
+                                    詳細<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className="w-1/4">
+                                <div className="flex items-center">
+                                    公開期間<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th>
+                                <div className="flex items-center">
+                                    ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody className="border">
-                        <tr className="flex mx-6 my-2">
-                            <td className="flex w-2/7">第2回文庫X開始！</td>
-                            <td className="flex w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
-                            <td className="flex w-1/4">2025-10-10 - 2026-10-10</td>
-                            <td className="flex items-center">公開中<Icon icon="weui:arrow-filled"></Icon></td>
+                        <tr>
+                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
+                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
+                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
+                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
+                        </tr>
+                        <tr>
+                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
+                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
+                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
+                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
+                        </tr>
+                        <tr>
+                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
+                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
+                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
+                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
+                        </tr>
+                        <tr>
+                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
+                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
+                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
+                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
+                        </tr>
+                        <tr>
+                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
+                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
+                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
+                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
+                        </tr>
+                        <tr>
+                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
+                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
+                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
+                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
+                        </tr>
+                        <tr>
+                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
+                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
+                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
+                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
                         </tr>
                     </tbody>
                 </table>
