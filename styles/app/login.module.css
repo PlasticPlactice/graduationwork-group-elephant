@@ -1,28 +1,3 @@
-:root {
-  /* fonts */
-  --font-main: "Yu Gothic", "游ゴシック体";
-  --font-sab: "Yu Mincho", "游明朝";
-
-  /* colors */
-  --color-text: #000000;
-  --color-bg: #ffffff;
-  --color-input-bg: #6a8ca4;
-  --color-input-text: rgba(106, 140, 164, 0.5);
-  --color-main: #ff4463;
-  --color-sub: #6a8ca4;
-  --color-warning: #ff0000;
-  --color-accent: #faf443;
-
-  /* spacing / sizes */
-  --page-padding-sm: 16px;
-  --page-padding-lg: 24px;
-  --font-size-base: 16px;
-  --font-size-h1: 24px;
-  --font-size-small: 12px;
-  --control-height: 48px;
-  --control-radius: 5px;
-}
-
 .loginForm {
     padding: 0 3rem;
 }
