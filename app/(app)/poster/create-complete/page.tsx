@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React from 'react';
 import { useRef } from 'react';
 
-export default function createCompletePage() {
+export default function CreateCompletePage() {
     const inputRef = useRef<HTMLInputElement>(null);
     const [showTooltip, setshowTooltip] =  React.useState(false);
 
