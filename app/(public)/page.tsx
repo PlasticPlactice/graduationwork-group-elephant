@@ -320,6 +320,7 @@ export default function Home() {
             <div className="news__button">
               <Button
                 className="w-full"
+                href="/donation"
                 style={{
                   backgroundColor: "#ff4d6d",
                   color: "#ffffff",

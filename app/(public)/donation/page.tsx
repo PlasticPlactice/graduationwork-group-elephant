@@ -1,10 +1,10 @@
 import React from "react";
 import { ListPageLayout } from "@/components/layouts/ListPageLayout";
 
-const newsItems = Array.from({ length: 10 }, (_, i) => ({
+const donationItems = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   date: "2025-10-01",
-  title: "第１回文庫Xが開催されました！",
+  title: "○○様よりご寄付をいただきました！",
   image: "/top/image.png",
 }));
 
@@ -12,11 +12,11 @@ const newsItems = Array.from({ length: 10 }, (_, i) => ({
 const totalPages = 5;
 const currentPage = 1;
 
-export default function NewsPage() {
+export default function DonationPage() {
   return (
     <ListPageLayout
-      title="お知らせ一覧"
-      items={newsItems}
+      title="みなさまからの寄贈本"
+      items={donationItems}
       currentPage={currentPage}
       totalPages={totalPages}
     />
