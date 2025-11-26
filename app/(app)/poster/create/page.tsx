@@ -60,7 +60,7 @@ export default function CreateViewerPage() {
                 <h1 className="font-bold text-center">アカウント作成</h1>
                 <a href="" className={`block text-center font-bold ${styles.subColor}`}><span className="border-b">アカウントをお持ちの方はこちら</span></a>
 
-                <form action="" method="get">
+                <form action="" method="post">
                     {/* ニックネームの入力 */}
                     <div className="my-4">
                         <label htmlFor="username" className="block font-bold">ニックネーム</label>
