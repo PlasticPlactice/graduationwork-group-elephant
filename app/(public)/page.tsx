@@ -3,6 +3,7 @@
 import "@/styles/public/top.css";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { EventCard } from "@/components/features/EventCard";
 export default function Home() {
   return (
     <div>
@@ -94,60 +95,19 @@ export default function Home() {
 
               <div className="event-cards">
                 {/* Card 1 */}
-                <div className="event-card">
-                  <div className="event-card__header">
-                    <h4 className="event-card__title">第2回 文庫Xイベント</h4>
-                    <div className="event-card__timer">
-                      <span className="timer-label">投票期間終了まであと</span>
-                      <span className="timer-days">10日</span>
-                    </div>
-                  </div>
-                  <p className="event-card__desc">
-                    投票期間中です！投票してみましょう！
-                  </p>
-                  <div className="event-card__action">
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      style={{
-                        color: "#FF4463",
-                        border: "1px solid #FF4463",
-                        backgroundColor: "#FFFFFF",
-                        width: "100%",
-                      }}
-                    >
-                      投票へ
-                    </Button>
-                  </div>
-                </div>
+                {/* Card 1 */}
+                <EventCard
+                  title="第2回 文庫Xイベント"
+                  daysLeft={10}
+                  description="投票期間中です！投票してみましょう！"
+                />
 
                 {/* Card 2 */}
-                <div className="event-card">
-                  <div className="event-card__header">
-                    <h4 className="event-card__title">第1回 文庫Xイベント</h4>
-                    <div className="event-card__timer">
-                      <span className="timer-label">投票期間終了まであと</span>
-                      <span className="timer-days">10日</span>
-                    </div>
-                  </div>
-                  <p className="event-card__desc">
-                    投票期間中です！投票してみましょう！
-                  </p>
-                  <div className="event-card__action">
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      style={{
-                        color: "#FF4463",
-                        border: "1px solid #FF4463",
-                        backgroundColor: "#FFFFFF",
-                        width: "100%",
-                      }}
-                    >
-                      投票へ
-                    </Button>
-                  </div>
-                </div>
+                <EventCard
+                  title="第1回 文庫Xイベント"
+                  daysLeft={10}
+                  description="投票期間中です！投票してみましょう！"
+                />
               </div>
 
               <div className="bunko-x__all-events">
