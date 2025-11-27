@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import "@/styles/components/ItemModal.css";
@@ -33,6 +33,23 @@ const modalContent = {
 };
 
 export const ItemModal = ({ item, onClose }: ItemModalProps) => {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [onClose]);
+
   // 背景クリックでモーダルを閉じるが、コンテンツ内クリックでは閉じないようにする
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -42,21 +59,31 @@ export const ItemModal = ({ item, onClose }: ItemModalProps) => {
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
-      <div className="modal-content">
-        <button className="modal-close-btn" onClick={onClose}>
+      <div
+        className="modal-content"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+      >
+        <button
+          className="modal-close-btn"
+          onClick={onClose}
+          aria-label="閉じる"
+        >
           &times;
         </button>
         <div className="modal-main-image-wrapper">
           <Image
             src={item.image}
             alt={item.title}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: "cover" }}
           />
         </div>
         <div className="modal-body">
           <p className="modal-date">{item.date}</p>
-          <h2 className="modal-title">{item.title}</h2>
+          <h2 className="modal-title" id="modal-title">
+            {item.title}
+          </h2>
           <p className="modal-text">{modalContent.text}</p>
           <p className="modal-text">{modalContent.eventDate}</p>
           <p className="modal-text">{modalContent.eventPlace}</p>
@@ -68,8 +95,8 @@ export const ItemModal = ({ item, onClose }: ItemModalProps) => {
                 <Image
                   src={att.src}
                   alt={`添付資料 ${index + 1}`}
-                  layout="fill"
-                  objectFit="contain"
+                  fill
+                  style={{ objectFit: "contain" }}
                 />
               </div>
             ))}

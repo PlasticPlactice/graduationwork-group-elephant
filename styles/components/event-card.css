@@ -48,8 +48,8 @@
 }
 
 .event-card__button {
-  color: #FF4463 !important;
-  border: 1px solid #FF4463 !important;
-  background-color: #FFFFFF !important;
+  color: #FF4463;
+  border: 1px solid #FF4463;
+  background-color: #FFFFFF;
   width: 100%;
 }

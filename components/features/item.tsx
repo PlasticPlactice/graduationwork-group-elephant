@@ -10,7 +10,13 @@ type ItemProps = {
 
 export const Item = ({ date, title, image, onClick }: ItemProps) => {
   return (
-    <div className="item-container" onClick={onClick}>
+    <div className="item-container" onClick={onClick} onKeyDown={(e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onClick?.();
+      }
+    }} role="button" tabIndex={0}
+    >
       <div className="item-image-wrapper">
         <Image src={image} alt={title} fill className="item-image" />
       </div>
