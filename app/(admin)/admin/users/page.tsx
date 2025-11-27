@@ -1,6 +1,7 @@
 import Textbox from '@/components/ui/admin-textbox';
 import AdminButton from '@/components/ui/admin-button';
 import "@/styles/admin/users.css";
+import { Icon } from '@iconify/react';
 
 export default function page() {
     return (
@@ -51,6 +52,48 @@ export default function page() {
                         className='search-btn'
                     />
                 </div>
+            </div>
+
+            {/*---------------------------
+                ユーザー一覧
+            ---------------------------*/}
+            <div className='mx-8 mt-8'>
+                <table className="w-full notice-table">
+                    <thead className="table-head">
+                        <tr>
+                            <th className='py-2 pl-6 w-1/10'>
+                                <div className="flex items-center">
+                                    ID<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className='w-2/10'>
+                                <div className="flex items-center">
+                                    ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className='w-2/10'>
+                                <div className="flex items-center">
+                                    ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className='w-2/10'>
+                                <div className="flex items-center">
+                                    年代<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className='w-2/10'>
+                                <div className="flex items-center">
+                                    居住地<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th>
+                                <div className="flex items-center">
+                                    投票数<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
         </main>
     );
