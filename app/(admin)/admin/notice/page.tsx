@@ -153,15 +153,31 @@ export default function Page() {
 
             <div className="flex items-center justify-center my-5 page-section">
                 <Icon icon="weui:arrow-filled" rotate={2} width={20} className="page-arrow"></Icon>
-                <p className={`px-4 py-1 page-number ${currentPage === 1 ? 'active' : ''}`}
-                    onClick={() => setCurrentPage(1)}>1</p>
-                <p className={`px-4 py-1 page-number ${currentPage === 2 ? 'active' : ''}`}
-                    onClick={() => setCurrentPage(2)}>2</p>
-                <p className={`px-4 py-1 page-number ${currentPage === 3 ? 'active' : ''}`}
-                    onClick={() => setCurrentPage(3)}>3</p>
-                <p className="px-4 py-1 page-number">...</p>
-                <p className={`px-4 py-1 page-number ${currentPage === 5 ? 'active' : ''}`}
-                    onClick={() => setCurrentPage(5)}>5</p>
+               <button
+                    type="button"
+                    className={`px-4 py-1 page-number ${currentPage === 1 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(1)}
+                    aria-current={currentPage === 1 ? "page" : undefined}
+                >1</button>
+                <button
+                    type="button"
+                    className={`px-4 py-1 page-number ${currentPage === 2 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(2)}
+                    aria-current={currentPage === 2 ? "page" : undefined}
+                >2</button>
+                <button
+                    type="button"
+                    className={`px-4 py-1 page-number ${currentPage === 3 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(3)}
+                    aria-current={currentPage === 3 ? "page" : undefined}
+                >3</button>
+                <span className="px-4 py-1 page-number" aria-hidden="true">...</span>
+                <button
+                    type="button"
+                    className={`px-4 py-1 page-number ${currentPage === 5 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(5)}
+                    aria-current={currentPage === 5 ? "page" : undefined}
+                >5</button>
                 <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
             </div>
         </main>
