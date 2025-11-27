@@ -17,6 +17,17 @@ export default function Page() {
         { id: "private", label: "非公開" },
         { id: "public", label: "公開中" },
     ];
+
+    // お知らせデータ
+    const noticeData = [
+        { id: 1, title: "第2回文庫X開始！", content: "あの人気企画が帰ってきた！書籍タイトルを...", period: "2025-10-10 - 2026-10-10", status: "公開中" },
+        { id: 2, title: "第2回文庫X開始！", content: "あの人気企画が帰ってきた！書籍タイトルを...", period: "2025-10-10 - 2026-10-10", status: "公開中" },
+        { id: 3, title: "第2回文庫X開始！", content: "あの人気企画が帰ってきた！書籍タイトルを...", period: "2025-10-10 - 2026-10-10", status: "公開中" },
+        { id: 4, title: "第2回文庫X開始！", content: "あの人気企画が帰ってきた！書籍タイトルを...", period: "2025-10-10 - 2026-10-10", status: "公開中" },
+        { id: 5, title: "第2回文庫X開始！", content: "あの人気企画が帰ってきた！書籍タイトルを...", period: "2025-10-10 - 2026-10-10", status: "公開中" },
+        { id: 6, title: "第2回文庫X開始！", content: "あの人気企画が帰ってきた！書籍タイトルを...", period: "2025-10-10 - 2026-10-10", status: "公開中" },
+        { id: 7, title: "第2回文庫X開始！", content: "あの人気企画が帰ってきた！書籍タイトルを...", period: "2025-10-10 - 2026-10-10", status: "公開中" },
+    ];
     
     return (
         <main className="notice-container">
@@ -123,48 +134,19 @@ export default function Page() {
                         </tr>
                     </thead>
                     <tbody className="border">
-                        <tr className="notice-record">
-                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
-                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
-                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
-                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
-                        </tr>
-                        <tr className="notice-record">
-                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
-                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
-                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
-                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
-                        </tr>
-                        <tr className="notice-record">
-                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
-                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
-                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
-                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
-                        </tr>
-                        <tr className="notice-record">
-                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
-                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
-                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
-                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
-                        </tr>
-                        <tr className="notice-record">
-                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
-                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
-                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
-                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
-                        </tr>
-                        <tr className="notice-record">
-                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
-                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
-                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
-                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
-                        </tr>
-                        <tr className="notice-record">
-                            <td className="py-2 pl-6 font-bold w-2/7">第2回文庫X開始！</td>
-                            <td className="notice-content w-2/7">あの人気企画が帰ってきた！書籍タイトルを...</td>
-                            <td className="w-1/4">2025-10-10 - 2026-10-10</td>
-                            <td><div className="flex items-center"><p className="py-1 mr-24 px-9 status">公開中</p><Icon icon="weui:arrow-filled" width={15}></Icon></div></td>
-                        </tr>
+                        {noticeData.map((notice) => (
+                            <tr key={notice.id} className="notice-record">
+                                <td className="py-2 pl-6 font-bold w-2/7">{notice.title}</td>
+                                <td className="notice-content w-2/7">{notice.content}</td>
+                                <td className="w-1/4">{notice.period}</td>
+                                <td>
+                                    <div className="flex items-center">
+                                        <p className="py-1 mr-24 px-9 status">{notice.status}</p>
+                                        <Icon icon="weui:arrow-filled" width={15}></Icon>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

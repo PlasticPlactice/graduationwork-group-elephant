@@ -12,7 +12,7 @@ export default function Page() {
         <main className="home-main">
 
             <div className='mt-10'>
-                <h1 className='text-center event-title text-default'>開催中のイベント</h1>
+                <h1 className='text-center event-title'>開催中のイベント</h1>
                 <div className='w-3/5 py-2 m-auto text-center event-container'>
                     <p className='font-bold underline event-name'>第1回文庫X</p>
                     <p className='font-extrabold w-max m-auto px-7 py-0.5 rounded-2xl event-status'>二次審査中</p>

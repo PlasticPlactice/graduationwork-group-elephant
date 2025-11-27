@@ -38,8 +38,19 @@ export default function Button({
         ...style
       }}
       {...props}
-      
     >
+      <style jsx>{`
+          .admin-button{
+            background-color:var(--btn-bg, var(--color-main));
+            color:var(--color-bg);
+          }
+          .admin-button:hover {
+            /* ホバー時の色（例：背景を白、文字をメイン色にする） */
+            background-color: var(--color-bg);
+            color: var(--color-main);
+            border: 1px solid var(--color-main); /* 枠線をつけてみる */
+          }
+        `}</style>
       {icon && iconPosition === 'left' && <Icon icon={icon} />}
       {label}
       {icon && iconPosition === 'right' && <Icon icon={icon} />}
