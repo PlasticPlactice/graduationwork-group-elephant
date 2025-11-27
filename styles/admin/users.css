@@ -1,0 +1,29 @@
+/* メインコンテナ */
+.notice-container {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* 検索ボックスエリア */
+.search-area {
+  border: 1px solid #8B8B8B;
+  border-radius: var(--control-radius);
+}
+
+.custom-input{
+    height: 2.8rem;
+    width: 17rem;
+}
+.age-input{
+    width: 6rem;
+}
+.city-input{
+  width: 7rem;
+}
+.account-input{
+  width: 15rem;
+}
+.search-btn{
+  width: 15rem;
+  font-size: var(--page-padding-lg);
+}
