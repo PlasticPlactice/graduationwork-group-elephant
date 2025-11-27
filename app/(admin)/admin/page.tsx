@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import AdminButton from '@/components/ui/admin-button';
 import Textbox from '@/components/ui/admin-textbox';
-import './style.css';
+import '@/styles/admin/index.css';
 
 export const metadata: Metadata = {
   title: "ログイン", 

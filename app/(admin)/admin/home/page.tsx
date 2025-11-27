@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { Icon } from '@iconify/react';
-import './style.css';
+import '@/styles/admin/home.css';
 
 export const metadata: Metadata = {
   title: "ホーム",

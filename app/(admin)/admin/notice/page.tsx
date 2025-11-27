@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Textbox from '@/components/ui/admin-textbox';
 import AdminButton from '@/components/ui/admin-button';
-import "./style.css"; // CSSファイルをインポート
+import "@/styles/admin/notice.css"; // CSSファイルをインポート
 import { Icon } from "@iconify/react";
 
 export default function Page() {
