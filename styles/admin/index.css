@@ -1,0 +1,10 @@
+.login-main {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.login-form {
+  border: 1px solid var(--color-input-bg);
+}
+
+
