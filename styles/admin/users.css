@@ -41,5 +41,10 @@
 .notice-table th,
 .notice-table td{
   border-bottom: 1px solid var(--color-input-bg);
+}
 
+.active{
+  color: #48885A;
+  background-color: #71F486;
+  border-radius: var(--control-radius);
 }
