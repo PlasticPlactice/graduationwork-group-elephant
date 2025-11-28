@@ -1,0 +1,45 @@
+.home-main {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.event-title {
+  font-size: var(--font-size-h1);
+  margin: 0;
+}
+
+.event-container {
+  border: 1px solid var(--color-main);
+}
+
+.event-name {
+  font-size: var(--font-size-h1);
+}
+
+.event-status {
+  color: #1E40AF;
+  background-color: #DBEAFE;
+}
+
+.event-date {
+  font-size: var(--font-size-small);
+}
+
+.admin-card {
+  border: 2px solid var(--color-main);
+  border-radius: var(--control-radius);
+}
+
+.admin-icon {
+  background-color: var(--color-main);
+  color: var(--color-bg);
+}
+
+.card-title {
+  font-size: var(--font-size-h1);
+}
+
+.card-description {
+  color: var(--color-input-bg);
+  font-size: var(--font-size-small);
+}
