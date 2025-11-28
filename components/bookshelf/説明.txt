@@ -1,0 +1,22 @@
+app/
+  (public)/
+    posts/
+      [slug]/
+        page.tsx          // 既存の詳細ページ
+        bookshelf.tsx     // 本棚セクション（このファイルを今から書く）
+
+components/
+  bookshelf/
+    bookData.ts          // 本のデータ（色・模様）
+    BookPattern.tsx      // ドット/ストライプ/チェック/なし を描画
+    ShelfBook.tsx        // 上の本棚に並ぶ本
+    BookshelfTop.tsx     // 上の本棚エリア（背景＋棚＋本）
+    ScatterBook.tsx      // 下で散らばる本
+    ScatterArea.tsx      // 下の散らばりエリア（ランダム配置生成）
+    BookshelfLayout.tsx  // 上と下をまとめるレイアウト
+
+public/
+  bookshelf/
+    Hondana-haikei.png     // 本棚背景
+    Hondana-ita.png        // 棚の板
+ 
