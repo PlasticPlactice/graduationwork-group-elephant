@@ -85,7 +85,10 @@ export function BookshelfTop() {
   return (
     <>
       <div className="mb-6 flex flex-col items-center gap-3 text-center">
-        <button className="btn-unstyled inline-flex w-full max-w-xs items-center justify-center rounded-full border border-pink-500 bg-white px-8 py-3 text-sm font-semibold text-pink-500 shadow-md shadow-pink-100">
+        <button
+          type="button"
+          className="inline-flex w-full max-w-xs items-center justify-center rounded-full border border-pink-500 bg-white px-8 py-3 text-sm font-semibold text-pink-500 shadow-md shadow-pink-100"
+        >
           すべてのイベント
         </button>
         <h1 className="text-2xl font-bold text-slate-900">

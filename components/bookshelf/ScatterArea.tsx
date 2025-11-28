@@ -3,6 +3,9 @@ import type { Book } from "./bookData";
 import { BOOKS } from "./bookData";
 import { ScatterBook } from "./ScatterBook";
 
+const SCATTER_AREA_HEIGHT = 864; // enough vertical room for stacked scatter rows without overlap
+const SCATTER_ROW_OFFSET = 60; // vertical spacing between stacked scatter rows in px
+
 export type ScatterEntry = {
   book: Book;
   slotIndex: number;
@@ -57,13 +60,13 @@ export function ScatterArea({
           ▲
         </span>
       </div>
-      <div className="relative w-full" style={{ height: 864 }}>
+      <div className="relative w-full" style={{ height: SCATTER_AREA_HEIGHT }}>
         <div className="absolute inset-0 rounded-4xl border border-white/40 bg-white/50 shadow-[0_20px_45px_rgba(15,23,42,0.12)] backdrop-blur" />
         {scatterEntries.map(({ book, slotIndex }, entryIdx) => {
           const slot = SCATTER_LAYOUT[slotIndex % SCATTER_LAYOUT.length];
           const depth = Math.floor(slotIndex / SCATTER_LAYOUT.length);
           const transforms = [
-            depth ? `translateY(${depth * 60}px)` : null,
+            depth ? `translateY(${depth * SCATTER_ROW_OFFSET}px)` : null,
             `rotate(${slot.rotation ?? 0}deg)`,
           ]
             .filter(Boolean)

@@ -19,13 +19,12 @@ export function BookshelfLayout({
     >
       {Array.from({ length: SHELF_COUNT }).map((_, index) => {
         const isTopShelf = index === 0;
-        const isBottomShelf = index === SHELF_COUNT - 1;
         return (
           <div key={`shelf-${index}`} className="flex flex-col items-center">
             <div
               className={`relative flex w-full items-end justify-center ${
                 isTopShelf ? "h-32" : "h-28"
-              } ${isBottomShelf ? "-mb-6" : "-mb-6"}`}
+              } -mb-6`}
             >
               {shelfContents[index] ?? null}
             </div>

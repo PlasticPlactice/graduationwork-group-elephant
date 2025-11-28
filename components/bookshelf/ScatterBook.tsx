@@ -39,8 +39,10 @@ export function ScatterBook({
       onClick={onClick}
       disabled={!isInteractive}
       className={`group ${className} rounded-md border-none p-0 text-left ${
-        isInteractive ? "cursor-pointer" : "cursor-default"
-      } focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 active:outline-none disabled:pointer-events-none`}
+        isInteractive
+          ? "cursor-pointer focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2"
+          : "cursor-default"
+      } disabled:pointer-events-none`}
       style={buttonStyle}
       aria-label={isInteractive ? `${book.id} を本棚に置く` : undefined}
     >
