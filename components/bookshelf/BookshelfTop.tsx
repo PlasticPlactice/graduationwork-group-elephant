@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import { useCallback, useState } from "react";
-import { BookshelfLayout } from "./BookshelfLayout";
-import { BOOKS, type Book } from "./bookData";
-import { ShelfBook } from "./ShelfBook";
-import { ScatterArea, type ScatterEntry } from "./ScatterArea";
+import { BookshelfLayout } from "@/components/bookshelf/BookshelfLayout";
+import { BOOKS, type Book } from "@/components/bookshelf/bookData";
+import { ShelfBook } from "@/components/bookshelf/ShelfBook";
+import {
+  ScatterArea,
+  type ScatterEntry,
+} from "@/components/bookshelf/ScatterArea";
 
 const MAX_BOOKS_PER_SHELF = 8;
 const MAX_SHELVES = 3;

@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
-import type { Book } from "./bookData";
-import { BookPattern } from "./BookPattern";
+import type { Book } from "@/components/bookshelf/bookData";
+import { BookPattern } from "@/components/bookshelf/BookPattern";
 
 type ScatterBookProps = {
   book: Book;

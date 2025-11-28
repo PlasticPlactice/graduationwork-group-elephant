@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { PatternType } from "./bookData";
+import type { PatternType } from "@/components/bookshelf/bookData";
 
 type BookPatternProps = {
   pattern: PatternType;
