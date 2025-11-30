@@ -3,6 +3,42 @@ import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 
 export default function EventPage() {
+  // 仮のイベントデータ（例として3件）
+  const eventList = [
+    {
+      title: "第4回 文庫Xイベント",
+      daysLeft: 10,
+      description: "投票期間中です！投票してみましょう！",
+      buttonText: "投票する",
+      href: "/event/vote/4",
+      isFinished: false,
+    },
+    {
+      title: "第3回 文庫Xイベント",
+      daysLeft: "終了",
+      description: "入選作品が決定しました！確認してみましょう！",
+      buttonText: "確認する",
+      href: "/event/result/3",
+      isFinished: true,
+    },
+    {
+      title: "第2回 文庫Xイベント",
+      daysLeft: "終了",
+      description: "次回イベントもお楽しみに！",
+      buttonText: "詳細を見る",
+      href: "/event/result/2",
+      isFinished: true,
+    },
+    {
+      title: "第1回 文庫Xイベント",
+      daysLeft: "終了",
+      description: "次回イベントもお楽しみに！",
+      buttonText: "詳細を見る",
+      href: "/event/result/1",
+      isFinished: true,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-white pt-6">
       <div className="container mx-auto px-2 max-w-2xl">
@@ -22,44 +58,18 @@ export default function EventPage() {
         </h2>
 
         <div className="flex flex-col gap-6">
-          {/* 開催中のイベント */}
-          <EventCard
-            title="第1回 文庫Xイベント"
-            daysLeft={10}
-            description="投票期間中です！投票してみましょう！"
-            buttonText="投票する"
-            href="/event/vote/1"
-          />
-
-          {/* 終了したイベント */}
-          <EventCard
-            title="第1回 文庫Xイベント"
-            daysLeft="終了"
-            description="入選作品が決定しました！確認してみましょう！"
-            buttonText="確認する"
-            href="/event/result/1"
-            isFinished={true}
-          />
-
-          {/* 終了したイベント（例2） */}
-          <EventCard
-            title="第1回 文庫Xイベント"
-            daysLeft="終了"
-            description="入選作品が決定しました！確認してみましょう！"
-            buttonText="確認する"
-            href="/event/result/1"
-            isFinished={true}
-          />
-
-          {/* 終了したイベント（例3） */}
-          <EventCard
-            title="第1回 文庫Xイベント"
-            daysLeft="終了"
-            description="入選作品が決定しました！確認してみましょう！"
-            buttonText="確認する"
-            href="/event/result/1"
-            isFinished={true}
-          />
+          {/* イベントカードをループで表示 */}
+          {eventList.map((event, idx) => (
+            <EventCard
+              key={idx}
+              title={event.title}
+              daysLeft={event.daysLeft}
+              description={event.description}
+              buttonText={event.buttonText}
+              href={event.href}
+              isFinished={event.isFinished}
+            />
+          ))}
         </div>
       </div>
     </div>
