@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "現在開催中のイベント情報です。",
 };
 
-export default function EventRootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
