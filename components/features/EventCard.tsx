@@ -55,24 +55,16 @@ export const EventCard = ({
         {href ? (
           <a
             href={href}
-            className={`w-full inline-block font-bold py-3 text-center ${
-              isFinished
-                ? "bg-slate-500 hover:bg-slate-600"
-                : "bg-slate-500 hover:bg-slate-600"
-            } rounded`}
-            style={{ color: "var(--color-white)" }}
+            className="w-full inline-block font-bold py-3 text-center rounded"
+            style={{ backgroundColor: "var(--color-event-button-bg)", color: "var(--color-white)" }}
           >
             {buttonText}
           </a>
         ) : (
           <Button
-            className={`w-full font-bold py-3 ${
-              isFinished
-                ? "bg-slate-500 hover:bg-slate-600"
-                : "bg-slate-500 hover:bg-slate-600"
-            }`}
+            className="w-full font-bold py-3 rounded"
             onClick={onButtonClick}
-            style={{ color: "var(--color-white)" }}
+            style={{ backgroundColor: "var(--color-event-button-bg)", color: "var(--color-white)" }}
           >
             {buttonText}
           </Button>

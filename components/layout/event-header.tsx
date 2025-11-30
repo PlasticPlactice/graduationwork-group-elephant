@@ -3,13 +3,13 @@ import Link from "next/link";
 
 export function EventHeader() {
   return (
-    <header className="bg-[#6b8290] text-white h-[60px] flex items-center justify-between px-4 shadow-md">
+    <header className="bg-[#6A8CA4] text-white h-[60px] flex items-center justify-between px-4 shadow-md">
       {/* ロゴ部分 */}
       <Link
         href="/event"
         className="flex items-center text-2xl font-serif tracking-widest"
       >
-        <span>文庫</span>
+        <span className="text-white">文庫</span>
         <span className="text-red-500 ml-1">X</span>
       </Link>
 
