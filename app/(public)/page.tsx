@@ -113,6 +113,7 @@ export default function Home() {
               <div className="bunko-x__all-events">
                 <Button
                   className="w-full"
+                  href="/event"
                   style={{
                     backgroundColor: "#ff4d6d",
                     color: "#ffffff",
