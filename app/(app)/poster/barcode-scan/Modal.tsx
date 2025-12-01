@@ -18,10 +18,20 @@ export default function Modal({open, onClose, children}: ModalProps) {
         setMounted(true);
     }, []);
 
+    useEffect(() => {
+	        if (open) {
+	            const originalOverflow = document.body.style.overflow;
+	            document.body.style.overflow = 'hidden';
+	            return () => {
+	                document.body.style.overflow = originalOverflow;
+	            };
+	        }
+	}, [open]);
+
     if(!open || !mounted) return null;
 
     return createPortal(
-        <div className={`${Styles.modalOverlay}`} onClick={onClose}>
+        <div className={`${Styles.modalOverlay}`} onClick={onClose} role="dialog" aria-modal="true">
             <div className={`${Styles.modalContent}`} onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
