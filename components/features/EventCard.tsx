@@ -53,18 +53,40 @@ export const EventCard = ({
 
       <div className="event-card__action">
         {href ? (
-          <a
-            href={href}
-            className="w-full inline-block font-bold py-3 text-center rounded"
-            style={{ backgroundColor: "var(--color-event-button-bg)", color: "var(--color-white)" }}
-          >
-            {buttonText}
-          </a>
+          // 内部リンクは next/link を使い、外部リンクは通常のアンカーで開く
+          href.startsWith("http") ? (
+            <a
+              href={href}
+              className="w-full inline-block font-bold py-3 text-center rounded"
+              style={{
+                backgroundColor: "var(--color-event-button-bg)",
+                color: "var(--color-white)",
+              }}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {buttonText}
+            </a>
+          ) : (
+            <Button
+              href={href}
+              className="w-full font-bold py-3 rounded"
+              style={{
+                backgroundColor: "var(--color-event-button-bg)",
+                color: "var(--color-white)",
+              }}
+            >
+              {buttonText}
+            </Button>
+          )
         ) : (
           <Button
             className="w-full font-bold py-3 rounded"
             onClick={onButtonClick}
-            style={{ backgroundColor: "var(--color-event-button-bg)", color: "var(--color-white)" }}
+            style={{
+              backgroundColor: "var(--color-event-button-bg)",
+              color: "var(--color-white)",
+            }}
           >
             {buttonText}
           </Button>
