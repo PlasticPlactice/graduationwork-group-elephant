@@ -4,7 +4,7 @@ import Styles from "@/styles/app/account-create.module.css"
 import Image from "next/image";
 import { useState } from "react";
 
-import Modal from "./confirm-book";
+import Modal from "@/app/(app)/poster/barcode-scan/Modal";
 
 export default function BarcodeScanPage() {
     const [helpOpen, setHelpOpen] = useState(false);

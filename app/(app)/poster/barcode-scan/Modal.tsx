@@ -1,7 +1,7 @@
 "use client";
 
 import { createPortal } from "react-dom";
-import { Children, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import Styles from "@/styles/app/modal.module.css"
 
