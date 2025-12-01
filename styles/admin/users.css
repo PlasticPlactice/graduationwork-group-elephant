@@ -1,5 +1,5 @@
 /* メインコンテナ */
-.notice-container {
+.users-container {
   background-color: var(--color-bg);
   color: var(--color-text);
 }
@@ -10,78 +10,78 @@
   border-radius: var(--control-radius);
 }
 
-.custom-input{
+.custom-input {
     height: 2.8rem;
     width: 17rem;
 }
-.age-input{
+.age-input {
     width: 6rem;
 }
-.city-input{
+.city-input {
   width: 7rem;
 }
-.account-input{
+.account-input {
   width: 15rem;
 }
-.search-btn{
+.search-btn {
   width: 15rem;
   font-size: var(--page-padding-lg);
 }
 
 
-.notice-table{
+.user-table {
   border-collapse: collapse;
 }
-.table-head{
+.table-head {
   background-color: var(--color-main);
   font-size: var(--font-size-base);
   color: var(--color-bg);
   border: 1px solid var(--color-main);
 }
-.notice-table th,
-.notice-table td{
+.user-table th,
+.user-table td {
   border-bottom: 1px solid var(--color-input-bg);
 }
 
-.active{
+.active {
   color: #48885A;
   background-color: #71F486;
   border-radius: var(--control-radius);
 }
-.disable{
+.disable {
   color: #828848;
   background-color: #F4F471;
   border-radius: var(--control-radius);
 }
-.ban{
+.ban {
   color: #884849;
   background-color: #F47171;
   border-radius: var(--control-radius);
 }
-.users-record:hover{
+.users-record:hover {
   background-color: var(--color-input-text);
 }
 
-.page-section{
+.page-section {
   gap: 1rem;
 
 }
-.page-section .page-number{
+.page-section .page-number {
   font-size: var(--font-size-h1);
   background-color: var(--color-bg);
   border-radius: var(--control-radius);
   color: var(--color-sub);
 }
-.page-section .page-number:hover{
+.page-section .page-number:hover {
   font-size: var(--font-size-h1);
   background-color: var(--color-main);
   border-radius: var(--control-radius);
   color: var(--color-bg);
 }
-.page-section .page-number.active{
+.page-section .page-number.active {
   background-color: var(--color-main);
   color: var(--color-bg);
 }
-.page-arrow{
+.page-arrow {
   color: var(--color-sub);
 }
