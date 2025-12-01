@@ -1,10 +1,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
+import { Pagination } from "@/components/ui/pagination";
 
 export default function EventPage() {
   // 仮のイベントデータ（例として3件）
-  const eventList = [
+  const activeEventList = [
     {
       title: "第4回 文庫Xイベント",
       daysLeft: 10,
@@ -12,7 +13,9 @@ export default function EventPage() {
       buttonText: "投票する",
       href: "/event/vote/4",
       isFinished: false,
-    },
+    }];
+    
+  const endEventList = [
     {
       title: "第3回 文庫Xイベント",
       daysLeft: "終了",
@@ -59,7 +62,7 @@ export default function EventPage() {
 
         <div className="flex flex-col gap-6">
           {/* イベントカードをループで表示 */}
-          {eventList.map((event, idx) => (
+          {activeEventList.map((event, idx) => (
             <EventCard
               key={idx}
               title={event.title}
@@ -71,6 +74,28 @@ export default function EventPage() {
             />
           ))}
         </div>
+
+        <h2 className="text-center text-2xl font-bold my-10 text-slate-900">
+          過去のイベント
+        </h2>
+
+        <div className="flex flex-col gap-6">
+          {/* イベントカードをループで表示 */}
+          {endEventList.map((event, idx) => (
+            <EventCard
+              key={idx}
+              title={event.title}
+              daysLeft={event.daysLeft}
+              description={event.description}
+              buttonText={event.buttonText}
+              href={event.href}
+              isFinished={event.isFinished}
+            />
+          ))}
+        </div>
+
+        {/* ページネーション */}
+        <Pagination totalPages={3} currentPage={1} />
       </div>
     </div>
   );
