@@ -15,9 +15,18 @@ export function EventHeader() {
 
       {/* ハンバーガーメニュー */}
       <button
-        className="p-1 focus:outline-none"
+        type="button"
+        className="p-1 border-none outline-none focus:outline-none focus-visible:outline-none focus:ring-0 ring-0 shadow-none drop-shadow-none"
         aria-label="メニューを開く"
-        style={{ backgroundColor: "transparent" }}
+        style={{
+          backgroundColor: "var(--color-event-button-bg)",
+          color: "var(--color-white)",
+          boxShadow: "none",
+          WebkitBoxShadow: "none",
+          filter: "none",
+          outline: "none",
+          border: "none",
+        }}
       >
         {/* Menu アイコンのSVG */}
         <svg
