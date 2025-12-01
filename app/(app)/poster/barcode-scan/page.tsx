@@ -19,7 +19,7 @@ export default function BarcodeScanPage() {
                     <p className={`font-bold text-center ${Styles.subColor}`}>冊子のバーコードを読み込む必要があります。</p>
 
                     <Image src="/app/barcode.png" alt="バーコード" width={200} height={200} className="mx-auto my-10"/>
-                    <button className="w-full">カメラを起動</button>
+                    <button type="button" className="w-full">カメラを起動</button>
                 </div>
                 <div>
                     <p className={`text-center font-bold mb-4 ${Styles.text16px}`}>読み取れない方、読み取りにくい方はこちら</p>
@@ -27,7 +27,7 @@ export default function BarcodeScanPage() {
 
                     <div className="flex gap-3">
                         <input type="text" name="isbn" placeholder="ISBNコードを入力" className="w-full"/>
-                        <button onClick={() => setConfirmOpen(true)} className="w-2/4">検索</button>
+                        <button type="button" onClick={() => setConfirmOpen(true)} className="w-2/4">検索</button>
                     </div>
 
                     <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
@@ -53,13 +53,18 @@ export default function BarcodeScanPage() {
                                 <p className={`py-2 px-3 font-bold ${Styles.warningColor} ${Styles.text12px}`}>この先のページに進むと、本の変更はできません。内容をご確認の上、「登録へ」ボタンを押してください。</p>
                             </div>
                         </div>
-                        <button className={`w-full mb-3`}>登録へ</button>
-                        <button onClick={() => setConfirmOpen(false)} className={`w-full inline-flex items-center justify-center font-bold border ${Styles.barcodeScan__backButton}`}>戻る</button>
+                        <button type="button" className={`w-full mb-3`}>登録へ</button>
+                        <button type="button" onClick={() => setConfirmOpen(false)} className={`w-full inline-flex items-center justify-center font-bold border ${Styles.barcodeScan__backButton}`}>戻る</button>
                     </Modal>
 
                     <div className="flex items-center my-2">
                         <p className="">ISBNコードとは</p>
-                        <button onClick={() => setHelpOpen(true)} className={`${Styles.helpButton}`}>
+                        <button 
+                            type="button"
+                            aria-label="ISBNコードのヘルプを表示"
+                            onClick={() => setHelpOpen(true)}
+                            className={`${Styles.helpButton}`}
+                        >
                             <Image src="/app/help-circle-outline.png" alt="ヘルプマーク" width={30} height={20}/>
                         </button>
 
@@ -67,7 +72,7 @@ export default function BarcodeScanPage() {
                             <h2 className="font-bold text-center mb-4">ISBNコードとは？</h2>
                             <p className="mb-4">ISBNコードは、本の背表紙や裏表紙に記載されている13桁または10桁の数字です。このコードは、書籍を特定するための国際的な標準番号であり、出版社や書店が本を管理する際に使用されます。</p>
                             <p className="mb-4">13桁のISBNコードは通常、「978」または「979」で始まり、その後に出版社コード、タイトルコード、チェックデジットが続きます。10桁のISBNコードは、古い形式であり、現在は主に13桁の形式が使用されています。</p>
-                            <button onClick={() => setHelpOpen(false)} className="w-full mt-6">閉じる</button>
+                            <button type="button" onClick={() => setHelpOpen(false)} className="w-full mt-6">閉じる</button>
                         </Modal>
                     </div>
                 </div>
