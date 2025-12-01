@@ -17,7 +17,7 @@ export const EventCard = ({
   description,
   buttonText = "投票へ",
   onButtonClick,
-  href,
+  href = "/posts/bookshelf",
 }: EventCardProps) => {
   return (
     <div className="event-card">

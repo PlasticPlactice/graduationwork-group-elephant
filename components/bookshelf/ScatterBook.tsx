@@ -27,6 +27,10 @@ export function ScatterBook({
   const buttonStyle: CSSProperties = {
     ...style,
     backgroundColor: "transparent",
+    border: "none",
+    padding: 0,
+    boxShadow: "none",
+    appearance: "none",
   };
   const bookStyle: CSSProperties = {
     width,
@@ -38,7 +42,7 @@ export function ScatterBook({
       type="button"
       onClick={onClick}
       disabled={!isInteractive}
-      className={`group ${className} rounded-md border-none p-0 text-left ${
+      className={`${className} rounded-md border-none p-0 text-left ${
         isInteractive
           ? "cursor-pointer focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2"
           : "cursor-default"
