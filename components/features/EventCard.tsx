@@ -18,8 +18,8 @@ export const EventCard = ({
   description,
   buttonText = "投票へ",
   onButtonClick,
-  href,
   isFinished = false,
+  href = "/posts/bookshelf",
 }: EventCardProps) => {
   // daysLeftが数値なら「日」をつける、それ以外（"終了"など）ならそのまま
   const timerDisplay =
