@@ -15,7 +15,7 @@ type ScatterAreaProps = {
   books?: Book[];
   bookSlots?: ScatterEntry[];
   className?: string;
-  onBookSelect?: (bookId: string) => void;
+  onBookSelect?: (entry: ScatterEntry) => void;
 };
 
 type ScatterSlot = {
@@ -86,7 +86,11 @@ export function ScatterArea({
               book={book}
               className="absolute"
               style={style}
-              onClick={onBookSelect ? () => onBookSelect(book.id) : undefined}
+              onClick={
+                onBookSelect
+                  ? () => onBookSelect({ book, slotIndex })
+                  : undefined
+              }
             />
           );
         })}

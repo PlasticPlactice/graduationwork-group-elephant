@@ -14,6 +14,7 @@ components/
     ScatterBook.tsx      // 下で散らばる本
     ScatterArea.tsx      // 下の散らばりエリア（ランダム配置生成）
     BookshelfLayout.tsx  // 上と下をまとめるレイアウト
+    BooksText.tsx         //下の本をクリック時に書評を表示する
 
 public/
   bookshelf/

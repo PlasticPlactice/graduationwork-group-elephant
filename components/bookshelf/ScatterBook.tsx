@@ -27,6 +27,8 @@ export function ScatterBook({
   const buttonStyle: CSSProperties = {
     ...style,
     backgroundColor: "transparent",
+    width,
+    height,
     border: "none",
     padding: 0,
     boxShadow: "none",
