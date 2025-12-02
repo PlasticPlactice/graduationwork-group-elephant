@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { BookshelfLayout } from "@/components/bookshelf/BookshelfLayout";
 import { BOOKS, type Book } from "@/components/bookshelf/bookData";
+import { BookReviewModal } from "@/components/bookshelf/BookReviewModal";
 import { ShelfBook } from "@/components/bookshelf/ShelfBook";
 import {
   ScatterArea,
@@ -25,7 +26,16 @@ type BooksState = {
   scatter: ScatterEntry[];
 };
 
-function renderShelfRow(books: typeof BOOKS, rowKey: string) {
+type ModalState = {
+  book: Book;
+  mode: "scatter" | "shelf";
+};
+
+function renderShelfRow(
+  books: typeof BOOKS,
+  rowKey: string,
+  onBookSelect?: (book: Book) => void
+) {
   if (books.length === 0) return null;
 
   return (
@@ -40,6 +50,7 @@ function renderShelfRow(books: typeof BOOKS, rowKey: string) {
           book={book}
           heightClass="h-36"
           widthClass="w-10"
+          onClick={onBookSelect ? () => onBookSelect(book) : undefined}
         />
       ))}
       <div className={`${SHELF_SPACER_CLASS} sm:w-8`} aria-hidden="true" />
@@ -53,8 +64,9 @@ export function BookshelfTop() {
     scatter: createInitialScatterEntries(),
   }));
   const { shelves, scatter } = booksState;
+  const [modalState, setModalState] = useState<ModalState | null>(null);
 
-  const handleScatterBookSelect = useCallback((bookId: string) => {
+  const moveScatterBookToShelf = useCallback((bookId: string) => {
     setBooksState((prevState) => {
       const entryIndex = prevState.scatter.findIndex(
         (entry) => entry.book.id === bookId
@@ -85,6 +97,36 @@ export function BookshelfTop() {
     });
   }, []);
 
+  const handleScatterBookSelect = useCallback((entry: ScatterEntry) => {
+    setModalState({ book: entry.book, mode: "scatter" });
+  }, []);
+
+  const handleShelfBookSelect = useCallback((book: Book) => {
+    setModalState({ book, mode: "shelf" });
+  }, []);
+
+  const handleCloseReview = useCallback(() => {
+    setModalState(null);
+  }, []);
+
+  const handleCompleteBook = useCallback(() => {
+    if (!modalState) return;
+    if (modalState.mode === "shelf") {
+      setModalState(null);
+      return;
+    }
+    const hasSpace = booksState.shelves.some(
+      (shelf) => shelf.length < MAX_BOOKS_PER_SHELF
+    );
+    if (!hasSpace) {
+      // notify the user that there's no space instead of silently closing
+      window.alert("本棚に空きがありません。");
+      return;
+    }
+    moveScatterBookToShelf(modalState.book.id);
+    setModalState(null);
+  }, [booksState.shelves, modalState, moveScatterBookToShelf]);
+
   return (
     <>
       <div className="mb-6 flex flex-col items-center gap-3 text-center">
@@ -111,7 +153,7 @@ export function BookshelfTop() {
           <BookshelfLayout
             className="absolute inset-0"
             shelfContents={shelves.map((books, idx) =>
-              renderShelfRow(books, `shelf-${idx}`)
+              renderShelfRow(books, `shelf-${idx}`, handleShelfBookSelect)
             )}
           />
         </div>
@@ -122,6 +164,13 @@ export function BookshelfTop() {
         </span>
       </div>
       <ScatterArea bookSlots={scatter} onBookSelect={handleScatterBookSelect} />
+      <BookReviewModal
+        book={modalState?.book}
+        open={Boolean(modalState)}
+        onClose={handleCloseReview}
+        onComplete={handleCompleteBook}
+        actionLabel={modalState?.mode === "shelf" ? "閉じる" : undefined}
+      />
     </>
   );
 }

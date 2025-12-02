@@ -1,3 +1,4 @@
+import { type KeyboardEvent } from "react";
 import type { Book } from "@/components/bookshelf/bookData";
 import { BookPattern } from "@/components/bookshelf/BookPattern";
 
@@ -8,6 +9,7 @@ type ShelfBookProps = {
   className?: string;
   /** 背表紙のテキスト（省略時は何も表示しない） */
   label?: string;
+  onClick?: () => void;
 };
 
 const DEFAULT_HEIGHT = "h-40";
@@ -19,6 +21,7 @@ export function ShelfBook({
   widthClass = DEFAULT_WIDTH,
   className = "",
   label,
+  onClick,
 }: ShelfBookProps) {
   const containerClass = [
     "relative",
@@ -35,8 +38,27 @@ export function ShelfBook({
     .filter(Boolean)
     .join(" ");
 
+  const interactiveClasses = onClick
+    ? "cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
+    : "";
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onClick();
+    }
+  };
+
   return (
-    <div className={containerClass} aria-label={label ?? book.id}>
+    <div
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      className={[containerClass, interactiveClasses].filter(Boolean).join(" ")}
+      aria-label={label ?? book.id}
+    >
       <BookPattern
         pattern={book.pattern}
         baseColor={book.baseColor}

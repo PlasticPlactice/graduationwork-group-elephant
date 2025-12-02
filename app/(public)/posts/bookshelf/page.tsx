@@ -1,3 +1,5 @@
+"use client";
+
 import { BookshelfTop } from "@/components/bookshelf/BookshelfTop";
 
 export default function BookshelfDetailPage() {
