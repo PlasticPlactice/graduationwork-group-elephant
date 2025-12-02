@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { BookshelfLayout } from "@/components/bookshelf/BookshelfLayout";
 import { BOOKS, type Book } from "@/components/bookshelf/bookData";
-import { BooksText } from "@/components/bookshelf/BooksText";
+import { BookReviewModal } from "@/components/bookshelf/BookReviewModal";
 import { ShelfBook } from "@/components/bookshelf/ShelfBook";
 import {
   ScatterArea,
@@ -119,7 +119,8 @@ export function BookshelfTop() {
       (shelf) => shelf.length < MAX_BOOKS_PER_SHELF
     );
     if (!hasSpace) {
-      setModalState(null);
+      // notify the user that there's no space instead of silently closing
+      window.alert("本棚に空きがありません。");
       return;
     }
     moveScatterBookToShelf(modalState.book.id);
@@ -163,7 +164,7 @@ export function BookshelfTop() {
         </span>
       </div>
       <ScatterArea bookSlots={scatter} onBookSelect={handleScatterBookSelect} />
-      <BooksText
+      <BookReviewModal
         book={modalState?.book}
         open={Boolean(modalState)}
         onClose={handleCloseReview}
