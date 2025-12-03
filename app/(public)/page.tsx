@@ -95,11 +95,13 @@ export default function Home() {
 
               <div className="event-cards">
                 {/* Card 1 */}
-                {/* Card 1 */}
                 <EventCard
                   title="第2回 文庫Xイベント"
                   daysLeft={10}
                   description="投票期間中です！投票してみましょう！"
+                  buttonBackgroundColor="var(--color-bg)"
+                  buttonBorderColor="var(--color-main)"
+                  buttonTextColor="var(--color-main)"
                 />
 
                 {/* Card 2 */}
@@ -107,6 +109,9 @@ export default function Home() {
                   title="第1回 文庫Xイベント"
                   daysLeft={10}
                   description="投票期間中です！投票してみましょう！"
+                  buttonBackgroundColor="var(--color-bg)"
+                  buttonBorderColor="var(--color-main)"
+                  buttonTextColor="var(--color-main)"
                 />
               </div>
 
@@ -115,8 +120,8 @@ export default function Home() {
                   className="w-full"
                   href="/event"
                   style={{
-                    backgroundColor: "#ff4d6d",
-                    color: "#ffffff",
+                    backgroundColor: "var(--color-main)",
+                    color: "var(--color-white)",
                     width: "100%",
                     maxWidth: "400px",
                   }}
