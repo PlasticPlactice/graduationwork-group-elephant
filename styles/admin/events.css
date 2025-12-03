@@ -1,0 +1,72 @@
+.register-btn {
+  width: 15rem;
+  font-size: var(--page-padding-lg);
+}
+.events-headline{
+    font-size: var(--font-size-h1);
+    margin: 1.5rem 0 1.5rem 0;
+}
+.event-btn{
+    width: 10rem;
+    font-size: var(--page-padding-lg);
+}
+.now-event-section{
+    border: 1px solid var(--color-main);
+    border-radius: var(--control-radius);
+}
+.event-title-section{
+    border-bottom: 1px solid var(--color-sub);
+}
+
+/* 1. トグルボタン全体のコンテナ */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 5rem; /* スイッチの幅 */
+  height: 2rem; /* スイッチの高さ */
+}
+
+/* 2. 標準のチェックボックスを非表示にする */
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 3. スイッチの「トラック」（背景）の基本スタイル */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #9CA3AF; /* OFFの状態の色（画像のようなグレー） */
+  transition: .4s;
+  border-radius: 34px; /* 角を丸くする */
+}
+
+/* 4. スイッチの「ツマミ」（円）のスタイル */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.5rem; /* ツマミの高さ */
+  width: 1.5rem; /* ツマミの幅 */
+  left: 0.2rem; /* 左端からの位置 */
+  bottom: 0.25rem; /* 下端からの位置 */
+  background-color: white; /* ツマミの色 */
+  transition: .4s;
+  border-radius: 50%; /* 完全な円にする */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* ツマミに影をつける */
+}
+
+/* 5. チェックされた時 (ONの状態) のトラックのスタイル変更 */
+input:checked + .slider {
+  background-color: #2196F3; /* ONの状態の色 (例: 青) */
+}
+
+/* 6. チェックされた時 (ONの状態) のツマミの位置変更 */
+input:checked + .slider:before {
+  /* スイッチの幅 (60px) - ツマミの幅 (26px) - 左右のパディング (4px*2) = 26px の移動 */
+  transform: translateX(3rem); 
+}
