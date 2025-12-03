@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import AdminButton from '@/components/ui/admin-button';
 import Textbox from '@/components/ui/admin-textbox';
 import '@/styles/admin/index.css';
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "ログイン", 
@@ -24,7 +25,7 @@ export default function Page() {
           <Textbox name="title" placeholder="パスワードを入力してください" className=''/>
         </div>
 
-        <a href="#" className='text-center mb-2'>パスワードを忘れた場合</a>
+        <Link href="#" className='text-center mb-2'>パスワードを忘れた場合</Link>
 
         <div className='text-center'>
           <AdminButton label="ログイン" type="submit" className='login-button' />

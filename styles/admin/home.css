@@ -37,6 +37,7 @@
 
 .card-title {
   font-size: var(--font-size-h1);
+  color: var(--color-text);
 }
 
 .card-description {
