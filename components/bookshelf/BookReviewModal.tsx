@@ -9,6 +9,10 @@ type BookReviewModalProps = {
   onClose: () => void;
   onComplete: () => void;
   actionLabel?: string;
+  isFavorited?: boolean;
+  isVoted?: boolean;
+  onToggleFavorite?: () => void;
+  onToggleVote?: () => void;
 };
 
 export function BookReviewModal({
@@ -17,10 +21,16 @@ export function BookReviewModal({
   onClose,
   onComplete,
   actionLabel = "本棚にしまう",
+  isFavorited = false,
+  isVoted = false,
+  onToggleFavorite,
+  onToggleVote,
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
+  const favButtonRef = useRef<HTMLButtonElement | null>(null);
+  const voteButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -90,6 +100,63 @@ export function BookReviewModal({
     };
   }, [open, onClose]);
 
+  // Force inline styles with !important to override external button styles
+  useEffect(() => {
+    const favEl = favButtonRef.current;
+    if (favEl) {
+      // ensure box-sizing so border doesn't change layout
+      favEl.style.setProperty("box-sizing", "border-box", "important");
+      if (isFavorited) {
+        favEl.style.setProperty("background-color", "#F6E05E", "important");
+        favEl.style.setProperty("color", "#111827", "important");
+        favEl.style.setProperty(
+          "box-shadow",
+          "0 6px 18px rgba(160,138,0,0.25)",
+          "important"
+        );
+        // keep a transparent border so size doesn't shift
+        favEl.style.setProperty("border", "1px solid transparent", "important");
+      } else {
+        favEl.style.setProperty("background-color", "#ffffff", "important");
+        favEl.style.setProperty("color", "#374151", "important");
+        favEl.style.setProperty("box-shadow", "none", "important");
+        favEl.style.setProperty(
+          "border",
+          "1px solid rgba(148,163,184,0.2)",
+          "important"
+        );
+      }
+    }
+
+    const voteEl = voteButtonRef.current;
+    if (voteEl) {
+      voteEl.style.setProperty("box-sizing", "border-box", "important");
+      if (isVoted) {
+        voteEl.style.setProperty("background-color", "#ef4444", "important");
+        voteEl.style.setProperty("color", "#ffffff", "important");
+        voteEl.style.setProperty(
+          "box-shadow",
+          "0 6px 18px rgba(220,38,38,0.25)",
+          "important"
+        );
+        voteEl.style.setProperty(
+          "border",
+          "1px solid transparent",
+          "important"
+        );
+      } else {
+        voteEl.style.setProperty("background-color", "#ffffff", "important");
+        voteEl.style.setProperty("color", "#374151", "important");
+        voteEl.style.setProperty("box-shadow", "none", "important");
+        voteEl.style.setProperty(
+          "border",
+          "1px solid rgba(148,163,184,0.2)",
+          "important"
+        );
+      }
+    }
+  }, [isFavorited, isVoted]);
+
   if (!open || !book) {
     return null;
   }
@@ -122,7 +189,43 @@ export function BookReviewModal({
             {book.review ?? "書評がまだ登録されていません。"}
           </div>
         </div>
-        <div className="relative z-10 mt-6 flex justify-center">
+        <div className="relative z-10 mt-6 flex items-center justify-center gap-3">
+          <button
+            ref={favButtonRef}
+            type="button"
+            onClick={() => onToggleFavorite?.()}
+            aria-pressed={isFavorited}
+            style={{
+              backgroundColor: isFavorited ? "#F6E05E" : "#FFFFFF",
+              color: isFavorited ? "#111827" : "#374151",
+            }}
+            className={
+              (isFavorited
+                ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-yellow-400 text-slate-900 shadow-md ring-2 ring-yellow-300"
+                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-white text-slate-700 border border-slate-200 hover:bg-yellow-50") +
+              " transition-colors transform active:scale-95"
+            }
+          >
+            お気に入り
+          </button>
+          <button
+            ref={voteButtonRef}
+            type="button"
+            onClick={() => onToggleVote?.()}
+            aria-pressed={isVoted}
+            style={{
+              backgroundColor: isVoted ? "#ef4444" : "#FFFFFF",
+              color: isVoted ? "#FFFFFF" : "#374151",
+            }}
+            className={
+              (isVoted
+                ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-red-600 text-white shadow-md ring-2 ring-red-300"
+                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-white text-slate-700 border border-slate-200 hover:bg-red-50") +
+              " transition-colors transform active:scale-95"
+            }
+          >
+            投票
+          </button>
           <button
             type="button"
             onClick={onComplete}
