@@ -85,7 +85,7 @@ export function AdminHeader() {
             <ul className="space-y-6">
               <li>
                 <Link
-                  href="/admin/notifications"
+                  href="/admin/notice"
                   onClick={() => setOpenMenu(false)}
                   className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
                 >
