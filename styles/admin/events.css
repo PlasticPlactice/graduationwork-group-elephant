@@ -70,3 +70,17 @@ input:checked + .slider:before {
   /* スイッチの幅 (60px) - ツマミの幅 (26px) - 左右のパディング (4px*2) = 26px の移動 */
   transform: translateX(3rem); 
 }
+
+
+.now-event-condition{
+    color: #868884;
+}
+.up-arrow{
+    color: var(--color-main);
+}
+.event-condition-circle-now{
+    background-color: var(--color-main);
+}
+.event-condition-circle-future{
+    background-color: var(--color-sub);
+}

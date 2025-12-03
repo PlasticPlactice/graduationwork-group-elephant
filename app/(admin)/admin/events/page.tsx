@@ -2,6 +2,7 @@
 import AdminButton from '@/components/ui/admin-button';
 import { useRouter } from 'next/navigation';
 import "@/styles/admin/events.css"
+import { Icon } from "@iconify/react";
 
 export default function Page() {
     const router = useRouter();
@@ -40,6 +41,15 @@ export default function Page() {
                             <span className="slider"></span>
                         </label>
                     </div>
+                </div>
+
+                <p className='now-event-condition my-5'>現在のイベント状況</p>
+                <Icon icon="bxs:up-arrow" rotate={2} className='up-arrow'></Icon>
+                <div className='flex justify-between w-2/3 m-auto'>
+                    <p className='w-3 h-3 rounded-full event-condition-circle-now'></p>
+                    <p className='w-3 h-3 rounded-full event-condition-circle-now'></p>
+                    <p className='w-3 h-3 rounded-full event-condition-circle-future'></p>
+                    <p className='w-3 h-3 rounded-full event-condition-circle-future'></p>
                 </div>
             </section>
         </main>
