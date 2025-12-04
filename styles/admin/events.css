@@ -79,8 +79,26 @@ input:checked + .slider:before {
     color: var(--color-main);
 }
 .event-condition-circle-now{
-    background-color: var(--color-main);
+    color: var(--color-main);
+    margin: auto;
 }
 .event-condition-circle-future{
-    background-color: var(--color-sub);
+    color: var(--color-sub);
+    margin: auto;
 }
+
+progress {
+  -webkit-appearance: none; /* プログレスバーのスタイルをリセット */
+  -moz-appearance: none; /* プログレスバーのスタイルをリセット */
+  background-color: var(--color-sub); /* プログレスバーの背景色/-moz- 用 */
+}
+::-webkit-progress-bar {
+  background-color: var(--color-sub); /* プログレスバーの背景色/-webkit- 用 */
+}
+::-webkit-progress-value {
+  background-color: var(--color-main); /* プログレスバーの進捗部分色/-webkit- 用 */
+}
+::-moz-progress-bar {
+  background-color: var(--color-main); /* プログレスバーの進捗部分色/-moz- 用 */
+}
+
