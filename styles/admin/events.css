@@ -102,3 +102,53 @@ progress {
   background-color: var(--color-main); /* プログレスバーの進捗部分色/-moz- 用 */
 }
 
+.event-data-headline{
+  font-size: var(--font-size-h1);
+}
+
+.edit_btn{
+  width: 7.5rem;
+  font-size: var(--font-size-h1);
+  height: 2.5rem;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-base);
+  margin: 0.5rem 0 0 0;
+}
+
+.row {
+  display: flex;
+  border: 1px solid var(--color-main);
+  margin: 0 0 0.1rem 0;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  width: 20rem;              /* 左カラム固定幅（画像に合わせて調整） */
+  background: var(--color-main);       /* ピンク背景 */
+  color: #fff;
+  /* padding: 1rem; */
+  border-right: 1px solid var(--color-main);
+  font-weight: normal;
+  font-size: 1.3rem;
+}
+
+.content {
+  flex: 1;
+  padding-left: 1.3rem;
+  font-size: 1.3rem;
+  box-sizing: border-box;
+}
+
+.large {
+  height: 5rem;             /* 備考欄の縦長を再現 */
+  border-bottom: 1px solid var(--color-main);
+
+}
+

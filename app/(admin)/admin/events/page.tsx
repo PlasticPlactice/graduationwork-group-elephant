@@ -60,6 +60,48 @@ export default function Page() {
                     <span>二次審査</span>
                     <span>終了済</span>
                 </div>
+
+                <div className='flex items-center justify-between'>
+                    <h2 className='font-bold event-data-headline'>イベント情報</h2>
+                    <AdminButton
+                        label='編集'
+                        type="button" 
+                        className='edit_btn'
+                    />
+                </div>
+
+            <div className="schedule-table">
+                <div className="row ">
+                    <div className="label text-center">テーマタイトル</div>
+                    <div className="content">第1回文庫X</div>
+                </div>
+
+                <div className="row">
+                    <div className="label text-center">開始日</div>
+                    <div className="content">2024年10月30日 ～ 2025年10月30日</div>
+                </div>
+
+                <div className="row">
+                    <div className="label text-center">書評投稿期間</div>
+                    <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
+                </div>
+
+                <div className="row">
+                    <div className="label text-center">1次審査期間</div>
+                    <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
+                </div>
+
+                <div className="row">
+                    <div className="label text-center">2次審査期間</div>
+                    <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
+                </div>
+
+                <div className="row">
+                    <div className="label large text-center">備考</div>
+                    <div className="content large"></div>
+                </div>
+            </div>
+
             </section>
         </main>
     )
