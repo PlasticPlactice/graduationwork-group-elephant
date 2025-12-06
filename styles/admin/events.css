@@ -14,6 +14,9 @@
     border: 1px solid var(--color-main);
     border-radius: var(--control-radius);
 }
+.end-event-section{
+  border: none;
+}
 .event-title-section{
     border-bottom: 1px solid var(--color-sub);
 }
@@ -152,3 +155,25 @@ progress {
 
 }
 
+details{
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
+}
+summary{
+  list-style-type: none;
+}
+.summary_title h2{
+  font-size: var(--font-size-h1);
+}
+.summary_title p{
+  color: #8A8A8A;
+}
+.icon{
+}
+details[open] .icon {
+  transform: rotate(180deg);
+}
+
+.end-event-accordion{
+  margin-bottom: 1rem;
+}
