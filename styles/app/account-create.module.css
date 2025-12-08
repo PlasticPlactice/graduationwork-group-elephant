@@ -11,7 +11,7 @@
   --color-main: #ff4463;
   --color-sub: #6a8ca4;
   --color-warning: #ff0000;
-  --color-warning-bg: #FFECEF;
+  --color-warning-bg: #ffecef;
   --color-accent: #faf443;
 
   /* spacing / sizes */
@@ -69,9 +69,8 @@
   padding: 0.3rem 0.5rem;
 }
 
-
 .genderRadio {
-  transform: scale(2.0);
+  transform: scale(2);
   height: auto;
   outline: none;
 }
@@ -119,10 +118,22 @@
 }
 
 @keyflames fadeInOut {
-  0% { opacity: 0; transform: translateY(-5px); }
-  20% { opacity: 1; transform: translateY(0px); }
-  80% { opacity: 1; transform: translateY(0px); }
-  100% { opacity: 0; transform: translateY(-5px); }
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
 }
 
 .helpButton {
@@ -134,6 +145,36 @@
 
 .barcodeScan__alertContainer {
   background-color: var(--color-warning-bg);
+}
+
+.barcodeScan__readerWrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+}
+
+.barcodeScan__reader {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--color-sub);
+  border-radius: var(--control-radius);
+  background-color: #f7f9fb;
+  overflow: hidden;
+}
+
+.barcodeScan__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.barcodeScan__status {
+  margin-top: 8px;
+  color: var(--color-sub);
 }
 
 .barcodeScan__backButton {
