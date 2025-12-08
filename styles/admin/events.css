@@ -175,3 +175,23 @@ details[open] .icon {
 .end-event-accordion {
   margin-bottom: 1rem;
 }
+
+/* モーダル */
+.reg-modal{
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.close-btn{
+  background-color: var(--color-bg);
+  box-shadow: none;
+}
+.custom-input{
+  border: 1px solid var(--color-sub);
+}
+.datetime-input{
+  width: 40%;
+  border: 1px solid var(--color-sub);
+}
+.event-detail-text{
+  font-size:0.8rem;
+  color: var(--color-sub);
+}
