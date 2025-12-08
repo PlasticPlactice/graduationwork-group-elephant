@@ -53,7 +53,13 @@ export default function BarcodeScanPage() {
       if (!normalized) return;
 
       // Ignore lower (price/classification) code starting with 191/192
-      if (normalized.startsWith("191") || normalized.startsWith("192")) return;
+          if (normalized.startsWith("191") || normalized.startsWith("192")) {
+            setScanStatus((prev) => {
+              const warningMsg = "上のバーコードを読み取ってください。";
+              return prev === warningMsg ? prev : warningMsg;
+            });
+            return;
+          }
 
       // Accept only ISBN prefixes
       if (!(normalized.startsWith("978") || normalized.startsWith("979")))
