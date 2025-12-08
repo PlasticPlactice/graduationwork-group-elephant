@@ -10,6 +10,9 @@ type EventCardProps = {
   onButtonClick?: () => void;
   href?: string;
   isFinished?: boolean;
+  buttonBackgroundColor?: string;
+  buttonBorderColor?: string;
+  buttonTextColor?: string;
 };
 
 export const EventCard = ({
@@ -20,6 +23,9 @@ export const EventCard = ({
   onButtonClick,
   isFinished = false,
   href = "/posts/bookshelf",
+  buttonBackgroundColor,
+  buttonBorderColor,
+  buttonTextColor,
 }: EventCardProps) => {
   // daysLeftが数値なら「日」をつける、それ以外（"終了"など）ならそのまま
   const timerDisplay =
@@ -59,8 +65,12 @@ export const EventCard = ({
               href={href}
               className="w-full inline-block font-bold py-3 text-center rounded"
               style={{
-                backgroundColor: "var(--color-event-button-bg)",
-                color: "var(--color-white)",
+                backgroundColor:
+                  buttonBackgroundColor || "var(--color-event-button-bg)",
+                color: buttonTextColor || "var(--color-white)",
+                border: buttonBorderColor
+                  ? `2px solid ${buttonBorderColor}`
+                  : "none",
               }}
               target="_blank"
               rel="noopener noreferrer"
@@ -72,8 +82,12 @@ export const EventCard = ({
               href={href}
               className="w-full font-bold py-3 rounded"
               style={{
-                backgroundColor: "var(--color-event-button-bg)",
-                color: "var(--color-white)",
+                backgroundColor:
+                  buttonBackgroundColor || "var(--color-event-button-bg)",
+                color: buttonTextColor || "var(--color-white)",
+                border: buttonBorderColor
+                  ? `2px solid ${buttonBorderColor}`
+                  : "none",
               }}
             >
               {buttonText}
@@ -84,8 +98,12 @@ export const EventCard = ({
             className="w-full font-bold py-3 rounded"
             onClick={onButtonClick}
             style={{
-              backgroundColor: "var(--color-event-button-bg)",
-              color: "var(--color-white)",
+              backgroundColor:
+                buttonBackgroundColor || "var(--color-event-button-bg)",
+              color: buttonTextColor || "var(--color-white)",
+              border: buttonBorderColor
+                ? `2px solid ${buttonBorderColor}`
+                : "none",
             }}
           >
             {buttonText}
