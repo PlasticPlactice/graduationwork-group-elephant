@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
 
@@ -11,6 +11,7 @@ type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
 export default function MyPage() {
   // 初期表示時にモーダルを表示
   const [showModal, setShowModal] = useState(true);
+  const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const sampleEvents = [
     {
       title: "第1回 文庫Xイベント",
@@ -28,7 +29,7 @@ export default function MyPage() {
 
   const sampleReviews = [
     {
-      title: "色彩を持たない多崎をつくると、彼の巡礼の年",
+      title: "色彩を持たない多崎つくると、彼の巡礼の年",
       status: "1次審査前",
       badgeType: "red",
       excerpt:
@@ -37,7 +38,7 @@ export default function MyPage() {
       buttonDisabled: false,
     },
     {
-      title: "色彩を持たない多崎をつくると、彼の巡礼の年",
+      title: "色彩を持たない多崎つくると、彼の巡礼の年",
       status: "1次審査中",
       badgeType: "blue",
       excerpt:
@@ -46,7 +47,7 @@ export default function MyPage() {
       buttonDisabled: true,
     },
     {
-      title: "色彩を持たない多崎をつくると、彼の巡礼の年",
+      title: "色彩を持たない多崎つくると、彼の巡礼の年",
       status: "下書き",
       badgeType: "gray",
       excerpt:
@@ -85,7 +86,10 @@ export default function MyPage() {
           <div className="flex items-center justify-center gap-3 mt-1">
             <div className="text-rose-500 font-bold">○○○さん</div>
           </div>
-          <div className="absolute right-3 top-2 flex items-center" aria-hidden>
+          <div
+            className="absolute right-3 top-2 flex items-center"
+            aria-hidden="true"
+          >
             {/* SVG 封筒アイコン（大きめ） */}
             <svg
               width="40"
@@ -93,7 +97,6 @@ export default function MyPage() {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              aria-hidden
             >
               <path
                 d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v11A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5v-11z"
@@ -169,6 +172,9 @@ export default function MyPage() {
                 <li className="mr-2" key={tab.key}>
                   <a
                     href="#"
+                    ref={(el) => {
+                      tabRefs.current[tabIndex] = el;
+                    }}
                     onClick={(e) => {
                       e.preventDefault();
                       setActiveFilterTab(tab.key);
@@ -182,13 +188,7 @@ export default function MyPage() {
                             : 0;
                         const nextTab = REVIEW_FILTER_TABS[nextIndex];
                         setActiveFilterTab(nextTab.key);
-                        const nextElement =
-                          e.currentTarget.parentElement?.nextElementSibling?.querySelector(
-                            "a"
-                          );
-                        if (nextElement) {
-                          (nextElement as HTMLElement).focus();
-                        }
+                        tabRefs.current[nextIndex]?.focus();
                       }
                       if (e.key === "ArrowLeft") {
                         e.preventDefault();
@@ -198,20 +198,18 @@ export default function MyPage() {
                             : REVIEW_FILTER_TABS.length - 1;
                         const prevTab = REVIEW_FILTER_TABS[prevIndex];
                         setActiveFilterTab(prevTab.key);
-                        const prevElement =
-                          e.currentTarget.parentElement?.previousElementSibling?.querySelector(
-                            "a"
-                          );
-                        if (prevElement) {
-                          (prevElement as HTMLElement).focus();
-                        }
+                        tabRefs.current[prevIndex]?.focus();
                       }
                     }}
                     role="tab"
                     aria-current={
-                      activeFilterTab === tab.key ? "page" : undefined
+                      activeFilterTab === tab.key ? "tab" : undefined
                     }
-                    className={`inline-block p-3 rounded-t-md ${activeFilterTab === tab.key ? "-mb-px text-sky-600 bg-white border border-b-0 border-gray-400 rounded-t-md" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"}`}
+                    className={`inline-block p-3 rounded-t-md ${
+                      activeFilterTab === tab.key
+                        ? "-mb-px text-sky-600 bg-white border border-b-0 border-gray-400 rounded-t-md"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                    }`}
                     data-key={tab.key}
                   >
                     {tab.label}
@@ -232,7 +230,13 @@ export default function MyPage() {
                         {review.title}
                       </h3>
                       <span
-                        className={`px-3 py-1 rounded-full font-bold text-sm flex-shrink-0 ${review.badgeType === "red" ? "bg-rose-50 text-rose-600 border border-rose-100" : review.badgeType === "blue" ? "bg-sky-50 text-sky-600 border border-sky-100" : "bg-slate-100 text-slate-600 border border-slate-200"}`}
+                        className={`px-3 py-1 rounded-full font-bold text-sm flex-shrink-0 ${
+                          review.badgeType === "red"
+                            ? "bg-rose-50 text-rose-600 border border-rose-100"
+                            : review.badgeType === "blue"
+                            ? "bg-sky-50 text-sky-600 border border-sky-100"
+                            : "bg-slate-100 text-slate-600 border border-slate-200"
+                        }`}
                       >
                         {review.status}
                       </span>
@@ -245,7 +249,11 @@ export default function MyPage() {
                     {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
                     <div className="mt-4">
                       <button
-                        className={`${review.buttonDisabled ? "w-full bg-gray-200 text-gray-400 px-3 py-2 rounded-md font-bold" : "w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"}`}
+                        className={`${
+                          review.buttonDisabled
+                            ? "w-full bg-gray-200 text-gray-400 px-3 py-2 rounded-md font-bold"
+                            : "w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
+                        }`}
                         disabled={review.buttonDisabled}
                       >
                         {review.buttonText}

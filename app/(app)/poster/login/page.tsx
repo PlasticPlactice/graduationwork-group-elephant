@@ -72,11 +72,13 @@ export default function LoginPage() {
               />
             </div>
           </div>
+          {/* TODO: ログインロジックを実装後、onSubmitハンドラーを追加 */}
+          <Link href="/poster/mypage" className="w-full">
+            <button type="button" className="w-full">
+              ログイン
+            </button>
+          </Link>
         </form>
-
-        <Link href="/poster/mypage" className={`w-full block text-center`}>
-          <button className={`w-full`}>ログイン</button>
-        </Link>
       </div>
     </div>
   );
