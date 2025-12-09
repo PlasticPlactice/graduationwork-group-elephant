@@ -5,15 +5,16 @@ import { useState,useEffect } from 'react';
 import "@/styles/admin/events.css"
 import { Icon } from "@iconify/react";
 import EventRegisterModal from '@/components/admin/EventRegisterModal';
+import EventEditModal from '@/components/admin/EventEditModal'
 
 export default function Page() {
     const router = useRouter();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [rangeValue, setRangeValue] = useState(33);
+    const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // モーダルが開いている時に背景のスクロールを防ぐ
     useEffect(() => {
-        if (isModalOpen) {
+        if (isRegisterModalOpen) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
@@ -23,14 +24,18 @@ export default function Page() {
         return () => {
             document.body.style.overflow = 'unset';
         };
-    }, [isModalOpen]);
+    }, [isRegisterModalOpen]);
 
     const handleRegister = () => {
-        setIsModalOpen(true);
+        setIsRegisterModalOpen(true);
+    };
+    const handleEdit = () => {
+        setIsEditModalOpen(true);
     };
 
     const closeModal = () => {
-        setIsModalOpen(false);
+        setIsRegisterModalOpen(false);
+        setIsEditModalOpen(false);
     }
     const handledetail = () => {
         router.push('/admin/home')
@@ -95,6 +100,7 @@ export default function Page() {
                         label='編集'
                         type="button" 
                         className='edit_btn'
+                        onClick={handleEdit}
                     />
                 </div>
 
@@ -322,7 +328,8 @@ export default function Page() {
             </details>
 
             {/* モーダル */}
-            <EventRegisterModal isOpen={isModalOpen} onClose={closeModal} />
+            <EventRegisterModal isOpen={isRegisterModalOpen} onClose={closeModal} />
+            <EventEditModal isOpen={isEditModalOpen} onClose={closeModal} />
         </main>
     )
 }

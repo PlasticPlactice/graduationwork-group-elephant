@@ -177,7 +177,7 @@ details[open] .icon {
   margin-bottom: 1rem;
 }
 
-/* モーダル */
+/* モーダル共通部分 */
 /* モーダルのスクロール領域 */
 .modal-content {
   display: flex;
@@ -278,4 +278,14 @@ textarea#remarks {
   background-color: var(--color-bg);
   color: #16A34A;
   border:1px solid #16A34A;
+}
+
+/* 編集モーダル */
+.now-status{
+  font-size: var(--font-size-h1);
+  color: #31AD7C;
+  background-color: #AAE991;
+}
+.next-status{
+  border: 1px solid var(--color-sub);
 }

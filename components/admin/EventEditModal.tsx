@@ -23,7 +23,7 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
         <div className="fixed inset-0 reg-modal bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
             <div className="modal-content bg-white rounded-lg w-11/12 max-w-8xl max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
                 <div className="flex justify-between items-center p-6 border-b">
-                    <h2 className="text-2xl font-bold">イベント登録</h2>
+                    <h2 className="text-2xl font-bold">イベント編集</h2>
                     <button onClick={onClose} className="close-btn text-black">
                         <Icon icon="mdi:close" width={24} className='text-black'/>
                     </button>
@@ -39,6 +39,7 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                 className='w-full custom-input'
                                 style={{backgroundColor:'#F9FAFB'}}
                                 placeholder='イベントのタイトルを入力'
+                                value={'第1回文庫X'}
                             />
                         </div>
 
@@ -51,7 +52,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='event-start-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
-                                    style={{backgroundColor:'#F9FAFB'}}
+                                    style={{ backgroundColor: '#F9FAFB' }}
+                                    value={'2024-10-30 12:00'}
                                 />
                                 <p>～</p>
                                 <Textbox
@@ -59,7 +61,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='event-end-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
-                                    style={{backgroundColor:'#F9FAFB'}}
+                                    style={{ backgroundColor: '#F9FAFB' }}
+                                    value={'2025-10-30 12:00'}
                                 />
                             </div>
                         </div>
@@ -73,7 +76,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='book-post-start-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
-                                    style={{backgroundColor:'#F9FAFB'}}
+                                    style={{ backgroundColor: '#F9FAFB' }}
+                                    value={'2024-11-30 12:00'}
                                 />
                                 <p>～</p>
                                 <Textbox
@@ -81,7 +85,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='book-post-end-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
-                                    style={{backgroundColor:'#F9FAFB'}}
+                                    style={{ backgroundColor: '#F9FAFB' }}
+                                    value={'2024-12-30 12:00'}
                                 />
                             </div>
                         </div>
@@ -95,7 +100,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='book-vote-start-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
-                                    style={{backgroundColor:'#F9FAFB'}}
+                                    style={{ backgroundColor: '#F9FAFB' }}
+                                    value={'2025-01-05 12:00'}
                                 />
                                 <p>～</p>
                                 <Textbox
@@ -103,7 +109,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='book-vote-end-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
-                                    style={{backgroundColor:'#F9FAFB'}}
+                                    style={{ backgroundColor: '#F9FAFB' }}
+                                    value={'2025-02-05 12:00'}
                                 />
                             </div>
                         </div>
@@ -111,8 +118,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                         <div className='my-4'>
                             <label htmlFor="event-status" className='text-xl block'>ステータス</label>
                             <div className='flex justify-between w-4/5 m-auto'>
-                                <p className='w-10'><Icon icon="bxs:up-arrow" rotate={2} className='up-arrow m-auto'></Icon></p>
                                 <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                                <p className='w-10'><Icon icon="bxs:up-arrow" rotate={2} className='up-arrow m-auto'></Icon></p>
                                 <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
                                 <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
                             </div>
@@ -123,7 +130,7 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                 <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-future'></Icon></p>
                             </div>
                             <div className='flex justify-center mt-2'>
-                                <progress max={100} value={11} className='w-full h-0.5'></progress>
+                                <progress max={100} value={37} className='w-full h-0.5'></progress>
                             </div>
                             <div className='flex justify-between w-4/5 m-auto'>
                                 <span>開催前</span>
@@ -134,9 +141,17 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                         </div>
 
                         <div className='my-4'>
-                            <label htmlFor="remarks" className='text-xl block'>備考欄</label>
-                            <p className='event-detail-text text-sm'>イベントについての詳細を記入してください。 ※ユーザーには公開されません</p>
-                            <textarea name="remarks" id="remarks"></textarea>
+                            <label htmlFor="remarks" className='text-lg block'>現在のステータス</label>
+                            <div className="flex items-center gap-3">
+                                <span className="now-status py-1 px-6 rounded-4xl font-bold">一次審査中</span>
+                                <Icon icon='mdi:arrow-up-bold' rotate={1} width={30}></Icon>
+                                <select className="next-status">
+                                    <option value="開催前">開催前</option>
+                                    <option value="一次審査中">一次審査中</option>
+                                    <option value="二次審査中">二次審査中</option>
+                                    <option value="終了済">終了済</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div className='flex justify-end gap-4'>
