@@ -2,13 +2,29 @@
 import AdminButton from '@/components/ui/admin-button';
 import Textbox from '@/components/ui/admin-textbox';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import "@/styles/admin/events.css"
 import { Icon } from "@iconify/react";
+import EventRegisterModal from '@/components/admin/EventRegisterModal';
 
 export default function Page() {
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [rangeValue, setRangeValue] = useState(33);
+
+    // モーダルが開いている時に背景のスクロールを防ぐ
+    useEffect(() => {
+        if (isModalOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        
+        // クリーンアップ関数
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isModalOpen]);
 
     const handleRegister = () => {
         setIsModalOpen(true);
@@ -20,6 +36,10 @@ export default function Page() {
     const handledetail = () => {
         router.push('/admin/home')
     }
+
+    const handleRangeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRangeValue(Number(e.target.value));
+    };
     return (
         <main>
             <AdminButton
@@ -306,99 +326,7 @@ export default function Page() {
             </details>
 
             {/* モーダル */}
-            {isModalOpen && (
-                <div className=" fixed inset-0 reg-modal bg-opacity-50 flex items-center justify-center z-50" onClick={closeModal}>
-                    <div className="bg-white rounded-lg p-3 w-11/12 max-w-8xl" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-2xl font-bold">イベント登録</h2>
-                            <button onClick={closeModal} className="close-btn text-black">
-                                <Icon icon="mdi:close" width={24} className='text-black'/>
-                            </button>
-                        </div>
-                        
-                        <form action="" className='p-3'>
-                            <div className='my-4'>
-                                <label htmlFor="title-form" className='title-label text-xl block'>タイトル</label>
-                                <Textbox
-                                    id='title-form'
-                                    name='title'
-                                    className='w-full custom-input'
-                                    style={{backgroundColor:'#F9FAFB'}}
-                                    placeholder='イベントのタイトルを入力'
-                                ></Textbox>
-                            </div>
-
-                            <div className='my-4'>
-                                <label htmlFor="event-start-datetime" className='text-xl block'>イベント開催期間</label>
-                                <p className='event-detail-text text-sm'>イベントの開催期間を決定します</p>
-                                <div className='flex justify-between items-center'>
-                                    <Textbox
-                                        id='event-start-datetime'
-                                        name='event-start-datetime'
-                                        className='datetime-input'
-                                        type='datetime-local'
-                                        style={{backgroundColor:'#F9FAFB'}}
-                                    ></Textbox>
-                                    <p>～</p>
-                                    <Textbox
-                                        id='event-start-datetime'
-                                        name='event-start-datetime'
-                                        className='datetime-input'
-                                        type='datetime-local'
-                                        style={{backgroundColor:'#F9FAFB'}}
-                                    ></Textbox>
-                                </div>
-                            </div>
-
-                            <div className='my-4'>
-                                <label htmlFor="event-start-datetime" className='text-xl block'>書評投稿期間</label>
-                                <p className='event-detail-text text-sm'>ユーザーが書評を投稿できる期間を決定します</p>
-                                <div className='flex justify-between items-center'>
-                                    <Textbox
-                                        id='event-start-datetime'
-                                        name='event-start-datetime'
-                                        className='datetime-input'
-                                        type='datetime-local'
-                                        style={{backgroundColor:'#F9FAFB'}}
-                                    ></Textbox>
-                                    <p>～</p>
-                                    <Textbox
-                                        id='event-start-datetime'
-                                        name='event-start-datetime'
-                                        className='datetime-input'
-                                        type='datetime-local'
-                                        style={{backgroundColor:'#F9FAFB'}}
-                                    ></Textbox>
-                                </div>
-                            </div>
-
-                            <div className='my-4'>
-                                <label htmlFor="event-start-datetime" className='text-xl block'>書評投票期間</label>
-                                <p className='event-detail-text text-sm'>ユーザーが書評に対して投票できる期間を決定します</p>
-                                <div className='flex justify-between items-center'>
-                                    <Textbox
-                                        id='event-start-datetime'
-                                        name='event-start-datetime'
-                                        className='datetime-input'
-                                        type='datetime-local'
-                                        style={{backgroundColor:'#F9FAFB'}}
-                                    ></Textbox>
-                                    <p>～</p>
-                                    <Textbox
-                                        id='event-start-datetime'
-                                        name='event-start-datetime'
-                                        className='datetime-input'
-                                        type='datetime-local'
-                                        style={{backgroundColor:'#F9FAFB'}}
-                                    ></Textbox>
-                                </div>
-                            </div>
-                            {/* todo:ステータス */}
-                            {/* todo:備考欄 */}
-                        </form>
-                    </div>
-                </div>
-            )}
+            <EventRegisterModal isOpen={isModalOpen} onClose={closeModal} />
         </main>
     )
 }
