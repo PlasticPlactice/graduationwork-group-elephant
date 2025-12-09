@@ -51,7 +51,12 @@ export default function Page() {
                 </div>
 
                 <p className='now-event-condition my-5'>現在のイベント状況</p>
-                <Icon icon="bxs:up-arrow" rotate={2} className='up-arrow'></Icon>
+                <div className='flex justify-between w-2/3 m-auto'>
+                    <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                    <p className='w-10'><Icon icon="bxs:up-arrow" rotate={2} className='up-arrow m-auto'></Icon></p>
+                    <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                    <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                </div>
                 <div className='flex justify-between w-2/3 m-auto'>
                     <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
                     <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
@@ -59,7 +64,7 @@ export default function Page() {
                     <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-future'></Icon></p>
                 </div>
                 <div className='flex justify-center mt-2'>
-                    <progress max={100} value={30} className='w-full h-0.5'></progress>
+                    <progress max={100} value={40} className='w-full h-0.5'></progress>
                 </div>
                 <div className='flex justify-between w-2/3 m-auto'>
                     <span>開催前</span>
@@ -141,15 +146,20 @@ export default function Page() {
                     </div>
 
                     <p className='now-event-condition my-5'>現在のイベント状況</p>
-                    <Icon icon="bxs:up-arrow" rotate={2} className='up-arrow'></Icon>
+                    <div className='flex justify-between w-2/3 m-auto'>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                        <p className='w-10'><Icon icon="bxs:up-arrow" rotate={2} className='up-arrow m-auto'></Icon></p>
+                    </div>
                     <div className='flex justify-between w-2/3 m-auto'>
                         <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
                         <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-future'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-future'></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
                     </div>
                     <div className='flex justify-center mt-2'>
-                        <progress max={100} value={30} className='w-full h-0.5'></progress>
+                        <progress max={100} value={100} className='w-full h-0.5'></progress>
                     </div>
                     <div className='flex justify-between w-2/3 m-auto'>
                         <span>開催前</span>
@@ -230,15 +240,20 @@ export default function Page() {
                     </div>
 
                     <p className='now-event-condition my-5'>現在のイベント状況</p>
-                    <Icon icon="bxs:up-arrow" rotate={2} className='up-arrow'></Icon>
+                    <div className='flex justify-between w-2/3 m-auto'>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
+                        <p className='w-10'><Icon icon="bxs:up-arrow" rotate={2} className='up-arrow m-auto'></Icon></p>
+                    </div>
                     <div className='flex justify-between w-2/3 m-auto'>
                         <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
                         <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-future'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-future'></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
                     </div>
                     <div className='flex justify-center mt-2'>
-                        <progress max={100} value={30} className='w-full h-0.5'></progress>
+                        <progress max={100} value={100} className='w-full h-0.5'></progress>
                     </div>
                     <div className='flex justify-between w-2/3 m-auto'>
                         <span>開催前</span>
