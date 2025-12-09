@@ -1,7 +1,6 @@
 // components/admin/EventRegisterModal.tsx
 "use client"
 import { Icon } from "@iconify/react";
-import AdminButton from '@/components/ui/admin-button';
 import Textbox from '@/components/ui/admin-textbox';
 import "@/styles/admin/events.css"
 

@@ -1,6 +1,5 @@
 "use client"
 import AdminButton from '@/components/ui/admin-button';
-import Textbox from '@/components/ui/admin-textbox';
 import { useRouter } from 'next/navigation';
 import { useState,useEffect } from 'react';
 import "@/styles/admin/events.css"
@@ -37,9 +36,6 @@ export default function Page() {
         router.push('/admin/home')
     }
 
-    const handleRangeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setRangeValue(Number(e.target.value));
-    };
     return (
         <main>
             <AdminButton
