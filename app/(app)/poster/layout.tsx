@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -13,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className="antialiased min-h-screen flex flex-col">
+      <body suppressHydrationWarning className="antialiased min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">{children}</main>
         {/* <Footer /> */}
