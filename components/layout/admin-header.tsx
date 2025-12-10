@@ -25,7 +25,7 @@ export function AdminHeader() {
           onClick={handleMenuToggle}
           aria-label={openMenu ? "Close menu" : "Open menu"}
           className="ml-4 inline-flex h-20 w-20 cursor-pointer items-center justify-center rounded-md bg-white hover:bg-gray-50 focus:outline-none border border-gray-100"
-          style={{ backgroundColor: "#ffffff" }}
+          style={{ backgroundColor: "#ffffff",boxShadow:'none' }}
         >
           <svg
             className="h-6 w-6"
@@ -62,7 +62,7 @@ export function AdminHeader() {
               onClick={handleMenuToggle}
               className="inline-flex h-20 w-20 items-center justify-center rounded-md bg-white hover:bg-gray-50 border border-gray-100"
               aria-label="Close menu"
-              style={{ backgroundColor: "#ffffff" }}
+              style={{ backgroundColor: "#ffffff",boxShadow:'none' }}
             >
               <svg
                 className="h-6 w-6"

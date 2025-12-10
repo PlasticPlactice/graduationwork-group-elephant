@@ -15,7 +15,7 @@ export default function Page() {
             <div className='mt-10'>
                 <h1 className='text-center event-title'>開催中のイベント</h1>
                 <div className='w-3/5 py-2 m-auto text-center event-container'>
-                    <p className='font-bold underline event-name'>第1回文庫X</p>
+                    <Link href="/admin/events-details" className='font-bold event-name'>第1回文庫X</Link>
                     <p className='font-extrabold w-max m-auto px-7 py-0.5 rounded-2xl event-status'>二次審査中</p>
                     <p className="event-date">2024年10月30日～2025年10月30日</p>
                 </div>
