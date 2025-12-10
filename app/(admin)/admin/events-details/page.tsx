@@ -11,6 +11,7 @@ import AllMessageSendModal from "@/components/admin/AllMessageSendModal"
 export default function Page() { 
     const [openRows, setOpenRows] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [displayCount, setDisplayCount] = useState<number>(10);
 
     const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
     const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
@@ -58,8 +59,28 @@ export default function Page() {
     const tableData = [
         { id: 10, title: '転生したらスライムだった件', nickname: '象花たろう', status: '一次通過', votes: 30 },
         { id: 11, title: '本好きの下剋上', nickname: '山田太郎', status: '一次通過', votes: 45 },
-        { id: 12, title: '無職転生', nickname: '佐藤花子', status: '一次通過', votes: 15},
+        { id: 12, title: '無職転生', nickname: '佐藤花子', status: '一次通過', votes: 15 },
+        { id: 13, title: 'オーバーロード', nickname: '田中一郎', status: '一次通過', votes: 28 },
+        { id: 14, title: 'この素晴らしい世界に祝福を!', nickname: '鈴木次郎', status: '一次通過', votes: 52 },
+        { id: 15, title: 'Re:ゼロから始める異世界生活', nickname: '高橋三郎', status: '一次通過', votes: 38 },
+        { id: 16, title: '幼女戦記', nickname: '伊藤四郎', status: '一次通過', votes: 22 },
+        { id: 17, title: 'ログ・ホライズン', nickname: '渡辺五郎', status: '一次通過', votes: 19 },
+        { id: 18, title: 'ソードアート・オンライン', nickname: '中村六郎', status: '一次通過', votes: 67 },
+        { id: 19, title: '魔法科高校の劣等生', nickname: '小林七郎', status: '一次通過', votes: 41 },
+        { id: 20, title: 'ダンジョンに出会いを求めるのは間違っているだろうか', nickname: '加藤八郎', status: '一次通過', votes: 33 },
+        { id: 21, title: 'ゲート 自衛隊 彼の地にて、斯く戦えり', nickname: '吉田九郎', status: '一次通過', votes: 25 },
+        { id: 22, title: '盾の勇者の成り上がり', nickname: '山本十郎', status: '一次通過', votes: 44 },
+        { id: 23, title: '転生賢者の異世界ライフ', nickname: '松本花子', status: '一次通過', votes: 31 },
+        { id: 24, title: '薬屋のひとりごと', nickname: '井上美咲', status: '一次通過', votes: 58 },
+        { id: 25, title: '異世界食堂', nickname: '木村健太', status: '一次通過', votes: 27 },
+        { id: 26, title: '蜘蛛ですが、なにか?', nickname: '林美穂', status: '一次通過', votes: 36 },
+        { id: 27, title: '勇者パーティーを追放されたビーストテイマー', nickname: '清水大輔', status: '一次通過', votes: 20 },
+        { id: 28, title: '陰の実力者になりたくて!', nickname: '森田裕子', status: '一次通過', votes: 49 },
+        { id: 29, title: '最強陰陽師の異世界転生記', nickname: '石川雄一', status: '一次通過', votes: 34 },
     ];
+    // 表示するデータをスライス
+    const displayedData = tableData.slice(0, displayCount);
+    
     return (
         <main>
             {/*---------------------------
@@ -127,7 +148,11 @@ export default function Page() {
 
             <div className='flex items-center mx-8 gap-3'>
                 <p>表示数</p>
-                <select className='all-select'>
+                <select
+                    className='all-select'
+                    value={displayCount}
+                    onChange={(e) => setDisplayCount(Number(e.target.value))}
+                >
                     <option value="10">10</option>
                     <option value="15">15</option>
                     <option value="20">20</option>
@@ -175,7 +200,7 @@ export default function Page() {
                     </thead>
                     {/* アコーディオン */}
                     <tbody className='border'>
-                        {tableData.map((row) => (
+                        {displayedData.map((row) => (
                             <>
                                 <tr key={row.id} className='table-row'>
                                     <td className='text-center py-2 pl-1'>

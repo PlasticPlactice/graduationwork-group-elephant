@@ -55,6 +55,7 @@ export default function CsvOutputModal({ isOpen, onClose }: CsvOutputModalPops) 
                     <div className="m-auto w-1/4">
                         <AdminButton
                             label='送信'
+                            type='submit'
                         />
                     </div>
                 </form>
