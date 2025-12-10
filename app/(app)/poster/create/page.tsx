@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/styles/app/account-create.module.css";
+import styles from "@/styles/app/poster.module.css";
 
 import Image from "next/image";
 import { useCallback, useState, useMemo } from "react";

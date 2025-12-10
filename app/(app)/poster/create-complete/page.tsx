@@ -1,9 +1,10 @@
 "use client";
-import Styles from "@/styles/app/account-create.module.css";
-import Image from "next/image";
+
+import Styles from '@/styles/app/poster.module.css';
+import Image from 'next/image';
+import React from 'react';
+import { useRef } from 'react';
 import Link from "next/link";
-import React from "react";
-import { useRef } from "react";
 
 export default function CreateCompletePage() {
   const inputRef = useRef<HTMLInputElement>(null);

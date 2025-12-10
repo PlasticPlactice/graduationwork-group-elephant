@@ -1,8 +1,8 @@
 "use client";
 
-import loginModule from "@/styles/app/login.module.css";
-import Styles from "@/styles/app/account-create.module.css";
-import Image from "next/image";
+import loginModule from "@/styles/app/login.module.css"
+import Styles from "@/styles/app/poster.module.css"
+import Image from "next/image"
 import Link from "next/link";
 
 export default function LoginPage() {
