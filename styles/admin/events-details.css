@@ -172,3 +172,11 @@ details[open] .icon {
 .status-arrow{
   color: var(--color-sub);
 }
+
+.all-message-area{
+  border: 1px solid var(--color-sub);
+  height: 10rem;
+}
+.all-message-area::placeholder{
+  color: var(--color-sub);
+}

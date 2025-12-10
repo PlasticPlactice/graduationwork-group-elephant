@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react';
 import { useState,useEffect } from 'react';
 import StatusEditModal from "@/components/admin/StatusEditModal";
 import CsvOutputModal from '@/components/admin/CsvOutputModal';
+import AllMessageSendModal from "@/components/admin/AllMessageSendModal"
 
 export default function Page() { 
     const [openRows, setOpenRows] = useState<number[]>([]);
@@ -13,6 +14,7 @@ export default function Page() {
 
     const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
     const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
+    const [isAllMessageSendModalOpen, setIsAllMessageSendModalOpen] = useState(false);
 
 
     const toggleRow = (id: number) => {
@@ -43,10 +45,13 @@ export default function Page() {
     const handleCsvOutput = () => {
         setIsCsvOutputModalOpen(true)
     }
-
+    const handleAllMessageSend = () => {
+        setIsAllMessageSendModalOpen(true);
+    }
     const closeModal = () => {
         setIsStatusEditModalOpen(false)
         setIsCsvOutputModalOpen(false)
+        setIsAllMessageSendModalOpen(false)
     }
 
     // サンプルデータ
@@ -102,6 +107,7 @@ export default function Page() {
                     icon='ic:baseline-message'
                     iconPosition='left'
                     className='w-auto'
+                    onClick={handleAllMessageSend}
                 />
                 <AdminButton
                     label='CSV出力'
@@ -297,7 +303,8 @@ export default function Page() {
 
             {/* モーダル */}
             <StatusEditModal isOpen={isStatusEditModalOpen} onClose={closeModal} />
-            <CsvOutputModal isOpen={isCsvOutputModalOpen} onClose={closeModal}/>
+            <CsvOutputModal isOpen={isCsvOutputModalOpen} onClose={closeModal} />
+            <AllMessageSendModal isOpen={isAllMessageSendModalOpen} onClose={closeModal}/>
         </main>
     )    
 }
