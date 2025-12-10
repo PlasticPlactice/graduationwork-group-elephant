@@ -14,6 +14,20 @@ export function EventHeader() {
       </Link>
 
       {/* ハンバーガーメニュー */}
+      <Link
+        href="/poster/login"
+        className="text-base font-bold transition-colors text-white"
+        style={{
+          backgroundColor: "var(--color-sub)",
+          color: "var(--color-white)",
+          padding: "16px 12px",
+         }}
+      >
+        ログイン
+      </Link>
+
+      {/* ハンバーガーメニュー（一時的にコメントアウト）
+      {/*
       <button
         type="button"
         className="p-1 border-none outline-none focus:outline-none focus-visible:outline-none focus:ring-0 ring-0 shadow-none drop-shadow-none"
@@ -28,7 +42,6 @@ export function EventHeader() {
           border: "none",
         }}
       >
-        {/* Menu アイコンのSVG */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="32"
@@ -45,6 +58,7 @@ export function EventHeader() {
           <line x1="4" x2="20" y1="18" y2="18" />
         </svg>
       </button>
+      */}
     </header>
   );
 }

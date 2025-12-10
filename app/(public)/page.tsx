@@ -86,11 +86,11 @@ export default function Home() {
 
         <section className="bunko-x">
           <div className="bunko-x__inner">
-            {/* 現在投票可能なイベント */}
+            {/* 投票可能なイベント */}
             <div className="bunko-x__events">
               <h3 className="bunko-x__subtitle">
                 <span className="bunko-x__subtitle-line"></span>
-                現在投票可能なイベント
+                投票可能なイベント
                 <span className="bunko-x__subtitle-line"></span>
               </h3>
 

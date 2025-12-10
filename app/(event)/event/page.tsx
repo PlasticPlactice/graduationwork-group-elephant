@@ -62,7 +62,6 @@ export default function EventPage() {
         </h2>
 
         <div className="flex flex-col gap-6">
-          {/* イベントカードをループで表示 */}
           {activeEventList.map((event, idx) => (
             <EventCard
               key={idx}

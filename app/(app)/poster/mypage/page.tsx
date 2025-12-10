@@ -34,7 +34,7 @@ export default function MyPage() {
       badgeType: "red",
       excerpt:
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "投稿済み編集する",
+      buttonText: "投稿済み・編集する",
       buttonDisabled: false,
     },
     {
@@ -43,7 +43,7 @@ export default function MyPage() {
       badgeType: "blue",
       excerpt:
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "投稿済み編集不可",
+      buttonText: "投稿済み・編集不可",
       buttonDisabled: true,
     },
     {
@@ -251,9 +251,14 @@ export default function MyPage() {
                       <button
                         className={`${
                           review.buttonDisabled
-                            ? "w-full bg-gray-200 text-gray-400 px-3 py-2 rounded-md font-bold"
+                            ? "w-full text-white px-3 py-2 rounded-md font-bold"
                             : "w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
                         }`}
+                        style={
+                          review.buttonDisabled
+                            ? { backgroundColor: "var(--color-sub)" }
+                            : {}
+                        }
                         disabled={review.buttonDisabled}
                       >
                         {review.buttonText}
