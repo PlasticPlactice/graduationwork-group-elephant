@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { Pagination } from "@/components/ui/pagination";
+import { Suspense } from "react";
 
 export default function EventPage() {
   // 仮のイベントデータ（例として3件）
@@ -97,7 +98,9 @@ export default function EventPage() {
         </div>
 
         {/* ページネーション */}
-        <Pagination totalPages={3} currentPage={1} />
+        <Suspense>
+          <Pagination totalPages={3} currentPage={1} />
+        </Suspense>
       </div>
     </div>
   );
