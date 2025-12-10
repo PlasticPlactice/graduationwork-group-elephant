@@ -14,7 +14,7 @@ export default function EventPage() {
       daysLeft: 10,
       description: "投票期間中です！投票してみましょう！",
       buttonText: "投票する",
-      href: "/event/vote/4",
+      href: "/posts/bookshelf",
       isFinished: false,
     },
   ];
@@ -25,7 +25,7 @@ export default function EventPage() {
       daysLeft: "終了",
       description: "入選作品が決定しました！確認してみましょう！",
       buttonText: "確認する",
-      href: "/event/result/3",
+      href: "/posts/bookshelf",
       isFinished: true,
     },
     {
@@ -33,7 +33,7 @@ export default function EventPage() {
       daysLeft: "終了",
       description: "次回イベントもお楽しみに！",
       buttonText: "詳細を見る",
-      href: "/event/result/2",
+      href: "/posts/bookshelf",
       isFinished: true,
     },
     {
@@ -41,7 +41,7 @@ export default function EventPage() {
       daysLeft: "終了",
       description: "次回イベントもお楽しみに！",
       buttonText: "詳細を見る",
-      href: "/event/result/1",
+      href: "/posts/bookshelf",
       isFinished: true,
     },
   ];
