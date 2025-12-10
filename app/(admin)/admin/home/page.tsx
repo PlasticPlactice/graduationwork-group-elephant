@@ -35,7 +35,7 @@ export default function Page() {
                 </Link>
 
                 {/* イベント管理 */}
-                <Link href="#" className='flex py-2 pl-2 shadow-md w-max admin-card'>
+                <Link href="/admin/events" className='flex py-2 pl-2 shadow-md w-max admin-card'>
                     <div className='flex items-center justify-center w-auto mx-1'>
                         <Icon icon="mdi:calendar" width="50" height="50"
                             className='p-1 rounded-full admin-icon' />

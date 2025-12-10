@@ -15,7 +15,7 @@ export function AdminHeader() {
     <header className="w-full bg-white border-b border-gray-100">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 md:px-6">
         <Link
-          href="/admin"
+          href="/admin/home"
           className="flex items-center hover:opacity-80 transition-opacity"
         >
           ホーム
@@ -115,7 +115,7 @@ export function AdminHeader() {
 
               <li>
                 <Link
-                  href="/admin/donations"
+                  href="/admin/notice"
                   onClick={() => setOpenMenu(false)}
                   className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
                 >
