@@ -128,7 +128,7 @@ button,
 
 /* tiptapのcss */
 .ProseMirror {
-  min-height: 38.5rem;
+  min-height: 38.5rem !important;
   line-height: normal !important;
 }
 
