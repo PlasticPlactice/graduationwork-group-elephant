@@ -32,6 +32,7 @@ export default function BarcodeScanPage() {
   const [scanError, setScanError] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const fetchIdRef = useRef(0);
 
   const validateIsbn13 = useCallback((value: string) => {
     if (!/^\d{13}$/.test(value)) return false;
@@ -82,11 +83,12 @@ export default function BarcodeScanPage() {
       setDetectedIsbn(normalized);
       setIsbnInput(normalized);
       setSelectedIsbn(normalized);
+      fetchBookInfo(normalized);
       await stopScanner();
       setScanStatus("ISBNを検出しました。入力欄をご確認ください。");
       setConfirmOpen(true);
     },
-    [stopScanner, validateIsbn13]
+    [fetchBookInfo, stopScanner, validateIsbn13]
   );
 
   const handleScanFailure = useCallback((error: string) => {
@@ -148,23 +150,23 @@ export default function BarcodeScanPage() {
     setDetectedIsbn(normalized);
     setIsbnInput(normalized);
     setSelectedIsbn(normalized);
+    fetchBookInfo(normalized);
     setConfirmOpen(true);
     setScanError(null);
-  }, [isbnInput, validateIsbn13]);
+  }, [fetchBookInfo, isbnInput, validateIsbn13]);
 
-  useEffect(() => {
-    if (!confirmOpen || !selectedIsbn) return;
-    if (selectedIsbn === lastFetchedIsbn) return;
+  const fetchBookInfo = useCallback(
+    async (isbn: string) => {
+      if (isbn === lastFetchedIsbn) return;
 
-    let active = true;
-    const fetchBook = async () => {
+      const fetchId = ++fetchIdRef.current;
       setBookLoading(true);
       setBookError(null);
       setBookItem(null);
 
       try {
-        const res = await fetch(`/api/books?isbn=${selectedIsbn}`);
-        if (!active) return;
+        const res = await fetch(`/api/books?isbn=${isbn}`);
+        if (fetchId !== fetchIdRef.current) return;
 
         if (!res.ok) {
           setBookError("本情報の取得に失敗しました。");
@@ -183,21 +185,17 @@ export default function BarcodeScanPage() {
           author: firstItem.author ?? "",
           mediumImageUrl: firstItem.mediumImageUrl,
         });
-        setLastFetchedIsbn(selectedIsbn);
+        setLastFetchedIsbn(isbn);
       } catch (error) {
         console.error("Failed to fetch book info", error);
-        if (active) setBookError("本情報の取得に失敗しました。");
+        if (fetchId === fetchIdRef.current)
+          setBookError("本情報の取得に失敗しました。");
       } finally {
-        if (active) setBookLoading(false);
+        if (fetchId === fetchIdRef.current) setBookLoading(false);
       }
-    };
-
-    fetchBook();
-
-    return () => {
-      active = false;
-    };
-  }, [confirmOpen, selectedIsbn, lastFetchedIsbn]);
+    },
+    [lastFetchedIsbn]
+  );
 
   const displayIsbn = selectedIsbn ?? detectedIsbn ?? (isbnInput || "未取得");
 
