@@ -1,6 +1,7 @@
 "use client";
 import Styles from "@/styles/app/account-create.module.css";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { useRef } from "react";
 
@@ -136,7 +137,9 @@ export default function CreateCompletePage() {
         </div>
       </div>
 
-      <button className="w-full">ログイン画面へ</button>
+      <Link href="/poster/login" className="w-full block">
+        <button className="w-full">ログイン画面へ</button>
+      </Link>
     </div>
   );
 }
