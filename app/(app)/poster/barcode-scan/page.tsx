@@ -2,6 +2,7 @@
 
 import Styles from "@/styles/app/account-create.module.css";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Html5Qrcode } from "html5-qrcode";
 
@@ -140,9 +141,9 @@ export default function BarcodeScanPage() {
 
   return (
     <div>
-      <a href="" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
+      <Link href="/" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
         <span>&lt;</span> ファンサイトはこちら
-      </a>
+      </Link>
       <div className={`${Styles.posterContainer}`}>
         <div className="mt-7 mb-10">
           <h1 className="font-bold text-center">本のバーコードをスキャン</h1>
