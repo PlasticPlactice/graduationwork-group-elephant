@@ -9,6 +9,10 @@ type BookReviewModalProps = {
   onClose: () => void;
   onComplete: () => void;
   actionLabel?: string;
+  isFavorited?: boolean;
+  isVoted?: boolean;
+  onToggleFavorite?: () => void;
+  onToggleVote?: () => void;
 };
 
 export function BookReviewModal({
@@ -17,6 +21,10 @@ export function BookReviewModal({
   onClose,
   onComplete,
   actionLabel = "本棚にしまう",
+  isFavorited = false,
+  isVoted = false,
+  onToggleFavorite,
+  onToggleVote,
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -90,9 +98,27 @@ export function BookReviewModal({
     };
   }, [open, onClose]);
 
+  const voteButtonClass = `flex h-14 min-h-[3.5rem] flex-1 items-center justify-center gap-3 rounded-full border border-solid text-base font-bold tracking-wide transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-200 appearance-none shadow-none ${
+    isVoted
+      ? "!bg-red-500 !text-white !border-red-500 ![box-shadow:0_10px_24px_rgba(239,68,68,0.3)]"
+      : "!bg-white !text-red-500 !border-[rgba(239,68,68,0.3)] !shadow-none"
+  }`;
+
+  const favoriteButtonClass = `flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
+    isFavorited ? "!text-yellow-400" : "!text-gray-400"
+  }`;
+
   if (!open || !book) {
     return null;
   }
+
+  const handleVoteClick = () => {
+    if (!onToggleVote) return;
+    const confirmed = window.confirm("1日1票ですが投票しますか？");
+    if (confirmed) {
+      onToggleVote();
+    }
+  };
 
   return (
     <div
@@ -108,28 +134,85 @@ export function BookReviewModal({
         onClick={(event) => event.stopPropagation()}
         tabIndex={-1}
       >
-        <button
-          type="button"
-          ref={closeButtonRef}
-          onClick={onClose}
-          className="absolute right-6 -top-6 inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-2xl text-slate-500 shadow-md transition hover:bg-slate-50"
-          aria-label="閉じる"
-        >
-          ×
-        </button>
         <div className="relative z-10">
           <div className="h-[600px] overflow-y-auto bg-white px-6 py-6 text-base leading-relaxed text-slate-800 sm:h-[680px]">
             {book.review ?? "書評がまだ登録されていません。"}
           </div>
         </div>
-        <div className="relative z-10 mt-6 flex justify-center">
-          <button
-            type="button"
-            onClick={onComplete}
-            className="inline-flex w-full max-w-xs items-center justify-center rounded-full bg-pink-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-pink-200 transition hover:bg-pink-600"
-          >
-            {actionLabel}
-          </button>
+
+        <div className="relative z-10 mt-6 flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleVoteClick}
+                aria-pressed={isVoted}
+                className={voteButtonClass}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 14l2 2 4-4m6 2a9 9 0 11-18 0 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{isVoted ? "投票済み" : "投票する"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onToggleFavorite?.()}
+                className={favoriteButtonClass}
+                aria-pressed={isFavorited}
+                aria-label={
+                  isFavorited ? "ブックマーク済み" : "ブックマークに追加"
+                }
+                style={{ borderColor: "#f6e05e" }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill={isFavorited ? "currentColor" : "none"}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 5v16l7-5 7 5V5a2 2 0 00-2-2H7a2 2 0 00-2 2z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={onComplete}
+                className="flex-[0.7] rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
+              >
+                {actionLabel}
+              </button>
+
+              <button
+                type="button"
+                ref={closeButtonRef}
+                onClick={onClose}
+                className="flex-[0.3] rounded-full border !border-gray-300 !bg-gray-100 px-4 py-3 text-sm font-semibold !text-gray-700 transition hover:!bg-gray-200 focus:outline-none focus-visible:ring-4 !focus-visible:ring-gray-200"
+                style={{ boxShadow: "none" }}
+              >
+                閉じる
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

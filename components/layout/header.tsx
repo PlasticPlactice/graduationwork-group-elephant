@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 
-
 export function Header() {
   return (
     <header className="w-full bg-white border-b border-gray-100">
@@ -21,12 +20,12 @@ export function Header() {
           />
         </Link>
 
-        <button
-          type="button"
-          className="text-base font-bold text-[#FF5555] hover:text-[#ff3333] transition-colors"
+        <Link
+          href="/poster/login"
+          className="btn text-base font-bold text-[#FF5555] hover:text-[#ff3333] transition-colors"
         >
           ログイン
-        </button>
+        </Link>
       </div>
     </header>
   );

@@ -13,8 +13,9 @@ export default function EventPage() {
       buttonText: "投票する",
       href: "/event/vote/4",
       isFinished: false,
-    }];
-    
+    },
+  ];
+
   const endEventList = [
     {
       title: "第3回 文庫Xイベント",
@@ -49,8 +50,8 @@ export default function EventPage() {
         <div className="mb-12">
           <Button
             href="/"
-            className="w-full bg-white border border-[#3ea8e5] font-bold h-auto rounded-lg shadow hover:bg-slate-50 transition-colors"
-            style={{ color: "#3ea8e5", padding: "12px 0" }}
+            className="w-full bg-white border font-bold h-auto rounded-lg shadow hover:bg-slate-50 transition-colors"
+            style={{ padding: "12px 0" }}
           >
             象と花ファンサイトへ
           </Button>
@@ -61,7 +62,6 @@ export default function EventPage() {
         </h2>
 
         <div className="flex flex-col gap-6">
-          {/* イベントカードをループで表示 */}
           {activeEventList.map((event, idx) => (
             <EventCard
               key={idx}

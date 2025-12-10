@@ -4,7 +4,28 @@ import "@/styles/public/top.css";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
+import { ItemModal } from "@/components/features/ItemModal";
+import { useState } from "react";
+
 export default function Home() {
+  const [showNewsModal, setShowNewsModal] = useState(false);
+  const [selectedNews, setSelectedNews] = useState<{
+    id: number;
+    date: string;
+    title: string;
+    image: string;
+  } | null>(null);
+
+  const handleNewsClick = (
+    id: number,
+    title: string,
+    date: string,
+    image: string
+  ) => {
+    setSelectedNews({ id, date, title, image });
+    setShowNewsModal(true);
+  };
+
   return (
     <div>
       <main>
@@ -43,15 +64,20 @@ export default function Home() {
               <p>
                 象と花は古本販売の盛岡書房と、新刊書店のさわや書店が共同で行うプロジェクトです。
               </p>
+              <br className="br-sp-only" />
               <p>
                 あなたに知識や情報、感動を与えてくれた本を循環させ、病気と戦う子供たちのための本に替えて贈ります。
               </p>
+              <br className="br-sp-only" />
               <p>
                 身近な人に贈り物を手渡すような気持ちで、子供たちと読書のよろこびを分かち合える取り組みです。
               </p>
             </div>
             <div className="about__button">
-              <Button href="/about" style={{ color: "#ffffff" }}>
+              <Button
+                href="https://zoutohana.com/about.html"
+                style={{ color: "#ffffff" }}
+              >
                 くわしくはこちら
               </Button>
             </div>
@@ -60,6 +86,52 @@ export default function Home() {
 
         <section className="bunko-x">
           <div className="bunko-x__inner">
+            {/* 投票可能なイベント */}
+            <div className="bunko-x__events">
+              <h3 className="bunko-x__subtitle">
+                <span className="bunko-x__subtitle-line"></span>
+                投票可能なイベント
+                <span className="bunko-x__subtitle-line"></span>
+              </h3>
+
+              <div className="event-cards">
+                {/* Card 1 */}
+                <EventCard
+                  title="第2回 文庫Xイベント"
+                  daysLeft={10}
+                  description="投票期間中です！投票してみましょう！"
+                  buttonBackgroundColor="var(--color-bg)"
+                  buttonBorderColor="var(--color-main)"
+                  buttonTextColor="var(--color-main)"
+                />
+
+                {/* Card 2 */}
+                <EventCard
+                  title="第1回 文庫Xイベント"
+                  daysLeft={10}
+                  description="投票期間中です！投票してみましょう！"
+                  buttonBackgroundColor="var(--color-bg)"
+                  buttonBorderColor="var(--color-main)"
+                  buttonTextColor="var(--color-main)"
+                />
+              </div>
+
+              <div className="bunko-x__all-events">
+                <Button
+                  className="w-full mb-24"
+                  href="/event"
+                  style={{
+                    backgroundColor: "var(--color-main)",
+                    color: "var(--color-white)",
+                    width: "100%",
+                    maxWidth: "400px",
+                  }}
+                >
+                  すべてのイベント
+                </Button>
+              </div>
+            </div>
+
             {/* 文庫Xについて */}
             <div className="bunko-x__intro">
               <h2 className="bunko-x__title">
@@ -84,47 +156,6 @@ export default function Home() {
                 </p>
               </div>
             </div>
-
-            {/* 現在投票可能なイベント */}
-            <div className="bunko-x__events">
-              <h3 className="bunko-x__subtitle">
-                <span className="bunko-x__subtitle-line"></span>
-                現在投票可能なイベント
-                <span className="bunko-x__subtitle-line"></span>
-              </h3>
-
-              <div className="event-cards">
-                {/* Card 1 */}
-                {/* Card 1 */}
-                <EventCard
-                  title="第2回 文庫Xイベント"
-                  daysLeft={10}
-                  description="投票期間中です！投票してみましょう！"
-                />
-
-                {/* Card 2 */}
-                <EventCard
-                  title="第1回 文庫Xイベント"
-                  daysLeft={10}
-                  description="投票期間中です！投票してみましょう！"
-                />
-              </div>
-
-              <div className="bunko-x__all-events">
-                <Button
-                  className="w-full"
-                  href="/event"
-                  style={{
-                    backgroundColor: "#ff4d6d",
-                    color: "#ffffff",
-                    width: "100%",
-                    maxWidth: "400px",
-                  }}
-                >
-                  すべてのイベント
-                </Button>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -137,7 +168,17 @@ export default function Home() {
             </h2>
             <div className="news__list">
               {/* News Item 1 */}
-              <div className="news-item">
+              <div
+                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() =>
+                  handleNewsClick(
+                    1,
+                    "第１回文庫Xが開催されました！",
+                    "2025-10-01",
+                    "/top/image1.png"
+                  )
+                }
+              >
                 <div className="news-item__image">
                   <Image
                     src="/top/image1.png"
@@ -154,7 +195,17 @@ export default function Home() {
               </div>
 
               {/* News Item 2 */}
-              <div className="news-item">
+              <div
+                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() =>
+                  handleNewsClick(
+                    2,
+                    "第１回文庫Xが開催されました！",
+                    "2025-10-01",
+                    "/top/image1.png"
+                  )
+                }
+              >
                 <div className="news-item__image">
                   <Image
                     src="/top/image1.png"
@@ -187,12 +238,95 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="news">
+          <div className="news__inner">
+            <h2 className="news__title">
+              <span className="news__title-line"></span>
+              寄贈情報
+              <span className="news__title-line"></span>
+            </h2>
+            <div className="news__list">
+              {/* News Item 1 */}
+              <div
+                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() =>
+                  handleNewsClick(
+                    3,
+                    "○○様より「ハリーポッター」を寄贈していただきました！",
+                    "2025-10-01",
+                    "/top/image1.png"
+                  )
+                }
+              >
+                <div className="news-item__image">
+                  <Image
+                    src="/top/image1.png"
+                    alt="News Image"
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div className="news-item__meta">
+                  <span className="news-item__date">2025-10-01</span>
+                  <span className="news-item__badge">NEW</span>
+                </div>
+                <p className="news-item__text">
+                  ○○様より「ハリーポッター」を寄贈していただきました！
+                </p>
+              </div>
+
+              {/* News Item 2 */}
+              <div
+                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() =>
+                  handleNewsClick(
+                    4,
+                    "○○様より「ハリーポッター」を寄贈していただきました！",
+                    "2025-10-01",
+                    "/top/image1.png"
+                  )
+                }
+              >
+                <div className="news-item__image">
+                  <Image
+                    src="/top/image1.png"
+                    alt="News Image"
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div className="news-item__meta">
+                  <span className="news-item__date">2025-10-01</span>
+                  <span className="news-item__badge">NEW</span>
+                </div>
+                <p className="news-item__text">
+                  ○○様より「ハリーポッター」を寄贈していただきました！
+                </p>
+              </div>
+            </div>
+            <div className="donation-button">
+              <Button
+                className="w-full"
+                href="/donation"
+                style={{
+                  backgroundColor: "#ff4d6d",
+                  color: "#ffffff",
+                  width: "100%",
+                  maxWidth: "400px",
+                }}
+              >
+                すべての寄贈情報
+              </Button>
+            </div>
+          </div>
+        </section>
+
         <section
           className="news"
           style={{
             backgroundColor: "#F1F0E8",
-            paddingTop: "20px",
-            paddingBottom: "20px",
+            paddingTop: "80px",
+            paddingBottom: "80px",
           }}
         >
           <div className="news__inner">
@@ -215,7 +349,12 @@ export default function Home() {
                 本を通して生まれる「つながり」が、子どもたちの未来にそっと寄り添う力になると信じています。
               </p>
             </div>
-            <div className="donation-banner">
+            <a
+              href="https://zoutohana.com/collect.html"
+              className="donation-banner"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <div className="donation-banner__image">
                 <Image
                   src="/top/image.png"
@@ -228,73 +367,18 @@ export default function Home() {
                 <span className="donation-banner__text">私たちの取り組み</span>
                 <span className="donation-banner__arrow">&gt;</span>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="news">
-          <div className="news__inner">
-            <h2 className="news__title">
-              <span className="news__title-line"></span>
-              寄贈情報
-              <span className="news__title-line"></span>
-            </h2>
-            <div className="news__list">
-              {/* News Item 1 */}
-              <div className="news-item">
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">
-                  ○○様より「ハリーポッター」を寄贈していただきました！
-                </p>
-              </div>
-
-              {/* News Item 2 */}
-              <div className="news-item">
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">
-                  ○○様より「ハリーポッター」を寄贈していただきました！
-                </p>
-              </div>
-            </div>
-            <div className="news__button">
-              <Button
-                className="w-full"
-                href="/donation"
-                style={{
-                  backgroundColor: "#ff4d6d",
-                  color: "#ffffff",
-                  width: "100%",
-                  maxWidth: "400px",
-                }}
-              >
-                すべての寄贈情報
-              </Button>
-            </div>
+            </a>
           </div>
         </section>
       </main>
+
+      {/* ニュースモーダル */}
+      {selectedNews && showNewsModal && (
+        <ItemModal
+          item={selectedNews}
+          onClose={() => setShowNewsModal(false)}
+        />
+      )}
     </div>
   );
 }

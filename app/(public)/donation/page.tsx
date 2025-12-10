@@ -1,7 +1,7 @@
 import React from "react";
 import { ListPageLayout } from "@/components/templates/ListPageLayout";
 
-const donationItems = Array.from({ length: 10 }, (_, i) => ({
+const donationItems = Array.from({ length: 4 }, (_, i) => ({
   id: i + 1,
   date: "2025-10-01",
   title: "○○様よりご寄付をいただきました！",

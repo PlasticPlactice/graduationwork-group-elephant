@@ -1,7 +1,7 @@
 import React from "react";
 import { ListPageLayout } from "@/components/templates/ListPageLayout";
 
-const newsItems = Array.from({ length: 10 }, (_, i) => ({
+const newsItems = Array.from({ length: 4 }, (_, i) => ({
   id: i + 1,
   date: "2025-10-01",
   title: "第１回文庫Xが開催されました！",
