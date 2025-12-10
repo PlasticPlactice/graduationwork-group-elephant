@@ -105,3 +105,27 @@ details[open] .icon {
 .print-preview-btn{
   box-shadow: none;
 }
+
+.page-section{
+  gap: 1rem;
+
+}
+.page-section .page-number{
+  font-size: var(--font-size-h1);
+  background-color: var(--color-bg);
+  border-radius: var(--control-radius);
+  color: var(--color-sub);
+}
+.page-section .page-number:hover{
+  font-size: var(--font-size-h1);
+  background-color: var(--color-main);
+  border-radius: var(--control-radius);
+  color: var(--color-bg);
+}
+.page-section .page-number.active{
+  background-color: var(--color-main);
+  color: var(--color-bg);
+}
+.page-arrow{
+  color: var(--color-sub);
+}
