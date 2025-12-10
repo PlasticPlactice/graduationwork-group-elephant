@@ -57,6 +57,7 @@
 
 .colorButton {
   border-radius: 100%;
+  border: 1px solid var(--color-sub);
 }
 
 .termsForm {
@@ -148,3 +149,71 @@
   font-weight: bold;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
+
+.editorButton {
+  height: 2.5rem;
+  border: 1px solid var(--color-sub) !important;
+  border-radius: var(--control-radius);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  padding: 0;
+  width: 2.5rem;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.toolBar {
+  border: 1px solid var(--color-sub);
+  border-radius: var(--control-radius);
+}
+
+.oneTimeKeepButton {
+  height: 2rem;
+}
+
+.patternButton {
+  border: 1px solid var(--color-main);
+}
+
+.activeButton {
+  background-color: var(--color-main);
+  color: var(--color-bg);
+  box-shadow: none;
+  transition: background-color 0.3s ease;
+}
+
+.inactiveButton {
+  background-color: #fff;
+  color: #444;
+  transition: background-color 0.3s ease;
+}
+
+.activeColorButton {
+  outline: 3px solid white;
+  box-shadow: 0 0 0 3px #ffffff; /* 外側に赤リング */
+  transform: scale(1.15);
+  transition: transform 0.2s ease;
+}
+
+.editorColorButton {
+  border: 1px solid var(--color-sub);
+  border-radius: 100%;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.blackButton {
+  background-color: #000000;
+  color: #ffffff;
+}
+.redButton {
+  background-color: #ff0000;
+  color: #ffffff;
+}
+.blueButton {
+  background-color: #0000ff;
+  color: #ffffff;
+}
+
