@@ -52,8 +52,10 @@
 
 }
 .head-check{
-  inline-size: 2rem;
-  block-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #6A8CA4;
+  border-radius: 2px;
 }
 summary {
   list-style-type: none;
@@ -74,4 +76,32 @@ details[open] .icon {
   box-shadow: none;
   color: var(--color-text);
   font-size: var(--font-size-h1);
+}
+/* アコーディオンの中 */
+.details-content h3{
+  font-size: var(--font-size-h1);
+}
+.book-review-section{
+  overflow-y: auto;
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
+}
+.book-review-section p {
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.book-data{
+  border-bottom: 1px solid #A0B7C7;
+  margin: 0 0 0.5rem 0;
+}
+.book-head{
+  color: #A0B7C7;
+}
+.book-content{
+  font-size: 20px;
+  margin: 0 0 0.6rem 0;
+}
+.print-preview-btn{
+  box-shadow: none;
 }

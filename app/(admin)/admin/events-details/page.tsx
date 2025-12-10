@@ -99,8 +99,9 @@ export default function Page() {
                 <table className="w-full event-table">
                     <thead className='table-head'>
                         <tr>
-                            <th className='flex items-center justify-center py-2 pl-1'>
-                                <input type="checkbox" className='head-check'/>
+                            <th className='flex items-center justify-center '>
+                                {/* <input type="checkbox" className='head-check' disabled/> */}
+                                <div className='my-2 ml-1 head-check bg-white'></div>
                             </th>
                             <th className='w-28'>
                                 <div className='flex items-center '>
@@ -137,7 +138,7 @@ export default function Page() {
                             <>
                                 <tr key={row.id} className='table-row'>
                                     <td className='text-center py-2 pl-1'>
-                                        <input type="checkbox" className='head-check' />
+                                        <input type="checkbox" className='head-check'/>
                                     </td>
                                     <td>
                                         <span>{row.id}</span>
@@ -169,16 +170,55 @@ export default function Page() {
                                 {openRows.includes(row.id) && (
                                     <tr key={`${row.id}-details`} className='details-row'>
                                         <td colSpan={7} className='details-content'>
-                                            <div className='p-4 bg-gray-50'>
-                                                <h3 className='font-bold mb-2'>書評内容</h3>
-                                                <div className='mt-4 flex gap-4'>
-                                                    <div>
-                                                        <span className='font-semibold'>投稿日:</span> 2024-10-15
+                                            <div className='p-4 flex'>
+                                                <section className='w-4/7'>
+                                                    <h3 className='font-bold mb-2 ml-4'>書評本文</h3>
+                                                    <div className='book-review-section w-auto h-84 ml-4 p-2'>
+                                                        <p>１ヶ月前、私は会社の先輩の冴子さえこさんと付き合うことになった。
+                                                            前からずっと気になっていた先輩に断れるのを覚悟で呑みに誘った。
+                                                            「美味しいお酒が呑めるなら一緒に呑んでもいいけど」
+                                                            普段あまり笑顔を見せない冴子さんが少し楽しそうに笑みを浮かべているのを見て、私は内心ガッツポーズをした。
+                                                            大分酔いが回って来た頃、私は思いきって冴子さんに
+                                                            「彼氏さんどんな人なんですか？」と探りを入れた。
+                                                            社内でも美人で仕事もできる冴子さんがモテないわけがないのだけど、人づてにフリーらしいと聞いて本当かどうか確かめたかった。「今は一人」「へぇ～意外ですね。私が男なら冴子さんみたいな素敵な人、絶対落としに行きますよ！」「藍田あいだは男じゃないから落としには来ないってこと？」全くもって予想外の返答に私は持っていたグラスを落としそうになった。「…女が落としに行っても冴子さんは落ちてくれるんですか？」平然を装いながら、でも内心では耳元にも聞こえるくらいに心臓がドキドキしていた。「男とか女とかそんな些末なこと、どうでもいいでしょ」当たり前のことを聞くなと言わんばかりの態度に私は思いきって
+                                                            エクスアーマータイプ：モノケロス。リバティー・アライアンスの紋章に描かれたモノケロスを外観モチーフに取り入れた最新型のアーマータイプである。ポーンA1などの生命保護機能を重要視した汎用アーマータイプと異なり、より攻撃的な目的をもって開発された経緯を持つ。また使用者の能力・適正に依存する部分が多く、白堊理研の人体強化計画によって生み出された強化兵士を素体として装着することを前提としている。
+                                                            リバティー・アライアンスにとって脅威となる「ゾアントロプス・レーヴェ」「パラポーン・エクスパンダー」といった強力な個体に対抗するべく、素体となる強化兵士は全身の知覚、筋力を強制的に向上させられている。彼らは 機械部品に頼らない生物としての強化を施され、ヒトという種の枠の中で生きながらに最大限の戦闘能力を獲得したが、代償としてすべての個体が人格面に何らかの障害を抱えている。実戦では一体がモノケロスを纏って対エクスパンダーに投入された記録があり、短時間ではあるが互角以上の戦闘能力を発揮したこの個体には「白麟角」と呼ばれる特別な呼称が与えられた。
+                                                        </p>
                                                     </div>
+                                                </section>
+
+                                                <section className='ml-10 w-3/7'>
+                                                    <h3 className='font-bold mb-2'>書籍情報</h3>
                                                     <div>
-                                                        <span className='font-semibold'>最終更新:</span> 2024-10-20
+                                                        <div className='book-data'>
+                                                            <h4 className='book-head'>タイトル</h4>
+                                                            <p className='book-content'>転生したらスライムだった件</p>
+                                                        </div>
+
+                                                        <div className='book-data'>
+                                                            <h4 className='book-head'>著者</h4>
+                                                            <p className='book-content'>伏瀬</p>
+                                                        </div>
+
+                                                        <div className='book-data'>
+                                                            <h4 className='book-head'>出版社</h4>
+                                                            <p className='book-content'>マイクロマガジン社</p>
+                                                        </div>
+
+                                                        <div className='book-data'>
+                                                            <h4 className='book-head'>ISBN</h4>
+                                                            <p className='book-content'>978-4-89637-459-9(一巻)</p>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                    <div className='flex justify-end '>
+                                                        <AdminButton
+                                                            label='印刷プレビュー'
+                                                            icon='material-symbols:print'
+                                                            iconPosition='left'
+                                                            className='print-preview-btn w-auto'    
+                                                        />
+                                                    </div>
+                                                </section>
                                             </div>
                                         </td>
                                     </tr>
