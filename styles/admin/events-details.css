@@ -129,3 +129,31 @@ details[open] .icon {
 .page-arrow{
   color: var(--color-sub);
 }
+
+/* モーダル */
+.status-edit-modal{
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-head{
+  font-size: var(--font-size-h1);
+}
+.status-table{
+  overflow-y: auto;
+
+}
+.status-table th,
+.status-table td{
+  border-bottom: 1px solid var(--color-input-bg);
+}
+.modal-sub-head{
+  font-size: var(--font-size-h1);
+}
+.status-table th{
+  font-size: var(--font-size-h1);
+}
+.status-record td{
+  font-size: var(--font-size-h1);
+}
+.status-book-section{
+  overflow-y: auto;
+}

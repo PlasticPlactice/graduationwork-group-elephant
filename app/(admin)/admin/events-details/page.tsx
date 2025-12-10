@@ -3,11 +3,14 @@ import Textbox from '@/components/ui/admin-textbox';
 import AdminButton from '@/components/ui/admin-button';
 import "@/styles/admin/events-details.css"
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
+import StatusEditModal from "@/components/admin/StatusEditModal";
 
 export default function Page() { 
     const [openRows, setOpenRows] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
+
+    const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
 
 
     const toggleRow = (id: number) => {
@@ -17,6 +20,28 @@ export default function Page() {
                 : [...prev, id]
         );
     };
+
+    // モーダルが開いている時に背景のスクロールを防ぐ
+    useEffect(() => {
+        if (isStatusEditModalOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        
+        // クリーンアップ関数
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isStatusEditModalOpen]);
+
+    const handleStatusEdit = () => {
+        setIsStatusEditModalOpen(true)
+    }
+
+    const closeModal = () => {
+        setIsStatusEditModalOpen(false)
+    }
 
     // サンプルデータ
     const tableData = [
@@ -83,6 +108,7 @@ export default function Page() {
                     icon='material-symbols:edit-outline'
                     iconPosition='left'
                     className='w-auto'
+                    onClick={handleStatusEdit}
                 />
             </div>
 
@@ -134,6 +160,7 @@ export default function Page() {
                             </th>
                         </tr>
                     </thead>
+                    {/* アコーディオン */}
                     <tbody className='border'>
                         {tableData.map((row) => (
                             <>
@@ -230,35 +257,39 @@ export default function Page() {
                 </table>
             </div>
 
+            {/* ページネーション */}
             <div className="flex items-center justify-center my-5 page-section">
-                            <Icon icon="weui:arrow-filled" rotate={2} width={20} className="page-arrow"></Icon>
-                           <button
-                                type="button"
-                                className={`px-4 py-1 page-number ${currentPage === 1 ? 'active' : ''}`}
-                                onClick={() => setCurrentPage(1)}
-                                aria-current={currentPage === 1 ? "page" : undefined}
-                            >1</button>
-                            <button
-                                type="button"
-                                className={`px-4 py-1 page-number ${currentPage === 2 ? 'active' : ''}`}
-                                onClick={() => setCurrentPage(2)}
-                                aria-current={currentPage === 2 ? "page" : undefined}
-                            >2</button>
-                            <button
-                                type="button"
-                                className={`px-4 py-1 page-number ${currentPage === 3 ? 'active' : ''}`}
-                                onClick={() => setCurrentPage(3)}
-                                aria-current={currentPage === 3 ? "page" : undefined}
-                            >3</button>
-                            <span className="px-4 py-1 page-number" aria-hidden="true">...</span>
-                            <button
-                                type="button"
-                                className={`px-4 py-1 page-number ${currentPage === 5 ? 'active' : ''}`}
-                                onClick={() => setCurrentPage(5)}
-                                aria-current={currentPage === 5 ? "page" : undefined}
-                            >5</button>
-                            <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
-                        </div>
+                <Icon icon="weui:arrow-filled" rotate={2} width={20} className="page-arrow"></Icon>
+                <button
+                    type="button"
+                    className={`px-4 py-1 page-number ${currentPage === 1 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(1)}
+                    aria-current={currentPage === 1 ? "page" : undefined}
+                >1</button>
+                <button
+                    type="button"
+                    className={`px-4 py-1 page-number ${currentPage === 2 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(2)}
+                    aria-current={currentPage === 2 ? "page" : undefined}
+                >2</button>
+                <button
+                    type="button"
+                    className={`px-4 py-1 page-number ${currentPage === 3 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(3)}
+                    aria-current={currentPage === 3 ? "page" : undefined}
+                >3</button>
+                <span className="px-4 py-1 page-number" aria-hidden="true">...</span>
+                <button
+                    type="button"
+                    className={`px-4 py-1 page-number ${currentPage === 5 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(5)}
+                    aria-current={currentPage === 5 ? "page" : undefined}
+                >5</button>
+                <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
+            </div>
+
+            {/* モーダル */}
+            <StatusEditModal isOpen={isStatusEditModalOpen} onClose={closeModal}/>
         </main>
     )    
 }
