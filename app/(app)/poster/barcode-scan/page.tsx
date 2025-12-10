@@ -154,11 +154,17 @@ export default function BarcodeScanPage() {
         });
       }
 
+      // Calculate qrbox size based on container width (responsive)
+      const container = document.getElementById(QR_REGION_ID);
+      const containerWidth = container?.parentElement?.clientWidth || 320;
+      const qrboxSize = Math.min(containerWidth - 40, 400);
+
       await scannerRef.current.start(
         { facingMode: "environment" },
         {
           fps: 10,
-          qrbox: { width: 300, height: 200 },
+          // qrbox: { width: qrboxSize, height: qrboxSize * 0.67 },
+          aspectRatio: 1.5,
           disableFlip: true,
         },
         handleScanSuccess,
@@ -222,7 +228,11 @@ export default function BarcodeScanPage() {
               className={`${Styles.barcodeScan__reader}`}
               id={QR_REGION_ID}
               aria-label="バーコード読み取りエリア"
-              style={{ opacity: isScanning ? 1 : 0.01 }}
+              style={{
+                opacity: isScanning ? 1 : 0.01,
+                width: "100%",
+                height: "100%",
+              }}
             />
             {!isScanning && (
               <div className={Styles.barcodeScan__placeholder}>
