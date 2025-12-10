@@ -1,6 +1,6 @@
 "use client";
 
-import Styles from "@/styles/app/poster.module.css"
+import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -10,17 +10,29 @@ import Modal from "@/app/(app)/poster/barcode-scan/Modal";
 
 const QR_REGION_ID = "barcode-scan-reader";
 
+type RakutenBookItem = {
+  title: string;
+  author: string;
+  mediumImageUrl?: string;
+};
+
 export default function BarcodeScanPage() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isbnInput, setIsbnInput] = useState("");
   const [detectedIsbn, setDetectedIsbn] = useState<string | null>(null);
+  const [selectedIsbn, setSelectedIsbn] = useState<string | null>(null);
+  const [bookLoading, setBookLoading] = useState(false);
+  const [bookError, setBookError] = useState<string | null>(null);
+  const [bookItem, setBookItem] = useState<RakutenBookItem | null>(null);
+  const [lastFetchedIsbn, setLastFetchedIsbn] = useState<string | null>(null);
   const [scanStatus, setScanStatus] = useState(
     "冊子のバーコードを読み込む必要があります。"
   );
   const [scanError, setScanError] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const fetchIdRef = useRef(0);
 
   const validateIsbn13 = useCallback((value: string) => {
     if (!/^\d{13}$/.test(value)) return false;
@@ -48,6 +60,48 @@ export default function BarcodeScanPage() {
     }
   }, []);
 
+  const fetchBookInfo = useCallback(
+    async (isbn: string) => {
+      if (isbn === lastFetchedIsbn) return;
+
+      const fetchId = ++fetchIdRef.current;
+      setBookLoading(true);
+      setBookError(null);
+      setBookItem(null);
+
+      try {
+        const res = await fetch(`/api/books?isbn=${isbn}`);
+        if (fetchId !== fetchIdRef.current) return;
+
+        if (!res.ok) {
+          setBookError("本情報の取得に失敗しました。");
+          return;
+        }
+
+        const data = await res.json();
+        const firstItem = data?.Items?.[0]?.Item;
+        if (!firstItem) {
+          setBookError("本情報が見つかりませんでした。");
+          return;
+        }
+
+        setBookItem({
+          title: firstItem.title ?? "",
+          author: firstItem.author ?? "",
+          mediumImageUrl: firstItem.mediumImageUrl,
+        });
+        setLastFetchedIsbn(isbn);
+      } catch (error) {
+        console.error("Failed to fetch book info", error);
+        if (fetchId === fetchIdRef.current)
+          setBookError("本情報の取得に失敗しました。");
+      } finally {
+        if (fetchId === fetchIdRef.current) setBookLoading(false);
+      }
+    },
+    [lastFetchedIsbn]
+  );
+
   const handleScanSuccess = useCallback(
     async (decodedText: string) => {
       const normalized = decodedText.replace(/[^0-9]/g, "");
@@ -70,11 +124,13 @@ export default function BarcodeScanPage() {
 
       setDetectedIsbn(normalized);
       setIsbnInput(normalized);
+      setSelectedIsbn(normalized);
+      fetchBookInfo(normalized);
       await stopScanner();
       setScanStatus("ISBNを検出しました。入力欄をご確認ください。");
       setConfirmOpen(true);
     },
-    [stopScanner, validateIsbn13]
+    [fetchBookInfo, stopScanner, validateIsbn13]
   );
 
   const handleScanFailure = useCallback((error: string) => {
@@ -135,9 +191,13 @@ export default function BarcodeScanPage() {
     }
     setDetectedIsbn(normalized);
     setIsbnInput(normalized);
+    setSelectedIsbn(normalized);
+    fetchBookInfo(normalized);
     setConfirmOpen(true);
     setScanError(null);
-  }, [isbnInput, validateIsbn13]);
+  }, [fetchBookInfo, isbnInput, validateIsbn13]);
+
+  const displayIsbn = selectedIsbn ?? detectedIsbn ?? (isbnInput || "未取得");
 
   return (
     <div>
@@ -217,9 +277,46 @@ export default function BarcodeScanPage() {
             <div className="mb-10">
               <p>ISBNコード</p>
               <div className={`border rounded-sm py-2 mb-4 ${Styles.text16px}`}>
-                <p className={`font-bold text-center`}>
-                  {detectedIsbn ?? (isbnInput || "未取得")}
-                </p>
+                <p className={`font-bold text-center`}>{displayIsbn}</p>
+              </div>
+              <div className="mb-6">
+                <p className="font-bold mb-2">本情報</p>
+                <div className="border rounded-sm p-3">
+                  {bookLoading && <p>本情報を取得中...</p>}
+                  {!bookLoading && bookError && (
+                    <p className={`${Styles.warningColor} ${Styles.text12px}`}>
+                      {bookError}
+                    </p>
+                  )}
+                  {!bookLoading && !bookError && bookItem && (
+                    <div className="flex gap-3 items-start">
+                      {bookItem.mediumImageUrl ? (
+                        <img
+                          src={bookItem.mediumImageUrl}
+                          alt={bookItem.title || "book image"}
+                          width={100}
+                          height={140}
+                          className="rounded"
+                        />
+                      ) : (
+                        <div className="w-[100px] h-[140px] bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+                          No Image
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-bold mb-2 break-words">
+                          {bookItem.title}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {bookItem.author}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {!bookLoading && !bookError && !bookItem && (
+                    <p className={Styles.text12px}>ISBNを確認しています...</p>
+                  )}
+                </div>
               </div>
               <p className={`font-bold text-center ${Styles.text16px}`}>
                 こちらのISBNで登録を進めますか？
