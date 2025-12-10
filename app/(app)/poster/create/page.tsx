@@ -4,6 +4,7 @@ import styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import { useCallback, useState, useMemo } from "react";
 import{ useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function CreateViewerPage() {
     const [selectedColor, setSelectedColor] = useState('#D1D5DB');
@@ -61,7 +62,7 @@ export default function CreateViewerPage() {
             <div className={`${styles.posterContainer}`}>
                 <Image  src="/layout/logo.png" alt="logo" width={177} height={120} className="mx-auto" />
                 <h1 className="font-bold text-center">アカウント作成</h1>
-                <a href="login" className={`block text-center font-bold ${styles.subColor}`}><span className="border-b">アカウントをお持ちの方はこちら</span></a>
+                <Link href="/poster/login" className={`block text-center font-bold ${styles.subColor}`}><span className="border-b">アカウントをお持ちの方はこちら</span></Link>
 
                 <form action="" method="post">
                     {/* ニックネームの入力 */}
@@ -242,7 +243,9 @@ export default function CreateViewerPage() {
                     
                     {/* 送信ボタン */}
                     <div className="my-8">
-                        <button onClick={() => router.push("login")} type="button" className="button w-full">登録</button>
+                        <Link href="/poster/login">
+                            <button onClick={() => router.push("login")} type="button" className="button w-full">登録</button>
+                        </Link>
                     </div>
                 </form>
             </div>
