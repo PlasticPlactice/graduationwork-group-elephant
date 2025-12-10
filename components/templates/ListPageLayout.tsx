@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { Item } from "@/components/features/item";
 import { ItemModal } from "@/components/features/ItemModal";
+import { Suspense } from "react";
 
 interface ItemProps {
   id: number;
@@ -68,7 +69,9 @@ export const ListPageLayout = ({
             />
           ))}
 
-          <Pagination currentPage={currentPage} totalPages={totalPages} />
+          <Suspense>
+            <Pagination currentPage={currentPage} totalPages={totalPages} />
+          </Suspense>
         </div>
       </div>
 
