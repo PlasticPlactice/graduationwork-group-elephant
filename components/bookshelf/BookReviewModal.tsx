@@ -104,28 +104,15 @@ export function BookReviewModal({
   useEffect(() => {
     const favEl = favButtonRef.current;
     if (favEl) {
-      // ensure box-sizing so border doesn't change layout
       favEl.style.setProperty("box-sizing", "border-box", "important");
-      if (isFavorited) {
-        favEl.style.setProperty("background-color", "#F6E05E", "important");
-        favEl.style.setProperty("color", "#111827", "important");
-        favEl.style.setProperty(
-          "box-shadow",
-          "0 6px 18px rgba(160,138,0,0.25)",
-          "important"
-        );
-        // keep a transparent border so size doesn't shift
-        favEl.style.setProperty("border", "1px solid transparent", "important");
-      } else {
-        favEl.style.setProperty("background-color", "#ffffff", "important");
-        favEl.style.setProperty("color", "#374151", "important");
-        favEl.style.setProperty("box-shadow", "none", "important");
-        favEl.style.setProperty(
-          "border",
-          "1px solid rgba(148,163,184,0.2)",
-          "important"
-        );
-      }
+      favEl.style.setProperty("background", "transparent", "important");
+      favEl.style.setProperty("border", "none", "important");
+      favEl.style.setProperty("box-shadow", "none", "important");
+      favEl.style.setProperty(
+        "color",
+        isFavorited ? "#F6E05E" : "#9CA3AF",
+        "important"
+      );
     }
 
     const voteEl = voteButtonRef.current;
@@ -136,21 +123,17 @@ export function BookReviewModal({
         voteEl.style.setProperty("color", "#ffffff", "important");
         voteEl.style.setProperty(
           "box-shadow",
-          "0 6px 18px rgba(220,38,38,0.25)",
+          "0 10px 24px rgba(239,68,68,0.3)",
           "important"
         );
-        voteEl.style.setProperty(
-          "border",
-          "1px solid transparent",
-          "important"
-        );
+        voteEl.style.setProperty("border", "1px solid #ef4444", "important");
       } else {
         voteEl.style.setProperty("background-color", "#ffffff", "important");
-        voteEl.style.setProperty("color", "#374151", "important");
+        voteEl.style.setProperty("color", "#ef4444", "important");
         voteEl.style.setProperty("box-shadow", "none", "important");
         voteEl.style.setProperty(
           "border",
-          "1px solid rgba(148,163,184,0.2)",
+          "1px solid rgba(239,68,68,0.3)",
           "important"
         );
       }
@@ -189,50 +172,68 @@ export function BookReviewModal({
             {book.review ?? "書評がまだ登録されていません。"}
           </div>
         </div>
-        <div className="relative z-10 mt-6 flex items-center justify-center gap-3">
-          <button
-            ref={favButtonRef}
-            type="button"
-            onClick={() => onToggleFavorite?.()}
-            aria-pressed={isFavorited}
-            style={{
-              backgroundColor: isFavorited ? "#F6E05E" : "#FFFFFF",
-              color: isFavorited ? "#111827" : "#374151",
-            }}
-            className={
-              (isFavorited
-                ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-yellow-400 text-slate-900 shadow-md ring-2 ring-yellow-300"
-                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-white text-slate-700 border border-slate-200 hover:bg-yellow-50") +
-              " transition-colors transform active:scale-95"
-            }
-          >
-            お気に入り
-          </button>
-          <button
-            ref={voteButtonRef}
-            type="button"
-            onClick={() => onToggleVote?.()}
-            aria-pressed={isVoted}
-            style={{
-              backgroundColor: isVoted ? "#ef4444" : "#FFFFFF",
-              color: isVoted ? "#FFFFFF" : "#374151",
-            }}
-            className={
-              (isVoted
-                ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-red-600 text-white shadow-md ring-2 ring-red-300"
-                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-white text-slate-700 border border-slate-200 hover:bg-red-50") +
-              " transition-colors transform active:scale-95"
-            }
-          >
-            投票
-          </button>
-          <button
-            type="button"
-            onClick={onComplete}
-            className="inline-flex w-full max-w-xs items-center justify-center rounded-full bg-pink-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-pink-200 transition hover:bg-pink-600"
-          >
-            {actionLabel}
-          </button>
+        <div className="relative z-10 mt-6 flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
+            <button
+              ref={voteButtonRef}
+              type="button"
+              onClick={() => onToggleVote?.()}
+              aria-pressed={isVoted}
+              className={`flex h-16 items-center justify-center gap-3 rounded-full border text-lg font-bold tracking-wide transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-200 ${
+                isVoted ? "bg-red-500 text-white" : "bg-white text-red-500"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 14l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{isVoted ? "投票済み" : "投票する"}</span>
+            </button>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={onComplete}
+                className="flex-1 rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
+              >
+                読み終わった
+              </button>
+
+              <button
+                ref={favButtonRef}
+                type="button"
+                onClick={() => onToggleFavorite?.()}
+                className="ml-auto inline-flex h-12 w-12 items-center justify-center text-gray-400 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100"
+                aria-pressed={isFavorited}
+                style={{ color: isFavorited ? "#F6E05E" : "#9CA3AF" }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill={isFavorited ? "currentColor" : "none"}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 5v16l7-5 7 5V5a2 2 0 00-2-2H7a2 2 0 00-2 2z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
