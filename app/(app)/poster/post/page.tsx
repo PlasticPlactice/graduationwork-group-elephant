@@ -61,8 +61,9 @@ export default function PostPage() {
         extensions: [
         StarterKit,
         BubbleMenu.configure({
-            element: typeof document !== "undefined"
-            ? document.querySelector(".bubble-menu")
+            element:
+            typeof document !== "undefined"
+            ? (document.querySelector(".bubble-menu") as HTMLElement | null)
             : null,
         }),
         TextStyle,
