@@ -10,6 +10,8 @@ type ShelfBookProps = {
   /** 背表紙のテキスト（省略時は何も表示しない） */
   label?: string;
   onClick?: () => void;
+  /** 下部ハイライトの色（例: '#FFD54F' または 'red'）。指定なしで非表示 */
+  bottomColor?: string;
 };
 
 const DEFAULT_HEIGHT = "h-40";
@@ -22,6 +24,7 @@ export function ShelfBook({
   className = "",
   label,
   onClick,
+  bottomColor,
 }: ShelfBookProps) {
   const containerClass = [
     "relative",
@@ -59,6 +62,13 @@ export function ShelfBook({
       className={[containerClass, interactiveClasses].filter(Boolean).join(" ")}
       aria-label={label ?? book.id}
     >
+      {bottomColor ? (
+        <div
+          aria-hidden="true"
+          className="absolute left-0 right-0 bottom-0"
+          style={{ height: "25%", backgroundColor: bottomColor }}
+        />
+      ) : null}
       <BookPattern
         pattern={book.pattern}
         baseColor={book.baseColor}
