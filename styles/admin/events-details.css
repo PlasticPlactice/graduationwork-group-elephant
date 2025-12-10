@@ -46,3 +46,32 @@
   color: var(--color-bg);
   border: 1px solid var(--color-main);
 }
+.event-table th,
+.event-table td{
+  border-bottom: 1px solid var(--color-input-bg);
+
+}
+.head-check{
+  inline-size: 2rem;
+  block-size: 2rem;
+}
+summary {
+  list-style-type: none;
+}
+details[open] .icon {
+  transform: rotate(180deg);
+}
+.title-text{
+  color: var(--color-main);
+  border-bottom: 1px solid var(--color-main);
+}
+.status-text{
+  color: #1E40AF;
+  background-color: #DBEAFE;
+}
+.accordion-toggle{
+  background-color: var(--color-bg);
+  box-shadow: none;
+  color: var(--color-text);
+  font-size: var(--font-size-h1);
+}
