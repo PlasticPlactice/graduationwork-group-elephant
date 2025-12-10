@@ -131,9 +131,10 @@ export function BookshelfTop() {
       if (votedBookId !== null) {
         // already voted today
         window.alert("本日の投票は終了しました。(１日１票のみ)");
-        return;
+        return false;
       }
       setVotedBookId(bookId);
+      return true;
     },
     [votedBookId]
   );
@@ -216,7 +217,13 @@ export function BookshelfTop() {
         onToggleFavorite={() =>
           modalState && toggleFavorite(modalState.book.id)
         }
-        onToggleVote={() => modalState && toggleVote(modalState.book.id)}
+        onToggleVote={() => {
+          if (!modalState) return;
+          const voted = toggleVote(modalState.book.id);
+          if (voted) {
+            handleCompleteBook();
+          }
+        }}
       />
     </>
   );
