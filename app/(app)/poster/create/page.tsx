@@ -3,10 +3,13 @@ import styles from "@/styles/app/poster.module.css";
 
 import Image from "next/image";
 import { useCallback, useState, useMemo } from "react";
+import{ useRouter } from "next/navigation";
 
 export default function CreateViewerPage() {
     const [selectedColor, setSelectedColor] = useState('#D1D5DB');
     const [selectedAddress, setSelectedAddress] = useState('');
+
+    const router = useRouter();
 
     const handleAddressChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
         const newValue = event.target.value;
@@ -58,7 +61,7 @@ export default function CreateViewerPage() {
             <div className={`${styles.posterContainer}`}>
                 <Image  src="/layout/logo.png" alt="logo" width={177} height={120} className="mx-auto" />
                 <h1 className="font-bold text-center">アカウント作成</h1>
-                <a href="" className={`block text-center font-bold ${styles.subColor}`}><span className="border-b">アカウントをお持ちの方はこちら</span></a>
+                <a href="login" className={`block text-center font-bold ${styles.subColor}`}><span className="border-b">アカウントをお持ちの方はこちら</span></a>
 
                 <form action="" method="post">
                     {/* ニックネームの入力 */}
@@ -239,7 +242,7 @@ export default function CreateViewerPage() {
                     
                     {/* 送信ボタン */}
                     <div className="my-8">
-                        <button className="button w-full">登録</button>
+                        <button onClick={() => router.push("login")} type="button" className="button w-full">登録</button>
                     </div>
                 </form>
             </div>

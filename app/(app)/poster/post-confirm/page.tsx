@@ -1,7 +1,6 @@
-"use client";
-
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function PostConfirmPage({searchParams,} : {searchParams: {content: string};
 }) {
@@ -34,8 +33,12 @@ export default async function PostConfirmPage({searchParams,} : {searchParams: {
                     </div>
                 </div>
 
-                <button className={`w-full mt-10`}>登録</button>
-                <button className={`w-full my-5 ${Styles.barcodeScan__backButton}`}>編集に戻る</button>
+                <Link href="mypage" className="w-full mt-4 block">
+                    <button className={`w-full mt-10`}>登録</button>
+                </Link>
+                <Link href="post" className="w-full mt-4 block">
+                    <button className={`w-full ${Styles.barcodeScan__backButton}`}>戻る</button>
+                </Link>
             </div>
         </div>
     );

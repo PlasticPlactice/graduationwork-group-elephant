@@ -2,6 +2,8 @@
 
 import Styles from "@/styles/app/poster.module.css";
 import { useState, useEffect, useRef } from "react";
+import { preparePostConfirm } from "./actions";
+import { useActionState } from "react";
 // tiptapのimport
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -9,8 +11,6 @@ import { BubbleMenu } from "@tiptap/extension-bubble-menu";
 import Color from "@tiptap/extension-color";
 import { TextStyle } from "@tiptap/extension-text-style";
 import CharacterCount from "@tiptap/extension-character-count";
-import { preparePostConfirm } from "./actions";
-import { useActionState } from "react";
 
 export default function PostPage() {
     // HTML送信用
@@ -145,7 +145,7 @@ export default function PostPage() {
 
     return (
         <div className={`${Styles.posterContainer}`}>
-            <p className={`font-bold text-center my-3 ${Styles.text24px}`}>あなただけの書評を書く</p>
+            <p className={`font-bold text-center my-5 ${Styles.text24px}`}>あなただけの書評を書く</p>
             <a href="" className={`block font-bold ${Styles.subColor}`}><span>&lt;</span> マイページに戻る</a>
 
             <div className="py-2 flex items-center justify-between border-t">
@@ -221,7 +221,7 @@ export default function PostPage() {
                             <p className="font-bold w-full text-center">デザインを選ぶ</p>
                             <div className="border-t-2 w-1/2"></div>
                         </div>
-                        <p className={`text-center ${Styles.subColor}`}>本の色や模様をあなた好みに変更しましょう。</p>
+                        <p className={`text-center my-3 ${Styles.subColor}`}>本の色や模様をあなた好みに変更しましょう。</p>
                         <div className="mb-5">
                             <p className="font-bold">本の色</p>
                             <div className="my-2">
