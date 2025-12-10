@@ -32,16 +32,35 @@ export const EventCard = ({
     typeof daysLeft === "number" ? `${daysLeft}日` : daysLeft;
 
   return (
-    <div className="event-card bg-white border border-slate-300 rounded-lg p-6 shadow-sm">
+    <div
+      className="event-card bg-white rounded-lg p-6 shadow-sm"
+      style={{
+        border: isFinished
+          ? "1px solid rgb(203, 213, 225)"
+          : "2px solid var(--color-main)",
+      }}
+    >
       <div className="flex justify-between items-start mb-4">
-        <h4 className="text-xl font-bold text-slate-800 flex-1 pr-4">
-          {title}
-        </h4>
+        <div className="flex-1 pr-4">
+          <h4 className="text-xl font-bold text-slate-800 mb-2">{title}</h4>
+          <p className="text-slate-600 text-sm leading-relaxed">
+            {description}
+          </p>
+        </div>
 
         {/* タイマー部分のデザイン */}
-        <div className="border border-slate-300 rounded px-3 py-2 text-center min-w-[100px]">
+        <div
+          className="rounded px-3 py-2 text-center min-w-[100px]"
+          style={{
+            border: isFinished
+              ? "1px solid rgb(203, 213, 225)"
+              : "2px solid var(--color-main)",
+          }}
+        >
           <span className="block text-xs font-bold text-slate-600 mb-1">
-            投票期間終了まであと
+            投票終了まで
+            <br />
+            あと
           </span>
           <span
             className={`block text-2xl font-bold ${
@@ -53,10 +72,6 @@ export const EventCard = ({
         </div>
       </div>
 
-      <p className="text-slate-600 mb-6 text-sm leading-relaxed">
-        {description}
-      </p>
-
       <div className="event-card__action">
         {href ? (
           // 内部リンクは next/link を使い、外部リンクは通常のアンカーで開く
@@ -66,7 +81,10 @@ export const EventCard = ({
               className="w-full inline-block font-bold py-3 text-center rounded"
               style={{
                 backgroundColor:
-                  buttonBackgroundColor || "var(--color-event-button-bg)",
+                  buttonBackgroundColor ||
+                  (isFinished
+                    ? "var(--color-event-button-bg)"
+                    : "var(--color-main)"),
                 color: buttonTextColor || "var(--color-white)",
                 border: buttonBorderColor
                   ? `2px solid ${buttonBorderColor}`
@@ -83,7 +101,10 @@ export const EventCard = ({
               className="w-full font-bold py-3 rounded"
               style={{
                 backgroundColor:
-                  buttonBackgroundColor || "var(--color-event-button-bg)",
+                  buttonBackgroundColor ||
+                  (isFinished
+                    ? "var(--color-event-button-bg)"
+                    : "var(--color-main)"),
                 color: buttonTextColor || "var(--color-white)",
                 border: buttonBorderColor
                   ? `2px solid ${buttonBorderColor}`
@@ -99,7 +120,10 @@ export const EventCard = ({
             onClick={onButtonClick}
             style={{
               backgroundColor:
-                buttonBackgroundColor || "var(--color-event-button-bg)",
+                buttonBackgroundColor ||
+                (isFinished
+                  ? "var(--color-event-button-bg)"
+                  : "var(--color-main)"),
               color: buttonTextColor || "var(--color-white)",
               border: buttonBorderColor
                 ? `2px solid ${buttonBorderColor}`
