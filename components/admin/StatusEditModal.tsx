@@ -1,4 +1,8 @@
 "use client"
+
+import { Icon } from "@iconify/react";
+import AdminButton from '@/components/ui/admin-button';
+
 interface StatusEditModalPops {
     isOpen: boolean;
     onClose: () => void;
@@ -47,6 +51,27 @@ export default function StatusEditModal({ isOpen, onClose }: StatusEditModalPops
                         </tbody>
                     </table>
                 </div>
+
+                <div className="grid grid-cols-3 items-center my-3 m-auto">
+                    <p className="now-status-head ">変更前ステータス</p>
+                    <p className="now-status-text font-bold py-1.5 px-7 rounded-2xl">一次通過</p>
+                    <p id="dummy_text">fff</p>
+                </div>
+                <Icon icon='ri:arrow-up-line' rotate={2} className="mx-auto status-arrow" width={30}></Icon>
+                <form action="" method="post" className="m-auto w-1/4">
+                    <select className="w-full">
+                        <option value="評価前">評価前</option>
+                        <option value="一次通過">一次通過</option>
+                        <option value="二次通過">二次通過</option>
+                        <option value="三次通過">三次通過</option>
+                    </select>
+
+                    <AdminButton
+                        label="変更"
+                        type="submit"
+                        className="w-full mt-5"
+                    />
+                </form>
             </div>
         </div>
     )

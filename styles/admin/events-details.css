@@ -157,3 +157,18 @@ details[open] .icon {
 .status-book-section{
   overflow-y: auto;
 }
+
+.now-status-head{
+  font-size: var(--font-size-base);
+}
+.now-status-text{
+  font-size: 20px;
+  color: #1E40AF;
+  background-color: #DBEAFE;
+}
+#dummy_text{
+  color: var(--color-bg);
+}
+.status-arrow{
+  color: var(--color-sub);
+}
