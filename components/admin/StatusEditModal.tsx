@@ -27,7 +27,7 @@ export default function StatusEditModal({ isOpen, onClose }: StatusEditModalPops
 
     return (
         <div className="fixed inset-0 status-edit-modal bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-            <div className="modal-content bg-white rounded-lg w-11/12 max-w-8xl max-h-[90vh] flex flex-col p-6"  onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content bg-white rounded-lg w-9/12 max-w-8xl max-h-[90vh] flex flex-col p-6"  onClick={(e) => e.stopPropagation()}>
                 <h2 className="modal-head text-center">ステータス変更</h2>
                 <h3 className="modal-sub-head mt-3">ステータス変更する書評</h3>
 
