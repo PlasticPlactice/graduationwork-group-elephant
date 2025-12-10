@@ -28,8 +28,8 @@ export const ReviewPassedModal: React.FC<ReviewPassedModalProps> = ({
     },
     {
       label: "2次審査",
-      date: "予定:2025/12/25",
-      status: "pending" as const,
+      date: "予定:2025/12/10",
+      status: "done" as const,
     },
     {
       label: "入選",
@@ -135,7 +135,7 @@ export const ReviewPassedModal: React.FC<ReviewPassedModalProps> = ({
                         initial={{ scaleY: 0 }}
                         animate={{ scaleY: 1 }}
                         transition={{ delay: idx * 0.1 + 0.2, duration: 0.3 }}
-                        className={`absolute left-[9px] top-6 w-[2px] h-7 origin-top z-0 ${
+                        className={`absolute left-[9px] top-4 w-[2px] h-7 origin-top z-0 ${
                           timeline[idx + 1].status === "done"
                             ? "bg-rose-400"
                             : "bg-gray-300"
@@ -190,7 +190,7 @@ export const ReviewPassedModal: React.FC<ReviewPassedModalProps> = ({
               </div>
             </div>
             <button
-              className="w-full bg-rose-400 text-white font-bold py-2 rounded-md text-center"
+              className="w-full bg-rose-400 text-white font-bold py-2 rounded-md text-center border-none focus:outline-none focus:ring-2 focus:ring-rose-300 focus:ring-offset-2"
               onClick={onClose}
               ref={confirmBtnRef}
             >

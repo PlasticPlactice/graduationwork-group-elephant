@@ -40,10 +40,10 @@
 .about__inner {
   max-width: 800px;
   width: 100%;
-  text-align: center;
+  text-align: left;
 }
 .about__title {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 800;
   margin-bottom: 40px;
   display: flex;
@@ -72,7 +72,7 @@
 /* 文庫Xセクションのスタイル */
 .bunko-x {
   background-color: #6b8ba4;
-  padding: 80px 20px;
+  padding: 80px 20px 40px;
   color: #ffffff;
   font-family: serif;
 }
@@ -91,7 +91,7 @@
 .bunko-x__text {
   font-size: 16px;
   line-height: 2;
-  text-align: center;
+  text-align: left;
   margin-bottom: 60px;
 }
 .bunko-x__list {
@@ -112,7 +112,7 @@
   left: 0;
 }
 .bunko-x__subtitle {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 800;
   margin-bottom: 40px;
   display: flex;
@@ -139,7 +139,7 @@
 
 /* おしらせセクションのスタイル */
 .news {
-  padding: 80px 20px;
+  padding: 80px 20px 0px;
   background-color: #ffffff;
   color: #333;
   font-family: serif;
@@ -149,7 +149,7 @@
   margin: 0 auto;
 }
 .news__title {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 800;
   margin-bottom: 40px;
   display: flex;
@@ -201,11 +201,17 @@
 }
 .news__button {
   text-align: center;
+  padding-bottom: 20px;
+}
+
+.donation-button {
+  padding-bottom: 80px;
+  text-align: center;
 }
 
 /* 寄贈についてセクションの追加スタイル */
 .donation-text {
-  text-align: center;
+  text-align: left;
   line-height: 2.5;
   margin-bottom: 40px;
   font-size: 15px;
@@ -237,12 +243,18 @@
   gap: 10px;
   font-weight: bold;
   font-size: 18px;
-  color: #333;
+  color: var(--color-text);
 }
 .donation-banner__arrow {
   font-family: monospace;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 22px;
+  color: var(--color-text);
+}
+
+/* SP版のみ表示する改行 */
+.br-sp-only {
+  display: block;
 }
 
 @media (min-width: 768px) {
@@ -250,6 +262,9 @@
     display: block;
   }
   .heroImage--mobile {
+    display: none;
+  }
+  .br-sp-only {
     display: none;
   }
 }
