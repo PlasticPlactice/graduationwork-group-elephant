@@ -7,6 +7,7 @@ import { useState,useEffect } from 'react';
 import StatusEditModal from "@/components/admin/StatusEditModal";
 import CsvOutputModal from '@/components/admin/CsvOutputModal';
 import AllMessageSendModal from "@/components/admin/AllMessageSendModal"
+import { useRouter } from 'next/navigation';
 
 export default function Page() { 
     const [openRows, setOpenRows] = useState<number[]>([]);
@@ -17,6 +18,7 @@ export default function Page() {
     const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
     const [isAllMessageSendModalOpen, setIsAllMessageSendModalOpen] = useState(false);
 
+    const router = useRouter();
 
     const toggleRow = (id: number) => {
         setOpenRows(prev => 
@@ -53,6 +55,10 @@ export default function Page() {
         setIsStatusEditModalOpen(false)
         setIsCsvOutputModalOpen(false)
         setIsAllMessageSendModalOpen(false)
+    }
+
+    const handlepreview = () => {
+        router.push('/admin/print-preview')
     }
 
     // サンプルデータ
@@ -281,7 +287,8 @@ export default function Page() {
                                                             label='印刷プレビュー'
                                                             icon='material-symbols:print'
                                                             iconPosition='left'
-                                                            className='print-preview-btn w-auto'    
+                                                            className='print-preview-btn w-auto'   
+                                                            onClick={handlepreview}
                                                         />
                                                     </div>
                                                 </section>
