@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useState } from "react";
 import { BookshelfLayout } from "@/components/bookshelf/BookshelfLayout";
 import { BOOKS, type Book } from "@/components/bookshelf/bookData";
@@ -163,13 +164,18 @@ export function BookshelfTop() {
 
   return (
     <>
-      <div className="mb-6 flex flex-col items-center gap-3 text-center">
-        <button
-          type="button"
-          className="inline-flex w-full max-w-xs items-center justify-center rounded-full border border-pink-500 bg-white px-8 py-3 text-sm font-semibold text-pink-500 shadow-md shadow-pink-100"
-        >
-          すべてのイベント
-        </button>
+      <div className="mb-6 flex flex-col items-center gap-3 text-center px-4">
+        <div className="w-full max-w-sm">
+          <Link href="/event">
+            <button
+              type="button"
+              className="w-full bg-white border font-bold h-auto rounded-lg shadow hover:bg-slate-50 transition-colors"
+              style={{ padding: "12px 0" }}
+            >
+              すべてのイベント
+            </button>
+          </Link>
+        </div>
         <h1 className="text-2xl font-bold text-slate-900">
           第〇回文庫Xイベント
         </h1>

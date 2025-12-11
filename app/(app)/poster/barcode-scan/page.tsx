@@ -341,9 +341,11 @@ export default function BarcodeScanPage() {
                 </p>
               </div>
             </div>
-            <button type="button" className={`w-full mb-3`}>
-              登録へ
-            </button>
+            <Link href="/poster/post">
+              <button type="button" className={`w-full mb-3`}>
+                登録へ
+              </button>
+            </Link>
             <button
               type="button"
               onClick={() => setConfirmOpen(false)}
