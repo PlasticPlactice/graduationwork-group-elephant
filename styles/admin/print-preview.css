@@ -36,6 +36,39 @@
   margin: 2rem 0;
 }
 
+.design-area{
+  background-color: #F3F4F6;
+  border:1px solid #D5D5D5;
+}
+.design-head{
+  font-size: 28px;
+}
+.design-sub-head{
+  font-size: 24px;
+}
+.main-color-pick{
+  background-color: #FE9C56;
+  width: 22px;
+  height: 22px;
+}
+.main-color-text{
+  font-size: 22px;
+}
+
+.pattern-pick{
+  background-image: repeating-linear-gradient(120deg, #000000, #000000 6px, transparent 6px, transparent 11px);
+  width: 22px;
+  height: 22px;
+}
+
+.pattern-color-pick{
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  width: 22px;
+  height: 22px;
+}
+
+
 @media print {
   @page { size: A4 landscape; }
 

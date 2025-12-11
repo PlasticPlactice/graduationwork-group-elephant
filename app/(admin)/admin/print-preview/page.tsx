@@ -8,7 +8,7 @@ export default function Page() {
     }
 
     return (
-        <main>
+        <main className="flex">
             <div>
                 <h2 className="preview-head">プレビュー</h2>
                 <section className="print-area">
@@ -34,12 +34,27 @@ export default function Page() {
                 </div>
             </div>
 
-            {/* <div>
-                <h2>デザイン情報</h2>
-                <h3>メインカラー</h3>
-                <p></p>
-                オレンジ
-            </div> */}
+            <div className="design-area w-full px-4 py-6">
+                <h2 className="design-head font-bold mb-3">デザイン情報</h2>
+
+                <h3 className="design-sub-head font-bold">メインカラー</h3>
+                <div className="flex items-center gap-1 mb-4">
+                    <p className="main-color-pick rounded-full"></p>
+                    <p className="main-color-text">オレンジ</p>
+                </div>
+
+                <h3 className="design-sub-head font-bold">柄</h3>
+                <div className="flex items-center gap-1 mb-4">
+                    <p className="pattern-pick rounded-full"></p>
+                    <p className="main-color-text">ストライプ</p>
+                </div>
+
+                <h3 className="design-sub-head font-bold">柄のカラー</h3>
+                <div className="flex items-center gap-1">
+                    <p className="pattern-color-pick rounded-full"></p>
+                    <p className="main-color-text">ホワイト</p>
+                </div>
+            </div>
         </main>
     )
 }
