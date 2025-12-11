@@ -1,16 +1,16 @@
 "use client";
 
-import loginModule from "@/styles/app/login.module.css";
-import Styles from "@/styles/app/account-create.module.css";
-import Image from "next/image";
+import loginModule from "@/styles/app/login.module.css"
+import Styles from "@/styles/app/poster.module.css"
+import Image from "next/image"
 import Link from "next/link";
 
 export default function LoginPage() {
   return (
     <div>
-      <a href="" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
+      <Link href="/" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
         <span>&lt;</span> ファンサイトはこちら
-      </a>
+      </Link>
       <div className={`mb-2 ${Styles.posterContainer}`}>
         <div className="my-8">
           <Image

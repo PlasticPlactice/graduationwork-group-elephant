@@ -125,3 +125,18 @@ button,
   font: bold;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
+
+/* tiptapのcss */
+.ProseMirror {
+  min-height: 38.5rem !important;
+  line-height: normal !important;
+}
+
+.ProseMirror p {
+  line-height: 1.6 !important;
+  height: auto !important;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}

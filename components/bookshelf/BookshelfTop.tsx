@@ -34,7 +34,9 @@ type ModalState = {
 function renderShelfRow(
   books: typeof BOOKS,
   rowKey: string,
-  onBookSelect?: (book: Book) => void
+  onBookSelect?: (book: Book) => void,
+  favorites?: string[],
+  votedBookId?: string | null
 ) {
   if (books.length === 0) return null;
 
@@ -44,15 +46,24 @@ function renderShelfRow(
       className="flex w-full max-w-5xl items-end justify-start gap-2"
     >
       <div className={`${SHELF_SPACER_CLASS} sm:w-8`} aria-hidden="true" />
-      {books.map((book, idx) => (
-        <ShelfBook
-          key={`${book.id}-${idx}`}
-          book={book}
-          heightClass="h-36"
-          widthClass="w-10"
-          onClick={onBookSelect ? () => onBookSelect(book) : undefined}
-        />
-      ))}
+      {books.map((book, idx) => {
+        let bottomColor: string | undefined = undefined;
+        if (votedBookId === book.id) {
+          bottomColor = "#ef4444"; // red-500
+        } else if (favorites && favorites.includes(book.id)) {
+          bottomColor = "#f6e05e"; // yellow-ish
+        }
+        return (
+          <ShelfBook
+            key={`${book.id}-${idx}`}
+            book={book}
+            heightClass="h-36"
+            widthClass="w-10"
+            onClick={onBookSelect ? () => onBookSelect(book) : undefined}
+            bottomColor={bottomColor}
+          />
+        );
+      })}
       <div className={`${SHELF_SPACER_CLASS} sm:w-8`} aria-hidden="true" />
     </div>
   );
@@ -65,6 +76,8 @@ export function BookshelfTop() {
   }));
   const { shelves, scatter } = booksState;
   const [modalState, setModalState] = useState<ModalState | null>(null);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [votedBookId, setVotedBookId] = useState<string | null>(null);
 
   const moveScatterBookToShelf = useCallback((bookId: string) => {
     setBooksState((prevState) => {
@@ -104,6 +117,27 @@ export function BookshelfTop() {
   const handleShelfBookSelect = useCallback((book: Book) => {
     setModalState({ book, mode: "shelf" });
   }, []);
+
+  const toggleFavorite = useCallback((bookId: string) => {
+    setFavorites((prev) =>
+      prev.includes(bookId)
+        ? prev.filter((id) => id !== bookId)
+        : [...prev, bookId]
+    );
+  }, []);
+
+  const toggleVote = useCallback(
+    (bookId: string) => {
+      if (votedBookId !== null) {
+        // already voted today
+        window.alert("本日の投票は終了しました。(１日１票のみ)");
+        return false;
+      }
+      setVotedBookId(bookId);
+      return true;
+    },
+    [votedBookId]
+  );
 
   const handleCloseReview = useCallback(() => {
     setModalState(null);
@@ -153,7 +187,13 @@ export function BookshelfTop() {
           <BookshelfLayout
             className="absolute inset-0"
             shelfContents={shelves.map((books, idx) =>
-              renderShelfRow(books, `shelf-${idx}`, handleShelfBookSelect)
+              renderShelfRow(
+                books,
+                `shelf-${idx}`,
+                handleShelfBookSelect,
+                favorites,
+                votedBookId
+              )
             )}
           />
         </div>
@@ -170,6 +210,20 @@ export function BookshelfTop() {
         onClose={handleCloseReview}
         onComplete={handleCompleteBook}
         actionLabel={modalState?.mode === "shelf" ? "閉じる" : undefined}
+        isFavorited={
+          modalState ? favorites.includes(modalState.book.id) : false
+        }
+        isVoted={modalState ? votedBookId === modalState.book.id : false}
+        onToggleFavorite={() =>
+          modalState && toggleFavorite(modalState.book.id)
+        }
+        onToggleVote={() => {
+          if (!modalState) return;
+          const voted = toggleVote(modalState.book.id);
+          if (voted) {
+            handleCompleteBook();
+          }
+        }}
       />
     </>
   );

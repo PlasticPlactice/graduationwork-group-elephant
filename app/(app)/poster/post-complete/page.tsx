@@ -1,7 +1,8 @@
 "use client";
 
-import Styles from "@/styles/app/account-create.module.css";
+import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function PostCompletePage() {
     return (
@@ -42,8 +43,12 @@ export default function PostCompletePage() {
 
             <p className={`font-bold text-center ${Styles.subColor} ${Styles.text12px}`}>過去の受賞作品、現在開催中のイベントはこちら ↓</p>
             <button type="button" onClick={() => window.location.href = "https://zoutohana.com/"} className={`w-full mb-5 ${Styles.barcodeScan__backButton}`} >像と花ファンサイトへ</button>
-            <button type="button" className={`w-full mb-5 ${Styles.barcodeScan__backButton}`} >もう１冊登録する</button>
-            <button type="button" className={`w-full`} >書評を確認する（マイページ）</button>
+            <Link href="barcode-scan" className="w-full block mb-5">
+                <button type="button" className={`w-full ${Styles.barcodeScan__backButton}`} >もう１冊登録する</button>
+            </Link>
+            <Link href="mypage" className="w-full block">
+                <button type="button" className={`w-full`} >書評を確認する（マイページ）</button>
+            </Link>
         </div>
     )
 }

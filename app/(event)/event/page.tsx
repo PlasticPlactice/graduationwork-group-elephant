@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { Pagination } from "@/components/ui/pagination";
+import { Suspense } from "react";
 
 export default function EventPage() {
   // 仮のイベントデータ（例として3件）
@@ -11,7 +14,7 @@ export default function EventPage() {
       daysLeft: 10,
       description: "投票期間中です！投票してみましょう！",
       buttonText: "投票する",
-      href: "/event/vote/4",
+      href: "/posts/bookshelf",
       isFinished: false,
     },
   ];
@@ -22,7 +25,7 @@ export default function EventPage() {
       daysLeft: "終了",
       description: "入選作品が決定しました！確認してみましょう！",
       buttonText: "確認する",
-      href: "/event/result/3",
+      href: "/posts/bookshelf",
       isFinished: true,
     },
     {
@@ -30,7 +33,7 @@ export default function EventPage() {
       daysLeft: "終了",
       description: "次回イベントもお楽しみに！",
       buttonText: "詳細を見る",
-      href: "/event/result/2",
+      href: "/posts/bookshelf",
       isFinished: true,
     },
     {
@@ -38,7 +41,7 @@ export default function EventPage() {
       daysLeft: "終了",
       description: "次回イベントもお楽しみに！",
       buttonText: "詳細を見る",
-      href: "/event/result/1",
+      href: "/posts/bookshelf",
       isFinished: true,
     },
   ];
@@ -62,7 +65,6 @@ export default function EventPage() {
         </h2>
 
         <div className="flex flex-col gap-6">
-          {/* イベントカードをループで表示 */}
           {activeEventList.map((event, idx) => (
             <EventCard
               key={idx}
@@ -96,7 +98,9 @@ export default function EventPage() {
         </div>
 
         {/* ページネーション */}
-        <Pagination totalPages={3} currentPage={1} />
+        <Suspense>
+          <Pagination totalPages={3} currentPage={1} />
+        </Suspense>
       </div>
     </div>
   );

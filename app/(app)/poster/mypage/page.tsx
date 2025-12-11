@@ -34,7 +34,7 @@ export default function MyPage() {
       badgeType: "red",
       excerpt:
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "投稿済み編集する",
+      buttonText: "投稿済み・編集する",
       buttonDisabled: false,
     },
     {
@@ -43,7 +43,7 @@ export default function MyPage() {
       badgeType: "blue",
       excerpt:
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "投稿済み編集不可",
+      buttonText: "投稿済み・編集不可",
       buttonDisabled: true,
     },
     {
@@ -202,14 +202,14 @@ export default function MyPage() {
                       }
                     }}
                     role="tab"
-                    aria-current={
-                      activeFilterTab === tab.key ? "tab" : undefined
-                    }
-                    className={`inline-block p-3 rounded-t-md ${
+                    aria-selected={activeFilterTab === tab.key}
+                    tabIndex={activeFilterTab === tab.key ? 0 : -1}
+                    className={`inline-block p-3 rounded-t-md font-medium ${
                       activeFilterTab === tab.key
-                        ? "-mb-px text-sky-600 bg-white border border-b-0 border-gray-400 rounded-t-md"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                        ? "-mb-px bg-white border border-b-0 border-gray-400 rounded-t-md"
+                        : "hover:bg-slate-100"
                     }`}
+                    style={{ color: "var(--color-text)" }}
                     data-key={tab.key}
                   >
                     {tab.label}
@@ -251,9 +251,14 @@ export default function MyPage() {
                       <button
                         className={`${
                           review.buttonDisabled
-                            ? "w-full bg-gray-200 text-gray-400 px-3 py-2 rounded-md font-bold"
+                            ? "w-full text-white px-3 py-2 rounded-md font-bold"
                             : "w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
                         }`}
+                        style={
+                          review.buttonDisabled
+                            ? { backgroundColor: "var(--color-sub)" }
+                            : {}
+                        }
                         disabled={review.buttonDisabled}
                       >
                         {review.buttonText}
@@ -265,30 +270,40 @@ export default function MyPage() {
             </div>
             {/* マイページ下部のメニュー（添付画像のコンテンツ） */}
             <div className="max-w-2xl mx-auto my-10">
-              <ul className="divide-y-2 divide-black bg-white overflow-hidden border-t-2 border-b-2 border-black">
-                <li>
+              <ul
+                className="divide-y-2 bg-white overflow-hidden border-t-2 border-b-2"
+                style={{
+                  borderColor: "var(--color-sub)",
+                  borderTopColor: "var(--color-sub)",
+                  borderBottomColor: "var(--color-sub)",
+                }}
+              >
+                <li style={{ borderColor: "var(--color-sub)" }}>
                   <a
                     href="/mypage/edit"
                     className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-sky-300"
+                    style={{ color: "var(--color-text)" }}
                     aria-label="プロフィールの編集へ"
                   >
                     プロフィールの編集
                   </a>
                 </li>
-                <li>
+                <li style={{ borderColor: "var(--color-sub)" }}>
                   <a
                     href="/mypage/password"
                     className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-sky-300"
+                    style={{ color: "var(--color-text)" }}
                     aria-label="パスワードの変更へ"
                   >
                     パスワードの変更
                   </a>
                 </li>
-                <li>
+                <li style={{ borderColor: "var(--color-sub)" }}>
                   <a
                     href="/account/delete"
                     className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
                     aria-label="退会手続きへ"
+                    style={{ color: "red" }}
                   >
                     退会する
                   </a>
