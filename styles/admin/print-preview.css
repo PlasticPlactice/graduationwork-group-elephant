@@ -1,0 +1,76 @@
+.preview-head{
+  font-size: var(--font-size-h1);
+  margin: 1rem 0 1rem 3rem;
+}
+.print-area{
+    background-image: repeating-linear-gradient(120deg, #ffb784, #ffb784 28px, transparent 28px, transparent 43px);
+    padding: 3rem;
+    width: 1048px;
+    height: 630px;
+    font-size:15px ;
+    margin: 0 2rem 0 3rem;
+}
+.card-area{
+    padding-top: 0.5rem;
+    background-color: #F7EDDA;
+    width: 50%;
+    height: auto;
+}
+#number{
+    margin-left: 0.5rem;
+}
+#book-review{
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--color-text);
+}
+#reviewer-section{
+    padding: 1rem;
+}
+#reviewer-introduction{
+    text-align: center;
+}
+#print-btn{
+  background-color: #7C7F7A;
+  font-size: var(--font-size-h1);
+  padding: 0 2rem;
+  margin: 2rem 0;
+}
+
+@media print {
+  @page { size: A4 landscape; }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+
+  .print-area {
+    position: absolute;
+    inset: 0;
+    width: 297mm;
+    height: 210mm;
+    margin: 0;
+    padding: 20mm; /* 必要なら調整 */
+    background-image: repeating-linear-gradient(
+      120deg,
+      #ffb784,
+      #ffb784 28px,
+      transparent 28px,
+      transparent 43px
+    ) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .card-area {
+    background-color: #F7EDDA !important;
+    width: 50%;
+    height: auto;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+

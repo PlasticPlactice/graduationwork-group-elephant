@@ -38,7 +38,7 @@ export default function Page() {
         setIsEditModalOpen(false);
     }
     const handledetail = () => {
-        router.push('/admin/home')
+        router.push('/admin/events-details')
     }
 
     return (
