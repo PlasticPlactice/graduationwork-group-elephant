@@ -18,12 +18,14 @@ export default function MyPage() {
       daysLeft: 10,
       description: "投稿可能期間中です！投稿してみましょう！",
       buttonText: "投稿へ",
+      href: "/poster/barcode-scan",
     },
     {
       title: "第2回 文庫Xイベント",
       daysLeft: 15,
       description: "投稿可能期間中です！投稿してみましょう！",
       buttonText: "投稿へ",
+      href: "/poster/barcode-scan",
     },
   ];
 
@@ -36,6 +38,7 @@ export default function MyPage() {
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
       buttonText: "投稿済み・編集する",
       buttonDisabled: false,
+      href: "/poster/edit",
     },
     {
       title: "色彩を持たない多崎つくると、彼の巡礼の年",
@@ -45,6 +48,7 @@ export default function MyPage() {
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
       buttonText: "投稿済み・編集不可",
       buttonDisabled: true,
+      href: undefined,
     },
     {
       title: "色彩を持たない多崎つくると、彼の巡礼の年",
@@ -54,6 +58,7 @@ export default function MyPage() {
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
       buttonText: "下書きの編集＆投稿",
       buttonDisabled: false,
+      href: "/poster/edit",
     },
   ];
 
@@ -144,7 +149,7 @@ export default function MyPage() {
                   daysLeft={event.daysLeft}
                   description={event.description}
                   buttonText={event.buttonText}
-                  href="/posts/bookshelf"
+                  href={event.href}
                 />
               </div>
             ))}
@@ -248,21 +253,21 @@ export default function MyPage() {
 
                     {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
                     <div className="mt-4">
-                      <button
-                        className={`${
-                          review.buttonDisabled
-                            ? "w-full text-white px-3 py-2 rounded-md font-bold"
-                            : "w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
-                        }`}
-                        style={
-                          review.buttonDisabled
-                            ? { backgroundColor: "var(--color-sub)" }
-                            : {}
-                        }
-                        disabled={review.buttonDisabled}
-                      >
-                        {review.buttonText}
-                      </button>
+                      {review.href ? (
+                        <Link href={review.href}>
+                          <button className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold">
+                            {review.buttonText}
+                          </button>
+                        </Link>
+                      ) : (
+                        <button
+                          className="w-full text-white px-3 py-2 rounded-md font-bold cursor-not-allowed"
+                          style={{ backgroundColor: "var(--color-sub)" }}
+                          disabled
+                        >
+                          {review.buttonText}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
