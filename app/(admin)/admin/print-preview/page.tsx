@@ -7,6 +7,17 @@ export default function Page() {
         window.print();
     }
 
+    const buttons = document.querySelectorAll(".color-btn");
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            // すべてのボタンから選択状態を外す
+            buttons.forEach(b => b.classList.remove("selected"));
+            // 押したボタンだけ選択
+            btn.classList.add("selected");
+        });
+    });
+
     return (
         <main className="flex">
             <div>
@@ -50,9 +61,42 @@ export default function Page() {
                 </div>
 
                 <h3 className="design-sub-head font-bold">柄のカラー</h3>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 mb-6">
                     <p className="pattern-color-pick rounded-full"></p>
                     <p className="main-color-text">ホワイト</p>
+                </div>
+
+                <h3 className="design-sub-head font-bold">フォントカラー</h3>
+                <div className="flex items-center gap-1 mb-4">
+                    <p className="font-color-text">現在:</p>
+                    <p className="pattern-color-pick rounded-full"></p>
+                </div>
+
+                <div>
+                    <p className="font-color-text">編集:</p>
+                    <div className="grid grid-cols-4 gap-4">
+                        <button className="color-btn selected rounded-full" id="btn-1-1"></button>
+                        <button className="color-btn rounded-full" id="btn-1-2"></button>
+                        <button className="color-btn rounded-full" id="btn-1-3"></button>
+                        <button className="color-btn rounded-full" id="btn-1-4"></button>
+
+                        <button className="color-btn rounded-full" id="btn-2-1"></button>
+                        <button className="color-btn rounded-full" id="btn-2-2"></button>
+                        <button className="color-btn rounded-full" id="btn-2-3"></button>
+                        <button className="color-btn rounded-full" id="btn-2-4"></button>
+
+                        <button className="color-btn rounded-full" id="btn-3-1"></button>
+                        <button className="color-btn rounded-full" id="btn-3-2"></button>
+                        <button className="color-btn rounded-full" id="btn-3-3"></button>
+                        <button className="color-btn rounded-full" id="btn-3-4"></button>
+
+                        <button className="color-btn rounded-full" id="btn-4-1"></button>
+                        <button className="color-btn rounded-full" id="btn-4-2"></button>
+                    </div>
+                </div>
+
+                <div className="flex justify-center m-auto">
+                    <button className="applicable-btn">適用</button>
                 </div>
             </div>
         </main>
