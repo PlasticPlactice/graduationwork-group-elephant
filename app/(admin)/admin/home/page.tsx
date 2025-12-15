@@ -57,7 +57,7 @@ export default function Page() {
                 </div>
             </div>
 
-            <div className='grid grid-cols-2 grid-rows-2 m-auto w-max gap-x-14 gap-y-10 mt-18'>
+            <div className='grid grid-cols-2 grid-rows-2 m-auto w-3/5 gap-x-14 gap-y-10 mt-10 mb-5'>
                 {/* お知らせ・寄贈管理 */}
                 <Link href="/admin/notice" className='flex p-2 shadow-md w-max admin-card'>
                     <div className='flex items-center justify-center w-auto mx-1'>
@@ -71,7 +71,7 @@ export default function Page() {
                 </Link>
 
                 {/* イベント管理 */}
-                <Link href="/admin/events" className='flex py-2 pl-2 shadow-md w-max admin-card'>
+                <Link href="/admin/events" className='flex py-2 pl-2 shadow-md w-max admin-card justify-self-end'>
                     <div className='flex items-center justify-center w-auto mx-1'>
                         <Icon icon="mdi:calendar" width="50" height="50"
                             className='p-1 rounded-full admin-icon' />
@@ -95,7 +95,7 @@ export default function Page() {
                 </Link>
 
                 {/* パスワード変更 */}
-                <Link href="#" className='flex py-2 pl-2 pr-5 shadow-md w-max admin-card'>
+                <Link href="#" className='flex py-2 pl-2 pr-5 shadow-md w-max admin-card  justify-self-end'>
                     <div className='flex items-center justify-center w-auto mx-1'>
                         <Icon icon="material-symbols:key" width="50" height="50"
                             className='p-1 rounded-full admin-icon' />
