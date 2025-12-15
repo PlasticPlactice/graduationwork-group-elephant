@@ -1,5 +1,6 @@
 "use client"
 import "@/styles/admin/print-preview.css"
+import { useEffect } from "react"
 
 export default function Page() {
     
@@ -7,16 +8,24 @@ export default function Page() {
         window.print();
     }
 
-    const buttons = document.querySelectorAll(".color-btn");
+    useEffect(() => {
+        const buttons = document.querySelectorAll(".color-btn");
 
-    buttons.forEach(btn => {
-        btn.addEventListener("click", () => {
-            // すべてのボタンから選択状態を外す
-            buttons.forEach(b => b.classList.remove("selected"));
-            // 押したボタンだけ選択
-            btn.classList.add("selected");
+        buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                // すべてのボタンから選択状態を外す
+                buttons.forEach(b => b.classList.remove("selected"));
+                // 押したボタンだけ選択
+                btn.classList.add("selected");
+            });
         });
-    });
+        // クリーンアップ
+        return () => {
+            buttons.forEach(btn => {
+                btn.removeEventListener("click", () => {});
+            });
+        };
+    }, []);
 
     return (
         <main className="flex">
