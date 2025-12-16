@@ -1,6 +1,5 @@
 "use client"
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import '@/styles/admin/home.css';
 import Link from "next/link";
@@ -9,12 +8,7 @@ import Link from "next/link";
 export default function Page() {
     const router = useRouter();
 
-    // ページタイトルを設定
-    useEffect(() => {
-        document.title = "ホーム - 管理者";
-    }, []);
-
-    const handledetail = () => {
+    const handleDetail = () => {
         router.push('/admin/events')
     }
     return (
@@ -50,10 +44,10 @@ export default function Page() {
             
                     <p className="event-date mt-5">イベント開催期間：2024年10月30日～2025年10月30日</p>
                     <p className="event-date">書評投稿期間：2024年10月30日～2025年10月30日</p>
-                    <p className="event-date event-data-now">一次審査期間：2024年10月30日～2025年10月30日</p>
+                    <p className="event-date event-date-now">一次審査期間：2024年10月30日～2025年10月30日</p>
                     <p className="event-date">二次審査期間：2024年10月30日～2025年10月30日</p>
 
-                    <button className="event-detail-btn mt-5" onClick={handledetail}>イベント詳細</button>
+                    <button className="event-detail-btn mt-5" onClick={handleDetail}>イベント詳細</button>
                 </div>
             </div>
 

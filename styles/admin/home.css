@@ -36,24 +36,24 @@
 }
 
 progress {
-  -webkit-appearance: none; /* プログレスバーのスタイルをリセット */
-  -moz-appearance: none; /* プログレスバーのスタイルをリセット */
-  background-color: var(--color-sub); /* プログレスバーの背景色/-moz- 用 */
+  -webkit-appearance: none; /* -webkit- 用: プログレスバーのスタイルをリセット */
+  -moz-appearance: none;    /* -moz- 用: プログレスバーのスタイルをリセット */
+  background-color: var(--color-sub); /* -moz- 用: プログレスバーの背景色 */
 }
 ::-webkit-progress-bar {
-  background-color: var(--color-sub); /* プログレスバーの背景色/-webkit- 用 */
+  background-color: var(--color-sub); /* -webkit- 用: プログレスバーの背景色 */
 }
 ::-webkit-progress-value {
-  background-color: var(--color-main); /* プログレスバーの進捗部分色/-webkit- 用 */
+  background-color: var(--color-main); /* -webkit- 用: プログレスバーの進捗部分色 */
 }
 ::-moz-progress-bar {
-  background-color: var(--color-main); /* プログレスバーの進捗部分色/-moz- 用 */
+  background-color: var(--color-main); /* -moz- 用: プログレスバーの進捗部分色 */
 }
 
 .event-date {
   font-size: var(--font-size-base);
 }
-.event-data-now{
+.event-date-now{
   color: var(--color-main);
   font-weight: bold;
 }

@@ -1,29 +1,21 @@
-"use client"
-import { AdminHeader } from "@/components/layout/admin-header";
 import "@/styles/globals.css";
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { Metadata } from "next";
+import AdminLayoutClient from "@/app/(admin)/admin/admin-layout-client";
+
+export const metadata: Metadata = {
+  title: "管理者",
+  description: "管理者ページ",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const isAdminTop = pathname === "/admin";
-
-  // デフォルトのタイトルを設定
-  useEffect(() => {
-    if (!document.title || document.title === "") {
-      document.title = "管理者";
-    }
-  }, []);
-
   return (
     <html lang="ja">
       <body className="antialiased min-h-screen flex flex-col">
-        {!isAdminTop && <AdminHeader />}
-        <main className="flex-1">{children}</main>
+        <AdminLayoutClient>{children}</AdminLayoutClient>
       </body>
     </html>
   );
