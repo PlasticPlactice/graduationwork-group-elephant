@@ -130,18 +130,16 @@ export function BookReviewModal({
     >
       <div
         ref={modalRef}
-        className="relative flex w-full max-w-md flex-col rounded-3xl bg-transparent px-6 py-8 sm:max-w-lg"
+        className="relative flex h-[90vh] w-full max-w-md flex-col rounded-3xl bg-white px-6 py-8 shadow-2xl sm:max-w-lg"
         onClick={(event) => event.stopPropagation()}
         tabIndex={-1}
       >
-        <div className="relative z-10">
-          <div className="h-[600px] overflow-y-auto bg-white px-6 py-6 text-base leading-relaxed text-slate-800 sm:h-[680px]">
+        <div className="relative z-10 flex h-full flex-col">
+          <div className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-6 py-6 text-base leading-relaxed text-slate-800">
             {book.review ?? "書評がまだ登録されていません。"}
           </div>
-        </div>
 
-        <div className="relative z-10 mt-6 flex flex-col gap-4">
-          <div className="flex flex-col gap-3">
+          <div className="mt-6 flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -193,25 +191,13 @@ export function BookReviewModal({
               </button>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={onComplete}
-                className="flex-[0.7] rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
-              >
-                {actionLabel}
-              </button>
-
-              <button
-                type="button"
-                ref={closeButtonRef}
-                onClick={onClose}
-                className="flex-[0.3] rounded-full border !border-gray-300 !bg-gray-100 px-4 py-3 text-sm font-semibold !text-gray-700 transition hover:!bg-gray-200 focus:outline-none focus-visible:ring-4 !focus-visible:ring-gray-200"
-                style={{ boxShadow: "none" }}
-              >
-                閉じる
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onComplete}
+              className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
+            >
+              {actionLabel}
+            </button>
           </div>
         </div>
       </div>
