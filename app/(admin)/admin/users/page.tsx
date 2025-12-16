@@ -243,7 +243,7 @@ export default function Page() {
                             </th>
                             <th className=''>
                                 <div className="flex items-center justify-center">
-                                    投票数<Icon icon="uil:arrow" rotate={1}></Icon>
+                                    投稿数<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
                         </tr>

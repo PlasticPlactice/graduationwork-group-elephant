@@ -1,14 +1,20 @@
 "use client"
 import "@/styles/admin/print-preview.css"
+import { useState } from "react"
 
 export default function Page() {
+    const [selectedButtonId, setSelectedButtonId] = useState<string>("btn-1-1");
     
     const handlePrint = () => {
         window.print();
     }
 
+    const handleColorBtnClick = (id: string) => {
+        setSelectedButtonId(id);
+    };
+
     return (
-        <main>
+        <main className="flex">
             <div>
                 <h2 className="preview-head">プレビュー</h2>
                 <section className="print-area">
@@ -34,12 +40,57 @@ export default function Page() {
                 </div>
             </div>
 
-            {/* <div>
-                <h2>デザイン情報</h2>
-                <h3>メインカラー</h3>
-                <p></p>
-                オレンジ
-            </div> */}
+            <div className="design-area w-full px-4 py-6">
+                <h2 className="design-head font-bold mb-3">デザイン情報</h2>
+
+                <h3 className="design-sub-head font-bold">メインカラー</h3>
+                <div className="flex items-center gap-1 mb-4">
+                    <p className="main-color-pick rounded-full"></p>
+                    <p className="main-color-text">オレンジ</p>
+                </div>
+
+                <h3 className="design-sub-head font-bold">柄</h3>
+                <div className="flex items-center gap-1 mb-4">
+                    <p className="pattern-pick rounded-full"></p>
+                    <p className="main-color-text">ストライプ</p>
+                </div>
+
+                <h3 className="design-sub-head font-bold">柄のカラー</h3>
+                <div className="flex items-center gap-1 mb-6">
+                    <p className="pattern-color-pick rounded-full"></p>
+                    <p className="main-color-text">ホワイト</p>
+                </div>
+
+                <h3 className="design-sub-head font-bold">フォントカラー</h3>
+                <div className="flex items-center gap-1 mb-4">
+                    <p className="font-color-text">現在:</p>
+                    <p className="pattern-color-pick rounded-full"></p>
+                </div>
+
+                <div>
+                    <p className="font-color-text">編集:</p>
+                    <div className="grid grid-cols-4 gap-4">
+                        {Array.from({ length: 4 }).map((row, rowIndex) =>
+                            Array.from({ length: rowIndex === 3 ? 2 : 4 }).map((col, colIndex) => {
+                                const id = `btn-${rowIndex + 1}-${colIndex + 1}`;
+                                const isSelected = selectedButtonId === id;
+                                return (
+                                    <button
+                                        key={id}
+                                        className={`color-btn rounded-full${isSelected ? " selected" : ""}`}
+                                        id={id}
+                                        onClick={() => handleColorBtnClick(id)}
+                                    ></button>
+                                );
+                            })
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex justify-center m-auto">
+                    <button className="applicable-btn">適用</button>
+                </div>
+            </div>
         </main>
     )
 }
