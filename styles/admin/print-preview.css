@@ -38,7 +38,7 @@
 
 .design-area{
   background-color: #F3F4F6;
-  border:1px solid #D5D5D5;
+  border: 1px solid #D5D5D5;
 }
 .design-head{
   font-size: 28px;
@@ -152,7 +152,7 @@
   body * {
     visibility: hidden;
   }
-  .design-area .design-area *{
+  .design-area, .design-area *{
     visibility: hidden;
     display: none ;
   }
