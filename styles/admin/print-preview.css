@@ -152,9 +152,9 @@
   body * {
     visibility: hidden;
   }
-  .design-area .design-area *{
+  .design-area, .design-area *{
     visibility: hidden;
-    display: none ;
+    display: none;
   }
 
   .print-area, .print-area * {

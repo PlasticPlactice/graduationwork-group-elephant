@@ -11,18 +11,19 @@ export default function Page() {
     useEffect(() => {
         const buttons = document.querySelectorAll(".color-btn");
 
+       const handleColorBtnClick = function (this: Element, event: Event) {
+            // すべてのボタンから選択状態を外す
+            buttons.forEach(b => b.classList.remove("selected"));
+            // 押したボタンだけ選択
+            this.classList.add("selected");
+        };
         buttons.forEach(btn => {
-            btn.addEventListener("click", () => {
-                // すべてのボタンから選択状態を外す
-                buttons.forEach(b => b.classList.remove("selected"));
-                // 押したボタンだけ選択
-                btn.classList.add("selected");
-            });
+            btn.addEventListener("click", handleColorBtnClick);
         });
         // クリーンアップ
         return () => {
             buttons.forEach(btn => {
-                btn.removeEventListener("click", () => {});
+                btn.removeEventListener("click", handleColorBtnClick);
             });
         };
     }, []);
@@ -84,23 +85,20 @@ export default function Page() {
                 <div>
                     <p className="font-color-text">編集:</p>
                     <div className="grid grid-cols-4 gap-4">
-                        <button className="color-btn selected rounded-full" id="btn-1-1"></button>
-                        <button className="color-btn rounded-full" id="btn-1-2"></button>
-                        <button className="color-btn rounded-full" id="btn-1-3"></button>
-                        <button className="color-btn rounded-full" id="btn-1-4"></button>
-
-                        <button className="color-btn rounded-full" id="btn-2-1"></button>
-                        <button className="color-btn rounded-full" id="btn-2-2"></button>
-                        <button className="color-btn rounded-full" id="btn-2-3"></button>
-                        <button className="color-btn rounded-full" id="btn-2-4"></button>
-
-                        <button className="color-btn rounded-full" id="btn-3-1"></button>
-                        <button className="color-btn rounded-full" id="btn-3-2"></button>
-                        <button className="color-btn rounded-full" id="btn-3-3"></button>
-                        <button className="color-btn rounded-full" id="btn-3-4"></button>
-
-                        <button className="color-btn rounded-full" id="btn-4-1"></button>
-                        <button className="color-btn rounded-full" id="btn-4-2"></button>
+                        {Array.from({ length: 4 }).map((row, rowIndex) =>
+                            Array.from({ length: rowIndex === 3 ? 2 : 4 }).map((col, colIndex) => {
+                                const id = `btn-${rowIndex + 1}-${colIndex + 1}`;
+                                // The first button is selected by default
+                                const isSelected = rowIndex === 0 && colIndex === 0;
+                                return (
+                                    <button
+                                        key={id}
+                                        className={`color-btn rounded-full${isSelected ? " selected" : ""}`}
+                                        id={id}
+                                    ></button>
+                                );
+                            })
+                        )}
                     </div>
                 </div>
 
