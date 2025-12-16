@@ -130,12 +130,12 @@ export function BookReviewModal({
     >
       <div
         ref={modalRef}
-        className="relative flex h-[90vh] w-full max-w-md flex-col rounded-3xl bg-white px-6 py-8 shadow-2xl sm:max-w-lg"
+        className="relative flex h-[90vh] w-full max-w-md flex-col rounded-3xl bg-white px-4 py-8 shadow-2xl sm:max-w-lg sm:px-6"
         onClick={(event) => event.stopPropagation()}
         tabIndex={-1}
       >
         <div className="relative z-10 flex h-full flex-col">
-          <div className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-6 py-6 text-base leading-relaxed text-slate-800">
+          <div className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
             {book.review ?? "書評がまだ登録されていません。"}
           </div>
 
