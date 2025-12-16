@@ -1,32 +1,17 @@
 "use client"
 import "@/styles/admin/print-preview.css"
-import { useEffect } from "react"
+import { useState } from "react"
 
 export default function Page() {
+    const [selectedButtonId, setSelectedButtonId] = useState<string>("btn-1-1");
     
     const handlePrint = () => {
         window.print();
     }
 
-    useEffect(() => {
-        const buttons = document.querySelectorAll(".color-btn");
-
-       const handleColorBtnClick = function (this: Element, event: Event) {
-            // すべてのボタンから選択状態を外す
-            buttons.forEach(b => b.classList.remove("selected"));
-            // 押したボタンだけ選択
-            this.classList.add("selected");
-        };
-        buttons.forEach(btn => {
-            btn.addEventListener("click", handleColorBtnClick);
-        });
-        // クリーンアップ
-        return () => {
-            buttons.forEach(btn => {
-                btn.removeEventListener("click", handleColorBtnClick);
-            });
-        };
-    }, []);
+    const handleColorBtnClick = (id: string) => {
+        setSelectedButtonId(id);
+    };
 
     return (
         <main className="flex">
@@ -88,13 +73,13 @@ export default function Page() {
                         {Array.from({ length: 4 }).map((row, rowIndex) =>
                             Array.from({ length: rowIndex === 3 ? 2 : 4 }).map((col, colIndex) => {
                                 const id = `btn-${rowIndex + 1}-${colIndex + 1}`;
-                                // The first button is selected by default
-                                const isSelected = rowIndex === 0 && colIndex === 0;
+                                const isSelected = selectedButtonId === id;
                                 return (
                                     <button
                                         key={id}
                                         className={`color-btn rounded-full${isSelected ? " selected" : ""}`}
                                         id={id}
+                                        onClick={() => handleColorBtnClick(id)}
                                     ></button>
                                 );
                             })
