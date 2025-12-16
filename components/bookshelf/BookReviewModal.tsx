@@ -104,7 +104,7 @@ export function BookReviewModal({
       : "!bg-white !text-red-500 !border-[rgba(239,68,68,0.3)] !shadow-none"
   }`;
 
-  const favoriteButtonClass = `flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
+  const favoriteButtonClass = `flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
     isFavorited ? "!text-yellow-400" : "!text-gray-400"
   }`;
 
@@ -176,7 +176,7 @@ export function BookReviewModal({
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
+                  className="h-7 w-7 sm:h-8 sm:w-8"
                   fill={isFavorited ? "currentColor" : "none"}
                   viewBox="0 0 24 24"
                   stroke="currentColor"
