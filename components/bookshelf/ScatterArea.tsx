@@ -3,7 +3,7 @@ import type { Book } from "@/components/bookshelf/bookData";
 import { BOOKS } from "@/components/bookshelf/bookData";
 import { ScatterBook } from "@/components/bookshelf/ScatterBook";
 
-const SCATTER_AREA_HEIGHT = 864; // enough vertical room for stacked scatter rows without overlap
+const SCATTER_AREA_HEIGHT = "90vh"; // viewport-based height for responsive layout
 const SCATTER_ROW_OFFSET = 60; // vertical spacing between stacked scatter rows in px
 
 export type ScatterEntry = {

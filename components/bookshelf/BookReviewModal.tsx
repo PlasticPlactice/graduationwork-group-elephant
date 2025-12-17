@@ -158,7 +158,7 @@ export function BookReviewModal({
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M9 14l2 2 4-4m6 2a9 9 0 11-18 0 9 0 0118 0z"
+                    d="M9 14l2 2 4-4m6 2a9 9 0 1 1 -18 0 9 9 0 0 1 18 0z"
                   />
                 </svg>
                 <span>{isVoted ? "投票済み" : "投票する"}</span>

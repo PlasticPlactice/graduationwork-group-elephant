@@ -22,13 +22,13 @@ export function BookshelfLayout({
         return (
           <div key={`shelf-${index}`} className="flex flex-col items-center">
             <div
-              className={`relative flex w-full items-end justify-center ${
-                isTopShelf ? "h-32" : "h-28"
-              } -mb-6`}
+              className={`relative z-10 flex w-full items-end justify-center ${
+                isTopShelf ? "h-36 sm:h-40 lg:h-44" : "h-32 sm:h-36 lg:h-40"
+              } -mb-4 sm:-mb-5`}
             >
               {shelfContents[index] ?? null}
             </div>
-            <div className="relative h-16 w-full overflow-visible">
+            <div className="relative z-0 h-16 w-full overflow-visible lg:h-20">
               <div className="absolute left-1/2 top-0 h-full w-[150%] -translate-x-1/2">
                 <Image
                   src="/bookshelf/Hondana-ita.png"

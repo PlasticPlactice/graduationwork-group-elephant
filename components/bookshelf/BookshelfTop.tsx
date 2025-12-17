@@ -13,7 +13,7 @@ import {
 
 const MAX_BOOKS_PER_SHELF = 8;
 const MAX_SHELVES = 3;
-const SHELF_SPACER_CLASS = "h-36 w-6 opacity-0";
+const SHELF_SPACER_CLASS = "h-32 w-6 opacity-0 sm:h-36 lg:h-40";
 
 const createEmptyShelves = () =>
   Array.from({ length: MAX_SHELVES }, () => [] as Book[]);
@@ -57,8 +57,8 @@ function renderShelfRow(
           <ShelfBook
             key={`${book.id}-${idx}`}
             book={book}
-            heightClass="h-36"
-            widthClass="w-10"
+            heightClass="h-32 sm:h-36 lg:h-40"
+            widthClass="w-9 sm:w-10 lg:w-12"
             onClick={onBookSelect ? () => onBookSelect(book) : undefined}
             bottomColor={bottomColor}
           />
@@ -164,18 +164,12 @@ export function BookshelfTop() {
   return (
     <>
       <div className="mb-6 flex flex-col items-center gap-3 text-center">
-        <button
-          type="button"
-          className="inline-flex w-full max-w-xs items-center justify-center rounded-full border border-pink-500 bg-white px-8 py-3 text-sm font-semibold text-pink-500 shadow-md shadow-pink-100"
-        >
-          すべてのイベント
-        </button>
         <h1 className="text-2xl font-bold text-slate-900">
           第〇回文庫Xイベント
         </h1>
       </div>
       <div className="relative mx-auto w-full max-w-md sm:max-w-4xl">
-        <div className="relative h-[70vh] min-h-[620px] w-full overflow-hidden sm:h-[80vh] sm:min-h-[820px]">
+        <div className="relative h-[70vh] w-full overflow-hidden">
           <Image
             src="/bookshelf/Hondana-haikei.png"
             alt="本棚背景"
