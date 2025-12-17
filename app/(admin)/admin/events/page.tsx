@@ -12,6 +12,59 @@ export default function Page() {
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+    const eventNowData = [
+        {
+            id: 1, title: "第5回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
+            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
+            public_flag:"true"
+        },
+        {
+            id: 2, title: "第6回文庫X", detail: "大人気イベント文庫Xです。", status: "2", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
+            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
+            public_flag:"true"
+        }
+    ]
+
+    const eventEndData = [
+        {
+            id: 1, title: "第3回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
+            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
+            public_flag:"true"
+        },
+        {
+            id: 2, title: "第4回文庫X", detail: "大人気イベント文庫Xです。", status: "0", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
+            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
+            public_flag:"true"
+        }
+    ]
+
+    {/* 18, 39,61,83*/}
+    const getProgressValue = (status: string) => {
+        const statusMap: { [key: string]: number } = {
+            '0': 18,
+            '1': 39,
+            '2': 61,
+            '3': 83
+        };
+        return statusMap[status] || 0;
+    };
+
+    const getCircleClassName = (index: number, status: string) => {
+        const statusNumber = parseInt(status);
+        if (index <= statusNumber) {
+            return 'event-condition-circle-now';
+        }
+        return 'event-condition-circle-future';
+    };
+
+    const getArrowIcon = (index: number, status: string) => {
+        const statusNumber = parseInt(status);
+        if (statusNumber === index) {
+            return <Icon icon="bxs:up-arrow" rotate={2} className='up-arrow m-auto'></Icon>;
+        }
+        return <Icon icon='material-symbols:circle' className='m-auto text-white'></Icon>;
+    };
+
     // モーダルが開いている時に背景のスクロールを防ぐ
     useEffect(() => {
         if (isRegisterModalOpen) {
@@ -51,281 +104,199 @@ export default function Page() {
             />
             <h1 className='events-headline text-center'>開催中のイベント</h1>
 
-            <section className='w-11/12 now-event-section m-auto p-4'>
-                <div className='flex items-center justify-between pb-3 event-title-section'>
-                    <div className='flex items-center'>
+            {eventNowData.map((now) => (
+                <section key={now.id} className='w-11/12 now-event-section m-auto p-4 mb-4'>
+                    <div className='flex items-center justify-between pb-3 event-title-section'>
+                        <div className='flex items-center'>
+                            <p className='font-bold event-title'>{ now.title}</p>
+                            <p className='ml-3'>{now.start_period} ~ { now.end_period}</p>
+                        </div>
+                        <div className='flex items-center mr-10'>
+                            <p>イベントの公開</p>
+                            <label className="toggle-switch ml-7">
+                                <input 
+                                    type="checkbox" 
+                                    id={`myToggle-${now.id}`}
+                                    checked={now.public_flag === "true"}
+                                    readOnly
+                                />
+                                
+                                <span className="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <p className='now-event-condition my-5'>現在のイベント状況</p>
+                    <div className='flex justify-between w-2/3 m-auto'>
+                        <p className='w-10'>{getArrowIcon(0, now.status)}</p>
+                        <p className='w-10'>{getArrowIcon(1, now.status)}</p>
+                        <p className='w-10'>{getArrowIcon(2, now.status)}</p>
+                        <p className='w-10'>{getArrowIcon(3, now.status)}</p>
+                    </div>
+                    <div className='flex justify-between w-2/3 m-auto'>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(0, now.status)}></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(1, now.status)}></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(2, now.status)}></Icon></p>
+                        <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(3, now.status)}></Icon></p>
+                    </div>
+                    <div className='flex justify-cent\er mt-2'>
+                        {/* 18, 39,61,83*/}
+                        <progress max={100} value={getProgressValue(now.status)} className='w-full h-0.5'></progress>
+                    </div>
+                    <div className='flex justify-between w-2/3 m-auto'>
+                        <span>開催前</span>
+                        <span>一次審査</span>
+                        <span>二次審査</span>
+                        <span>終了済</span>
+                    </div>
+
+                    <div className='flex items-center justify-between'>
+                        <h2 className='font-bold event-data-headline'>イベント情報</h2>
                         <AdminButton
-                            label='第1回文庫X'
-                            className='font-bold event-btn'
+                            label='編集'
+                            type="button" 
+                            className='edit_btn'
+                            onClick={handleEdit}
+                        />
+                    </div>
+
+                <div className="schedule-table">
+                    <div className="row ">
+                        <div className="label text-center">テーマタイトル</div>
+                            <div className="content">{now.title}</div>
+                    </div>
+
+                    <div className="row">
+                        <div className="label text-center">開始日</div>
+                            <div className="content">{now.start_period}</div>
+                    </div>
+
+                    <div className="row">
+                        <div className="label text-center">書評投稿期間</div>
+                        <div className="content">{now.first_voting_start_period} - {now.first_voting_end_period}</div>
+                    </div>
+
+                    <div className="row">
+                        <div className="label text-center">1次審査期間</div>
+                            <div className="content">{now.first_voting_end_period} - { now.second_voting_start_period}</div>
+                    </div>
+
+                    <div className="row">
+                        <div className="label text-center">2次審査期間</div>
+                            <div className="content">{now.second_voting_start_period} - {now.second_voting_end_period}</div>
+                    </div>
+
+                    <div className="row">
+                        <div className="label large text-center">備考</div>
+                            <div className="content large">{now.detail}</div>
+                    </div>
+                    </div>
+                    <div className='flex justify-center mt-3'>
+                        <AdminButton
+                            label='書評を見る'
+                            className='detail-btn'
                             onClick={handledetail}
                         />
-                        <p className='ml-3'>2022-10-01 ~ 2023-10-01</p>
                     </div>
-                    <div className='flex items-center mr-10'>
-                        <p>イベントの公開</p>
-                        <label className="toggle-switch ml-7">
-                            <input type="checkbox" id="myToggle"/>
-                            
-                            <span className="slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <p className='now-event-condition my-5'>現在のイベント状況</p>
-                <div className='flex justify-between w-2/3 m-auto'>
-                    <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
-                    <p className='w-10'><Icon icon="bxs:up-arrow" rotate={2} className='up-arrow m-auto'></Icon></p>
-                    <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
-                    <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
-                </div>
-                <div className='flex justify-between w-2/3 m-auto'>
-                    <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                    <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                    <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-future'></Icon></p>
-                    <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-future'></Icon></p>
-                </div>
-                <div className='flex justify-center mt-2'>
-                    <progress max={100} value={40} className='w-full h-0.5'></progress>
-                </div>
-                <div className='flex justify-between w-2/3 m-auto'>
-                    <span>開催前</span>
-                    <span>一次審査</span>
-                    <span>二次審査</span>
-                    <span>終了済</span>
-                </div>
-
-                <div className='flex items-center justify-between'>
-                    <h2 className='font-bold event-data-headline'>イベント情報</h2>
-                    <AdminButton
-                        label='編集'
-                        type="button" 
-                        className='edit_btn'
-                        onClick={handleEdit}
-                    />
-                </div>
-
-            <div className="schedule-table">
-                <div className="row ">
-                    <div className="label text-center">テーマタイトル</div>
-                    <div className="content">第1回文庫X</div>
-                </div>
-
-                <div className="row">
-                    <div className="label text-center">開始日</div>
-                    <div className="content">2024年10月30日 ～ 2025年10月30日</div>
-                </div>
-
-                <div className="row">
-                    <div className="label text-center">書評投稿期間</div>
-                    <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
-                </div>
-
-                <div className="row">
-                    <div className="label text-center">1次審査期間</div>
-                    <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
-                </div>
-
-                <div className="row">
-                    <div className="label text-center">2次審査期間</div>
-                    <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
-                </div>
-
-                <div className="row">
-                    <div className="label large text-center">備考</div>
-                    <div className="content large"></div>
-                </div>
-            </div>
-            </section>
+                </section>
+            ))}
 
             <h1 className='events-headline text-center'>終了済のイベント</h1>
 
-            <details className='w-11/12 m-auto p-4 end-event-accordion'>
-                <summary className='flex items-center justify-between'>
-                    <div className='summary_title'>
-                        <h2 className='font-bold'>第0回文庫X</h2>
-                        <p>2022-10-01 ~ 2023-10-01</p>
-                    </div>
+            {eventEndData.map((end) => (
+                <details key={end.id} className='w-11/12 m-auto p-4 end-event-accordion'>
+                    <summary className='flex items-center justify-between'>
+                        <div className='summary_title'>
+                            <h2 className='font-bold'>{end.title}</h2>
+                            <p>{end.start_period} ~ {end.end_period}</p>
+                        </div>
                         <Icon icon="ep:arrow-up" rotate={2} width={40} className='icon'></Icon>
-                </summary>
-                <section className='w-11/12 end-event-section m-auto p-4'>
-                    <div className='flex items-center justify-between pb-3 event-title-section'>
-                        <div className='flex items-center'>
-                            <AdminButton
-                                label='第0回文庫X'
-                                className='font-bold event-btn'
-                                onClick={handledetail}
-                            />
-                            <p className='ml-3'>2022-10-01 ~ 2023-10-01</p>
-                        </div>
-                        <div className='flex items-center mr-10'>
-                            <p>イベントの公開</p>
-                            <label className="toggle-switch ml-7">
-                                <input type="checkbox" id="myToggle"/>
+                    </summary>
+                    <section className='w-11/12 end-event-section m-auto p-4'>
+                        <div className='flex items-center justify-between pb-3 event-title-section'>
+                            <div className='flex items-center mr-10'>
+                                <p>イベントの公開</p>
+                                <label className="toggle-switch ml-7">
+                                    <input 
+                                        type="checkbox" 
+                                        id={`myToggle-${end.id}`}
+                                        checked={end.public_flag === "true"}
+                                        readOnly
+                                    />
                                 
-                                <span className="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <p className='now-event-condition my-5'>現在のイベント状況</p>
-                    <div className='flex justify-between w-2/3 m-auto'>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
-                        <p className='w-10'><Icon icon="bxs:up-arrow" rotate={2} className='up-arrow m-auto'></Icon></p>
-                    </div>
-                    <div className='flex justify-between w-2/3 m-auto'>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                    </div>
-                    <div className='flex justify-center mt-2'>
-                        <progress max={100} value={100} className='w-full h-0.5'></progress>
-                    </div>
-                    <div className='flex justify-between w-2/3 m-auto'>
-                        <span>開催前</span>
-                        <span>一次審査</span>
-                        <span>二次審査</span>
-                        <span>終了済</span>
-                    </div>
-
-                    <div className='flex items-center justify-between'>
-                        <h2 className='font-bold event-data-headline'>イベント情報</h2>
-                        <AdminButton
-                            label='編集'
-                            type="button" 
-                            className='edit_btn'
-                        />
-                    </div>
-
-                    <div className="schedule-table">
-                        <div className="row ">
-                            <div className="label text-center">テーマタイトル</div>
-                            <div className="content">第1回文庫X</div>
+                                    <span className="slider"></span>
+                                </label>
+                            </div>
                         </div>
 
-                        <div className="row">
-                            <div className="label text-center">開始日</div>
-                            <div className="content">2024年10月30日 ～ 2025年10月30日</div>
+                        <p className='now-event-condition my-5'>現在のイベント状況</p>
+                        <div className='flex justify-between w-2/3 m-auto'>
+                            <p className='w-10'>{getArrowIcon(0, end.status)}</p>
+                            <p className='w-10'>{getArrowIcon(1, end.status)}</p>
+                            <p className='w-10'>{getArrowIcon(2, end.status)}</p>
+                            <p className='w-10'>{getArrowIcon(3, end.status)}</p>
+                        </div>
+                        <div className='flex justify-between w-2/3 m-auto'>
+                            <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(0, end.status)}></Icon></p>
+                            <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(1, end.status)}></Icon></p>
+                            <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(2, end.status)}></Icon></p>
+                            <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(3, end.status)}></Icon></p>
+                        </div>
+                        <div className='flex justify-center mt-2'>
+                            <progress max={100} value={getProgressValue(end.status)} className='w-full h-0.5'></progress>
+                        </div>
+                        <div className='flex justify-between w-2/3 m-auto'>
+                            <span>開催前</span>
+                            <span>一次審査</span>
+                            <span>二次審査</span>
+                            <span>終了済</span>
                         </div>
 
-                        <div className="row">
-                            <div className="label text-center">書評投稿期間</div>
-                            <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
-                        </div>
-
-                        <div className="row">
-                            <div className="label text-center">1次審査期間</div>
-                            <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
-                        </div>
-
-                        <div className="row">
-                            <div className="label text-center">2次審査期間</div>
-                            <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
-                        </div>
-
-                        <div className="row">
-                            <div className="label large text-center">備考</div>
-                            <div className="content large"></div>
-                        </div>
-                    </div>
-                </section>
-            </details>
-
-            <details className='w-11/12 m-auto p-4 end-event-accordion'>
-                <summary className='flex items-center justify-between'>
-                    <div className='summary_title'>
-                        <h2 className='font-bold'>第0回文庫X</h2>
-                        <p>2022-10-01 ~ 2023-10-01</p>
-                    </div>
-                        <Icon icon="ep:arrow-up" rotate={2} width={40} className='icon'></Icon>
-                </summary>
-                <section className='w-11/12 end-event-section m-auto p-4'>
-                    <div className='flex items-center justify-between pb-3 event-title-section'>
-                        <div className='flex items-center'>
+                        <div className='flex items-center justify-between'>
+                            <h2 className='font-bold event-data-headline'>イベント情報</h2>
                             <AdminButton
-                                label='第0回文庫X'
-                                className='font-bold event-btn'
-                                onClick={handledetail}
+                                label='編集'
+                                type="button"
+                                className='edit_btn'
                             />
-                            <p className='ml-3'>2022-10-01 ~ 2023-10-01</p>
-                        </div>
-                        <div className='flex items-center mr-10'>
-                            <p>イベントの公開</p>
-                            <label className="toggle-switch ml-7">
-                                <input type="checkbox" id="myToggle"/>
-                                
-                                <span className="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <p className='now-event-condition my-5'>現在のイベント状況</p>
-                    <div className='flex justify-between w-2/3 m-auto'>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='m-auto text-white'></Icon></p>
-                        <p className='w-10'><Icon icon="bxs:up-arrow" rotate={2} className='up-arrow m-auto'></Icon></p>
-                    </div>
-                    <div className='flex justify-between w-2/3 m-auto'>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                        <p className='w-10'><Icon icon='material-symbols:circle' className='event-condition-circle-now'></Icon></p>
-                    </div>
-                    <div className='flex justify-center mt-2'>
-                        <progress max={100} value={100} className='w-full h-0.5'></progress>
-                    </div>
-                    <div className='flex justify-between w-2/3 m-auto'>
-                        <span>開催前</span>
-                        <span>一次審査</span>
-                        <span>二次審査</span>
-                        <span>終了済</span>
-                    </div>
-
-                    <div className='flex items-center justify-between'>
-                        <h2 className='font-bold event-data-headline'>イベント情報</h2>
-                        <AdminButton
-                            label='編集'
-                            type="button" 
-                            className='edit_btn'
-                        />
-                    </div>
-
-                    <div className="schedule-table">
-                        <div className="row ">
-                            <div className="label text-center">テーマタイトル</div>
-                            <div className="content">第1回文庫X</div>
                         </div>
 
-                        <div className="row">
-                            <div className="label text-center">開始日</div>
-                            <div className="content">2024年10月30日 ～ 2025年10月30日</div>
-                        </div>
+                        <div className="schedule-table">
+                            <div className="row ">
+                                <div className="label text-center">テーマタイトル</div>
+                                <div className="content">{end.title}</div>
+                            </div>
 
-                        <div className="row">
-                            <div className="label text-center">書評投稿期間</div>
-                            <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
-                        </div>
+                            <div className="row">
+                                <div className="label text-center">開始日</div>
+                                <div className="content">{end.start_period}</div>
+                            </div>
 
-                        <div className="row">
-                            <div className="label text-center">1次審査期間</div>
-                            <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
-                        </div>
+                            <div className="row">
+                                <div className="label text-center">書評投稿期間</div>
+                                <div className="content">{end.first_voting_start_period} - {end.first_voting_end_period}</div>
+                            </div>
 
-                        <div className="row">
-                            <div className="label text-center">2次審査期間</div>
-                            <div className="content">20xx年xx月xx日 - 20xx年xx月xx日</div>
-                        </div>
+                            <div className="row">
+                                <div className="label text-center">1次審査期間</div>
+                                <div className="content">{end.first_voting_end_period} - {end.second_voting_start_period}</div>
+                            </div>
 
-                        <div className="row">
-                            <div className="label large text-center">備考</div>
-                            <div className="content large"></div>
+                            <div className="row">
+                                <div className="label text-center">2次審査期間</div>
+                                <div className="content">{end.second_voting_start_period} - {end.second_voting_end_period}</div>
+                            </div>
+
+                            <div className="row">
+                                <div className="label large text-center">備考</div>
+                                <div className="content large">{end.detail}</div>
+                            </div>
                         </div>
-                    </div>
-                </section>
-            </details>
+                    </section>
+                </details>
+            ))}
+
+            
 
             {/* モーダル */}
             <EventRegisterModal isOpen={isRegisterModalOpen} onClose={closeModal} />
