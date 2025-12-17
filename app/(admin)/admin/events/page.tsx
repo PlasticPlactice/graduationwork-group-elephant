@@ -12,33 +12,32 @@ export default function Page() {
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-    const eventNowData = [
+    const [eventNowData, setEventNowData] = useState([
         {
             id: 1, title: "第5回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
             first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag:"true"
+            public_flag: "true"
         },
         {
             id: 2, title: "第6回文庫X", detail: "大人気イベント文庫Xです。", status: "2", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
             first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag:"true"
+            public_flag: "true"
         }
-    ]
+    ]);
 
-    const eventEndData = [
+    const [eventEndData, setEventEndData] = useState([
         {
             id: 1, title: "第3回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
             first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag:"true"
+            public_flag: "true"
         },
         {
             id: 2, title: "第4回文庫X", detail: "大人気イベント文庫Xです。", status: "0", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
             first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag:"true"
+            public_flag: "true"
         }
-    ]
+    ]);
 
-    {/* 18, 39,61,83*/}
     const getProgressValue = (status: string) => {
         const statusMap: { [key: string]: number } = {
             '0': 18,
@@ -64,6 +63,23 @@ export default function Page() {
         }
         return <Icon icon='material-symbols:circle' className='m-auto text-white'></Icon>;
     };
+
+    const handleToggleNowEvent = (id: number) => {
+        setEventNowData(prev => prev.map(event => 
+            event.id === id 
+                ? { ...event, public_flag: event.public_flag === "true" ? "false" : "true" }
+                : event
+        ));
+    };
+
+    const handleToggleEndEvent = (id: number) => {
+        setEventEndData(prev => prev.map(event => 
+            event.id === id 
+                ? { ...event, public_flag: event.public_flag === "true" ? "false" : "true" }
+                : event
+        ));
+    };
+
 
     // モーダルが開いている時に背景のスクロールを防ぐ
     useEffect(() => {
@@ -118,7 +134,8 @@ export default function Page() {
                                     type="checkbox" 
                                     id={`myToggle-${now.id}`}
                                     checked={now.public_flag === "true"}
-                                    readOnly
+                                    onChange={() => handleToggleNowEvent(now.id)}
+                                    aria-label='イベントの公開トグル'
                                 />
                                 
                                 <span className="slider"></span>
@@ -139,8 +156,7 @@ export default function Page() {
                         <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(2, now.status)}></Icon></p>
                         <p className='w-10'><Icon icon='material-symbols:circle' className={getCircleClassName(3, now.status)}></Icon></p>
                     </div>
-                    <div className='flex justify-cent\er mt-2'>
-                        {/* 18, 39,61,83*/}
+                    <div className='flex justify-center mt-2'>
                         <progress max={100} value={getProgressValue(now.status)} className='w-full h-0.5'></progress>
                     </div>
                     <div className='flex justify-between w-2/3 m-auto'>
@@ -221,7 +237,8 @@ export default function Page() {
                                         type="checkbox" 
                                         id={`myToggle-${end.id}`}
                                         checked={end.public_flag === "true"}
-                                        readOnly
+                                        onChange={() => handleToggleEndEvent(end.id)}
+                                        aria-label='イベントの公開トグル'
                                     />
                                 
                                     <span className="slider"></span>
@@ -258,6 +275,7 @@ export default function Page() {
                                 label='編集'
                                 type="button"
                                 className='edit_btn'
+                                onClick={handleEdit}
                             />
                         </div>
 
@@ -296,7 +314,6 @@ export default function Page() {
                 </details>
             ))}
 
-            
 
             {/* モーダル */}
             <EventRegisterModal isOpen={isRegisterModalOpen} onClose={closeModal} />
