@@ -32,51 +32,58 @@ export default function Page() {
     return (
         <main className="notice-container">
             {/*---------------------------
+            お知らせ登録ボタン
+            ---------------------------*/}
+            <AdminButton
+                label="お知らせ登録"
+                type="button"
+                className="register-btn ml-8 mt-5"
+            />
+            {/*---------------------------
                 検索ボックス
                ---------------------------*/}
-            <div className="flex px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-area">
-                
-                <div className="input-group">
-                    <p>タイトル</p>
-                    <Textbox 
-                        size="lg" 
-                        className="custom-input-full"
-                    />
-                </div>
-
-                <div className="ml-5 input-group">
-                    <p>公開期間</p>
-                    <div className="flex items-center">
+            <details className="px-5 pt-3 pb-3 mx-8 my-6 search-accordion"> 
+                <summary className='flex items-center justify-between'>
+                    <p>検索ボックス</p>
+                    <Icon icon="ep:arrow-up" rotate={2} width={20} className='icon'></Icon>
+                </summary>
+                <section>
+                    <div className="input-group">
+                        <p>タイトル</p>
                         <Textbox 
-                            type="date"
-                            className="custom-input"
-                        />
-                        <p className="items-center justify-center px-2">ー</p>
-                        <Textbox 
-                            type="date"
-                            className="custom-input"
+                            size="lg" 
+                            className="custom-input-full"
                         />
                     </div>
-                </div>
 
-                <AdminButton
-                    label="検索" 
-                    type="submit" 
-                    icon="mdi:search"
-                    iconPosition="left"
-                    className='self-end ml-5 search-btn'
-                />
-            </div>
+                    <div className=" input-group">
+                        <p>公開期間</p>
+                        <div className="flex justify-between items-center">
+                            <Textbox 
+                                type="date"
+                                className="custom-input"
+                            />
+                            <p className="items-center justify-center px-2">ー</p>
+                            <Textbox 
+                                type="date"
+                                className="custom-input"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <AdminButton
+                            label="検索" 
+                            type="submit" 
+                            icon="mdi:search"
+                            iconPosition="left"
+                            className='search-btn mt-5'
+                            />
+                    </div>
+                </section>
+            </details>
 
             <div className="flex justify-between mx-8">
-                {/*---------------------------
-                お知らせ登録ボタン
-               ---------------------------*/}
-                <AdminButton
-                    label="お知らせ登録"
-                    type="button"
-                    className="register-btn"
-                />
                 {/*---------------------------
                 ステータス変更ボタン
                ---------------------------*/}
