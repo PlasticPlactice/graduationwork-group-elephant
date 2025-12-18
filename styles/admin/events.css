@@ -6,7 +6,7 @@
     font-size: var(--font-size-h1);
     margin: 1.5rem 0 1.5rem 0;
 }
-.event-btn{
+.event-title{
     width: 10rem;
     font-size: var(--page-padding-lg);
 }
@@ -171,6 +171,11 @@ summary {
 }
 details[open] .icon {
   transform: rotate(180deg);
+}
+.detail-btn{
+  font-size: var(--font-size-h1);
+  width: 10rem;
+  font-weight: bold;
 }
 
 .end-event-accordion {
