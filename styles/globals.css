@@ -108,6 +108,10 @@ select:focus,
   /* outline-offset: px; */
 }
 
+input[type="radio"] {
+  outline: none;
+}
+
 /* Buttons */
 button,
 .btn {

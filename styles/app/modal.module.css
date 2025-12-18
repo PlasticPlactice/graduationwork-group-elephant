@@ -5,11 +5,29 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modalOverlayOpen {
+  opacity: 1;
 }
 
 .modalContent {
   background: white;
-  padding: 20px;
   border-radius: 12px;
+  padding: 20px;
   width: 90%;
+
+  transform: translateY(20px) scale(0.98);
+  opacity: 0;
+
+  transition:
+    transform 0.35s ease,
+    opacity 0.35s ease;
+}
+
+.modalContentOpen {
+  transform: translateY(0) scale(1);
+  opacity: 1;
 }
