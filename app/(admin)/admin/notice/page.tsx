@@ -5,14 +5,18 @@ import Textbox from '@/components/ui/admin-textbox';
 import AdminButton from '@/components/ui/admin-button';
 import "@/styles/admin/notice.css"; // CSSファイルをインポート
 import { Icon } from "@iconify/react";
+import Link from "next/link";
 
 export default function Page() {
     // 3. 選択状態を管理するstate (初期値は 'public')
     const [selectedStatus, setSelectedStatus] = useState<string>("public");
     const [currentPage, setCurrentPage] = useState<number>(1);
 
+    const [selectedTab, setSelectedTab] = useState<string>("notice");
+    
     // ボタンの定義
     const statusButtons = [
+        { id: "all", label: "すべて" },
         { id: "draft", label: "下書き" },
         { id: "private", label: "非公開" },
         { id: "public", label: "公開中" },
@@ -83,11 +87,30 @@ export default function Page() {
                 </section>
             </details>
 
-            <div className="flex justify-between mx-8">
+
+            <div>
+                {/*---------------------------
+                お知らせ・寄贈タブ
+               ---------------------------*/}
+                <div className="flex mx-8 mt-8 border-b tab">
+                    <button 
+                        onClick={() => setSelectedTab("notice")}
+                        className={`pb-3 mr-7 text-h1 notice-tab-link ${selectedTab === "notice" ? "active" : ""}`}
+                    >
+                    お知らせ
+                    </button>
+                    <button 
+                        onClick={() => setSelectedTab("donation")}
+                        className={`pb-3 notice-tab-link ${selectedTab === "donation" ? "active" : ""}`}
+                    >
+                     寄贈
+                    </button>
+                </div>
+                <div className="flex justify-end mx-8">
                 {/*---------------------------
                 ステータス変更ボタン
                ---------------------------*/}
-                <div className="flex items-center justify-center px-3 status-wrapper">
+                <div className="flex items-center justify-center px-3 status-wrapper py-1 mt-5">
                     {statusButtons.map((btn) => {
                         const isActive = selectedStatus === btn.id;
                         return (
@@ -103,18 +126,9 @@ export default function Page() {
                     })}
                 </div>
             </div>
-
-            <div>
-                {/*---------------------------
-                お知らせ・寄贈タブ
-               ---------------------------*/}
-                <div className="flex mx-8 mt-8 border-b tab">
-                    <p className="pb-3 border-b-2 notice-tab mr-7 text-h1">お知らせ</p>
-                    <p className="">寄贈</p>
-                </div>
             </div>
 
-            <div className="mx-8 mt-8">
+            <div className="mx-8 mt-5">
                 <table className="w-full notice-table">
                     <thead className="table-head">
                         <tr>
