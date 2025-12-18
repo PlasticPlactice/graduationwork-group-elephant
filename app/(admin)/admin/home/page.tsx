@@ -84,52 +84,52 @@ export default function Page() {
                 </div>
             </div>
 
-            <div className='grid grid-cols-2 grid-rows-2 m-auto w-3/5 gap-x-14 gap-y-10 mt-3 mb-3'>
+            <div className='grid grid-cols-2 grid-rows-2 m-auto w-3/5 gap-x-14 gap-y-5 mt-10 mb-3'>
                 {/* お知らせ・寄贈管理 */}
-                <Link href="/admin/notice" className='flex p-2 shadow-md w-max admin-card'>
+                <Link href="/admin/notice" className='flex p-2 shadow-md admin-card'>
                     <div className='flex items-center justify-center w-auto mx-1'>
                         <Icon icon="mdi:megaphone" width="50" height="50"
                             className='rounded-full admin-icon' />
                     </div>
                     <div>
-                        <h2 className='mb-1 text-left card-title'>お知らせ・寄贈管理</h2>
-                        <p className='mb-1 card-description'>お知らせの一覧・投稿・編集</p>
+                        <h2 className='mb-1 ml-6 text-left card-title'>お知らせ・寄贈管理</h2>
+                        <p className='mb-1 ml-6 card-description'>お知らせの一覧・投稿・編集</p>
                     </div>
                 </Link>
 
                 {/* イベント管理 */}
-                <Link href="/admin/events" className='flex py-2 pl-2 shadow-md w-max admin-card justify-self-end'>
+                <Link href="/admin/events" className='flex py-2 pl-2 shadow-md admin-card'>
                     <div className='flex items-center justify-center w-auto mx-1'>
                         <Icon icon="mdi:calendar" width="50" height="50"
                             className='p-1 rounded-full admin-icon' />
                     </div>
-                    <div className='ml-4 mr-16'>
-                        <h2 className='mb-1 text-left card-title'>イベント管理</h2>
-                        <p className='mb-1 card-description'>イベントの作成・編集</p>
+                    <div>
+                        <h2 className='mb-1 ml-6 text-left card-title'>イベント管理</h2>
+                        <p className='mb-1 ml-6 card-description'>イベントの作成・編集</p>
                     </div>
                 </Link>
 
                 {/* ユーザー管理 */}
-                <Link href="/admin/users" className='flex py-2 pl-2 pr-5 shadow-md w-max admin-card'>
+                <Link href="/admin/users" className='flex py-2 pl-2 pr-5 shadow-md admin-card'>
                     <div className='flex items-center justify-center w-auto mx-1'>
                         <Icon icon="mdi:people" width="50" height="50"
                             className='p-1 rounded-full admin-icon' />
                     </div>
-                    <div className='ml-4 mr-7'>
-                        <h2 className='mb-1 text-left card-title'>ユーザー管理</h2>
-                        <p className='mb-1 card-description'>ユーザー情報閲覧・書評閲覧</p>
+                    <div>
+                        <h2 className='mb-1 ml-6 text-left card-title'>ユーザー管理</h2>
+                        <p className='mb-1 ml-6 card-description'>ユーザー情報閲覧・書評閲覧</p>
                     </div>
                 </Link>
 
                 {/* パスワード変更 */}
-                <Link href="#" className='flex py-2 pl-2 pr-5 shadow-md w-max admin-card  justify-self-end'>
+                <Link href="#" className='flex py-2 pl-2 pr-5 shadow-md admin-card'>
                     <div className='flex items-center justify-center w-auto mx-1'>
                         <Icon icon="material-symbols:key" width="50" height="50"
                             className='p-1 rounded-full admin-icon' />
                     </div>
-                    <div className='ml-4 mr-4'>
-                        <h2 className='mb-1 text-left card-title'>パスワード変更</h2>
-                        <p className='mb-1 card-description'>パスワードを変更</p>
+                    <div>
+                        <h2 className='mb-1 ml-6 text-left card-title'>パスワード変更</h2>
+                        <p className='mb-1 ml-6 card-description'>パスワードを変更</p>
                     </div>
                 </Link>
             </div>
