@@ -83,6 +83,7 @@ details[open] .icon {
   border-bottom: 2px solid transparent;
   transition: border-color 0.2s ease;
   border-radius: 0px;
+  font-size: 20px;
 }
 .notice-tab-link.active {
   border-bottom-color: var(--color-main);

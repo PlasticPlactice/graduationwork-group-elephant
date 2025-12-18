@@ -132,7 +132,12 @@ export default function Page() {
                 <table className="w-full notice-table">
                     <thead className="table-head">
                         <tr>
-                            <th className="py-2 pl-6 w-2/7">
+                            <th className="py-2 pl-6 ">
+                                <div className="flex items-center">
+                                    ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className="w-2/7">
                                 <div className="flex items-center">
                                     タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
@@ -147,22 +152,21 @@ export default function Page() {
                                     公開期間<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th>
-                                <div className="flex items-center">
-                                    ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
-                                </div>
-                            </th>
                         </tr>
                     </thead>
                     <tbody className="border">
                         {noticeData.map((notice) => (
                             <tr key={notice.id} className="notice-record">
-                                <td className="py-2 pl-6 font-bold w-2/7">{notice.title}</td>
+                                <td>
+                                    <div className="w-fit">
+                                        <p className="ml-5 py-1 mr-24 px-9 status">{notice.status}</p>
+                                    </div>
+                                </td>
+                                <td className="py-2 font-bold w-2/7">{notice.title}</td>
                                 <td className="notice-content w-2/7">{notice.content}</td>
-                                <td className="w-1/4">{notice.period}</td>
                                 <td>
                                     <div className="flex items-center">
-                                        <p className="py-1 mr-24 px-9 status">{notice.status}</p>
+                                        <p className="px-9">{notice.period}</p>
                                         <Icon icon="weui:arrow-filled" width={15}></Icon>
                                     </div>
                                 </td>
