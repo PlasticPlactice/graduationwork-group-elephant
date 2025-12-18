@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 export default function Page() { 
     const [openRows, setOpenRows] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [displayCount, setDisplayCount] = useState<number>(10);
+    const [displayCount, setDisplayCount] = useState<number | "all">(10);
 
     const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
     const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
@@ -85,8 +85,10 @@ export default function Page() {
         { id: 29, title: '最強陰陽師の異世界転生記', nickname: '石川雄一', status: '一次通過', votes: 34 },
     ];
     // 表示するデータをスライス
-    const displayedData = tableData.slice(0, displayCount);
-    
+    const displayedData = displayCount === "all" 
+        ? tableData 
+        : tableData.slice(0, displayCount);
+        
     return (
         <main>
             {/*---------------------------
@@ -128,44 +130,51 @@ export default function Page() {
                 />
             </div>
 
-            <div className='flex justify-end mx-8 gap-3'>
-                <AdminButton
-                    label='メッセージ送信'
-                    icon='ic:baseline-message'
-                    iconPosition='left'
-                    className='w-auto'
-                    onClick={handleAllMessageSend}
-                />
-                <AdminButton
-                    label='CSV出力'
-                    icon='material-symbols:download'
-                    iconPosition='left'
-                    className='w-auto'
-                    onClick={handleCsvOutput}
-                />
-                <AdminButton
-                    label='ステータス変更'
-                    icon='material-symbols:edit-outline'
-                    iconPosition='left'
-                    className='w-auto'
-                    onClick={handleStatusEdit}
-                />
-            </div>
+            <div className='flex justify-between'>
+                <div className='flex items-center mx-8 gap-3'>
+                    <p>表示数</p>
+                    <select
+                        className='all-select'
+                        value={displayCount}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setDisplayCount(value === "all" ? "all" : Number(value));
+                        }}
+                    >
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                        <option value="25">25</option>
+                        <option value="30">30</option>
+                        <option value="all">全件表示</option>
+                    </select>
+                    <button className='choice-btn font-bold'>一括選択</button>
+                </div>
 
-            <div className='flex items-center mx-8 gap-3'>
-                <p>表示数</p>
-                <select
-                    className='all-select'
-                    value={displayCount}
-                    onChange={(e) => setDisplayCount(Number(e.target.value))}
-                >
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                </select>
-                <button className='choice-btn font-bold'>一括選択</button>
+                <div className='flex justify-end mx-8 gap-3'>
+                    <AdminButton
+                        label='ステータス変更'
+                        icon='material-symbols:edit-outline'
+                        iconPosition='left'
+                        className='w-auto'
+                        onClick={handleStatusEdit}
+                    />
+                    <AdminButton
+                        label='メッセージ送信'
+                        icon='ic:baseline-message'
+                        iconPosition='left'
+                        className='w-auto'
+                        onClick={handleAllMessageSend}
+                    />
+                    <AdminButton
+                        label='選択したデータのCSV出力'
+                        icon='material-symbols:download'
+                        iconPosition='left'
+                        className='w-auto'
+                        onClick={handleCsvOutput}
+                    />
+                </div>
             </div>
-
             <div className='mx-8 mt-8'>
                 <table className="w-full event-table">
                     <thead className='table-head'>
@@ -302,37 +311,47 @@ export default function Page() {
                 </table>
             </div>
 
-            {/* ページネーション */}
-            <div className="flex items-center justify-center my-5 page-section">
-                <Icon icon="weui:arrow-filled" rotate={2} width={20} className="page-arrow"></Icon>
-                <button
-                    type="button"
-                    className={`px-4 py-1 page-number ${currentPage === 1 ? 'active' : ''}`}
-                    onClick={() => setCurrentPage(1)}
-                    aria-current={currentPage === 1 ? "page" : undefined}
-                >1</button>
-                <button
-                    type="button"
-                    className={`px-4 py-1 page-number ${currentPage === 2 ? 'active' : ''}`}
-                    onClick={() => setCurrentPage(2)}
-                    aria-current={currentPage === 2 ? "page" : undefined}
-                >2</button>
-                <button
-                    type="button"
-                    className={`px-4 py-1 page-number ${currentPage === 3 ? 'active' : ''}`}
-                    onClick={() => setCurrentPage(3)}
-                    aria-current={currentPage === 3 ? "page" : undefined}
-                >3</button>
-                <span className="px-4 py-1 page-number" aria-hidden="true">...</span>
-                <button
-                    type="button"
-                    className={`px-4 py-1 page-number ${currentPage === 5 ? 'active' : ''}`}
-                    onClick={() => setCurrentPage(5)}
-                    aria-current={currentPage === 5 ? "page" : undefined}
-                >5</button>
-                <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
+            <div className='flex justify-end mr-8 my-5'>
+                <AdminButton
+                        label='全件CSV出力'
+                        icon='material-symbols:download'
+                        iconPosition='left'
+                        className='w-auto'
+                        onClick={handleCsvOutput}
+                    />
             </div>
-
+            {/* ページネーション */}
+            {displayCount !== "all" && (
+                <div className="flex items-center justify-center my-5 page-section">
+                    <Icon icon="weui:arrow-filled" rotate={2} width={20} className="page-arrow"></Icon>
+                    <button
+                        type="button"
+                        className={`px-4 py-1 page-number ${currentPage === 1 ? 'active' : ''}`}
+                        onClick={() => setCurrentPage(1)}
+                        aria-current={currentPage === 1 ? "page" : undefined}
+                    >1</button>
+                    <button
+                        type="button"
+                        className={`px-4 py-1 page-number ${currentPage === 2 ? 'active' : ''}`}
+                        onClick={() => setCurrentPage(2)}
+                        aria-current={currentPage === 2 ? "page" : undefined}
+                    >2</button>
+                    <button
+                        type="button"
+                        className={`px-4 py-1 page-number ${currentPage === 3 ? 'active' : ''}`}
+                        onClick={() => setCurrentPage(3)}
+                        aria-current={currentPage === 3 ? "page" : undefined}
+                    >3</button>
+                    <span className="px-4 py-1 page-number" aria-hidden="true">...</span>
+                    <button
+                        type="button"
+                        className={`px-4 py-1 page-number ${currentPage === 5 ? 'active' : ''}`}
+                        onClick={() => setCurrentPage(5)}
+                        aria-current={currentPage === 5 ? "page" : undefined}
+                    >5</button>
+                    <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
+                </div>
+            )}
             {/* モーダル */}
             <StatusEditModal isOpen={isStatusEditModalOpen} onClose={closeModal} />
             <CsvOutputModal isOpen={isCsvOutputModalOpen} onClose={closeModal} />
