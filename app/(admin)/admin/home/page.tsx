@@ -122,7 +122,7 @@ export default function Page() {
                 </Link>
 
                 {/* パスワード変更 */}
-                <Link href="#" className='flex py-2 pl-2 pr-5 shadow-md admin-card '>
+                <Link href="#" className='flex py-2 pl-2 pr-5 shadow-md admin-card'>
                     <div className='flex items-center justify-center w-auto mx-1'>
                         <Icon icon="material-symbols:key" width="50" height="50"
                             className='p-1 rounded-full admin-icon' />

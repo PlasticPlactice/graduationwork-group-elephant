@@ -132,9 +132,10 @@ export default function Page() {
 
             <div className='flex justify-between'>
                 <div className='flex items-center mx-8 gap-3'>
-                    <p>表示数</p>
+                    <label htmlFor='cotent-select'>表示数</label>
                     <select
                         className='all-select'
+                        id='cotent-select'
                         value={displayCount}
                         onChange={(e) => {
                             const value = e.target.value;
