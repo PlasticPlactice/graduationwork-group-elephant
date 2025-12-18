@@ -31,8 +31,8 @@ export default function Modal({open, onClose, children}: ModalProps) {
     if(!open || !mounted) return null;
 
     return createPortal(
-        <div className={`${Styles.modalOverlay}`} onClick={onClose} role="dialog" aria-modal="true">
-            <div className={`${Styles.modalContent}`} onClick={(e) => e.stopPropagation()}>
+        <div className={`${Styles.modalOverlay} ${Styles.modalOverlayOpen}`} onClick={onClose} role="dialog" aria-modal="true">
+            <div className={`${Styles.modalContent} ${Styles.modalContentOpen}`} onClick={(e) => e.stopPropagation()}>
                 {children}
             </div>
         </div>

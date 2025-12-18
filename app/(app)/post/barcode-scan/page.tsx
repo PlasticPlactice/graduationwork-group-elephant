@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Html5Qrcode } from "html5-qrcode";
 
-import Modal from "@/app/(app)/poster/barcode-scan/Modal";
+import Modal from "@/app/(app)/Modal";
 
 const QR_REGION_ID = "barcode-scan-reader";
 
