@@ -129,7 +129,7 @@ details[open] .icon {
   font-size: var(--font-size-h1);
   background-color: var(--color-bg);
   border-radius: var(--control-radius);
-  color: var(--color-sub);
+  color: #C0BEB7;
 }
 .page-section .page-number:hover{
   font-size: var(--font-size-h1);
@@ -142,5 +142,5 @@ details[open] .icon {
   color: var(--color-bg);
 }
 .page-arrow{
-  color: var(--color-sub);
+  color: #C0BEB7;
 }
