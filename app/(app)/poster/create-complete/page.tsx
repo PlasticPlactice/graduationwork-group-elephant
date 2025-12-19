@@ -21,14 +21,14 @@ export default function CreateCompletePage() {
   return (
     <div className={`${Styles.posterContainer} py-10`}>
       <Image
-        src="/layout/logo.png"
-        alt="logo"
-        width={177}
-        height={120}
+        src="/app/checkbox-multiple-marked-circle-outline.png"
+        alt="checkMark"
+        width={80}
+        height={80}
         className="mx-auto"
       />
       <p
-        className={`text-2xl font-bold mt-6 mb-10 text-center ${Styles.text24px} ${Styles.mainColor}`}
+        className={`text-2xl font-bold mb-10 text-center ${Styles.text24px} ${Styles.mainColor}`}
       >
         アカウント登録が
         <br />
@@ -68,78 +68,64 @@ export default function CreateCompletePage() {
         </div>
       </div>
 
-      <div className="flex mt-12 mb-14.5">
+      <div className='flex gap-4 items-center justify-center mt-15 mb-8'>
         <Image
-          src="/app/login.png"
-          width={48}
-          height={48}
-          alt="logo"
-          className={`mr-4 p-1 ${Styles.alertImage}`}
+        src="/app/create-complete-alert.png"
+        alt="警告"
+        width={45}
+        height={40}
+        className=''
         />
+        <p className={`text-red-500 font-bold`}>アカウントに関する注意事項を<br/>ご確認ください。</p>
+      </div>
+
+      <div className={`border-2 border-red-500 rounded-sm px-7 py-8 mt-3 mb-15 shadow-lg`}>
         <div>
           <p
             className="font-bold mt-0.5"
             style={{ color: "#ff4d6d", fontSize: "18px" }}
           >
-            ※ ログイン時に必要です
+            ログイン時に必須の情報です
           </p>
           <p
             className="font-bold mt-1"
             style={{ color: "var(--color-sub)", fontSize: "14px" }}
           >
-            このIDはログイン時に必要となります。
+            このIDはログイン時に必要です。
           </p>
         </div>
-      </div>
-      <div className="flex mt-9 mb-10">
-        <Image
-          src="/app/monitor-screenshot.png"
-          width={48}
-          height={48}
-          alt="monitor"
-          className={`mr-4 p-1 ${Styles.alertImage}`}
-        />
         <div>
           <p
-            className="font-bold mt-0.5"
+            className="font-bold mt-5"
             style={{ color: "#ff4d6d", fontSize: "18px" }}
           >
-            ※ 大切に保管してください
+            ユーザーIDは重要な情報です。
           </p>
           <p
             className="font-bold mt-1"
             style={{ color: "var(--color-sub)", fontSize: "14px" }}
           >
-            スクリーンショットを撮るなどして、ご自身で大切に保管してください。
+            スクリーンショットを撮るなどして、大切に保管してください。
           </p>
         </div>
-      </div>
-      <div className="flex mt-9 mb-15">
-        <Image
-          src="/app/account-off.png"
-          width={48}
-          height={48}
-          alt="logo"
-          className={`mr-4 p-1 ${Styles.alertImage}`}
-        />
         <div>
           <p
-            className="font-bold mt-0.5"
+            className="font-bold mt-5"
             style={{ color: "#ff4d6d", fontSize: "18px" }}
           >
-            ※ 紛失すると復旧できません
+            紛失しないようにご注意ください
           </p>
           <p
             className="font-bold mt-1"
             style={{ color: "var(--color-sub)", fontSize: "14px" }}
           >
-            ユーザーIDを紛失した場合、アカウントの復旧はできませんのでご注意ください。
+            ユーザーIDを紛失してしまった場合、アカウントの復旧はできません。
           </p>
         </div>
       </div>
 
       <Link href="/poster/login" className="w-full block">
-        <button className="w-full">ログイン画面へ</button>
+        <button className="w-full font-bold mt-5 mb-10">ログイン画面へ</button>
       </Link>
     </div>
   );

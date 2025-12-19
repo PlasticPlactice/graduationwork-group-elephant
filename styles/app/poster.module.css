@@ -57,6 +57,7 @@
   padding-right: var(--page-padding-lg);
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 5rem;
 }
 
 .colorButton {
