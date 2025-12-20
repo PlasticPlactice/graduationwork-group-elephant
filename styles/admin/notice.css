@@ -12,9 +12,6 @@ summary {
   list-style-type: none;
   font-size: 20px;
 }
-.search-accordion{
-  border: 1px solid #000;
-}
 /* 検索ボックスエリア */
 .search-area {
   border: 1px solid #8B8B8B;

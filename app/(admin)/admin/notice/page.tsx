@@ -5,7 +5,6 @@ import Textbox from '@/components/ui/admin-textbox';
 import AdminButton from '@/components/ui/admin-button';
 import "@/styles/admin/notice.css"; // CSSファイルをインポート
 import { Icon } from "@iconify/react";
-import Link from "next/link";
 
 export default function Page() {
     // 3. 選択状態を管理するstate (初期値は 'public')
@@ -60,7 +59,7 @@ export default function Page() {
                         />
                     </div>
 
-                    <div className=" input-group">
+                    <div className="input-group">
                         <p>公開期間</p>
                         <div className="flex justify-between items-center">
                             <Textbox 
@@ -103,7 +102,7 @@ export default function Page() {
                         onClick={() => setSelectedTab("donation")}
                         className={`pb-3 notice-tab-link ${selectedTab === "donation" ? "active" : ""}`}
                     >
-                     寄贈
+                    寄贈
                     </button>
                 </div>
                 <div className="flex justify-end mx-8">
