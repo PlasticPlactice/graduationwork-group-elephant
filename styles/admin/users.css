@@ -70,7 +70,7 @@
   font-size: var(--font-size-h1);
   background-color: var(--color-bg);
   border-radius: var(--control-radius);
-  color: var(--color-sub);
+  color: #727171;
 }
 .page-section .page-number:hover {
   font-size: var(--font-size-h1);
@@ -83,5 +83,5 @@
   color: var(--color-bg);
 }
 .page-arrow {
-  color: var(--color-sub);
+  color: #727171;
 }
