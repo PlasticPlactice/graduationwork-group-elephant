@@ -4,6 +4,15 @@
   color: var(--color-text);
 }
 
+details{
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
+}
+summary {
+  list-style-type: none;
+  font-size: 20px;
+}
+
 /* 検索ボックスエリア */
 .search-area {
   border: 1px solid #8B8B8B;
@@ -27,6 +36,7 @@
 
 /* 検索ボタン */
 .search-btn {
+  width: 20rem;
   height: 2.5rem;
 }
 

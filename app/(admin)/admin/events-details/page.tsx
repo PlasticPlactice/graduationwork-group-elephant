@@ -94,26 +94,29 @@ export default function Page() {
             {/*---------------------------
             検索ボックス
             ---------------------------*/}
-            <div className="flex px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-area">
+            <details className="px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-accordion">
+                <summary className='flex items-center justify-between'>
+                    <p>検索ボックス</p>
+                    <Icon icon="ep:arrow-up" rotate={2} width={20} className='icon'></Icon>
+                </summary>
                 
-                <div className="input-group">
+                <div className="">
                     <p>書籍タイトル</p>
                     <Textbox 
                         size="lg" 
                         className="custom-input-full"
                     />
                 </div>
-
-                <div className="ml-5 input-group">
+                <div className="">
                     <p>ニックネーム</p>
                     <Textbox
                         className='custom-input-full'
                         type='text'/>
                 </div>
 
-                <div className="ml-5 input-group">
+                <div className="">
                     <p>ステータス</p>
-                    <select className='custom-input-full'>
+                    <select className='input-group'>
                         <option value="評価前">評価前</option>
                         <option value="一次通過">一次通過</option>
                         <option value="二次通過">二次通過</option>
@@ -121,14 +124,16 @@ export default function Page() {
                     </select>
                 </div>
 
-                <AdminButton
-                    label="検索" 
-                    type="submit" 
-                    icon="mdi:search"
-                    iconPosition="left"
-                    className='self-end ml-5 search-btn'
-                />
-            </div>
+                <div className='flex justify-center'>
+                    <AdminButton
+                        label="検索" 
+                        type="submit" 
+                        icon="mdi:search"
+                        iconPosition="left"
+                        className='mt-5 search-btn'
+                    />
+                </div>
+            </details>
 
             <div className='flex justify-between'>
                 <div className='flex items-center mx-8 gap-3'>
