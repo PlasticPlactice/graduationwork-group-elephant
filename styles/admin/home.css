@@ -42,19 +42,19 @@
     margin: auto;
 }
 .event-condition-circle-future {
-    color: #727171;
+    color: var(--color-admin-sub);
     margin: auto;
 }
 
 progress {
   -webkit-appearance: none; /* -webkit- 用: プログレスバーのスタイルをリセット */
   -moz-appearance: none;    /* -moz- 用: プログレスバーのスタイルをリセット */
-  background-color: #727171; /* -moz- 用: プログレスバーの背景色 */
+  background-color: var(--color-admin-sub); /* -moz- 用: プログレスバーの背景色 */
   border: none;
   height: 3px;
 }
 ::-webkit-progress-bar {
-  background-color: #727171; /* -webkit- 用: プログレスバーの背景色 */
+  background-color: var(--color-admin-sub); /* -webkit- 用: プログレスバーの背景色 */
 }
 ::-webkit-progress-value {
   background-color: var(--color-main); /* -webkit- 用: プログレスバーの進捗部分色 */

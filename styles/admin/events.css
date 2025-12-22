@@ -18,7 +18,7 @@
   border: none;
 }
 .event-title-section{
-    border-bottom: 1px solid #727171;
+    border-bottom: 1px solid var(--color-admin-sub);
 }
 
 /* 1. トグルボタン全体のコンテナ */
@@ -87,17 +87,17 @@ input:checked + .slider:before {
     margin: auto;
 }
 .event-condition-circle-future {
-    color: #727171;
+    color: var(--color-admin-sub);
     margin: auto;
 }
 
 progress {
   -webkit-appearance: none; /* プログレスバーのスタイルをリセット */
   -moz-appearance: none; /* プログレスバーのスタイルをリセット */
-  background-color: #727171; /* プログレスバーの背景色/-moz- 用 */
+  background-color: var(--color-admin-sub); /* プログレスバーの背景色/-moz- 用 */
 }
 ::-webkit-progress-bar {
-  background-color: #727171; /* プログレスバーの背景色/-webkit- 用 */
+  background-color: var(--color-admin-sub); /* プログレスバーの背景色/-webkit- 用 */
 }
 ::-webkit-progress-value {
   background-color: var(--color-main); /* プログレスバーの進捗部分色/-webkit- 用 */
@@ -201,15 +201,15 @@ details[open] .icon {
   box-shadow: none;
 }
 .custom-input{
-  border: 1px solid #727171;
+  border: 1px solid var(--color-admin-sub);
 }
 .datetime-input{
   width: 40%;
-  border: 1px solid #727171;
+  border: 1px solid var(--color-admin-sub);
 }
 .event-detail-text{
   font-size:0.8rem;
-  color: #727171;
+  color: var(--color-admin-sub);
 }
 /* レンジスライダーのスタイル */
 input[type="range"].range {
@@ -253,7 +253,7 @@ textarea#remarks {
   width: 100%;
   min-height: 5rem;
   padding: 0.75rem;
-  border: 1px solid #727171;
+  border: 1px solid var(--color-admin-sub);
   border-radius: 4px;
   background-color: #F9FAFB;
   resize: vertical;
@@ -292,5 +292,5 @@ textarea#remarks {
   background-color: #AAE991;
 }
 .next-status{
-  border: 1px solid #727171;
+  border: 1px solid var(--color-admin-sub);
 }
