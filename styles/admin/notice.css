@@ -4,19 +4,28 @@
   color: var(--color-text);
 }
 
+details{
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
+}
+summary {
+  list-style-type: none;
+  font-size: 20px;
+}
 /* 検索ボックスエリア */
 .search-area {
   border: 1px solid #8B8B8B;
   border-radius: var(--control-radius);
 }
 
-/* 入力エリアの幅調整 (タイトル・公開期間) */
-.input-group {
-  width: 40%;
+details[open] .icon {
+  transform: rotate(180deg);
 }
+/* 入力エリアの幅調整 (タイトル・公開期間) */
 
 /* テキストボックスの高さ・幅強制上書き */
 .custom-input {
+  width: 35rem;
   height: 2.5rem;
 }
 
@@ -27,6 +36,7 @@
 
 /* 検索ボタン */
 .search-btn {
+  width: 20rem;
   height: 2.5rem;
 }
 
@@ -62,6 +72,18 @@
 
 .tab{
   font-size: var(--page-padding-lg);
+}
+.notice-tab-link{
+  color: #000;
+  background-color: #fff;
+  box-shadow: none;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease;
+  border-radius: 0px;
+  font-size: 20px;
+}
+.notice-tab-link.active {
+  border-bottom-color: var(--color-main);
 }
 .notice-tab{
   border-color:var(--color-main);
@@ -104,7 +126,7 @@
   font-size: var(--font-size-h1);
   background-color: var(--color-bg);
   border-radius: var(--control-radius);
-  color: var(--color-sub);
+  color: var(--color-admin-sub);
 }
 .page-section .page-number:hover{
   font-size: var(--font-size-h1);
@@ -117,5 +139,5 @@
   color: var(--color-bg);
 }
 .page-arrow{
-  color: var(--color-sub);
+  color: var(--color-admin-sub);
 }

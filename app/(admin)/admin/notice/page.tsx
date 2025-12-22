@@ -11,8 +11,11 @@ export default function Page() {
     const [selectedStatus, setSelectedStatus] = useState<string>("public");
     const [currentPage, setCurrentPage] = useState<number>(1);
 
+    const [selectedTab, setSelectedTab] = useState<string>("notice");
+    
     // ボタンの定義
     const statusButtons = [
+        { id: "all", label: "すべて" },
         { id: "draft", label: "下書き" },
         { id: "private", label: "非公開" },
         { id: "public", label: "公開中" },
@@ -32,55 +35,81 @@ export default function Page() {
     return (
         <main className="notice-container">
             {/*---------------------------
+            お知らせ登録ボタン
+            ---------------------------*/}
+            <AdminButton
+                label="お知らせ登録"
+                type="button"
+                className="register-btn ml-8 mt-5"
+            />
+            {/*---------------------------
                 検索ボックス
                ---------------------------*/}
-            <div className="flex px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-area">
-                
-                <div className="input-group">
-                    <p>タイトル</p>
-                    <Textbox 
-                        size="lg" 
-                        className="custom-input-full"
-                    />
-                </div>
-
-                <div className="ml-5 input-group">
-                    <p>公開期間</p>
-                    <div className="flex items-center">
+            <details className="px-5 pt-3 pb-3 mx-8 my-6 search-accordion"> 
+                <summary className='flex items-center justify-between'>
+                    <p>検索ボックス</p>
+                    <Icon icon="ep:arrow-up" rotate={2} width={20} className='icon'></Icon>
+                </summary>
+                <section>
+                    <div className="input-group">
+                        <p>タイトル</p>
                         <Textbox 
-                            type="date"
-                            className="custom-input"
-                        />
-                        <p className="items-center justify-center px-2">ー</p>
-                        <Textbox 
-                            type="date"
-                            className="custom-input"
+                            size="lg" 
+                            className="custom-input-full"
                         />
                     </div>
-                </div>
 
-                <AdminButton
-                    label="検索" 
-                    type="submit" 
-                    icon="mdi:search"
-                    iconPosition="left"
-                    className='self-end ml-5 search-btn'
-                />
-            </div>
+                    <div className="input-group">
+                        <p>公開期間</p>
+                        <div className="flex justify-between items-center">
+                            <Textbox 
+                                type="date"
+                                className="custom-input"
+                            />
+                            <p className="items-center justify-center px-2">ー</p>
+                            <Textbox 
+                                type="date"
+                                className="custom-input"
+                            />
+                        </div>
+                    </div>
 
-            <div className="flex justify-between mx-8">
+                    <div className="flex justify-center">
+                        <AdminButton
+                            label="検索" 
+                            type="submit" 
+                            icon="mdi:search"
+                            iconPosition="left"
+                            className='search-btn mt-5'
+                            />
+                    </div>
+                </section>
+            </details>
+
+
+            <div>
                 {/*---------------------------
-                お知らせ登録ボタン
+                お知らせ・寄贈タブ
                ---------------------------*/}
-                <AdminButton
-                    label="お知らせ登録"
-                    type="button"
-                    className="register-btn"
-                />
+                <div className="flex mx-8 mt-8 border-b tab">
+                    <button 
+                        onClick={() => setSelectedTab("notice")}
+                        className={`pb-3 mr-7 text-h1 notice-tab-link ${selectedTab === "notice" ? "active" : ""}`}
+                    >
+                    お知らせ
+                    </button>
+                    <button 
+                        onClick={() => setSelectedTab("donation")}
+                        className={`pb-3 notice-tab-link ${selectedTab === "donation" ? "active" : ""}`}
+                    >
+                    寄贈
+                    </button>
+                </div>
+                <div className="flex justify-end mx-8">
                 {/*---------------------------
                 ステータス変更ボタン
                ---------------------------*/}
-                <div className="flex items-center justify-center px-3 status-wrapper">
+                <div className="flex items-center justify-center px-3 status-wrapper py-1 mt-5">
                     {statusButtons.map((btn) => {
                         const isActive = selectedStatus === btn.id;
                         return (
@@ -96,22 +125,18 @@ export default function Page() {
                     })}
                 </div>
             </div>
-
-            <div>
-                {/*---------------------------
-                お知らせ・寄贈タブ
-               ---------------------------*/}
-                <div className="flex mx-8 mt-8 border-b tab">
-                    <p className="pb-3 border-b-2 notice-tab mr-7 text-h1">お知らせ</p>
-                    <p className="">寄贈</p>
-                </div>
             </div>
 
-            <div className="mx-8 mt-8">
+            <div className="mx-8 mt-5">
                 <table className="w-full notice-table">
                     <thead className="table-head">
                         <tr>
-                            <th className="py-2 pl-6 w-2/7">
+                            <th className="py-2 pl-6 ">
+                                <div className="flex items-center">
+                                    ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className="w-2/7">
                                 <div className="flex items-center">
                                     タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
@@ -126,22 +151,21 @@ export default function Page() {
                                     公開期間<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th>
-                                <div className="flex items-center">
-                                    ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
-                                </div>
-                            </th>
                         </tr>
                     </thead>
                     <tbody className="border">
                         {noticeData.map((notice) => (
                             <tr key={notice.id} className="notice-record">
-                                <td className="py-2 pl-6 font-bold w-2/7">{notice.title}</td>
+                                <td>
+                                    <div className="w-fit">
+                                        <p className="ml-5 py-1 mr-24 px-9 status">{notice.status}</p>
+                                    </div>
+                                </td>
+                                <td className="py-2 font-bold w-2/7">{notice.title}</td>
                                 <td className="notice-content w-2/7">{notice.content}</td>
-                                <td className="w-1/4">{notice.period}</td>
                                 <td>
                                     <div className="flex items-center">
-                                        <p className="py-1 mr-24 px-9 status">{notice.status}</p>
+                                        <p className="px-9">{notice.period}</p>
                                         <Icon icon="weui:arrow-filled" width={15}></Icon>
                                     </div>
                                 </td>

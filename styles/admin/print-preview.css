@@ -69,7 +69,7 @@
 }
 
 .font-color-text{
-  color: var(--color-sub);
+  color: var(--color-admin-sub);
   font-size: 22px;
 }
 
