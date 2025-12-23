@@ -94,26 +94,32 @@ export default function Page() {
             {/*---------------------------
             検索ボックス
             ---------------------------*/}
-            <div className="flex px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-area">
+            <details className="px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-accordion">
+                <summary className='flex items-center justify-between'>
+                    検索ボックス
+                    <Icon icon="ep:arrow-up" rotate={2} width={20} className='icon'></Icon>
+                </summary>
                 
-                <div className="input-group">
-                    <p>書籍タイトル</p>
+                <div className="">
+                    <label htmlFor='title_box'>書籍タイトル</label>
                     <Textbox 
                         size="lg" 
                         className="custom-input-full"
+                        id='title_box'
+                    />
+                </div>
+                <div className="">
+                    <label htmlFor='nickname_box'>ニックネーム</label>
+                    <Textbox
+                        className='custom-input-full'
+                        type='text'
+                        id='nickname_box'
                     />
                 </div>
 
-                <div className="ml-5 input-group">
-                    <p>ニックネーム</p>
-                    <Textbox
-                        className='custom-input-full'
-                        type='text'/>
-                </div>
-
-                <div className="ml-5 input-group">
-                    <p>ステータス</p>
-                    <select className='custom-input-full'>
+                <div>
+                    <label htmlFor='status' className='block'>ステータス</label>
+                    <select className='input-group' id='status'>
                         <option value="評価前">評価前</option>
                         <option value="一次通過">一次通過</option>
                         <option value="二次通過">二次通過</option>
@@ -121,14 +127,16 @@ export default function Page() {
                     </select>
                 </div>
 
-                <AdminButton
-                    label="検索" 
-                    type="submit" 
-                    icon="mdi:search"
-                    iconPosition="left"
-                    className='self-end ml-5 search-btn'
-                />
-            </div>
+                <div className='flex justify-center'>
+                    <AdminButton
+                        label="検索" 
+                        type="submit" 
+                        icon="mdi:search"
+                        iconPosition="left"
+                        className='mt-5 search-btn'
+                    />
+                </div>
+            </details>
 
             <div className='flex justify-between'>
                 <div className='flex items-center mx-8 gap-3'>
@@ -180,36 +188,36 @@ export default function Page() {
                 <table className="w-full event-table">
                     <thead className='table-head'>
                         <tr>
-                            <th className='flex items-center justify-center '>
+                            <th className=''>
                                 {/* <input type="checkbox" className='head-check' disabled/> */}
-                                <div className='my-2 ml-1 head-check bg-white'></div>
+                                <div className='my-2 ml-3 head-check bg-white'></div>
                             </th>
-                            <th className='w-28'>
-                                <div className='flex items-center '>
+                            <th className='w-[27.777%]'>
+                                <div className='flex justify-center items-center'>
+                                    ステータス<Icon icon='uil:arrow' rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className='w-[11.111%]'>
+                                <div className='flex items-center justify-start'>
                                     ID<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className='w-1/4'>
+                            <th className='w-[27.777%]'>
                                 <div className='flex items-center'>
                                     書籍タイトル<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th>
+                            <th className='w-1/6'>
                                 <div className='flex items-center'>
                                     ニックネーム<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th>
-                                <div className='flex items-center '>
-                                    ステータス<Icon icon='uil:arrow' rotate={1}></Icon>
-                                </div>
-                            </th>
-                            <th>
+                            <th className='w-[11.111%]'>
                                 <div className='flex items-center'>
                                     投票数<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th>
+                            <th className='w-[5.555%]'>
                                 {/* <Icon icon='fe:arrow-up'></Icon> */}
                             </th>
                         </tr>
@@ -219,10 +227,13 @@ export default function Page() {
                         {displayedData.map((row) => (
                             <>
                                 <tr key={row.id} className='table-row'>
-                                    <td className='text-center py-2 pl-1'>
+                                    <td className='py-2 pl-3'>
                                         <input type="checkbox" className='head-check'/>
                                     </td>
-                                    <td>
+                                    <td className='text-center'>
+                                        <span className='status-text font-bold py-2 px-6 rounded-2xl'>{row.status}</span>
+                                    </td>
+                                    <td className='text-left'>
                                         <span>{row.id}</span>
                                     </td>
                                     <td>
@@ -231,10 +242,7 @@ export default function Page() {
                                     <td>
                                         <span>{row.nickname}</span>
                                     </td>
-                                    <td>
-                                        <span className='status-text font-bold py-2 px-6 rounded-2xl'>{row.status}</span>
-                                    </td>
-                                    <td>
+                                    <td className=''>
                                         <span>{row.votes}</span>
                                     </td>
                                     <td>
@@ -244,8 +252,8 @@ export default function Page() {
                                         >
                                             <Icon 
                                                 icon='fe:arrow-up' 
-                                                className={`icon transition-transform ${openRows.includes(row.id) ? 'rotate-180' : ''}`}
-                                            />
+                                                rotate={2}
+                                                className={`icon transition-transform ${openRows.includes(row.id) ? 'rotate-180' : 'rotate-0'}`}                                            />
                                         </button>
                                     </td>
                                 </tr>
