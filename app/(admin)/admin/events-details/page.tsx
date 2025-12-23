@@ -101,22 +101,25 @@ export default function Page() {
                 </summary>
                 
                 <div className="">
-                    <p>書籍タイトル</p>
+                    <label htmlFor='title_box'>書籍タイトル</label>
                     <Textbox 
                         size="lg" 
                         className="custom-input-full"
+                        id='title_box'
                     />
                 </div>
                 <div className="">
-                    <p>ニックネーム</p>
+                    <label htmlFor='nickname_box'>ニックネーム</label>
                     <Textbox
                         className='custom-input-full'
-                        type='text'/>
+                        type='text'
+                        id='nickname_box'
+                    />
                 </div>
 
                 <div className="">
-                    <p>ステータス</p>
-                    <select className='input-group'>
+                    <label htmlFor='status' className='block'>ステータス</label>
+                    <select className='input-group' id='status'>
                         <option value="評価前">評価前</option>
                         <option value="一次通過">一次通過</option>
                         <option value="二次通過">二次通過</option>
