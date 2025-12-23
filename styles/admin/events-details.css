@@ -56,10 +56,15 @@ summary {
   color: var(--color-bg);
   border: 1px solid var(--color-main);
 }
+.event-table {
+  table-layout: fixed;
+  width: 100%;
+}
 .event-table th,
 .event-table td{
   border-bottom: 1px solid var(--color-input-bg);
-
+  word-break: break-word;
+  box-sizing: border-box;
 }
 .head-check{
   width: 2rem;
@@ -87,6 +92,10 @@ details[open] .icon {
   color: var(--color-text);
   font-size: var(--font-size-h1);
 }
+.details-content > div {
+  width: 100%;
+  box-sizing: border-box;
+}
 /* アコーディオンの中 */
 .details-content h3{
   font-size: var(--font-size-h1);
@@ -95,6 +104,9 @@ details[open] .icon {
   overflow-y: auto;
   border: 1px solid var(--color-main);
   border-radius: var(--control-radius);
+  max-width: 100%;
+  max-height: 21rem; /* 必要に応じて調整 */
+  overflow-y: auto;
 }
 .book-review-section p {
     line-height: 1.8;

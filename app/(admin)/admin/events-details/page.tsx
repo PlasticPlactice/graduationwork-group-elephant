@@ -185,36 +185,36 @@ export default function Page() {
                 <table className="w-full event-table">
                     <thead className='table-head'>
                         <tr>
-                            <th className='flex items-center justify-center '>
+                            <th className=''>
                                 {/* <input type="checkbox" className='head-check' disabled/> */}
-                                <div className='my-2 ml-1 head-check bg-white'></div>
+                                <div className='my-2 ml-3 head-check bg-white'></div>
                             </th>
-                            <th className='w-28'>
-                                <div className='flex items-center '>
+                            <th className='w-5/18'>
+                                <div className='flex justify-center items-center'>
+                                    ステータス<Icon icon='uil:arrow' rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className='w-2/18'>
+                                <div className='flex items-center justify-baseline'>
                                     ID<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className='w-1/4'>
+                            <th className='w-5/18'>
                                 <div className='flex items-center'>
                                     書籍タイトル<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th>
+                            <th className='w-3/18'>
                                 <div className='flex items-center'>
                                     ニックネーム<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th>
-                                <div className='flex items-center '>
-                                    ステータス<Icon icon='uil:arrow' rotate={1}></Icon>
-                                </div>
-                            </th>
-                            <th>
+                            <th className='w-2/18'>
                                 <div className='flex items-center'>
                                     投票数<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th>
+                            <th className='w-1/18'>
                                 {/* <Icon icon='fe:arrow-up'></Icon> */}
                             </th>
                         </tr>
@@ -224,10 +224,13 @@ export default function Page() {
                         {displayedData.map((row) => (
                             <>
                                 <tr key={row.id} className='table-row'>
-                                    <td className='text-center py-2 pl-1'>
+                                    <td className='py-2 pl-3'>
                                         <input type="checkbox" className='head-check'/>
                                     </td>
-                                    <td>
+                                    <td className='text-center'>
+                                        <span className='status-text font-bold py-2 px-6 rounded-2xl'>{row.status}</span>
+                                    </td>
+                                    <td className='text-left'>
                                         <span>{row.id}</span>
                                     </td>
                                     <td>
@@ -236,10 +239,7 @@ export default function Page() {
                                     <td>
                                         <span>{row.nickname}</span>
                                     </td>
-                                    <td>
-                                        <span className='status-text font-bold py-2 px-6 rounded-2xl'>{row.status}</span>
-                                    </td>
-                                    <td>
+                                    <td className=''>
                                         <span>{row.votes}</span>
                                     </td>
                                     <td>
