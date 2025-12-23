@@ -252,6 +252,7 @@ export default function Page() {
                                         >
                                             <Icon 
                                                 icon='fe:arrow-up' 
+                                                rotate={2}
                                                 className={`icon transition-transform ${openRows.includes(row.id) ? 'rotate-180' : ''}`}
                                             />
                                         </button>
