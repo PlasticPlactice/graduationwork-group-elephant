@@ -12,6 +12,9 @@ summary {
   list-style-type: none;
   font-size: 20px;
 }
+summary::-webkit-details-marker {
+  display: none;
+}
 
 /* 検索ボックスエリア */
 .search-area {
@@ -106,7 +109,6 @@ details[open] .icon {
   border-radius: var(--control-radius);
   max-width: 100%;
   max-height: 21rem; /* 必要に応じて調整 */
-  overflow-y: auto;
 }
 .book-review-section p {
     line-height: 1.8;

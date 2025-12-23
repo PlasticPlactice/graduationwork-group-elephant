@@ -96,7 +96,7 @@ export default function Page() {
             ---------------------------*/}
             <details className="px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-accordion">
                 <summary className='flex items-center justify-between'>
-                    <p>検索ボックス</p>
+                    検索ボックス
                     <Icon icon="ep:arrow-up" rotate={2} width={20} className='icon'></Icon>
                 </summary>
                 
@@ -117,7 +117,7 @@ export default function Page() {
                     />
                 </div>
 
-                <div className="">
+                <div>
                     <label htmlFor='status' className='block'>ステータス</label>
                     <select className='input-group' id='status'>
                         <option value="評価前">評価前</option>
@@ -192,32 +192,32 @@ export default function Page() {
                                 {/* <input type="checkbox" className='head-check' disabled/> */}
                                 <div className='my-2 ml-3 head-check bg-white'></div>
                             </th>
-                            <th className='w-5/18'>
+                            <th className='w-[27.777%]'>
                                 <div className='flex justify-center items-center'>
                                     ステータス<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className='w-2/18'>
-                                <div className='flex items-center justify-baseline'>
+                            <th className='w-[11.111%]'>
+                                <div className='flex items-center justify-start'>
                                     ID<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className='w-5/18'>
+                            <th className='w-[27.777%]'>
                                 <div className='flex items-center'>
                                     書籍タイトル<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className='w-3/18'>
+                            <th className='w-1/6'>
                                 <div className='flex items-center'>
                                     ニックネーム<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className='w-2/18'>
+                            <th className='w-[11.111%]'>
                                 <div className='flex items-center'>
                                     投票数<Icon icon='uil:arrow' rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className='w-1/18'>
+                            <th className='w-[5.555%]'>
                                 {/* <Icon icon='fe:arrow-up'></Icon> */}
                             </th>
                         </tr>
@@ -253,8 +253,7 @@ export default function Page() {
                                             <Icon 
                                                 icon='fe:arrow-up' 
                                                 rotate={2}
-                                                className={`icon transition-transform ${openRows.includes(row.id) ? 'rotate-180' : ''}`}
-                                            />
+                                                className={`icon transition-transform ${openRows.includes(row.id) ? 'rotate-180' : 'rotate-0'}`}                                            />
                                         </button>
                                     </td>
                                 </tr>
