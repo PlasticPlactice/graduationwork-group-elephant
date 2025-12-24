@@ -11,8 +11,15 @@
 }
 
 .custom-input {
-    height: 2.8rem;
-    width: 17rem;
+  box-sizing: border-box;
+  width: 98%;
+  max-width: 40rem;
+  min-width: 12rem;
+  height: 2.8rem;
+}
+.search-field {
+  flex: 1 1 0;
+  max-width: 40rem;
 }
 .age-input {
     width: 6rem;
