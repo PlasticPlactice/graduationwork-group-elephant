@@ -74,7 +74,7 @@ export default function Page() {
                 <form onSubmit={handleSearch}>
                     <div className='flex items-center w-full justify-between gap-6'>
                         <div className="flex flex-col items-start search-field">
-                            <label htmlFor="user-id block">ID</label>
+                            <label htmlFor="user-id">ID</label>
                             <Textbox
                                 id="user-id"
                                 name="id"
@@ -100,7 +100,7 @@ export default function Page() {
                         <div>
                             <label htmlFor="age">年代</label>
                             <div className='flex justify-center items-center'>
-                                <select name="" id="age" className="mr-2">
+                                <select name="ageFrom" id="age" className="mr-2">
                                     <option value="10">10</option>
                                     <option value="20">20</option>
                                     <option value="30">30</option>
@@ -113,7 +113,7 @@ export default function Page() {
                                     <option value="100">100</option>
                                 </select>
                                 <p>&minus;</p>
-                                <select name="" id="" className="mx-2">
+                                <select name="ageTo" id="age-to" className="mx-2">
                                     <option value="10">10</option>
                                     <option value="20">20</option>
                                     <option value="30">30</option>
@@ -128,13 +128,15 @@ export default function Page() {
                             </div>
                         </div>
                         <div>
-                            <p>居住地</p>
+                            <label htmlFor="prefecture">居住地</label>
                             <div className='flex'>
                                 <select
                                     name="prefecture"
                                     value={searchForm.prefecture}
                                     onChange={handleInputChange}
-                                    className='mr-3'>
+                                    className='mr-3'
+                                    id="prefecture"
+                                    >
                                     <option value="">都道府県</option>
                                     <option value="北海道">北海道</option>
                                     <option value="青森県">青森県</option>
@@ -193,12 +195,13 @@ export default function Page() {
                             </div>
                         </div>
                         <div>
-                            <p>アカウントの状態</p>
+                            <label htmlFor="status" className="block">アカウントの状態</label>
                             <select
                                 name="status"
                                 value={searchForm.status}
                                 onChange={handleInputChange}
-                                className='account-input'>
+                                className='account-input'
+                                id="status">
                                 <option value="">すべて</option>
                                 <option value="利用中">利用中</option>
                                 <option value="退会済み">退会済み</option>
