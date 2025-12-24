@@ -8,6 +8,7 @@ import Color from "@tiptap/extension-color";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import Textbox from '@/components/ui/admin-textbox';
+import AdminButton from '@/components/ui/admin-button';
 import "@/styles/admin/register-notice.css"
 
 /**
@@ -173,6 +174,7 @@ export default function Page() {
                         name="notice-type"
                         id="notice"
                         value="notice"
+                        defaultChecked
                     />
                     <label htmlFor="notice" className="radio-label">お知らせ</label>
                 </div>          
@@ -293,7 +295,7 @@ export default function Page() {
                         </div>
                     )
                     ) : (
-                    <div className="p-2w-28 h-20 flex items-center justify-center text-sm text-gray-400">
+                    <div className="p-2w-28 h-20 flex items-center justify-center text-sm text-black">
                         未選択
                     </div>
                     )}
@@ -305,10 +307,9 @@ export default function Page() {
         {/* フォーム送信用の hidden input */}
         <input type="hidden" name="content" value={html} />
 
-        <div className="mt-4">
-          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
-            送信（デモ）
-          </button>
+        <div className="mt-4 flex justify-end gap-5">
+            <button className="draft-btn">下書きとして保存</button>
+            <input type="submit" className="submit-btn" value="登録" />
         </div>
       </form>
     </main>

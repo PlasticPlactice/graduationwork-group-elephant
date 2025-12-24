@@ -76,3 +76,26 @@ input[type='datetime-local']::before{
     background-color: var(--color-main);
     border-radius: var(--control-radius);
 }
+
+.draft-btn{
+    background-color: #2563EB;
+    color: #fff;
+    font-size: var(--font-size-h1);
+    box-shadow: none;
+}
+.draft-btn:hover{
+    background-color: #fff;
+    color: #2563EB;
+    border: 1px solid #2563EB;
+}
+.submit-btn{
+    background-color: #16A34A;
+    color: #fff;
+    font-size: var(--font-size-h1);
+    box-shadow: none;
+}
+.submit-btn:hover{
+    background-color: #fff;
+    color: #16A34A;
+    border: 1px solid #16A34A;
+}
