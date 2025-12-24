@@ -106,6 +106,35 @@ export default function Page() {
     reader.readAsDataURL(file);
     };
 
+    // 添付ファイルのプレビュー情報（左から順に表示）
+    type UploadPreview = { kind: "image"; src: string; name: string } | { kind: "file"; name: string };
+    const [uploadPreviews, setUploadPreviews] = useState<UploadPreview[]>([]);
+
+    // File -> DataURL のヘルパー
+    const fileToDataURL = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+    });
+
+    // 添付ファイル選択ハンドラ（複数選択を想定、最大4件を表示）
+    const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        e.currentTarget.value = "";
+        if (!file) return;
+
+    // 既存プレビューに追加（最大4件）
+    const prev = uploadPreviews.slice();
+    if (file.type.startsWith("image/")) {
+        const src = await fileToDataURL(file);
+        prev.push({ kind: "image", src, name: file.name });
+    } else {
+        prev.push({ kind: "file", name: file.name });
+    }
+    setUploadPreviews(prev.slice(0, 4));
+    };
   return (
     <main className="p-6">
       <form onSubmit={handleSubmit}>
@@ -232,6 +261,45 @@ export default function Page() {
         {/* エディタ本体 */}
         <div className="editor-container">
           <EditorContent editor={editor} className="p-3 min-h-[200px]" />
+        </div>
+        
+              {/* 添付画像・ファイル */}
+        <label htmlFor="upload" className="block">添付画像・ファイル</label>
+        <div className="flex items-center gap-10">
+            <input
+                id="upload"
+                type="file"
+                name="upload"
+                className="upload-btn"
+                onChange={handleUploadChange}
+            />
+            <label htmlFor="upload" className="upload-label inline-block h-fit px-3 py-2 cursor-pointer">
+            添付する画像・ファイルを選択
+            </label>
+            
+            <div className="flex gap-5">
+                {Array.from({ length: 4 }).map((_, i) => (
+                <div className="upload-preview" key={i}>
+                    {uploadPreviews[i] ? (
+                    uploadPreviews[i].kind === "image" ? (
+                        <img
+                        src={uploadPreviews[i].src}
+                        alt={uploadPreviews[i].name}
+                        className="object-cover"
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center text-sm">
+                        <span>{uploadPreviews[i].name}</span>
+                        </div>
+                    )
+                    ) : (
+                    <div className="p-2w-28 h-20 flex items-center justify-center text-sm text-gray-400">
+                        未選択
+                    </div>
+                    )}
+                </div>
+                ))}
+            </div>
         </div>
 
         {/* フォーム送信用の hidden input */}

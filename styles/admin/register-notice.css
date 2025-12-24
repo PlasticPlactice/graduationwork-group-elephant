@@ -58,3 +58,21 @@ input[type='datetime-local']::before{
     border: 1px solid var(--color-main);
     border-radius: 0px 0px var(--control-radius) var(--control-radius);
 }
+
+.upload-btn {
+    display: none;
+}
+.upload-label{
+    color: #000;
+    background-color: #fff;
+    font-weight: bold;
+    border-radius: var(--control-radius);
+    border: 1px solid #000;
+}
+
+.upload-preview{
+    width: 5rem;
+    height: 5rem;
+    background-color: var(--color-main);
+    border-radius: var(--control-radius);
+}
