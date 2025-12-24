@@ -233,33 +233,33 @@ export default function Page() {
                     </colgroup>
                     <thead className="table-head">
                         <tr>
-                            <th className='py-2'>
-                                <div className="flex items-center justify-center">
-                                    ID<Icon icon="uil:arrow" rotate={1}></Icon>
-                                </div>
-                            </th>
-                            <th className=''>
-                                <div className="flex items-center justify-center">
-                                    ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
-                                </div>
-                            </th>
-                            <th className=''>
-                                <div className="flex items-center justify-center">
+                            <th className='py-2 pl-10 w-[15%]'>
+                                <div className="flex items-center">
                                     ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
                             <th className=''>
-                                <div className="flex items-center justify-center">
+                                <div className="flex items-center">
+                                    ID<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className=''>
+                                <div className="flex items-center">
+                                    ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
+                                </div>
+                            </th>
+                            <th className=''>
+                                <div className="flex items-center">
                                     年代<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
                             <th className=''>
-                                <div className="flex items-center justify-center">
+                                <div className="flex items-center">
                                     居住地<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
                             <th className=''>
-                                <div className="flex items-center justify-center">
+                                <div className="flex items-center">
                                     投稿数<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
@@ -269,12 +269,12 @@ export default function Page() {
                         {dummyusersData.map((users) => {
                             return (
                                 <tr key={users.id} className="users-record">
-                                    <td className="py-2 text-center">{users.id}</td>
-                                    <td className="text-center">{users.nickname}</td>
-                                    <td className='text-center'><span className={`status-badge px-4 py-1 ${getStatusClass(users.status)}`}>{users.status}</span></td>
-                                    <td className="text-center">{users.age}</td>
-                                    <td className="text-center">{users.address}</td>
-                                    <td className='text-center'>{users.review}</td>
+                                    <td className='py-2 pl-10'><span className={`status-badge px-4 py-1 rounded-2xl ${getStatusClass(users.status)}`}>{users.status}</span></td>
+                                    <td className="">{users.id}</td>
+                                    <td className="">{users.nickname}</td>
+                                    <td className="">{users.age}</td>
+                                    <td className="">{users.address}</td>
+                                    <td className=''>{users.review}</td>
                                 </tr>
                             );
                         })}
