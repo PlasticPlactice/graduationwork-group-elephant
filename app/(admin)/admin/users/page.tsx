@@ -238,27 +238,27 @@ export default function Page() {
                                     ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className=''>
+                            <th>
                                 <div className="flex items-center">
                                     ID<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className=''>
+                            <th>
                                 <div className="flex items-center">
                                     ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className=''>
+                            <th>
                                 <div className="flex items-center">
                                     年代<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className=''>
+                            <th>
                                 <div className="flex items-center">
                                     居住地<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>
                             </th>
-                            <th className=''>
+                            <th>
                                 <div className="flex items-center">
                                     投稿数<Icon icon="uil:arrow" rotate={1}></Icon>
                                 </div>

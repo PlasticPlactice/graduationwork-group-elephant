@@ -242,7 +242,7 @@ export default function Page() {
                                     <td>
                                         <span>{row.nickname}</span>
                                     </td>
-                                    <td className=''>
+                                    <td>
                                         <span>{row.votes}</span>
                                     </td>
                                     <td>
