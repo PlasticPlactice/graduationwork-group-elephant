@@ -62,19 +62,19 @@ details[open] .icon {
 .active {
   color: #48885A;
   background-color: #ACFEBC;
-  /* border-radius: var(--control-radius); */
+  border-radius: var(--control-radius);
   font-weight: bold;
 }
 .disable {
   color: #828848;
   background-color: #FFFF9A;
-  /* border-radius: var(--control-radius); */
+  border-radius: var(--control-radius);
   font-weight: bold;
 }
 .ban {
   color: #884849;
   background-color: #FF9C9C;
-  /* border-radius: var(--control-radius); */
+  border-radius: var(--control-radius);
   font-weight: bold;
 }
 .users-record:hover {

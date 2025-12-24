@@ -231,7 +231,7 @@ export default function Page() {
                                         <input type="checkbox" className='head-check'/>
                                     </td>
                                     <td className='text-center'>
-                                        <span className='status-text font-bold py-2 px-6 rounded-2xl'>{row.status}</span>
+                                        <span className='status-text font-bold py-2 px-6'>{row.status}</span>
                                     </td>
                                     <td className='text-left'>
                                         <span>{row.id}</span>

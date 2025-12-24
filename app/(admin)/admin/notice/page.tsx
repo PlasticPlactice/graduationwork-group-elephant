@@ -157,9 +157,7 @@ export default function Page() {
                         {noticeData.map((notice) => (
                             <tr key={notice.id} className="notice-record">
                                 <td>
-                                    <div className="w-fit">
-                                        <p className="ml-5 py-1 mr-24 px-9 status">{notice.status}</p>
-                                    </div>
+                                    <span className="ml-5 py-1 px-9 status ">{notice.status}</span>
                                 </td>
                                 <td className="py-2 font-bold w-2/7">{notice.title}</td>
                                 <td className="notice-content w-2/7">{notice.content}</td>

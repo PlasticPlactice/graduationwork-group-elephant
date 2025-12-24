@@ -88,6 +88,7 @@ details[open] .icon {
 .status-text{
   color: #1E40AF;
   background-color: #DBEAFE;
+  border-radius: var(--control-radius);
 }
 .accordion-toggle{
   background-color: var(--color-bg);
