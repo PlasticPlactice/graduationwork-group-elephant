@@ -127,8 +127,50 @@ export default function Page() {
                 <label htmlFor="thumbnail" className="thumbnail-label inline-block px-3 py-2 cursor-pointer">
                     サムネイルを選択
                 </label>
-                  </div>
+            </div>
         </section>
+        
+        <Textbox
+            type="text"
+            className="title w-full my-5"
+            placeholder="タイトル"
+        />
+        <div className="flex justify-between items-center mb-5">
+            <div className="flex gap-10">
+                <div className="flex items-center">
+                    <input
+                        type="radio"
+                        className="notice-radio"
+                        name="notice-type"
+                        id="notice"
+                        value="notice"
+                    />
+                    <label htmlFor="notice" className="radio-label">お知らせ</label>
+                </div>          
+                <div className="flex items-center">
+                    <input
+                        type="radio"
+                        className="notice-radio"
+                        name="notice-type"
+                        id="donation"
+                        value="donation"
+                    />
+                    <label htmlFor="donation" className="radio-label">寄贈</label>
+                </div>
+            </div> 
+               
+            <div className="flex items-center gap-4">
+                <Textbox
+                    type="datetime-local"
+                    placeholder="公開開始日時"
+                />          
+                <p>	&minus;</p>
+                <Textbox
+                    type="datetime-local"
+                    placeholder="公開終了日時"
+                />
+            </div>
+        </div>
         {/* ツールバー */}
         <div className="flex items-center gap-2 mb-2">
           {/* 太字 */}

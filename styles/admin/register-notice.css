@@ -33,3 +33,11 @@
     cursor: pointer;
     display: inline-block;
 }
+
+.radio-label{
+    font-size: 20px;
+}
+input[type='datetime-local']::before{
+    content: attr(placeholder);
+    color: var(--color-main);
+}
