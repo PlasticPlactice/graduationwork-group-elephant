@@ -188,9 +188,9 @@ export default function Page() {
                 <table className="w-full event-table">
                     <thead className='table-head'>
                         <tr>
-                            <th className=''>
+                            <th className='py-2'>
                                 {/* <input type="checkbox" className='head-check' disabled/> */}
-                                <div className='my-2 ml-3 head-check bg-white'></div>
+                                <div className='ml-3 head-check bg-white'></div>
                             </th>
                             <th className='w-[27.777%]'>
                                 <div className='flex justify-center items-center'>
@@ -227,11 +227,11 @@ export default function Page() {
                         {displayedData.map((row) => (
                             <>
                                 <tr key={row.id} className='table-row'>
-                                    <td className='py-2 pl-3'>
+                                    <td className='pl-3'>
                                         <input type="checkbox" className='head-check'/>
                                     </td>
                                     <td className='text-center'>
-                                        <span className='status-text font-bold py-2 px-6'>{row.status}</span>
+                                        <span className='status-text font-bold py-1 px-6'>{row.status}</span>
                                     </td>
                                     <td className='text-left'>
                                         <span>{row.id}</span>

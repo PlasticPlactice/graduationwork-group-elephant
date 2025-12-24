@@ -70,8 +70,8 @@ summary::-webkit-details-marker {
   box-sizing: border-box;
 }
 .head-check{
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border: 1px solid #6A8CA4;
   border-radius: 2px;
 }
