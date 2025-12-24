@@ -3,22 +3,31 @@
   background-color: var(--color-bg);
   color: var(--color-text);
 }
-
-/* 検索ボックスエリア */
-.search-area {
-  border: 1px solid #8B8B8B;
+details{
+  border: 1px solid var(--color-main);
   border-radius: var(--control-radius);
 }
+summary {
+  list-style-type: none;
+  font-size: 20px;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .icon {
+  transform: rotate(180deg);
+}
 
+/* 検索ボックスエリア */
 .custom-input {
   box-sizing: border-box;
-  width: 98%;
+  width: 100%;
   max-width: 40rem;
   min-width: 12rem;
   height: 2.8rem;
 }
 .search-field {
-  flex: 1 1 0;
+  flex: 1 1;
   max-width: 40rem;
 }
 .age-input {
@@ -32,7 +41,7 @@
 }
 .search-btn {
   width: 15rem;
-  font-size: var(--page-padding-lg);
+  height: 2.5rem;
 }
 
 

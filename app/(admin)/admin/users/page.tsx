@@ -67,13 +67,13 @@ export default function Page() {
                 検索ボックス
             ---------------------------*/}
             <details className="px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-area">
-                <summary className='flex items-center'>
+                <summary className='flex items-center justify-between w-full'>
                     検索ボックス
                     <Icon icon="ep:arrow-up" rotate={2} width={20} className='icon'></Icon>
                 </summary>
                 <form onSubmit={handleSearch}>
-                    <div className='flex justify-between items-center'>
-                        <div className="flex flex-col items-start  search-field">
+                    <div className='flex items-center w-full justify-between gap-6'>
+                        <div className="flex flex-col items-start search-field">
                             <label htmlFor="user-id block">ID</label>
                             <Textbox
                                 id="user-id"
@@ -81,7 +81,7 @@ export default function Page() {
                                 value={searchForm.id}
                                 onChange={handleInputChange}
                                 size="lg"
-                                className='custom-input'
+                                className='custom-input w-full'
                             />
                         </div>
                         <div className="flex flex-col items-start search-field">
@@ -92,29 +92,39 @@ export default function Page() {
                                 value={searchForm.nickname}
                                 onChange={handleInputChange}
                                 size="lg"
-                                className='custom-input'
+                                className='custom-input w-full'
                             />
                         </div>
                     </div>
+                    <div className="flex justify-between items-center">
                         <div>
-                            <p>年代</p>
+                            <label htmlFor="age">年代</label>
                             <div className='flex justify-center items-center'>
-                                <Textbox
-                                    type='number'
-                                    name="ageFrom"
-                                    value={searchForm.ageFrom}
-                                    onChange={handleInputChange}
-                                    size="lg"
-                                    className='custom-input age-input mr-2'
-                                />
+                                <select name="" id="age" className="mr-2">
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">100</option>
+                                </select>
                                 <p>&minus;</p>
-                                <Textbox
-                                    type='number'
-                                    name="ageTo"
-                                    value={searchForm.ageTo}
-                                    onChange={handleInputChange}
-                                    size="lg"
-                                    className='custom-input age-input mx-2' />
+                                <select name="" id="" className="mx-2">
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">100</option>
+                                </select>
                             </div>
                         </div>
                         <div>
@@ -195,7 +205,8 @@ export default function Page() {
                                 <option value="BAN">BAN</option>
                             </select>
                         </div>
-                    <div className='flex justify-end mt-4 mr-2'>
+                    </div>
+                    <div className='flex justify-center mt-4'>
                         <AdminButton
                             label="検索" 
                             type="submit" 
