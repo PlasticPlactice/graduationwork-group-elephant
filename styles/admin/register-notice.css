@@ -1,3 +1,6 @@
+.required{
+    color: #ff0000;
+}
 .thumbnail-container{
     background-color: var(--color-main);
     position: relative;
@@ -21,8 +24,8 @@
     display: none;
 }
 .thumbnail-label{
-    color: #000;
-    background-color: #fff;
+    color: var(--color-text);
+    background-color: var(--color-bg);
     font-weight: bold;
     border-radius: var(--control-radius);
     position: absolute;
@@ -42,10 +45,8 @@ input[type='datetime-local']::before{
     color: var(--color-main);
 }
 
-.design-btn{
-    box-shadow: none;
-}
-.color-btn{
+.design-btn,
+.color-btn {
     box-shadow: none;
 }
 
@@ -63,11 +64,11 @@ input[type='datetime-local']::before{
     display: none;
 }
 .upload-label{
-    color: #000;
-    background-color: #fff;
+    color: var(--color-text);
+    background-color: var(--color-bg);
     font-weight: bold;
     border-radius: var(--control-radius);
-    border: 1px solid #000;
+    border: 1px solid var(--color-text);
 }
 
 .upload-preview{
@@ -76,26 +77,29 @@ input[type='datetime-local']::before{
     background-color: var(--color-main);
     border-radius: var(--control-radius);
 }
-
-.draft-btn{
-    background-color: #2563EB;
-    color: #fff;
+.remove-btn{
+    background-color: #ff0000;
+}
+.draft-btn,
+.submit-btn {
     font-size: var(--font-size-h1);
     box-shadow: none;
 }
+.draft-btn{
+    background-color: #2563EB;
+    color: var(--color-bg);
+}
 .draft-btn:hover{
-    background-color: #fff;
+    background-color: var(--color-bg);
     color: #2563EB;
     border: 1px solid #2563EB;
 }
 .submit-btn{
     background-color: #16A34A;
-    color: #fff;
-    font-size: var(--font-size-h1);
-    box-shadow: none;
+    color: var(--color-bg);
 }
 .submit-btn:hover{
-    background-color: #fff;
+    background-color: var(--color-bg);
     color: #16A34A;
     border: 1px solid #16A34A;
 }

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Textbox from '@/components/ui/admin-textbox';
-import AdminButton from '@/components/ui/admin-button';
 import "@/styles/admin/register-notice.css"
 // tiptap
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -135,9 +134,14 @@ export default function Page() {
         prev.push({ kind: "file", name: file.name });
     }
     setUploadPreviews(prev.slice(0, 4));
+  };
+  
+  // 指定インデックスのプレビューを削除する（UIからの削除）
+    const removeUploadPreview = (index: number) => {
+      setUploadPreviews(prev => prev.filter((_, i) => i !== index));
     };
   return (
-    <main className="p-6">
+    <main className="p-6">  
       <form onSubmit={handleSubmit}>
               {/* サムネインポート */}
         <section className="thumbnail-container h-50">
@@ -148,22 +152,42 @@ export default function Page() {
                     name="file"
                     className="thumbnail-btn"
                     accept="image/*"
-                    onChange={handleFileChange}
+                    required
+                    onChange={(e) => {
+                        const file = e.target.files && e.target.files[0];
+                        if (!file) {
+                            return;
+                        }
+                        const maxSize = 10 * 1024 * 1024; // 5MB
+                        const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+                        if (!allowedTypes.includes(file.type)) {
+                            alert("画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます。");
+                            e.target.value = "";
+                            return;
+                        }
+                        if (file.size > maxSize) {
+                            alert("ファイルサイズが大きすぎます。10MB以下の画像を選択してください。");
+                            e.target.value = "";
+                            return;
+                        }
+                        handleFileChange(e);
+                    }}
+
                 />
                 {/* プレビュー画像を container 全体に表示 */}
                 {thumbnailPreview && (
-                <img src={thumbnailPreview} alt="thumbnail preview" className="thumbnail-preview" />
+                <img src={thumbnailPreview} alt="thumbnail preview" className="thumbnail-preview"/>
                 )}
                 <label htmlFor="thumbnail" className="thumbnail-label inline-block px-3 py-2 cursor-pointer">
                     サムネイルを選択
                 </label>
             </div>
         </section>
-        
         <Textbox
             type="text"
             className="title w-full my-5"
             placeholder="タイトル"
+            required
         />
         <div className="flex justify-between items-center mb-5">
             <div className="flex gap-10">
@@ -194,11 +218,14 @@ export default function Page() {
                 <Textbox
                     type="datetime-local"
                     placeholder="公開開始日時"
+                    name="public-start-datetime"
+                    required
                 />          
                 <p>	&minus;</p>
                 <Textbox
                     type="datetime-local"
                     placeholder="公開終了日時"
+                    name="public-end-datetime"
                 />
             </div>
         </div>
@@ -262,7 +289,7 @@ export default function Page() {
 
         {/* エディタ本体 */}
         <div className="editor-container">
-          <EditorContent editor={editor} className="p-3 min-h-[200px]" />
+          <EditorContent editor={editor} className="p-3 min-h-[200px]" required/>
         </div>
         
               {/* 添付画像・ファイル */}
@@ -279,23 +306,38 @@ export default function Page() {
             添付する画像・ファイルを選択
             </label>
             
-            <div className="flex gap-5">
+           <div className="flex gap-5">
                 {Array.from({ length: 4 }).map((_, i) => (
                 <div className="upload-preview" key={i}>
                     {uploadPreviews[i] ? (
-                    uploadPreviews[i].kind === "image" ? (
-                        <img
-                        src={uploadPreviews[i].src}
-                        alt={uploadPreviews[i].name}
-                        className="object-cover"
-                        />
-                    ) : (
-                        <div className="flex items-center justify-center text-sm">
-                        <span>{uploadPreviews[i].name}</span>
+                    <>
+                      {uploadPreviews[i].kind === "image" ? (
+                        <div className="relative">
+                          <img
+                            src={uploadPreviews[i].src}
+                            alt={uploadPreviews[i].name}
+                            className="object-cover"
+                            width={112}
+                            height={80}
+                          />
                         </div>
-                    )
+                      ) : (
+                        <div className="flex items-center justify-center text-sm">
+                          <span>{uploadPreviews[i].name}</span>
+                        </div>
+                      )}
+                      <div className="mt-2">
+                        <button
+                          type="button"
+                          className="remove-btnl-2 text-sm border rounded bg-white"
+                          onClick={() => removeUploadPreview(i)}
+                        >
+                          削除
+                        </button>
+                      </div>
+                    </>
                     ) : (
-                    <div className="p-2w-28 h-20 flex items-center justify-center text-sm text-black">
+                    <div className="p-2 h-20 flex items-center justify-center text-sm text-black">
                         未選択
                     </div>
                     )}
@@ -308,7 +350,7 @@ export default function Page() {
         <input type="hidden" name="content" value={html} />
 
         <div className="mt-4 flex justify-end gap-5">
-            <button className="draft-btn">下書きとして保存</button>
+            <button type="button" className="draft-btn">下書きとして保存</button>
             <input type="submit" className="submit-btn" value="登録" />
         </div>
       </form>
