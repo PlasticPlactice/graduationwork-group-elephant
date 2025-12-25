@@ -103,3 +103,16 @@ input[type='datetime-local']::before{
     color: #16A34A;
     border: 1px solid #16A34A;
 }
+.remove-btn{
+    height: fit-content;
+}
+/* モーダル */
+.preview-modal{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.close-btn{
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    box-shadow: none;
+    font-size: var(--font-size-h1);
+}

@@ -140,6 +140,21 @@ export default function Page() {
     const removeUploadPreview = (index: number) => {
       setUploadPreviews(prev => prev.filter((_, i) => i !== index));
     };
+    
+  // モーダル制御
+  const [modalIndex, setModalIndex] = useState<number | null>(null);
+  const openPreview = (index: number) => setModalIndex(index);
+  const closeModal = () => setModalIndex(null);
+
+  // Esc で閉じる
+  useEffect(() => {
+    if (modalIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeModal();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modalIndex]);
   return (
     <main className="p-6">  
       <form onSubmit={handleSubmit}>
@@ -308,11 +323,17 @@ export default function Page() {
             
            <div className="flex gap-5">
                 {Array.from({ length: 4 }).map((_, i) => (
-                <div className="upload-preview" key={i}>
+                <div
+                  className="upload-preview"
+                  key={i}
+                  onClick={() => { if (uploadPreviews[i]) openPreview(i); }}
+                  role={uploadPreviews[i] ? "button" : undefined}
+                  aria-label={uploadPreviews[i] ? `プレビュー ${i+1}` : undefined}
+                  >
                     {uploadPreviews[i] ? (
                     <>
                       {uploadPreviews[i].kind === "image" ? (
-                        <div className="relative">
+                        <div className="relative overflow-hidden">
                           <img
                             src={uploadPreviews[i].src}
                             alt={uploadPreviews[i].name}
@@ -329,8 +350,8 @@ export default function Page() {
                       <div className="mt-2">
                         <button
                           type="button"
-                          className="remove-btnl-2 text-sm border rounded bg-white"
-                          onClick={() => removeUploadPreview(i)}
+                          className="remove-btn ml-2 text-sm border rounded bg-white"
+                          onClick={(e) => { e.stopPropagation(); removeUploadPreview(i); }}
                         >
                           削除
                         </button>
@@ -354,6 +375,28 @@ export default function Page() {
             <input type="submit" className="submit-btn" value="登録" />
         </div>
       </form>
+
+      {/* プレビューモーダル */}
+      {modalIndex !== null && uploadPreviews[modalIndex] && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 preview-modal" onClick={closeModal}>
+          <div className="bg-white rounded p-4 max-w-[100%] max-h-[100%] overflow-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-start gap-4">
+              <h3 className="text-lg font-medium">プレビュー</h3>
+              <button type="button" onClick={closeModal} className="close-btn">&times;</button>
+            </div>
+            <div className="mt-4">
+              {uploadPreviews[modalIndex].kind === "image" ? (
+                <img src={uploadPreviews[modalIndex].src} alt={uploadPreviews[modalIndex].name} className="max-w-full max-h-[80vh] object-contain" />
+              ) : (
+                <div className="p-4">
+                  <p className="font-medium">ファイル名</p>
+                  <p className="mt-2">{uploadPreviews[modalIndex].name}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
