@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Textbox from '@/components/ui/admin-textbox';
+import AdminButton from '@/components/ui/admin-button';
+import "@/styles/admin/register-notice.css"
 // tiptap
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Color from "@tiptap/extension-color";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
-import Textbox from '@/components/ui/admin-textbox';
-import AdminButton from '@/components/ui/admin-button';
-import "@/styles/admin/register-notice.css"
 
 /**
  * tiptap を使った簡易 WYSIWYG
