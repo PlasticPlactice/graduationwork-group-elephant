@@ -79,6 +79,13 @@ export default function Page() {
     editor?.chain().focus().setColor(color).run();
     setActiveColor(color);
   };
+  // キーボードから色を適用するハンドラ
+  const handleColorKey = (e: React.KeyboardEvent<HTMLButtonElement>, color: string) => {
+    if (e.key === "Enter" || e.key === " " || e.code === "Space") {
+      e.preventDefault();
+      applyColor(color);
+    }
+  };
 
   // フォーム送信処理（ここはプロジェクトの action に差し替えて使ってください）
   const handleSubmit = (e: React.FormEvent) => {
@@ -281,6 +288,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => applyColor("#000000")}
+              onKeyDown={(e) => handleColorKey(e, "#000000")}
               aria-label="黒"
               className={`w-8 h-8 rounded-full border color-btn ${activeColor === "#000000" ? "ring-2 ring-gray-700" : ""}`}
               style={{ backgroundColor: "#000000" }}
@@ -288,6 +296,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => applyColor("#ff0000")}
+              onKeyDown={(e) => handleColorKey(e, "#ff0000")}
               aria-label="赤"
               className={`w-8 h-8 rounded-full border color-btn ${activeColor === "#ff0000" ? "ring-2 ring-gray-700" : ""}`}
               style={{ backgroundColor: "#ff0000" }}
@@ -295,6 +304,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => applyColor("#0000ff")}
+              onKeyDown={(e) => handleColorKey(e, "#0000ff")}
               aria-label="青"
               className={`w-8 h-8 rounded-full border color-btn ${activeColor === "#0000ff" ? "ring-2 ring-gray-700" : ""}`}
               style={{ backgroundColor: "#0000ff" }}
