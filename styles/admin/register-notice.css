@@ -42,12 +42,14 @@
 }
 input[type='datetime-local']::before{
     content: attr(placeholder);
-    color: var(--color-main);
+    color: var(--color-text);
 }
-
 .design-btn,
 .color-btn {
     box-shadow: none;
+    padding: 0.5rem 0;
+    height: fit-content;
+    width: 2.5rem;
 }
 
 .design-container{

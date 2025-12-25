@@ -239,14 +239,15 @@ export default function Page() {
             <div className="flex items-center gap-4">
                 <Textbox
                     type="datetime-local"
-                    placeholder="公開開始日時"
+                    placeholder="公開開始"
                     name="public-start-datetime"
+                    className="datetime-box"
                     required
                 />          
                 <p>	&minus;</p>
                 <Textbox
                     type="datetime-local"
-                    placeholder="公開終了日時"
+                    placeholder="公開終了"
                     name="public-end-datetime"
                 />
             </div>
@@ -257,7 +258,7 @@ export default function Page() {
           <button
             type="button"
             onClick={toggleBold}
-            className={`px-3 py-1 border rounded font-bold design-btn ${editor?.isActive("bold") ? "bg-gray-200" : ""}`}
+            className={`border rounded font-bold design-btn ${editor?.isActive("bold") ? "bg-gray-200" : ""}`}
             title="太字"
           >
             B
@@ -267,7 +268,7 @@ export default function Page() {
           <button
             type="button"
             onClick={toggleItalic}
-            className={`px-3 py-1 border rounded italic design-btn ${editor?.isActive("italic") ? "bg-gray-200" : ""}`}
+            className={`border rounded italic design-btn ${editor?.isActive("italic") ? "bg-gray-200" : ""}`}
             title="斜体"
           >
             I
@@ -277,7 +278,7 @@ export default function Page() {
           <button
             type="button"
             onClick={toggleUnderline}
-            className={`px-3 py-1 border rounded underline design-btn ${editor?.isActive("underline") ? "bg-gray-200" : ""}`}
+            className={`border rounded underline design-btn ${editor?.isActive("underline") ? "bg-gray-200" : ""}`}
             title="下線"
           >
             U
@@ -292,7 +293,9 @@ export default function Page() {
               aria-label="黒"
               className={`w-8 h-8 rounded-full border color-btn ${activeColor === "#000000" ? "ring-2 ring-gray-700" : ""}`}
               style={{ backgroundColor: "#000000" }}
-            />
+            >
+              黒
+            </button>
             <button
               type="button"
               onClick={() => applyColor("#ff0000")}
@@ -300,7 +303,8 @@ export default function Page() {
               aria-label="赤"
               className={`w-8 h-8 rounded-full border color-btn ${activeColor === "#ff0000" ? "ring-2 ring-gray-700" : ""}`}
               style={{ backgroundColor: "#ff0000" }}
-            />
+            >赤
+            </button>
             <button
               type="button"
               onClick={() => applyColor("#0000ff")}
@@ -308,7 +312,8 @@ export default function Page() {
               aria-label="青"
               className={`w-8 h-8 rounded-full border color-btn ${activeColor === "#0000ff" ? "ring-2 ring-gray-700" : ""}`}
               style={{ backgroundColor: "#0000ff" }}
-            />
+            >青
+            </button>
           </div>
         </div>
 
