@@ -346,14 +346,14 @@ export default function Page() {
                   aria-label={uploadPreviews[i] ? `プレビュー ${i+1}` : undefined}
                   >
                     {uploadPreviews[i] ? (
-                    <>
+                      <>
                       {uploadPreviews[i].kind === "image" ? (
                         <div className="relative overflow-hidden">
                           <img
                             src={uploadPreviews[i].src}
                             alt={uploadPreviews[i].name}
                             className="object-cover"
-                            width={112}
+                            width={80}
                             height={80}
                           />
                         </div>
@@ -361,15 +361,16 @@ export default function Page() {
                         <div className="flex items-center justify-center text-sm">
                           <span>{uploadPreviews[i].name}</span>
                         </div>
-                      )}
-                      <div className="mt-2">
-                        <button
-                          type="button"
-                          className="remove-btn ml-2 text-sm border rounded bg-white"
-                          onClick={(e) => { e.stopPropagation(); removeUploadPreview(i); }}
-                        >
-                          削除
-                        </button>
+                        )}
+                        <div className="">
+                          <button
+                            type="button"
+                            aria-label="プレビューを削除"
+                            className="remove-btn"
+                            onClick={(e) => { e.stopPropagation(); removeUploadPreview(i); }}
+                          >
+                            &times;
+                          </button>
                       </div>
                     </>
                     ) : (
