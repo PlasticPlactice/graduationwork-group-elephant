@@ -16,6 +16,9 @@
   --color-accent: #faf443;
   --color-event-button-bg: #6A8CA4;
   --color-admin-sub:#727171;
+  --color-admin-active-background:#ACFEBC;
+  --color-admin-disable-background:#FFFF9A;
+  --color-admin-ban-background:#FF9C9C;
 
   /* spacing / sizes */
   --page-padding-sm: 16px;

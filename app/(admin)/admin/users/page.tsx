@@ -272,7 +272,7 @@ export default function Page() {
                         {dummyusersData.map((users) => {
                             return (
                                 <tr key={users.id} className="users-record">
-                                    <td className='py-2 pl-10'><span className={`status-badge px-4 py-1 ${getStatusClass(users.status)}`}>{users.status}</span></td>
+                                    <td className='py-2 pl-10'><span className={`status-badge ${getStatusClass(users.status)}`}>{users.status}</span></td>
                                     <td className="">{users.id}</td>
                                     <td className="">{users.nickname}</td>
                                     <td className="">{users.age}</td>
