@@ -86,12 +86,17 @@ input[type='datetime-local']::before{
   background: var(--color-main);
   border-radius: var(--control-radius);
 }
+.upload-preview > .relative {
+  width: 100%;
+  height: 100%;
+}
 
 /* 中の img を枠いっぱいにして隙間をなくす */
 .upload-preview img { 
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
 

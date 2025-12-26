@@ -352,9 +352,9 @@ export default function Page() {
                           <img
                             src={uploadPreviews[i].src}
                             alt={uploadPreviews[i].name}
-                            className="object-cover"
-                            width={80}
-                            height={80}
+                            className="w-full h-full object-cover"
+                            // width={80}
+                            // height={80}
                           />
                         </div>
                       ) : (
