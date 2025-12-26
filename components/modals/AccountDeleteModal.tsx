@@ -87,7 +87,7 @@ export const AccountDeleteModal: React.FC<AccountDeleteModalProps> = ({
               本当に退会しますか？
             </h2>
             <p className="text-center text-slate-700 text-sm leading-relaxed mb-6">
-              退会すると、あなたの書評はすべて削除され、度ごとにできなくなります。
+              退会すると、あなたの書評はすべて削除され、元に戻すことができなくなります。
             </p>
 
             <div className="flex flex-col gap-3">
