@@ -17,24 +17,25 @@ export const AccountDeleteModal: React.FC<AccountDeleteModalProps> = ({
   isLoading = false,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const confirmBtnRef = useRef<HTMLButtonElement>(null);
+  const cancelBtnRef = useRef<HTMLButtonElement>(null);
 
   // ESCキーで閉じる
   useEffect(() => {
     if (!open) return;
     const handleEscape = (e: KeyboardEvent) => {
+      if (isLoading) return;
       if (e.key === "Escape") {
         onClose();
       }
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [open, onClose]);
+  }, [open, onClose, isLoading]);
 
   // フォーカス管理: モーダル表示時にキャンセルボタンへ
   useEffect(() => {
-    if (open && confirmBtnRef.current) {
-      confirmBtnRef.current.focus();
+    if (open && !isLoading && cancelBtnRef.current) {
+      cancelBtnRef.current.focus({ preventScroll: true });
     }
     // 背景スクロール禁止
     if (open) {
@@ -45,10 +46,11 @@ export const AccountDeleteModal: React.FC<AccountDeleteModalProps> = ({
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [open]);
+  }, [open, isLoading]);
 
   // 背景クリックで閉じる
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isLoading) return;
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -92,7 +94,7 @@ export const AccountDeleteModal: React.FC<AccountDeleteModalProps> = ({
 
             <div className="flex flex-col gap-3">
               <button
-                className="w-full text-white font-bold py-3 rounded-md text-center border-none focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+                className="w-full text-white font-bold py-3 rounded-md text-center border-none focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: "red" }}
                 onClick={onConfirm}
                 disabled={isLoading}
@@ -102,7 +104,8 @@ export const AccountDeleteModal: React.FC<AccountDeleteModalProps> = ({
               <button
                 className="w-full bg-white text-slate-900 font-bold py-3 rounded-md text-center border-2 border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 hover:bg-slate-50 transition-colors"
                 onClick={onClose}
-                ref={confirmBtnRef}
+                ref={cancelBtnRef}
+                disabled={isLoading}
               >
                 キャンセル
               </button>
