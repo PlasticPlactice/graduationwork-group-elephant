@@ -18,14 +18,14 @@ export default function MyPage() {
       daysLeft: 10,
       description: "投稿可能期間中です！投稿してみましょう！",
       buttonText: "投稿へ",
-      href: "/poster/barcode-scan",
+      href: "/post/barcode-scan",
     },
     {
       title: "第2回 文庫Xイベント",
       daysLeft: 15,
       description: "投稿可能期間中です！投稿してみましょう！",
       buttonText: "投稿へ",
-      href: "/poster/barcode-scan",
+      href: "/post/barcode-scan",
     },
   ];
 
