@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 
 interface TimelineStep {
   label: string;
@@ -40,6 +41,24 @@ export const ReviewPassedModal: React.FC<ReviewPassedModalProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const confirmBtnRef = useRef<HTMLButtonElement>(null);
+
+  // コンフェッティエフェクト
+  useEffect(() => {
+    if (!open) return;
+
+    const timer = setTimeout(() => {
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.5 },
+      });
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [open]);
+
   // ESCキーで閉じる
   useEffect(() => {
     if (!open) return;

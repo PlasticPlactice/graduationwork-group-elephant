@@ -31,8 +31,10 @@ export default function BarcodeScanPage() {
   );
   const [scanError, setScanError] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const fetchIdRef = useRef(0);
+  const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const validateIsbn13 = useCallback((value: string) => {
     if (!/^\d{13}$/.test(value)) return false;
@@ -109,10 +111,13 @@ export default function BarcodeScanPage() {
 
       // Ignore lower (price/classification) code starting with 191/192
       if (normalized.startsWith("191") || normalized.startsWith("192")) {
-        setScanStatus((prev) => {
-          const warningMsg = "上のバーコードを読み取ってください。";
-          return prev === warningMsg ? prev : warningMsg;
-        });
+        if (warningTimerRef.current) {
+          clearTimeout(warningTimerRef.current);
+        }
+        setShowWarning(true);
+        warningTimerRef.current = setTimeout(() => {
+          setShowWarning(false);
+        }, 2000);
         return;
       }
 
@@ -121,6 +126,13 @@ export default function BarcodeScanPage() {
         return;
       if (normalized.length !== 13) return;
       if (!validateIsbn13(normalized)) return;
+
+      // Clear warning if it was showing
+      if (warningTimerRef.current) {
+        clearTimeout(warningTimerRef.current);
+        warningTimerRef.current = null;
+      }
+      setShowWarning(false);
 
       setDetectedIsbn(normalized);
       setIsbnInput(normalized);
@@ -154,16 +166,10 @@ export default function BarcodeScanPage() {
         });
       }
 
-      // Calculate qrbox size based on container width (responsive)
-      const container = document.getElementById(QR_REGION_ID);
-      const containerWidth = container?.parentElement?.clientWidth || 320;
-      const qrboxSize = Math.min(containerWidth - 40, 400);
-
       await scannerRef.current.start(
         { facingMode: "environment" },
         {
-          fps: 10,
-          // qrbox: { width: qrboxSize, height: qrboxSize * 0.67 },
+          fps: 60,
           aspectRatio: 1.5,
           disableFlip: true,
         },
@@ -186,6 +192,9 @@ export default function BarcodeScanPage() {
     return () => {
       // Cleanup camera on unmount to avoid iOS black screen issues when returning
       stopScanner();
+      if (warningTimerRef.current) {
+        clearTimeout(warningTimerRef.current);
+      }
     };
   }, [stopScanner]);
 
@@ -207,6 +216,58 @@ export default function BarcodeScanPage() {
 
   return (
     <div>
+      {/* Warning overlay for 191/192 barcode detection */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center"
+        style={{
+          opacity: showWarning ? 1 : 0,
+          background: showWarning ? "rgba(0, 0, 0, 0.7)" : "transparent",
+          transition: "opacity 300ms ease, background 300ms ease",
+          paddingBottom: "25vh",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            color: "#fff",
+            padding: "32px 24px",
+            animation: showWarning ? "slideUp 300ms ease forwards" : "none",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "48px",
+              marginBottom: "16px",
+            }}
+          >
+            ⚠️
+          </div>
+          <p
+            style={{
+              fontSize: "18px",
+              lineHeight: "1.6",
+            }}
+          >
+            上のISBNバーコードを
+            <br />
+            読み取ってください
+          </p>
+        </div>
+      </div>
+      <style>{`
+        @keyframes slideUp {
+          from {
+            transform: translateY(20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+      `}</style>
+
       <Link href="/" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
         <span>&lt;</span> ファンサイトはこちら
       </Link>
@@ -301,7 +362,7 @@ export default function BarcodeScanPage() {
                   {!bookLoading && !bookError && bookItem && (
                     <div className="flex gap-3 items-start">
                       {bookItem.mediumImageUrl ? (
-                        <img
+                        <Image
                           src={bookItem.mediumImageUrl}
                           alt={bookItem.title || "book image"}
                           width={100}
