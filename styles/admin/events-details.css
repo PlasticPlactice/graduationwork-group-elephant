@@ -39,7 +39,7 @@ summary::-webkit-details-marker {
 
 /* 検索ボタン */
 .search-btn {
-  width: 20rem;
+  width: 15rem;
   height: 2.5rem;
 }
 
@@ -70,8 +70,8 @@ summary::-webkit-details-marker {
   box-sizing: border-box;
 }
 .head-check{
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border: 1px solid #6A8CA4;
   border-radius: 2px;
 }
@@ -88,6 +88,7 @@ details[open] .icon {
 .status-text{
   color: #1E40AF;
   background-color: #DBEAFE;
+  border-radius: var(--control-radius);
 }
 .accordion-toggle{
   background-color: var(--color-bg);
