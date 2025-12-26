@@ -11,17 +11,18 @@ type ModalProps = {
 
 export default function Modal({ open, onClose, children }: ModalProps) {
   useEffect(() => {
-    if (open) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
+    if (!open) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
   }, [open]);
 
-  if (!open) return null;
+  if (typeof document === "undefined" || !open) return null;
+
+  const portalTarget = document.body;
 
   return createPortal(
     <div
@@ -37,6 +38,6 @@ export default function Modal({ open, onClose, children }: ModalProps) {
         {children}
       </div>
     </div>,
-    document.body
+    portalTarget
   );
 }

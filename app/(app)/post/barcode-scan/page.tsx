@@ -219,54 +219,25 @@ export default function BarcodeScanPage() {
       {/* Warning overlay for 191/192 barcode detection */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center"
-        style={{
-          opacity: showWarning ? 1 : 0,
-          background: showWarning ? "rgba(0, 0, 0, 0.7)" : "transparent",
-          transition: "opacity 300ms ease, background 300ms ease",
-          paddingBottom: "25vh",
-        }}
+        className={`pointer-events-none fixed inset-0 z-50 flex items-center justify-center pb-[25vh] transition-all duration-300 ${
+          showWarning ? "opacity-100 bg-black/70" : "opacity-0 bg-transparent"
+        }`}
       >
         <div
-          style={{
-            textAlign: "center",
-            color: "#fff",
-            padding: "32px 24px",
-            animation: showWarning ? "slideUp 300ms ease forwards" : "none",
-          }}
+          className={`text-center text-white px-6 py-8 transition-all duration-300 ${
+            showWarning
+              ? "translate-y-0 opacity-100"
+              : "translate-y-5 opacity-0"
+          }`}
         >
-          <div
-            style={{
-              fontSize: "48px",
-              marginBottom: "16px",
-            }}
-          >
-            ⚠️
-          </div>
-          <p
-            style={{
-              fontSize: "18px",
-              lineHeight: "1.6",
-            }}
-          >
+          <div className="text-5xl mb-4">⚠️</div>
+          <p className="text-lg leading-relaxed">
             上のISBNバーコードを
             <br />
             読み取ってください
           </p>
         </div>
       </div>
-      <style>{`
-        @keyframes slideUp {
-          from {
-            transform: translateY(20px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-      `}</style>
 
       <Link href="/" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
         <span>&lt;</span> ファンサイトはこちら
