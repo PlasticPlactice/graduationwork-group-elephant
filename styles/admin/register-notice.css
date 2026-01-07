@@ -1,0 +1,155 @@
+.required{
+    color: #ff0000;
+}
+.thumbnail-container{
+    background-color: var(--color-main);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* プレビュー画像をコンテナ全体に広げる */
+.thumbnail-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.thumbnail-btn {
+    display: none;
+}
+.thumbnail-label{
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    font-weight: bold;
+    border-radius: var(--control-radius);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 8px 12px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.radio-label{
+    font-size: 20px;
+}
+input[type='datetime-local']::before{
+    content: attr(placeholder);
+    color: var(--color-text);
+}
+.design-btn,
+.color-btn {
+    box-shadow: none;
+    padding: 0.5rem 0;
+    height: fit-content;
+    width: 2.5rem;
+}
+
+.design-container{
+    border: 1px solid var(--color-main);
+    border-radius: var(--control-radius) var(--control-radius) 0px 0px;
+}
+
+.editor-container{
+    border: 1px solid var(--color-main);
+    border-radius: 0px 0px var(--control-radius) var(--control-radius);
+}
+
+.upload-btn {
+    display: none;
+}
+.upload-label{
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    font-weight: bold;
+    border-radius: var(--control-radius);
+    border: 1px solid var(--color-text);
+}
+
+/* upload preview を枠いっぱいに埋める */
+.upload-preview {
+  width: 80px;
+  height: 80px;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-main);
+  border-radius: var(--control-radius);
+}
+.upload-preview > .relative {
+  width: 100%;
+  height: 100%;
+}
+
+/* 中の img を枠いっぱいにして隙間をなくす */
+.upload-preview img { 
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* 削除ボタンを右上に重ねる */
+.upload-preview .remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 10;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: #ff0000;
+  padding: 0;
+}
+
+.draft-btn,
+.submit-btn {
+    font-size: var(--font-size-h1);
+    box-shadow: none;
+}
+.draft-btn{
+    background-color: #2563EB;
+    color: var(--color-bg);
+}
+.draft-btn:hover{
+    background-color: var(--color-bg);
+    color: #2563EB;
+    border: 1px solid #2563EB;
+}
+.submit-btn{
+    background-color: #16A34A;
+    color: var(--color-bg);
+}
+.submit-btn:hover{
+    background-color: var(--color-bg);
+    color: #16A34A;
+    border: 1px solid #16A34A;
+}
+.remove-btn{
+    height: fit-content;
+}
+/* モーダル */
+.preview-modal{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.close-btn{
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    box-shadow: none;
+    font-size: var(--font-size-h1);
+}
