@@ -1,5 +1,6 @@
 "use client";
 import "@/styles/admin/detail-notice.css"
+import "@/styles/admin/notice-upload.css"
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 

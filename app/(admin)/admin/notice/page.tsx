@@ -165,7 +165,19 @@ export default function Page() {
                     </thead>
                     <tbody className="border">
                         {noticeData.map((notice) => (
-                            <tr key={notice.id} className="notice-record" onClick={handleNotice}>
+                            <tr
+                                key={notice.id}
+                                className="notice-record"
+                                onClick={handleNotice}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                        e.preventDefault();
+                                        handleNotice();
+                                    }
+                                }}
+                            >
                                 <td>
                                     <span className="ml-5 py-1 px-9 status">{notice.status}</span>
                                 </td>
