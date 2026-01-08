@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Textbox from '@/components/ui/admin-textbox';
-import "@/styles/admin/register-notice.css"
+import "@/styles/admin/edit-notice.css"
 // tiptap
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
