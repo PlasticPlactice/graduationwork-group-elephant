@@ -209,6 +209,7 @@ export default function Page() {
             type="text"
             className="title w-full my-5"
             placeholder="タイトル"
+            value="第2回文庫X開始!!"
             required
         />
         <div className="flex justify-between items-center mb-5">

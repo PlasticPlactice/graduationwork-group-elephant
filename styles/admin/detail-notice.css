@@ -1,0 +1,90 @@
+/* プレビュー画像をコンテナ全体に広げる */
+.thumbnail-preview {
+  position: relative;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.notice-title{
+    margin: 1rem 0 0 0;
+}
+.date-range{
+    color: var(--color-sub);
+}
+.status{
+    color: #1A6838;
+    background-color: #DCFCE7;
+    border-radius: var(--control-radius);
+}
+.img-file{
+    color: var(--color-sub);
+}
+/* .img-border{
+  width: 80px;
+  height: 80px;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-main);
+  border-radius: var(--control-radius);
+  object-fit: cover;
+  object-position: center;
+  display: block;
+} */
+ .upload-preview {
+  width: 80px;
+  height: 80px;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-main);
+  border-radius: var(--control-radius);
+}
+.upload-preview img { 
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.not-public-btn{
+    box-shadow: none;
+    font-size: var(--font-size-h1);
+    background-color: var(--color-warning);
+}
+.close-btn{
+    box-shadow: none;
+    font-size: var(--font-size-h1);
+    background-color: #D0D2CF;
+    color: var(--color-text);
+}
+.edit-btn{
+    box-shadow: none;
+    font-size: var(--font-size-h1);
+}
+.not-public-btn:hover{
+    border: 1px solid var(--color-warning);
+    background-color: var(--color-bg);
+    color: var(--color-warning);
+}
+.close-btn:hover{
+    border: 1px solid #D0D2CF;
+    background-color: var( --color-text);
+    color: #D0D2CF;
+}
+.edit-btn:hover{
+    border: 1px solid var(--color-main);
+    background-color: var(--color-bg);
+    color: var(--color-main);
+}
