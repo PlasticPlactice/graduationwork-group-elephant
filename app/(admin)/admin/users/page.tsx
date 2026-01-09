@@ -69,7 +69,7 @@ export default function Page() {
 
     // モーダルが開いている時に背景のスクロールを防ぐ
     useEffect(() => {
-        if (isUserExitModalOpen) {
+        if (isUserDetailModalOpen) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
@@ -79,7 +79,7 @@ export default function Page() {
         return () => {
             document.body.style.overflow = 'unset';
         };
-    }, [isUserExitModalOpen]);
+    }, [isUserDetailModalOpen]);
 
     const handleUserDetail = () => {
         setIsUserDetailModalOpen(true);
