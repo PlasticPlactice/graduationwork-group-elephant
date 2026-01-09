@@ -115,3 +115,27 @@ details[open] .icon {
 .page-arrow {
   color: var(--color-admin-sub);
 }
+
+/* モーダル */
+.user-detail-modal{
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+  display: flex;
+  flex-direction: column;
+}
+.close-btn{
+  background-color: var(--color-bg);
+  box-shadow: none;
+}
+.user-data-title{
+  color: var(--color-sub);
+}
+.status{
+  color: #48885A;
+  background-color: var(--color-admin-active-background);
+  border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
