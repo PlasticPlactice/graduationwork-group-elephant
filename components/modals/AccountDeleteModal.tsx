@@ -77,7 +77,7 @@ export const AccountDeleteModal: React.FC<AccountDeleteModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="bg-white rounded-xl shadow-lg max-w-xs w-full p-6 relative"
+            className="bg-white rounded-xl shadow-md max-w-xs w-full p-6 relative"
             onClick={(e: React.MouseEvent<HTMLDivElement>) =>
               e.stopPropagation()
             }
@@ -102,7 +102,12 @@ export const AccountDeleteModal: React.FC<AccountDeleteModalProps> = ({
                 {isLoading ? "処理中..." : "退会する"}
               </button>
               <button
-                className="w-full bg-white text-slate-900 font-bold py-3 rounded-md text-center border-2 border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 hover:bg-slate-50 transition-colors"
+                className="w-full font-bold py-3 rounded-md text-center border focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  backgroundColor: "#f3f4f6",
+                  color: "#374151",
+                  borderColor: "#d1d5db",
+                }}
                 onClick={onClose}
                 ref={cancelBtnRef}
                 disabled={isLoading}
