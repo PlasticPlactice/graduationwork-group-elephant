@@ -5,8 +5,17 @@ import Textbox from '@/components/ui/admin-textbox';
 import AdminButton from '@/components/ui/admin-button';
 import "@/styles/admin/notice.css"; // CSSファイルをインポート
 import { Icon } from "@iconify/react";
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
+    const router = useRouter();
+    const handleNotice = () => {
+        router.push('/admin/detail-notice')
+    }
+    const handleRegister = () => {
+        router.push('/admin/register-notice')
+    }
+    
     // 3. 選択状態を管理するstate (初期値は 'public')
     const [selectedStatus, setSelectedStatus] = useState<string>("public");
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -41,6 +50,7 @@ export default function Page() {
                 label="お知らせ登録"
                 type="button"
                 className="register-btn ml-8 mt-5"
+                onClick={handleRegister}
             />
             {/*---------------------------
                 検索ボックス
@@ -155,7 +165,19 @@ export default function Page() {
                     </thead>
                     <tbody className="border">
                         {noticeData.map((notice) => (
-                            <tr key={notice.id} className="notice-record">
+                            <tr
+                                key={notice.id}
+                                className="notice-record"
+                                onClick={handleNotice}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                        e.preventDefault();
+                                        handleNotice();
+                                    }
+                                }}
+                            >
                                 <td>
                                     <span className="ml-5 py-1 px-9 status">{notice.status}</span>
                                 </td>
