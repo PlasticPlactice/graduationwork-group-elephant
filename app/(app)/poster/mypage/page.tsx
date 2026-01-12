@@ -5,6 +5,7 @@ import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
 
 import { ReviewPassedModal } from "@/components/modals/ReviewPassedModal";
+import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
 type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
 
@@ -71,6 +72,13 @@ export default function MyPage() {
 
   const [activeFilterTab, setActiveFilterTab] =
     useState<ReviewFilterTab>("all");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    // TODO: 退会処理のAPI呼び出し
+    console.log("退会処理を実行します");
+    setShowDeleteModal(false);
+  };
 
   const filteredReviews = sampleReviews.filter((review) => {
     if (activeFilterTab === "all") return true;
@@ -85,6 +93,12 @@ export default function MyPage() {
     <>
       {/* 1次審査通過モーダル */}
       <ReviewPassedModal open={showModal} onClose={() => setShowModal(false)} />
+      {/* 退会確認モーダル */}
+      <AccountDeleteModal
+        open={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteAccount}
+      />
       <div className="min-h-screen bg-white px-4 py-4 box-border">
         <div className="text-center mt-3 relative">
           <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
@@ -305,7 +319,11 @@ export default function MyPage() {
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>
                   <a
-                    href="/account/delete"
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowDeleteModal(true);
+                    }}
                     className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
                     aria-label="退会手続きへ"
                     style={{ color: "red" }}
