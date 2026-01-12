@@ -1,7 +1,8 @@
 "use client"
 import "@/styles/admin/users.css"
 import { Icon } from "@iconify/react";
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import AdminButton from '@/components/ui/admin-button';
 
 interface UserExitModalProps {
     isOpen: boolean;
@@ -10,7 +11,7 @@ interface UserExitModalProps {
 
 export default function UserDetailModal({ isOpen, onClose }: UserExitModalProps) {
     const [openRows, setOpenRows] = useState<number[]>([]);
-    const [displayCount, setDisplayCount] = useState<number | "all">(10);
+    const [displayCount, setDisplayCount] = useState<number | "all">(2);
     
     if (!isOpen) return null;
 
@@ -169,10 +170,22 @@ export default function UserDetailModal({ isOpen, onClose }: UserExitModalProps)
                                     )}
                                 </>
                             ))}
-                            {/* todo:"さらに表示"を押してデータの出てくる量を増やす */}
-                            <p>さらに表示</p>
                         </tbody>
                     </table>
+                    <div className="text-center p-4">
+                        <button
+                            onClick={() => setDisplayCount(prev => prev === "all" ? 2 : "all")}
+                            className="data-row-link"
+                        >
+                            {displayCount === "all" ? "表示を戻す" : "さらに表示"}
+                        </button>
+                    </div>
+                </div>
+                <div className="py-5 mx-8 flex justify-end">
+                    <AdminButton
+                        label="退会"
+                        className="exit-btn"
+                    />
                 </div>
             </div>
         </div>
