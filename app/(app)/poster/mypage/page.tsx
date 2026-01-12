@@ -309,7 +309,7 @@ export default function MyPage() {
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>
                   <a
-                    href="/mypage/password"
+                    href="/poster/mypage/password"
                     className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-sky-300"
                     style={{ color: "var(--color-text)" }}
                     aria-label="パスワードの変更へ"
