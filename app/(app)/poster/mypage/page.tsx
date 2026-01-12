@@ -9,6 +9,8 @@ import { ProfileEditModal } from "@/components/modals/ProfileEditModal";
 import { MassageModal } from "@/components/modals/MassageModal";
 import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
+import Styles from "@/app/styles/poster.module.css";
+
 type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
 
 export default function MyPage() {
@@ -335,7 +337,6 @@ export default function MyPage() {
                     退会する
                   </a>
                 </li>
-                <WithdrawConfirmModal userName={userName} open={showDeleteAccountModal} onClose={() => setShowDeleteAccountModal(false)} />
               </ul>
             </div>
           </div>
