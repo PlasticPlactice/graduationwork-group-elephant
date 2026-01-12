@@ -1,42 +1,48 @@
 "use client"
+import React, { useState } from 'react';
 import "@/styles/admin/users.css"
 import { Icon } from "@iconify/react";
-import { useState, useEffect } from 'react';
 import AdminButton from '@/components/ui/admin-button';
 
-interface UserExitModalProps {
+interface UserDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onOpenUserExit?: () => void;
 }
 
-export default function UserDetailModal({ isOpen, onClose }: UserExitModalProps) {
+export default function UserDetailModal({ isOpen, onClose, onOpenUserExit }: UserDetailModalProps) {
     const [openRows, setOpenRows] = useState<number[]>([]);
     const [displayCount, setDisplayCount] = useState<number | "all">(2);
-    
-    if (!isOpen) return null;
 
     const toggleRow = (id: number) => {
-        setOpenRows(prev => 
-            prev.includes(id) 
+        setOpenRows(prev =>
+            prev.includes(id)
                 ? prev.filter(rowId => rowId !== id)
                 : [...prev, id]
         );
     };
     // サンプルデータ
     const tableData = [
-        { id: 10, title: '転生したらスライムだった件', eventname: '第1回文庫X', status: '一次通過'},
-        { id: 11, title: '本好きの下剋上', eventname: '第1回文庫X', status: '一次通過'},
-        { id: 12, title: '無職転生', eventname: '第1回文庫X', status: '一次通過'},
+        { id: 10, title: '転生したらスライムだった件', eventname: '第1回文庫X', status: '一次通過' },
+        { id: 11, title: '本好きの下剋上', eventname: '第1回文庫X', status: '一次通過' },
+        { id: 12, title: '無職転生', eventname: '第1回文庫X', status: '一次通過' },
         { id: 13, title: 'オーバーロード', eventname: '第1回文庫X', status: '一次通過' },
-        { id: 14, title: 'この素晴らしい世界に祝福を!', eventname: '第1回文庫X', status: '一次通過'},
-        { id: 15, title: 'Re:ゼロから始める異世界生活', eventname: '第1回文庫X', status: '一次通過'},
-        { id: 16, title: '幼女戦記', eventname: '第1回文庫X', status: '一次通過'},
+        { id: 14, title: 'この素晴らしい世界に祝福を!', eventname: '第1回文庫X', status: '一次通過' },
+        { id: 15, title: 'Re:ゼロから始める異世界生活', eventname: '第1回文庫X', status: '一次通過' },
+        { id: 16, title: '幼女戦記', eventname: '第1回文庫X', status: '一次通過' },
     ];
     // 表示するデータをスライス
-    const displayedData = displayCount === "all" 
-        ? tableData 
+    const displayedData = displayCount === "all"
+        ? tableData
         : tableData.slice(0, displayCount);
-        
+    
+    const handleUserExit = () => {
+        // 詳細モーダルを閉じ、親に退会モーダルを開くよう通知
+        onClose();
+        onOpenUserExit?.();
+    };
+
+    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 user-detail-modal bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
@@ -44,7 +50,7 @@ export default function UserDetailModal({ isOpen, onClose }: UserExitModalProps)
                 <div className="flex justify-between items-center p-6 border-b">
                     <h2 className="text-2xl font-bold">ユーザー詳細</h2>
                     <button onClick={onClose} className="close-btn text-black">
-                        <Icon icon="mdi:close" width={24} className='text-black'/>
+                        <Icon icon="mdi:close" width={24} className='text-black' />
                     </button>
                 </div>
                 <div className="user-data-title grid grid-cols-5 px-6 text-center">
@@ -94,8 +100,8 @@ export default function UserDetailModal({ isOpen, onClose }: UserExitModalProps)
                         {/* アコーディオン */}
                         <tbody className='border'>
                             {displayedData.map((row) => (
-                                <>
-                                    <tr key={row.id} className='table-row'>
+                                <React.Fragment key={row.id}>
+                                    <tr className='table-row'>
                                         <td className='text-left'>
                                             <span className='status-text font-bold py-1 px-6 ml-3'>{row.status}</span>
                                         </td>
@@ -109,14 +115,14 @@ export default function UserDetailModal({ isOpen, onClose }: UserExitModalProps)
                                             <span>{row.eventname}</span>
                                         </td>
                                         <td className="text-right align-middle pr-3">
-                                            <button 
+                                            <button
                                                 onClick={() => toggleRow(row.id)}
                                                 className='accordion-toggle'
                                             >
-                                                <Icon 
-                                                    icon='fe:arrow-up' 
+                                                <Icon
+                                                    icon='fe:arrow-up'
                                                     rotate={2}
-                                                    className={`icon transition-transform ${openRows.includes(row.id) ? 'rotate-180' : 'rotate-0'}`}                                            />
+                                                    className={`icon transition-transform ${openRows.includes(row.id) ? 'rotate-180' : 'rotate-0'}`} />
                                             </button>
                                         </td>
                                     </tr>
@@ -168,7 +174,7 @@ export default function UserDetailModal({ isOpen, onClose }: UserExitModalProps)
                                             </td>
                                         </tr>
                                     )}
-                                </>
+                                </React.Fragment>
                             ))}
                         </tbody>
                     </table>
@@ -185,9 +191,10 @@ export default function UserDetailModal({ isOpen, onClose }: UserExitModalProps)
                     <AdminButton
                         label="退会"
                         className="exit-btn"
+                        onClick={handleUserExit}
                     />
                 </div>
             </div>
         </div>
-    )
-}
+        )
+    };

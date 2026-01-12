@@ -346,9 +346,17 @@ export default function Page() {
                 >5</button>
                 <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
             </div>
-
             {/* モーダル */}
-            <UserDetailModal isOpen={isUserDetailModalOpen} onClose={closeModal}/>
+            <UserDetailModal
+                isOpen={isUserDetailModalOpen}
+                onClose={() => setIsUserDetailModalOpen(false)}
+                onOpenUserExit={() => setIsUserExitModalOpen(true)}
+            />
+
+            <UserExitModal
+                isOpen={isUserExitModalOpen}
+                onClose={() => setIsUserExitModalOpen(false)}
+            />
         </main>
     );
 }
