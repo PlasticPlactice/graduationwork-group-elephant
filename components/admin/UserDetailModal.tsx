@@ -49,7 +49,7 @@ export default function UserDetailModal({ isOpen, onClose, onOpenUserExit }: Use
             <div className="modal-content bg-white rounded-lg w-11/12 max-w-8xl max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
                 <div className="flex justify-between items-center p-6 border-b">
                     <h2 className="text-2xl font-bold">ユーザー詳細</h2>
-                    <button onClick={onClose} className="close-btn text-black">
+                    <button onClick={onClose} className="close-btn text-black" aria-label='閉じる'>
                         <Icon icon="mdi:close" width={24} className='text-black' />
                     </button>
                 </div>
@@ -130,7 +130,7 @@ export default function UserDetailModal({ isOpen, onClose, onOpenUserExit }: Use
                                         <tr key={`${row.id}-details`} className='details-row'>
                                             <td colSpan={5} className='details-content'>
                                                 <div className='p-4 flex'>
-                                                    <section className='w-4/7'>
+                                                    <section className='w-[57.142%]'>
                                                         <h3 className='font-bold mb-2 ml-4'>書評本文</h3>
                                                         <div className='book-review-section w-auto h-84 ml-4 p-2'>
                                                             <p>１ヶ月前、私は会社の先輩の冴子さえこさんと付き合うことになった。
@@ -146,7 +146,7 @@ export default function UserDetailModal({ isOpen, onClose, onOpenUserExit }: Use
                                                         </div>
                                                     </section>
     
-                                                    <section className='ml-10 w-3/7'>
+                                                    <section className='ml-10 w-[42.857%]'>
                                                         <h3 className='font-bold mb-2'>書籍情報</h3>
                                                         <div>
                                                             <div className='book-data'>

@@ -191,12 +191,6 @@ details[open] .icon {
   box-sizing: border-box;
 }
 /* アコーディオン */
-.accordion-toggle{
-  background-color: var(--color-bg);
-  box-shadow: none;
-  color: var(--color-text);
-  font-size: var(--font-size-h1);
-}
 /* アコーディオンの中 */
 .details-content h3{
   font-size: var(--font-size-h1);

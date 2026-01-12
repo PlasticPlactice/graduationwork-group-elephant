@@ -69,7 +69,7 @@ export default function Page() {
 
     // モーダルが開いている時に背景のスクロールを防ぐ
     useEffect(() => {
-        if (isUserDetailModalOpen) {
+        if (isUserDetailModalOpen || isUserExitModalOpen) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
@@ -79,20 +79,11 @@ export default function Page() {
         return () => {
             document.body.style.overflow = 'unset';
         };
-    }, [isUserDetailModalOpen]);
+    }, [isUserDetailModalOpen,isUserExitModalOpen]);
 
     const handleUserDetail = () => {
         setIsUserDetailModalOpen(true);
     };
-
-    const handleUserExit = () => {
-        setIsUserExitModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsUserDetailModalOpen(false);
-        setIsUserExitModalOpen(false);
-    }
     return (
         <main className="users-container">
             {/*---------------------------
