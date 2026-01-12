@@ -54,3 +54,26 @@
     background-color: var(--color-bg);
     color: var(--color-main);
 }
+
+/* モーダル */
+.notice-disable-modal{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-btn-common{
+    box-shadow: none;
+    width: 10rem;
+    font-size: 1rem;
+}
+.back-btn{
+    background-color: var(--color-bg);
+    color: var(--color-admin-sub);
+    border: 1px solid var(--color-admin-sub);
+}
+.disable-btn{
+    background-color: var(--color-warning);
+}
+.disable-btn:hover{
+    background-color: var(--color-bg);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning);
+}
