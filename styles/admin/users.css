@@ -3,16 +3,32 @@
   background-color: var(--color-bg);
   color: var(--color-text);
 }
-
-/* 検索ボックスエリア */
-.search-area {
-  border: 1px solid #8B8B8B;
+details {
+  border: 1px solid var(--color-main);
   border-radius: var(--control-radius);
 }
+summary {
+  list-style-type: none;
+  font-size: 20px;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .icon {
+  transform: rotate(180deg);
+}
 
+/* 検索ボックスエリア */
 .custom-input {
-    height: 2.8rem;
-    width: 17rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 40rem;
+  min-width: 12rem;
+  height: 2.8rem;
+}
+.search-field {
+  flex: 1 1;
+  max-width: 40rem;
 }
 .age-input {
     width: 6rem;
@@ -25,7 +41,7 @@
 }
 .search-btn {
   width: 15rem;
-  font-size: var(--page-padding-lg);
+  height: 2.5rem;
 }
 
 
@@ -43,20 +59,34 @@
   border-bottom: 1px solid var(--color-input-bg);
 }
 
+.status-badge{
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
 .active {
   color: #48885A;
-  background-color: #71F486;
+  background-color: var(--color-admin-active-background);
   border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 .disable {
   color: #828848;
-  background-color: #F4F471;
+  background-color: var(--color-admin-disable-background);
   border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 .ban {
   color: #884849;
-  background-color: #F47171;
+  background-color: var(--color-admin-ban-background);
   border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1.9rem;
+  padding-right: 1.9rem;
 }
 .users-record:hover {
   background-color: var(--color-input-text);
@@ -70,7 +100,7 @@
   font-size: var(--font-size-h1);
   background-color: var(--color-bg);
   border-radius: var(--control-radius);
-  color: var(--color-sub);
+  color: var(--color-admin-sub);
 }
 .page-section .page-number:hover {
   font-size: var(--font-size-h1);
@@ -83,5 +113,5 @@
   color: var(--color-bg);
 }
 .page-arrow {
-  color: var(--color-sub);
+  color: var(--color-admin-sub);
 }
