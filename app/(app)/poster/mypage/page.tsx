@@ -9,7 +9,7 @@ import { ProfileEditModal } from "@/components/modals/ProfileEditModal";
 import { MassageModal } from "@/components/modals/MassageModal";
 import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
-import Styles from "@/app/styles/poster.module.css";
+import Styles from "@/styles/app/poster.module.css";
 
 type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
 
