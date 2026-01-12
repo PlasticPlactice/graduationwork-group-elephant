@@ -236,3 +236,24 @@ details[open] .icon {
   box-shadow: none;
   padding: 1.5rem 0;
 }
+
+/* 退会モーダル */
+.user-exit-modal{
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.exit-area{
+  height: 10rem;
+}
+.exit-modal-common{
+  width: 13rem;
+  height: 2.5rem;
+  font-size: 1.5rem;
+  box-shadow: none;
+  margin: 1rem 0;
+  padding: 1.5rem 0;
+}
+.back-btn{
+  background-color: var(--color-bg);
+  color: var(--color-admin-sub);
+  border: 1px solid var(--color-admin-sub);
+}
