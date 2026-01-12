@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ========================
+// ユーザー管理
+// ========================
+
+model User {
+  id                       Int      @id @default(autoincrement())
+  account_id               String   @unique @db.VarChar(255)
+  password                 String   @db.VarChar(255)
+  nickname                 String   @db.VarChar(255)
+  address                  String   @db.VarChar(255)
+  sub_address              String   @db.VarChar(255)
+  age                      Int
+  gender                   Int
+  self_introduction        String
+  color                    String   @db.VarChar(255)
+  pattern                  String   @db.VarChar(255)
+  pattern_color            String   @db.VarChar(255)
+  user_status              Int
+  user_stop_reason         String
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  bookReviews              BookReview[]
+  bookReviewReactions      BookReviewReaction[]
+  userMessages             UserMessage[]
+  reactions                Reaction[]
+
+  @@index([deleted_flag])
+  @@index([user_status])
+}
+
+model Admin {
+  id                       Int      @id @default(autoincrement())
+  email                    String   @unique @db.VarChar(255)
+  password                 String   @db.VarChar(255)
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  notifications            Notification[]
+  messages                 Message[]
+  passwordResets           PasswordReset[]
+
+  @@index([deleted_flag])
+}
+
+// ========================
+// 書籍・書評関連
+// ========================
+
+model Book {
+  id                       Int      @id @default(autoincrement())
+  isbn                     String   @db.VarChar(255)
+  title                    String   @db.VarChar(255)
+  title_ruby               String?  @db.VarChar(255)
+  author                   String?  @db.VarChar(255)
+  author_ruby              String?  @db.VarChar(255)
+  all_pages                Int?
+  publisher                String?  @db.VarChar(255)
+  height_size              Int?
+  width_size               Int?
+  caption                  String?
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+
+  bookReviews              BookReview[]
+
+  @@index([isbn])
+}
+
+model BookReview {
+  id                       Int      @id @default(autoincrement())
+  user_id                  Int
+  event_id                 Int?
+  review                   String
+  isbn                     String   @db.VarChar(255)
+  book_title               String   @db.VarChar(255)
+  book_title_ruby          String?  @db.VarChar(255)
+  author                   String?  @db.VarChar(255)
+  author_ruby              String?  @db.VarChar(255)
+  all_pages                Int?
+  publishers               String?  @db.VarChar(255)
+  book_height_size         Int?
+  book_width_size          Int?
+  caption                  String?
+  evaluations_status       Int
+  evaluations_count        Int      @default(0)
+  nickname                 String   @db.VarChar(255)
+  address                  String   @db.VarChar(255)
+  age                      Int
+  gender                   Int
+  self_introduction        String
+  color                    String   @db.VarChar(255)
+  pattern                  String   @db.VarChar(255)
+  pattern_color            String   @db.VarChar(255)
+  public_flag              Boolean  @default(false)
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  user                     User     @relation(fields: [user_id], references: [id])
+  book                     Book     @relation(fields: [isbn], references: [isbn])
+  event                    Event?   @relation(fields: [event_id], references: [id])
+  bookReviewReactions      BookReviewReaction[]
+
+  @@index([user_id])
+  @@index([isbn])
+  @@index([event_id])
+  @@index([deleted_flag])
+  @@index([public_flag])
+}
+
+model BookReviewReaction {
+  id                       Int      @id @default(autoincrement())
+  reaction_id              Int
+  book_review_id           Int
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+
+  reaction                 Reaction @relation(fields: [reaction_id], references: [id])
+  bookReview               BookReview @relation(fields: [book_review_id], references: [id])
+
+  @@unique([reaction_id, book_review_id])
+  @@index([book_review_id])
+}
+
+// ========================
+// イベント関連
+// ========================
+
+model Event {
+  id                       Int      @id @default(autoincrement())
+  title                    String
+  detail                   String?
+  status                   Int
+  start_period             DateTime @db.Timestamptz(3)
+  end_period               DateTime @db.Timestamptz(3)
+  first_voting_start_period DateTime @db.Timestamptz(3)
+  first_voting_end_period  DateTime @db.Timestamptz(3)
+  second_voting_start_period DateTime @db.Timestamptz(3)
+  second_voting_end_period DateTime @db.Timestamptz(3)
+  public_flag              Boolean  @default(false)
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  bookReviews              BookReview[]
+
+  @@index([deleted_flag])
+  @@index([status])
+  @@index([public_flag])
+}
+
+model Reaction {
+  id                       Int      @id @default(autoincrement())
+  reaction                 String   @db.VarChar(255)
+  icon_path                String?  @db.VarChar(255)
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  bookReviewReactions      BookReviewReaction[]
+  users                    User[]
+
+  @@index([deleted_flag])
+}
+
+// ========================
+// お知らせ・メッセージ関連
+// ========================
+
+model Notification {
+  id                       Int      @id @default(autoincrement())
+  admin_id                 Int
+  title                    String   @db.VarChar(255)
+  detail                   String
+  public_flag              Boolean  @default(false)
+  public_date              DateTime  @default(now()) @db.Timestamptz(3)
+  notification_type        Int
+  draft_flag               Boolean  @default(false)
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  admin                    Admin    @relation(fields: [admin_id], references: [id])
+  notificationFiles        NotificationFile[]
+
+  @@index([admin_id])
+  @@index([deleted_flag])
+  @@index([public_flag])
+  @@index([draft_flag])
+}
+
+model NotificationFile {
+  id                       Int      @id @default(autoincrement())
+  file_id                  Int
+  notification_id          Int
+  sort_order               Int
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  file                     File     @relation(fields: [file_id], references: [id])
+  notification             Notification @relation(fields: [notification_id], references: [id])
+
+  @@index([file_id])
+  @@index([notification_id])
+  @@index([deleted_flag])
+}
+
+model Message {
+  id                       Int      @id @default(autoincrement())
+  admin_id                 Int
+  message                  String
+  draft_flag               Boolean  @default(true)
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  admin                    Admin    @relation(fields: [admin_id], references: [id])
+  userMessages             UserMessage[]
+
+  @@index([admin_id])
+  @@index([deleted_flag])
+  @@index([draft_flag])
+}
+
+model UserMessage {
+  id                       Int      @id @default(autoincrement())
+  user_id                  Int
+  message_id               Int
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  user                     User     @relation(fields: [user_id], references: [id])
+  message                  Message  @relation(fields: [message_id], references: [id])
+
+  @@index([user_id])
+  @@index([message_id])
+  @@index([deleted_flag])
+}
+
+// ========================
+// パスワードリセット
+// ========================
+
+model PasswordReset {
+  id                       Int      @id @default(autoincrement())
+  admin_id                 Int
+  token                    String   @unique
+  expires_at               DateTime
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+
+  admin                    Admin    @relation(fields: [admin_id], references: [id])
+
+  @@index([admin_id])
+  @@index([token])
+}
+
+// ========================
+// ファイル管理
+// ========================
+
+model File {
+  id                       Int      @id @default(autoincrement())
+  name                     String
+  data_path                String
+  type                     String
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  notificationFiles        NotificationFile[]
+
+  @@index([deleted_flag])
+}
