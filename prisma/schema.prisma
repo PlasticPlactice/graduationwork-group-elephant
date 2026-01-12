@@ -24,13 +24,12 @@ model User {
   pattern                  String   @db.VarChar(255)
   pattern_color            String   @db.VarChar(255)
   user_status              Int
-  user_stop_reason         String
+  user_stop_reason         String?
   created_at               DateTime  @default(now()) @db.Timestamptz(3)
   updated_at               DateTime  @updatedAt @db.Timestamptz(3)
   deleted_flag             Boolean  @default(false)
 
   bookReviews              BookReview[]
-  bookReviewReactions      BookReviewReaction[]
   userMessages             UserMessage[]
   reactions                Reaction[]
 
@@ -59,7 +58,7 @@ model Admin {
 
 model Book {
   id                       Int      @id @default(autoincrement())
-  isbn                     String   @db.VarChar(255)
+  isbn                     String   @unique @db.VarChar(255)
   title                    String   @db.VarChar(255)
   title_ruby               String?  @db.VarChar(255)
   author                   String?  @db.VarChar(255)
@@ -74,7 +73,6 @@ model Book {
 
   bookReviews              BookReview[]
 
-  @@index([isbn])
 }
 
 model BookReview {
@@ -256,7 +254,7 @@ model PasswordReset {
   id                       Int      @id @default(autoincrement())
   admin_id                 Int
   token                    String   @unique
-  expires_at               DateTime
+  expires_at               DateTime  @db.Timestamptz(3)
   created_at               DateTime  @default(now()) @db.Timestamptz(3)
 
   admin                    Admin    @relation(fields: [admin_id], references: [id])
