@@ -5,13 +5,24 @@ import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
 
 import { ReviewPassedModal } from "@/components/modals/ReviewPassedModal";
+import { ProfileEditModal } from "@/components/modals/ProfileEditModal";
+import { WithdrawConfirmModal } from "@/components/modals/WithdrawConfirmModal";
+import { MassageModal } from "@/components/modals/MassageModal";
+
+import Styles from "@/styles/app/poster.module.css";
 
 type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
 
 export default function MyPage() {
   // 初期表示時にモーダルを表示
   const [showModal, setShowModal] = useState(true);
+  // プロフィール編集、退会確認、DM（運営からのお知らせ）モーダルの表示
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+  const [showDMModal, setShowDMModal] = useState(false);
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  // ユーザーネーム
+  const userName = "タナカタロウ";
   const sampleEvents = [
     {
       title: "第1回 文庫Xイベント",
@@ -102,6 +113,7 @@ export default function MyPage() {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              onClick={() => setShowDMModal(true)}
             >
               <path
                 d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v11A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5v-11z"
@@ -118,6 +130,7 @@ export default function MyPage() {
                 strokeLinejoin="round"
               />
             </svg>
+            <MassageModal open={showDMModal} userName="タナカタロウ" onClose={() => setShowDMModal(false)} />
           </div>
         </div>
 
@@ -284,15 +297,9 @@ export default function MyPage() {
                 }}
               >
                 <li style={{ borderColor: "var(--color-sub)" }}>
-                  <a
-                    href="/mypage/edit"
-                    className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-sky-300"
-                    style={{ color: "var(--color-text)" }}
-                    aria-label="プロフィールの編集へ"
-                  >
-                    プロフィールの編集
-                  </a>
+                  <button onClick={() => setShowEditProfileModal(true)} className={`${Styles.mypage__linkButton}`}>プロフィールの編集</button>
                 </li>
+                <ProfileEditModal open={showEditProfileModal} onClose={() => setShowEditProfileModal(false)} />
                 <li style={{ borderColor: "var(--color-sub)" }}>
                   <a
                     href="/mypage/password"
@@ -304,15 +311,9 @@ export default function MyPage() {
                   </a>
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>
-                  <a
-                    href="/account/delete"
-                    className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
-                    aria-label="退会手続きへ"
-                    style={{ color: "red" }}
-                  >
-                    退会する
-                  </a>
+                  <button onClick={() => setShowDeleteAccountModal(true)} className={`${Styles.mypage__linkButton}`}>退会手続き</button>
                 </li>
+                <WithdrawConfirmModal userName={userName} open={showDeleteAccountModal} onClose={() => setShowDeleteAccountModal(false)} />
               </ul>
             </div>
           </div>
