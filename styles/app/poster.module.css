@@ -150,7 +150,7 @@
   background-color: var(--color-sub);
 }
 
-@keyflames fadeInOut {
+@keyframes fadeInOut {
   0% {
     opacity: 0;
     transform: translateY(-5px);
@@ -315,4 +315,18 @@
   justify-content: start;
   align-items: center;
   margin-bottom: 4px;
+}
+
+.mypage__linkButton {
+  width: 100%;
+  height: var(--control-height);
+  border: none !important;
+  border-radius: var(--control-radius);
+  background-color: white !important;
+  color: #000000;
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  box-shadow: none;
 }
