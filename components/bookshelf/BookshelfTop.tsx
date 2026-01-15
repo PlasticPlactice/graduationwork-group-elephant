@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { BookshelfLayout } from "@/components/bookshelf/BookshelfLayout";
 import { BOOKS, type Book } from "@/components/bookshelf/bookData";
 import { BookReviewModal } from "@/components/bookshelf/BookReviewModal";
@@ -70,6 +70,9 @@ function renderShelfRow(
 }
 
 export function BookshelfTop() {
+  const shelfTopRef = useRef<HTMLDivElement | null>(null);
+  const scatterTopRef = useRef<HTMLDivElement | null>(null);
+
   const [booksState, setBooksState] = useState<BooksState>(() => ({
     shelves: createEmptyShelves(),
     scatter: createInitialScatterEntries(),
@@ -161,15 +164,33 @@ export function BookshelfTop() {
     setModalState(null);
   }, [booksState.shelves, modalState, moveScatterBookToShelf]);
 
+  const scrollToScatter = useCallback(() => {
+    const SCATTER_SCROLL_OFFSET_PX = 30;
+    const target = scatterTopRef.current;
+    if (!target) return;
+    const top =
+      target.getBoundingClientRect().top +
+      window.scrollY +
+      SCATTER_SCROLL_OFFSET_PX;
+    window.scrollTo({ top, behavior: "smooth" });
+  }, []);
+
+  const scrollToShelf = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   return (
     <>
-      <div className="mb-6 flex flex-col items-center gap-3 text-center">
+      <div
+        ref={shelfTopRef}
+        className="mb-4 flex flex-col items-center gap-3 text-center"
+      >
         <h1 className="text-2xl font-bold text-slate-900">
           第〇回文庫Xイベント
         </h1>
       </div>
       <div className="relative mx-auto w-full max-w-md sm:max-w-4xl">
-        <div className="relative h-[70vh] w-full overflow-hidden">
+        <div className="relative h-[73vh] w-full overflow-hidden">
           <Image
             src="/bookshelf/Hondana-haikei.png"
             alt="本棚背景"
@@ -193,11 +214,24 @@ export function BookshelfTop() {
         </div>
       </div>
       <div className="mt-4 flex flex-col items-center gap-2 text-pink-500">
-        <span aria-hidden="true" className="text-4xl font-black leading-none">
-          ▼
-        </span>
+        <button
+          type="button"
+          onClick={scrollToScatter}
+          aria-label="下の散らばっている本へ移動"
+          className="leading-none"
+        >
+          <span aria-hidden="true" className="text-4xl font-black leading-none">
+            ▼
+          </span>
+        </button>
       </div>
-      <ScatterArea bookSlots={scatter} onBookSelect={handleScatterBookSelect} />
+      <div ref={scatterTopRef} />
+      <ScatterArea
+        className="mt-0"
+        bookSlots={scatter}
+        onBookSelect={handleScatterBookSelect}
+        onBackToShelf={scrollToShelf}
+      />
       <BookReviewModal
         book={modalState?.book}
         open={Boolean(modalState)}

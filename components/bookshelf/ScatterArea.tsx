@@ -16,6 +16,7 @@ type ScatterAreaProps = {
   bookSlots?: ScatterEntry[];
   className?: string;
   onBookSelect?: (entry: ScatterEntry) => void;
+  onBackToShelf?: () => void;
 };
 
 type ScatterSlot = {
@@ -47,6 +48,7 @@ export function ScatterArea({
   bookSlots,
   className = "",
   onBookSelect,
+  onBackToShelf,
 }: ScatterAreaProps) {
   const scatterEntries =
     bookSlots ?? books.map((book, idx) => ({ book, slotIndex: idx }));
@@ -56,9 +58,25 @@ export function ScatterArea({
       className={`relative mx-auto mt-12 w-full max-w-5xl px-4 ${className}`}
     >
       <div className="mb-4 flex flex-col items-center text-pink-500">
-        <span aria-hidden="true" className="text-4xl font-black leading-none">
-          ▲
-        </span>
+        {onBackToShelf ? (
+          <button
+            type="button"
+            onClick={onBackToShelf}
+            aria-label="本棚へ戻る"
+            className="leading-none"
+          >
+            <span
+              aria-hidden="true"
+              className="text-4xl font-black leading-none"
+            >
+              ▲
+            </span>
+          </button>
+        ) : (
+          <span aria-hidden="true" className="text-4xl font-black leading-none">
+            ▲
+          </span>
+        )}
       </div>
       <div className="relative w-full" style={{ height: SCATTER_AREA_HEIGHT }}>
         <div className="absolute inset-0 rounded-4xl border border-white/40 bg-white/50 shadow-[0_20px_45px_rgba(15,23,42,0.12)] backdrop-blur" />
