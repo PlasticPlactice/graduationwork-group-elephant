@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 import { ReviewPassedModal } from "@/components/modals/ReviewPassedModal";
 import { ProfileEditModal } from "@/components/modals/ProfileEditModal";
@@ -13,16 +14,43 @@ import Styles from "@/styles/app/poster.module.css";
 
 type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
 
+interface ProfileData {
+  nickName: string;
+  address: string;
+  addressDetail: string;
+  age: number;
+  gender: number;
+  introduction: string;
+}
+
 export default function MyPage() {
   // 初期表示時にモーダルを表示
   const [showModal, setShowModal] = useState(true);
   // プロフィール編集、退会確認、DM（運営からのお知らせ）モーダルの表示
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
-  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [showDMModal, setShowDMModal] = useState(false);
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-  // ユーザーネーム
-  const userName = "タナカタロウ";
+
+  // ユーザーデータ
+  const [userData, setUserData] = useState<ProfileData | null>(null);
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/profile");
+      if (res.ok) {
+        const data = await res.json();
+        setUserData(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const sampleEvents = [
     {
       title: "第1回 文庫Xイベント",
@@ -83,11 +111,39 @@ export default function MyPage() {
   const [activeFilterTab, setActiveFilterTab] =
     useState<ReviewFilterTab>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteAccount = async () => {
-    // TODO: 退会処理のAPI呼び出し
-    console.log("退会処理を実行します");
-    setShowDeleteModal(false);
+    if (isDeleting) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch("/api/user/withdraw", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        // 退会成功
+        alert("退会処理が完了しました。ご利用ありがとうございました。");
+        // ログアウトしてトップページへ
+        await signOut({ callbackUrl: "/" });
+      } else {
+        const data = await res.json();
+        alert(
+          data.message || "退会処理に失敗しました。もう一度お試しください。"
+        );
+        setIsDeleting(false);
+      }
+    } catch (error) {
+      console.error("Withdraw error:", error);
+      alert("退会処理中にエラーが発生しました。もう一度お試しください。");
+      setIsDeleting(false);
+    } finally {
+      setShowDeleteModal(false);
+    }
   };
 
   const filteredReviews = sampleReviews.filter((review) => {
@@ -108,12 +164,15 @@ export default function MyPage() {
         open={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteAccount}
+        isLoading={isDeleting}
       />
       <div className="min-h-screen bg-white px-4 py-4 box-border">
         <div className="text-center mt-3 relative">
           <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
           <div className="flex items-center justify-center gap-3 mt-1">
-            <div className="text-rose-500 font-bold">○○○さん</div>
+            <div className="text-rose-500 font-bold">
+              {userData?.nickName || "ゲスト"}さん
+            </div>
           </div>
           <div
             className="absolute right-3 top-2 flex items-center"
@@ -143,7 +202,10 @@ export default function MyPage() {
                 strokeLinejoin="round"
               />
             </svg>
-            <MassageModal open={showDMModal} userName="タナカタロウ" onClose={() => setShowDMModal(false)} />
+            <MassageModal
+              open={showDMModal}
+              onClose={() => setShowDMModal(false)}
+            />
           </div>
         </div>
 
@@ -310,9 +372,21 @@ export default function MyPage() {
                 }}
               >
                 <li style={{ borderColor: "var(--color-sub)" }}>
-                  <button onClick={() => setShowEditProfileModal(true)} className={`${Styles.mypage__linkButton}`}>プロフィールの編集</button>
+                  <button
+                    onClick={() => setShowEditProfileModal(true)}
+                    className={`${Styles.mypage__linkButton}`}
+                  >
+                    プロフィールの編集
+                  </button>
                 </li>
-                <ProfileEditModal open={showEditProfileModal} onClose={() => setShowEditProfileModal(false)} />
+                {userData && (
+                  <ProfileEditModal
+                    open={showEditProfileModal}
+                    onClose={() => setShowEditProfileModal(false)}
+                    profileData={userData}
+                    onUpdate={fetchUserData}
+                  />
+                )}
                 <li style={{ borderColor: "var(--color-sub)" }}>
                   <a
                     href="/poster/mypage/password"
