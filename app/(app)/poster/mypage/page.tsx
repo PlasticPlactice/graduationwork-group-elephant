@@ -205,6 +205,7 @@ export default function MyPage() {
             <MassageModal
               open={showDMModal}
               onClose={() => setShowDMModal(false)}
+              userName={userData?.nickName || "ゲスト"}
             />
           </div>
         </div>
