@@ -1,10 +1,10 @@
-import type { CSSProperties } from "react";
+﻿import type { CSSProperties, Ref } from "react";
 import type { Book } from "@/components/bookshelf/bookData";
 import { BOOKS } from "@/components/bookshelf/bookData";
 import { ScatterBook } from "@/components/bookshelf/ScatterBook";
 
-const SCATTER_AREA_HEIGHT = "90vh"; // viewport-based height for responsive layout
-const SCATTER_ROW_OFFSET = 60; // vertical spacing between stacked scatter rows in px
+const SCATTER_AREA_HEIGHT = "90vh";
+const SCATTER_ROW_OFFSET = 60;
 
 export type ScatterEntry = {
   book: Book;
@@ -17,6 +17,7 @@ type ScatterAreaProps = {
   className?: string;
   onBookSelect?: (entry: ScatterEntry) => void;
   onBackToShelf?: () => void;
+  containerRef?: Ref<HTMLDivElement>;
 };
 
 type ScatterSlot = {
@@ -49,12 +50,14 @@ export function ScatterArea({
   className = "",
   onBookSelect,
   onBackToShelf,
+  containerRef,
 }: ScatterAreaProps) {
   const scatterEntries =
     bookSlots ?? books.map((book, idx) => ({ book, slotIndex: idx }));
 
   return (
     <div
+      ref={containerRef}
       className={`relative mx-auto mt-12 w-full max-w-5xl px-4 ${className}`}
     >
       <div className="mb-4 flex flex-col items-center text-pink-500">

@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type Ref } from "react";
 import type { Book } from "@/components/bookshelf/bookData";
 
 type BookReviewModalProps = {
@@ -13,6 +13,8 @@ type BookReviewModalProps = {
   isVoted?: boolean;
   onToggleFavorite?: () => void;
   onToggleVote?: () => void;
+  actionButtonRef?: Ref<HTMLButtonElement>;
+  voteButtonRef?: Ref<HTMLButtonElement>;
 };
 
 export function BookReviewModal({
@@ -25,6 +27,8 @@ export function BookReviewModal({
   isVoted = false,
   onToggleFavorite,
   onToggleVote,
+  actionButtonRef,
+  voteButtonRef,
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -33,15 +37,12 @@ export function BookReviewModal({
   useEffect(() => {
     if (!open) return;
 
-    // save previously focused element to restore later
     previousActiveElementRef.current =
       document.activeElement as HTMLElement | null;
 
-    // lock body scroll
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    // focus the close button (or modal container) when opened
     const focusTarget = closeButtonRef.current ?? modalRef.current;
     focusTarget?.focus();
 
@@ -53,7 +54,6 @@ export function BookReviewModal({
       }
 
       if (e.key === "Tab") {
-        // focus trap: keep focus inside modal
         const container = modalRef.current;
         if (!container) return;
 
@@ -72,7 +72,6 @@ export function BookReviewModal({
         const lastIndex = nodes.length - 1;
 
         if (!e.shiftKey) {
-          // Tab
           const nextIndex =
             currentIndex === -1 || currentIndex === lastIndex
               ? 0
@@ -80,7 +79,6 @@ export function BookReviewModal({
           nodes[nextIndex].focus();
           e.preventDefault();
         } else {
-          // Shift + Tab
           const prevIndex = currentIndex <= 0 ? lastIndex : currentIndex - 1;
           nodes[prevIndex].focus();
           e.preventDefault();
@@ -91,7 +89,6 @@ export function BookReviewModal({
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      // restore body scroll and focus
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
       previousActiveElementRef.current?.focus();
@@ -145,6 +142,7 @@ export function BookReviewModal({
                 type="button"
                 onClick={handleVoteClick}
                 aria-pressed={isVoted}
+                ref={voteButtonRef}
                 className={voteButtonClass}
               >
                 <svg
@@ -170,7 +168,9 @@ export function BookReviewModal({
                 className={favoriteButtonClass}
                 aria-pressed={isFavorited}
                 aria-label={
-                  isFavorited ? "ブックマーク済み" : "ブックマークに追加"
+                  isFavorited
+                    ? "ブックマーク済み"
+                    : "ブックマークに追加"
                 }
                 style={{ borderColor: "#f6e05e" }}
               >
@@ -194,6 +194,7 @@ export function BookReviewModal({
             <button
               type="button"
               onClick={onComplete}
+              ref={actionButtonRef}
               className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
             >
               {actionLabel}

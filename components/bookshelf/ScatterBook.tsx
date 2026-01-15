@@ -47,6 +47,7 @@ export function ScatterBook({
       type="button"
       onClick={onClick}
       disabled={!isInteractive}
+      data-book-id={book.id}
       className={`${className} rounded-md border-none p-0 text-left ${
         isInteractive
           ? "cursor-pointer focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2"
