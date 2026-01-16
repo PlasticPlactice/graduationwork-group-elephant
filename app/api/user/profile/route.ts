@@ -50,6 +50,40 @@ export async function PUT(req: NextRequest) {
     const { nickName, address, addressDetail, age, gender, introduction } =
       body;
 
+    // 入力値の検証
+    if (!nickName || !address) {
+      return NextResponse.json(
+        { message: "ニックネームと居住地は必須です" },
+        { status: 400 }
+      );
+    }
+
+    // age の検証
+    const parsedAge = parseInt(age);
+    if (isNaN(parsedAge) || parsedAge < 10 || parsedAge > 99) {
+      return NextResponse.json(
+        { message: "年齢の値が不正です" },
+        { status: 400 }
+      );
+    }
+
+    // gender の検証
+    const parsedGender = parseInt(gender);
+    if (![1, 2, 3].includes(parsedGender)) {
+      return NextResponse.json(
+        { message: "性別の値が不正です" },
+        { status: 400 }
+      );
+    }
+
+    // 岩手県選択時のaddressDetail必須チェック
+    if (address === "岩手県" && !addressDetail) {
+      return NextResponse.json(
+        { message: "岩手県を選択した場合は、市区町村も選択してください" },
+        { status: 400 }
+      );
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: parseInt(session.user.id) },
       data: {

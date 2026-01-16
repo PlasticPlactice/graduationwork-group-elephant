@@ -6,9 +6,8 @@ export default withAuth({
   },
   callbacks: {
     authorized: ({ token }) => {
-      // トークンが存在すればログイン状態とみなす
-      // 必要に応じて role のチェックなどもここで行う
-      return !!token;
+      // 管理画面へのアクセスは admin ロールのユーザーのみに制限する
+      return token?.role === "admin";
     },
   },
 });

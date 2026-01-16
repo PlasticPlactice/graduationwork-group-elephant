@@ -4,10 +4,35 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 const connectionString = process.env.DATABASE_URL;
 
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
+// DATABASE_URL の検証
+if (!connectionString) {
+  throw new Error(
+    "DATABASE_URL environment variable is not set. Please define it before starting the application."
+  );
+}
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+let validatedConnectionString: string;
+
+try {
+  validatedConnectionString = new URL(connectionString).toString();
+} catch (err) {
+  throw new Error(
+    `DATABASE_URL environment variable is not a valid URL: ${
+      (err as Error).message
+    }`
+  );
+}
+
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient;
+  pool: Pool;
+};
+
+const pool =
+  globalForPrisma.pool ||
+  new Pool({ connectionString: validatedConnectionString });
+
+const adapter = new PrismaPg(pool);
 
 export const prisma =
   globalForPrisma.prisma ||
@@ -19,4 +44,7 @@ export const prisma =
         : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+  globalForPrisma.pool = pool;
+}

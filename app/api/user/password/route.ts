@@ -30,9 +30,9 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8) {
       return NextResponse.json(
-        { message: "パスワードは6文字以上である必要があります" },
+        { message: "パスワードは8文字以上である必要があります" },
         { status: 400 }
       );
     }

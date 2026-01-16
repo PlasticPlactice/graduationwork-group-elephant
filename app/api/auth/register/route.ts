@@ -7,30 +7,28 @@ function generateAccountId() {
   return Math.floor(1000000000 + Math.random() * 9000000000).toString();
 }
 
-// ユーザーIDを一意に生成するヘルパー関数
-async function createUniqueAccountId() {
-  let accountId = generateAccountId();
-  let isUnique = false;
+// ユーザーIDを一意に生成するヘルパー関数（リトライ戦略を使用）
+async function createUniqueAccountId(maxAttempts: number = 10) {
+  let accountId: string;
   let attempts = 0;
 
-  while (!isUnique && attempts < 10) {
+  while (attempts < maxAttempts) {
+    accountId = generateAccountId();
+    attempts++;
+
+    // 存在チェック（簡易的）
     const existingUser = await prisma.user.findUnique({
       where: { account_id: accountId },
     });
 
     if (!existingUser) {
-      isUnique = true;
-    } else {
-      accountId = generateAccountId(); // 再生成
-      attempts++;
+      return accountId;
     }
   }
 
-  if (!isUnique) {
-    throw new Error("Failed to generate unique account ID");
-  }
-
-  return accountId;
+  throw new Error(
+    "Failed to generate unique account ID after maximum attempts"
+  );
 }
 
 export async function POST(req: Request) {
@@ -51,6 +49,27 @@ export async function POST(req: Request) {
     if (!nickname || !password || !address || !age || !gender) {
       return NextResponse.json(
         { message: "必須項目が不足しています" },
+        { status: 400 }
+      );
+    }
+
+    // パスワード強度チェック（サーバー側）
+    if (
+      typeof password !== "string" ||
+      password.length < 8 ||
+      !/[A-Za-z]/.test(password) ||
+      !/[0-9]/.test(password)
+    ) {
+      return NextResponse.json(
+        { message: "パスワードは8文字以上で、英字と数字を含めてください" },
+        { status: 400 }
+      );
+    }
+
+    // 岩手県選択時のsub_address必須チェック
+    if (address === "岩手県" && !sub_address) {
+      return NextResponse.json(
+        { message: "岩手県を選択した場合は、市区町村も選択してください" },
         { status: 400 }
       );
     }
