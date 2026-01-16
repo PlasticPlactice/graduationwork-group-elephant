@@ -30,9 +30,15 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    if (newPassword.length < 8) {
+    const passwordComplexityRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
+
+    if (!passwordComplexityRegex.test(newPassword)) {
       return NextResponse.json(
-        { message: "パスワードは8文字以上である必要があります" },
+        {
+          message:
+            "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください",
+        },
         { status: 400 }
       );
     }

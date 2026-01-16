@@ -28,8 +28,13 @@ export default function PasswordChangePage() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setError("パスワードは6文字以上である必要があります");
+    const passwordComplexityRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
+
+    if (!passwordComplexityRegex.test(newPassword)) {
+      setError(
+        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください"
+      );
       return;
     }
 

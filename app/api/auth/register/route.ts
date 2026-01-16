@@ -9,7 +9,7 @@ function generateAccountId() {
 
 // ユーザーIDを一意に生成するヘルパー関数（リトライ戦略を使用）
 async function createUniqueAccountId(maxAttempts: number = 10) {
-  let accountId: string;
+  let accountId = "";
   let attempts = 0;
 
   while (attempts < maxAttempts) {
@@ -54,14 +54,18 @@ export async function POST(req: Request) {
     }
 
     // パスワード強度チェック（サーバー側）
+    const passwordComplexityRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
+
     if (
       typeof password !== "string" ||
-      password.length < 8 ||
-      !/[A-Za-z]/.test(password) ||
-      !/[0-9]/.test(password)
+      !passwordComplexityRegex.test(password)
     ) {
       return NextResponse.json(
-        { message: "パスワードは8文字以上で、英字と数字を含めてください" },
+        {
+          message:
+            "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください",
+        },
         { status: 400 }
       );
     }

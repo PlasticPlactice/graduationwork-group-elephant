@@ -125,7 +125,10 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       });
 
       if (!res.ok) {
-        throw new Error("更新に失敗しました");
+        const data = await res.json().catch(() => ({}));
+        const message =
+          (data as { message?: string }).message || "更新に失敗しました";
+        throw new Error(message);
       }
 
       alert("プロフィールを更新しました");
@@ -135,7 +138,9 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       onClose();
     } catch (error) {
       console.error(error);
-      alert("エラーが発生しました。");
+      const fallbackMessage =
+        error instanceof Error ? error.message : "エラーが発生しました。";
+      alert(fallbackMessage);
     } finally {
       setIsSubmitting(false);
     }

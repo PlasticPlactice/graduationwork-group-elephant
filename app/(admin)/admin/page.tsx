@@ -56,6 +56,7 @@ export default function Page() {
             className=""
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            type="email"
           />
         </div>
 

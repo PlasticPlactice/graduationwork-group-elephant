@@ -127,8 +127,18 @@ function CreateCompleteContent() {
 }
 
 export default function CreateCompletePage() {
+  const fallback = (
+    <div className="flex items-center justify-center py-16 text-slate-700">
+      <div
+        className="mr-3 inline-block h-6 w-6 animate-spin rounded-full border-2 border-orange-400 border-t-transparent"
+        aria-label="loading"
+      ></div>
+      <span className="text-sm font-semibold">読み込み中...</span>
+    </div>
+  );
+
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={fallback}>
       <CreateCompleteContent />
     </Suspense>
   );
