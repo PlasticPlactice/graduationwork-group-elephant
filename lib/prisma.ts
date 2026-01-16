@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -40,15 +40,15 @@ function getPool(): Pool {
   return globalForPrisma.pool;
 }
 
-const prismaOptions = {
+const prismaOptions: Prisma.PrismaClientOptions = {
   log:
     process.env.NODE_ENV === "development"
-      ? ["query", "error", "warn"]
-      : ["error"],
-} satisfies Parameters<typeof PrismaClient>[0];
+      ? (["query", "error", "warn"] as Prisma.LogLevel[])
+      : (["error"] as Prisma.LogLevel[]),
+};
 
 // 接続文字列がある場合のみ adapter をセットする（ビルド時はセットしない）
-const prismaOptionsWithAdapter = connectionString
+const prismaOptionsWithAdapter: Prisma.PrismaClientOptions = connectionString
   ? { ...prismaOptions, adapter: new PrismaPg(getPool()) }
   : prismaOptions;
 
