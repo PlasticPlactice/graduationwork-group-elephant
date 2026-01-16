@@ -9,51 +9,43 @@ const globalForPrisma = global as unknown as {
   pool: Pool;
 };
 
-// DATABASE_URL の検証（ランタイム時のみ）
-function validateConnectionString(connStr: string | undefined): string {
-  if (!connStr) {
-    throw new Error(
-      "DATABASE_URL environment variable is not set. Please define it before starting the application."
-    );
-  }
-
-  try {
-    return new URL(connStr).toString();
-  } catch (err) {
-    throw new Error(
-      `DATABASE_URL environment variable is not a valid URL: ${
-        (err as Error).message
-      }`
-    );
-  }
-}
-
-// Pool の作成（遅延評価）
-function getPool(): Pool {
-  if (!globalForPrisma.pool) {
-    const validatedConnectionString =
-      validateConnectionString(connectionString);
-    globalForPrisma.pool = new Pool({
-      connectionString: validatedConnectionString,
-    });
-  }
-  return globalForPrisma.pool;
-}
-
-const prismaOptions: Prisma.PrismaClientOptions = {
+// Prismaクライアントのオプション（基本設定のみ、adapterなし）
+const baseOptions: Prisma.PrismaClientOptions = {
   log:
     process.env.NODE_ENV === "development"
       ? (["query", "error", "warn"] as Prisma.LogLevel[])
       : (["error"] as Prisma.LogLevel[]),
 };
 
-// 接続文字列がある場合のみ adapter をセットする（ビルド時はセットしない）
-const prismaOptionsWithAdapter: Prisma.PrismaClientOptions = connectionString
-  ? { ...prismaOptions, adapter: new PrismaPg(getPool()) }
-  : prismaOptions;
+// ビルド時は常にadapterなしのPrismaクライアントを作成
+// 実行時（runtime）でDATABASE_URLがあれば、adapterを使用
+let prismaInstance: PrismaClient;
 
-export const prisma =
-  globalForPrisma.prisma || new PrismaClient(prismaOptionsWithAdapter);
+if (globalForPrisma.prisma) {
+  prismaInstance = globalForPrisma.prisma;
+} else {
+  // DATABASE_URLが設定されている場合のみadapterを使用（ビルド時はスキップ）
+  if (connectionString && process.env.NODE_ENV !== undefined) {
+    try {
+      const pool = new Pool({ connectionString });
+      prismaInstance = new PrismaClient({
+        ...baseOptions,
+        adapter: new PrismaPg(pool),
+      });
+    } catch (error) {
+      console.warn(
+        "Prisma adapter initialization failed, using default client:",
+        error
+      );
+      prismaInstance = new PrismaClient(baseOptions);
+    }
+  } else {
+    // DATABASE_URLがない、またはビルド時はadapterなし
+    prismaInstance = new PrismaClient(baseOptions);
+  }
+}
+
+export const prisma = prismaInstance;
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
