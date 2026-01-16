@@ -40,15 +40,20 @@ function getPool(): Pool {
   return globalForPrisma.pool;
 }
 
+const prismaOptions = {
+  log:
+    process.env.NODE_ENV === "development"
+      ? ["query", "error", "warn"]
+      : ["error"],
+} satisfies Parameters<typeof PrismaClient>[0];
+
+// 接続文字列がある場合のみ adapter をセットする（ビルド時はセットしない）
+const prismaOptionsWithAdapter = connectionString
+  ? { ...prismaOptions, adapter: new PrismaPg(getPool()) }
+  : prismaOptions;
+
 export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    adapter: connectionString ? new PrismaPg(getPool()) : undefined,
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
-  });
+  globalForPrisma.prisma || new PrismaClient(prismaOptionsWithAdapter);
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
