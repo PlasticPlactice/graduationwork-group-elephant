@@ -14,16 +14,24 @@ export default function PasswordResetRequestPage() {
     setMessage("");
 
     try {
-      // TODO: パスワードリセットリクエストのAPI呼び出しを実装
-      // メールアドレスをサーバーに送信して、リセットトークンを生成し、メール送信
-      console.log("パスワードリセットリクエストを送信します:", { email });
+      const res = await fetch("/api/admin/password/reset-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
-      // デモンストレーション用のメッセージ
-      setMessage(
-        "入力いただいたメールアドレスに、パスワードリセットリンクを送信しました。メールをご確認ください。"
-      );
-      setEmail("");
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage(data.message);
+        setEmail("");
+      } else {
+        setMessage(data.message || "エラーが発生しました。もう一度お試しください。");
+      }
     } catch (error) {
+      console.error("Password reset request error:", error);
       setMessage("エラーが発生しました。もう一度お試しください。");
     } finally {
       setIsLoading(false);

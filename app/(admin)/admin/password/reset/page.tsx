@@ -29,8 +29,13 @@ function PasswordResetContent() {
       return;
     }
 
-    if (newPassword.length < 8) {
-      setMessage("パスワードは8文字以上で設定してください。");
+    const passwordComplexityRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
+
+    if (!passwordComplexityRegex.test(newPassword)) {
+      setMessage(
+        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください。"
+      );
       return;
     }
 
@@ -42,20 +47,30 @@ function PasswordResetContent() {
     setIsLoading(true);
 
     try {
-      // TODO: パスワードリセットのAPI呼び出しを実装
-      // トークンとパスワードをサーバーに送信して、パスワードを更新
-      console.log("パスワードをリセットします:", {
-        token,
-        newPassword,
+      const res = await fetch("/api/admin/password/reset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token,
+          newPassword,
+          confirmPassword,
+        }),
       });
 
-      setIsSuccess(true);
-      setMessage(
-        "パスワードを変更しました。ログイン画面からログインしてください。"
-      );
-      setNewPassword("");
-      setConfirmPassword("");
+      const data = await res.json();
+
+      if (res.ok) {
+        setIsSuccess(true);
+        setMessage(data.message + " ログイン画面からログインしてください。");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        setMessage(data.message || "パスワード変更に失敗しました。");
+      }
     } catch (error) {
+      console.error("Password reset error:", error);
       setMessage(
         "パスワード変更に失敗しました。リセットリンクが期限切れの可能性があります。"
       );
