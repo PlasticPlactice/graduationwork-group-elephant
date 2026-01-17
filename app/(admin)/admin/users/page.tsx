@@ -39,6 +39,8 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("id");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // 検索フォームのstate
   const [searchForm, setSearchForm] = useState({
@@ -61,40 +63,45 @@ export default function Page() {
     return USER_STATUS_LABELS[status] || "";
   };
 
-  // ユーザー一覧取得APIを呼び出す
-  const fetchUsers = async (page: number = 1) => {
-    setIsLoading(true);
-    try {
-      const params = new URLSearchParams();
-      params.append("page", page.toString());
-      params.append("sortBy", sortBy);
-      params.append("sortOrder", sortOrder);
-      if (searchForm.id) params.append("id", searchForm.id);
-      if (searchForm.nickname) params.append("nickname", searchForm.nickname);
-      if (searchForm.ageFrom) params.append("ageFrom", searchForm.ageFrom);
-      if (searchForm.ageTo) params.append("ageTo", searchForm.ageTo);
-      if (searchForm.prefecture)
-        params.append("prefecture", searchForm.prefecture);
-      if (searchForm.city) params.append("city", searchForm.city);
-      if (searchForm.status) params.append("status", searchForm.status);
+  // ユーザー一覧取得APIを呼び出す（useCallbackでメモ化）
+  const fetchUsers = React.useCallback(
+    async (page: number = 1) => {
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("sortBy", sortBy);
+        params.append("sortOrder", sortOrder);
+        if (searchForm.id) params.append("id", searchForm.id);
+        if (searchForm.nickname) params.append("nickname", searchForm.nickname);
+        if (searchForm.ageFrom) params.append("ageFrom", searchForm.ageFrom);
+        if (searchForm.ageTo) params.append("ageTo", searchForm.ageTo);
+        if (searchForm.prefecture)
+          params.append("prefecture", searchForm.prefecture);
+        if (searchForm.city) params.append("city", searchForm.city);
+        if (searchForm.status) params.append("status", searchForm.status);
 
-      const response = await fetch(`/api/admin/users?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+        const response = await fetch(`/api/admin/users?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status}`);
+        }
+
+        const data: ApiResponse = await response.json();
+        setUsers(data.users);
+        setTotalPages(data.totalPages);
+        setCurrentPage(page);
+        setErrorMessage("");
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        setUsers([]);
+        setTotalPages(0);
+        setErrorMessage("ユーザー情報の取得に失敗しました。");
+      } finally {
+        setIsLoading(false);
       }
-
-      const data: ApiResponse = await response.json();
-      setUsers(data.users);
-      setTotalPages(data.totalPages);
-      setCurrentPage(page);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      setUsers([]);
-      setTotalPages(0);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [sortBy, sortOrder, searchForm],
+  );
 
   // 入力値の変更を処理
   const handleInputChange = (
@@ -114,7 +121,32 @@ export default function Page() {
     fetchUsers(1);
   };
 
-  // お知らせデータ
+  // 検索フォームをリセット
+  const handleResetSearch = () => {
+    setSearchForm({
+      id: "",
+      nickname: "",
+      ageFrom: "",
+      ageTo: "",
+      prefecture: "",
+      city: "",
+      status: "",
+    });
+    setCurrentPage(1);
+    fetchUsers(1);
+  };
+
+  // ソート処理（カラムごとに独立した状態管理）
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      // 同じカラムをクリックした場合は昇降順を切り替え
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // 異なるカラムをクリックした場合は昇順でリセット
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+  };
 
   // モーダルが開いている時に背景のスクロールを防ぐ
   useEffect(() => {
@@ -130,24 +162,32 @@ export default function Page() {
     };
   }, [isUserDetailModalOpen, isUserExitModalOpen]);
 
-  // 初期ロード時にユーザー一覧を取得
+  // 初回ロードとソート変更時にユーザー一覧を取得（デバウンス付き）
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      fetchUsers(currentPage);
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, sortOrder]);
+
+  // 初期ロード
   useEffect(() => {
     fetchUsers(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ソート条件が変更された時にユーザー一覧を再取得
-  useEffect(() => {
-    if (currentPage > 0) {
-      fetchUsers(currentPage);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortBy, sortOrder]);
-
   const handleUserDetail = (userId: number) => {
-    // TODO: ユーザー詳細モーダルにuserIdを渡す実装
-    console.log("Selected user ID:", userId);
+    setSelectedUserId(userId);
     setIsUserDetailModalOpen(true);
+  };
+
+  const handleCloseUserDetail = () => {
+    setIsUserDetailModalOpen(false);
+    setSelectedUserId(null);
   };
   return (
     <main className="users-container">
@@ -320,13 +360,21 @@ export default function Page() {
               </select>
             </div>
           </div>
-          <div className="flex justify-center mt-4">
+          <div className="flex justify-center gap-4 mt-4">
             <AdminButton
               label="検索"
               type="submit"
               icon="mdi:search"
               iconPosition="left"
               className="search-btn"
+            />
+            <AdminButton
+              label="リセット"
+              type="button"
+              icon="mdi:refresh"
+              iconPosition="left"
+              className="search-btn"
+              onClick={handleResetSearch}
             />
           </div>
         </form>
@@ -335,6 +383,11 @@ export default function Page() {
       {/*---------------------------
                 ユーザー一覧
             ---------------------------*/}
+      {errorMessage && (
+        <div className="mx-8 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {errorMessage}
+        </div>
+      )}
       <div className="mx-8 mt-8">
         <table className="w-full user-table">
           <colgroup>
@@ -348,59 +401,54 @@ export default function Page() {
           <thead className="table-head">
             <tr>
               <th className="py-2 pl-10 w-[15%]">
-                <div
+                <button
+                  type="button"
                   className="flex items-center cursor-pointer"
-                  onClick={() => {
-                    setSortBy("user_status");
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  }}
+                  onClick={() => handleSort("user_status")}
+                  aria-label={`ステータスで${sortBy === "user_status" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
                 >
                   ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                </button>
               </th>
               <th>
-                <div
+                <button
+                  type="button"
                   className="flex items-center cursor-pointer"
-                  onClick={() => {
-                    setSortBy("id");
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  }}
+                  onClick={() => handleSort("id")}
+                  aria-label={`IDで${sortBy === "id" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
                 >
                   ID<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                </button>
               </th>
               <th>
-                <div
+                <button
+                  type="button"
                   className="flex items-center cursor-pointer"
-                  onClick={() => {
-                    setSortBy("nickname");
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  }}
+                  onClick={() => handleSort("nickname")}
+                  aria-label={`ニックネームで${sortBy === "nickname" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
                 >
                   ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                </button>
               </th>
               <th>
-                <div
+                <button
+                  type="button"
                   className="flex items-center cursor-pointer"
-                  onClick={() => {
-                    setSortBy("age");
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  }}
+                  onClick={() => handleSort("age")}
+                  aria-label={`年代で${sortBy === "age" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
                 >
                   年代<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                </button>
               </th>
               <th>
-                <div
+                <button
+                  type="button"
                   className="flex items-center cursor-pointer"
-                  onClick={() => {
-                    setSortBy("address");
-                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                  }}
+                  onClick={() => handleSort("address")}
+                  aria-label={`居住地で${sortBy === "address" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
                 >
                   居住地<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                </button>
               </th>
               <th>
                 <div className="flex items-center">
@@ -449,47 +497,101 @@ export default function Page() {
       </div>
 
       <div className="flex items-center justify-center my-5 page-section">
-        <Icon
-          icon="weui:arrow-filled"
-          rotate={2}
-          width={20}
-          className="page-arrow"
-        ></Icon>
-        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map(
-          (pageNum) => (
-            <button
-              key={pageNum}
-              type="button"
-              className={`px-4 py-1 page-number ${currentPage === pageNum ? "active" : ""}`}
-              onClick={() => fetchUsers(pageNum)}
-              aria-current={currentPage === pageNum ? "page" : undefined}
-            >
-              {pageNum}
-            </button>
-          ),
-        )}
-        {totalPages > 5 && (
-          <>
-            <span className="px-4 py-1 page-number" aria-hidden="true">
-              ...
-            </span>
-            <button
-              type="button"
-              className={`px-4 py-1 page-number ${currentPage === totalPages ? "active" : ""}`}
-              onClick={() => fetchUsers(totalPages)}
-              aria-current={currentPage === totalPages ? "page" : undefined}
-            >
-              {totalPages}
-            </button>
-          </>
-        )}
-        <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
+        <button
+          type="button"
+          onClick={() => currentPage > 1 && fetchUsers(currentPage - 1)}
+          disabled={currentPage === 1}
+          aria-label="前のページ"
+          className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}
+        >
+          <Icon
+            icon="weui:arrow-filled"
+            rotate={2}
+            width={20}
+            className="page-arrow"
+          ></Icon>
+        </button>
+        {(() => {
+          const pages: (number | string)[] = [];
+          if (totalPages <= 7) {
+            // ページ数が7以下なら全て表示
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+          } else {
+            // 常に最初のページを表示
+            pages.push(1);
+
+            // 現在のページ周辺を表示
+            if (currentPage <= 4) {
+              // 最初の方のページにいる場合
+              for (let i = 2; i <= 5; i++) pages.push(i);
+              pages.push("...");
+            } else if (currentPage >= totalPages - 3) {
+              // 最後の方のページにいる場合
+              pages.push("...");
+              for (let i = totalPages - 4; i <= totalPages - 1; i++)
+                pages.push(i);
+            } else {
+              // 中間のページにいる場合
+              pages.push("...");
+              for (let i = currentPage - 1; i <= currentPage + 1; i++)
+                pages.push(i);
+              pages.push("...");
+            }
+
+            // 常に最後のページを表示
+            pages.push(totalPages);
+          }
+
+          return pages.map((pageNum, index) =>
+            typeof pageNum === "number" ? (
+              <button
+                key={`page-${pageNum}`}
+                type="button"
+                className={`px-4 py-1 page-number ${currentPage === pageNum ? "active" : ""}`}
+                onClick={() => fetchUsers(pageNum)}
+                aria-current={currentPage === pageNum ? "page" : undefined}
+              >
+                {pageNum}
+              </button>
+            ) : (
+              <span
+                key={`ellipsis-${index}`}
+                className="px-4 py-1 page-number"
+                aria-hidden="true"
+              >
+                {pageNum}
+              </span>
+            ),
+          );
+        })()}
+        <button
+          type="button"
+          onClick={() =>
+            currentPage < totalPages && fetchUsers(currentPage + 1)
+          }
+          disabled={currentPage === totalPages}
+          aria-label="次のページ"
+          className={
+            currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+          }
+        >
+          <Icon
+            icon="weui:arrow-filled"
+            width={20}
+            className="page-arrow"
+          ></Icon>
+        </button>
       </div>
       {/* モーダル */}
       <UserDetailModal
         isOpen={isUserDetailModalOpen}
-        onClose={() => setIsUserDetailModalOpen(false)}
-        onOpenUserExit={() => setIsUserExitModalOpen(true)}
+        onClose={handleCloseUserDetail}
+        onOpenUserExit={() => {
+          setIsUserDetailModalOpen(false);
+          setSelectedUserId(null);
+          setIsUserExitModalOpen(true);
+        }}
+        userId={selectedUserId}
       />
 
       <UserExitModal

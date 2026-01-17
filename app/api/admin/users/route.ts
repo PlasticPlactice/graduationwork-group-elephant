@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
   try {
     // クエリパラメータを取得
     const searchParams = req.nextUrl.searchParams;
+    // ページ番号バリデーション（最小値のみ。最大値は総件数取得後に検証可能）
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
     const sortBy = searchParams.get("sortBy") || "id";
     const sortOrder = searchParams.get("sortOrder") || "asc";
@@ -43,9 +44,22 @@ export async function GET(req: NextRequest) {
     // where句の条件を動的に構築
     const where: Prisma.UserWhereInput = {};
 
-    // ID検索
+    // ID検索（数値バリデーション）
     if (id) {
-      where.id = parseInt(id);
+      if (!/^\d+$/.test(id)) {
+        return NextResponse.json(
+          { message: "Invalid id parameter" },
+          { status: 400 },
+        );
+      }
+      const parsedId = Number(id);
+      if (!Number.isSafeInteger(parsedId)) {
+        return NextResponse.json(
+          { message: "Invalid id parameter" },
+          { status: 400 },
+        );
+      }
+      where.id = parsedId;
     }
 
     // ニックネーム検索
@@ -56,7 +70,20 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    // 年代検索
+    // 年代検索（数値バリデーション）
+    if (ageFrom !== null && isNaN(ageFrom)) {
+      return NextResponse.json(
+        { message: "Invalid ageFrom parameter" },
+        { status: 400 },
+      );
+    }
+    if (ageTo !== null && isNaN(ageTo)) {
+      return NextResponse.json(
+        { message: "Invalid ageTo parameter" },
+        { status: 400 },
+      );
+    }
+
     if (ageFrom !== null && ageTo !== null) {
       where.age = {
         gte: ageFrom,
@@ -87,16 +114,13 @@ export async function GET(req: NextRequest) {
 
     // ステータス検索（削除フラグロジック）
     if (status !== null) {
-      // ステータス 1（退会済み）または 2（BAN）が選ばれた場合
+      where.user_status = status;
+      // ステータス 1（退会済み）または 2（BAN）が選ばれた場合のみ削除済みを含める
       if (status === USER_STATUS.WITHDRAWN || status === USER_STATUS.BAN) {
-        where.OR = [
-          { deleted_flag: false },
-          { AND: [{ deleted_flag: true }, { user_status: status }] },
-        ];
+        // deleted_flag の制約なし（削除済みも含む）
       } else {
-        // その他のステータスは deleted_flag = false
+        // ACTIVE等の他のステータスは削除済みを除外
         where.deleted_flag = false;
-        where.user_status = status;
       }
     } else {
       // ステータス未選択の場合、削除済みは表示しない
