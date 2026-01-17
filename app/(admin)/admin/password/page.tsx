@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+const REDIRECT_DELAY_MS = 2000;
+
 export default function PasswordChangePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -60,7 +62,7 @@ export default function PasswordChangePage() {
         // 2秒後にホームページへ遷移
         setTimeout(() => {
           router.push("/admin/home");
-        }, 2000);
+        }, REDIRECT_DELAY_MS);
       } else {
         setError(data.message || "パスワード変更に失敗しました");
       }

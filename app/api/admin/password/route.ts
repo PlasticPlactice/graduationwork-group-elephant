@@ -12,7 +12,7 @@ export async function PUT(req: NextRequest) {
   }
 
   // Check if user is admin
-  if ((session.user as any).role !== "admin") {
+  if (session.user.role !== "admin") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
