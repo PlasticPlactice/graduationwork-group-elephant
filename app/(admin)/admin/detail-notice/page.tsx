@@ -63,7 +63,7 @@ export default function Page()
                 <img src="/admin/JYUN923_4_TP_V4.jpg"  onClick={() => openPreview(0)} alt="添付画像" className='img-border w-full h-full object-cover h-20 flex items-center justify-center text-sm text-black'/>
             </div>
 
-            <div className="btn-gruop flex items-center">
+            <div className="btn-group flex items-center">
                 <button className="not-public-btn" onClick={handleNoticeDisable}>非公開にする</button>
                 <div className="ml-auto flex gap-2">
                     <button className="close-btn">閉じる</button>

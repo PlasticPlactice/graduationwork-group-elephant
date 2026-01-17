@@ -1,12 +1,11 @@
 "use client"
-import AdminButton from '@/components/ui/admin-button';
 
-interface CsvOutputModalPops {
+interface NoticeDisableModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default function CsvOutputModal({ isOpen, onClose }: CsvOutputModalPops) {
+export default function NoticeDisableModal({ isOpen, onClose }: NoticeDisableModalProps) {
     if (!isOpen) return null;
 
 
