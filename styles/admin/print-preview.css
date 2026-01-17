@@ -1,0 +1,192 @@
+.preview-head{
+  font-size: var(--font-size-h1);
+  margin: 1rem 0 1rem 3rem;
+}
+.print-area{
+    background-image: repeating-linear-gradient(120deg, #ffb784, #ffb784 28px, transparent 28px, transparent 43px);
+    padding: 3rem;
+    width: 1048px;
+    height: 630px;
+    font-size:15px ;
+    margin: 0 2rem 0 3rem;
+}
+.card-area{
+    padding-top: 0.5rem;
+    background-color: #F7EDDA;
+    width: 50%;
+    height: auto;
+}
+#number{
+    margin-left: 0.5rem;
+}
+#book-review{
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--color-text);
+}
+#reviewer-section{
+    padding: 1rem;
+}
+#reviewer-introduction{
+    text-align: center;
+}
+#print-btn{
+  background-color: #7C7F7A;
+  font-size: var(--font-size-h1);
+  padding: 0 2rem;
+  margin: 2rem 0;
+}
+
+.design-area{
+  background-color: #F3F4F6;
+  border: 1px solid #D5D5D5; 
+}
+.design-head{
+  font-size: 28px;
+}
+.design-sub-head{
+  font-size: 24px;
+}
+.main-color-pick{
+  background-color: #FE9C56;
+  width: 22px;
+  height: 22px;
+}
+.main-color-text{
+  font-size: 22px;
+}
+
+.pattern-pick{
+  background-image: repeating-linear-gradient(120deg, #000000, #000000 6px, transparent 6px, transparent 11px);
+  width: 22px;
+  height: 22px;
+}
+
+.pattern-color-pick{
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  width: 22px;
+  height: 22px;
+}
+
+.font-color-text{
+  color: var(--color-admin-sub);
+  font-size: 22px;
+}
+
+.color-btn{
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #000000;
+  box-shadow: none;
+  padding: 0;
+}
+.color-btn.selected{
+  box-shadow:
+    0 0 0 4px white,   /* 内側の白い線 */
+    0 0 0 6px black;   /* 外側の黒い線 */
+}
+#btn-1-1{
+  background-color: #000000;
+}
+#btn-1-2{
+  background-color: #2B2B2B;
+}
+#btn-1-3{
+  background-color: #373636;
+}
+#btn-1-4{
+  background-color: #484848;
+}
+#btn-2-1{
+  background-color: #595959;
+}
+#btn-2-2{
+  background-color: #626262;
+}
+#btn-2-3{
+  background-color: #6B6B6B;
+}
+#btn-2-4{
+  background-color: #7B7B7B;
+}
+#btn-3-1{
+  background-color: #A0A0A0;
+}
+#btn-3-2{
+  background-color: #ABABAB;
+}
+#btn-3-3{
+  background-color: #CACACA;
+}
+#btn-3-4{
+  background-color: #D6D6D6;
+}
+#btn-4-1{
+  background-color: #E2E2E2;
+}
+#btn-4-2{
+  background-color: #FFFEFE;
+}
+
+.applicable-btn{
+  background-color: #7C7F7A;
+  font-size: var(--font-size-h1);
+  padding: 0 2rem;
+  margin: 2rem 0;
+}
+@media print {
+  @page { 
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 297mm;
+    height: 210mm;
+    overflow: hidden;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+  .design-area, .design-area *{
+    visibility: hidden;
+    display: none;
+  }
+
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+
+  .print-area {
+    position: fixed;
+    inset: 0;
+    width: 297mm;
+    height: 210mm;
+    margin: 0;
+    padding: 20mm; 
+    overflow: hidden;
+    page-break-after: avoid;
+    background-image: repeating-linear-gradient(
+      120deg,
+      #ffb784,
+      #ffb784 28px,
+      transparent 28px,
+      transparent 43px
+    ) ;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .card-area {
+    background-color: #F7EDDA ;
+    width: 50%;
+    height: auto;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+

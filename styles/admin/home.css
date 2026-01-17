@@ -3,17 +3,29 @@
   color: var(--color-text);
 }
 
+.event-scroll-content {
+  max-height: 227px; /* 高さを調整してください */
+  overflow-y: auto;
+  border: 2px solid var(--color-main);
+  background-color: #fff;
+  border-radius: var(--control-radius);
+}
+
 .event-title {
   font-size: var(--font-size-h1);
   margin: 0;
+  font-weight: bold;
 }
 
 .event-container {
-  border: 1px solid var(--color-main);
+  border: 1px solid #000;
+  background-color: #fff;
+  border-radius: var(--control-radius);
 }
 
 .event-name {
-  font-size: var(--font-size-h1);
+  font-size: 27px;
+  color: var(--color-text);
 }
 
 .event-status {
@@ -21,13 +33,62 @@
   background-color: #DBEAFE;
 }
 
+.up-arrow {
+    color: var(--color-main);
+    /* margin: 0 0 0 30.4rem; */
+}
+.event-condition-circle-now {
+    color: var(--color-main);
+    margin: auto;
+}
+.event-condition-circle-future {
+    color: var(--color-admin-sub);
+    margin: auto;
+}
+
+progress {
+  -webkit-appearance: none; /* -webkit- 用: プログレスバーのスタイルをリセット */
+  -moz-appearance: none;    /* -moz- 用: プログレスバーのスタイルをリセット */
+  background-color: var(--color-admin-sub); /* -moz- 用: プログレスバーの背景色 */
+  border: none;
+  height: 3px;
+}
+::-webkit-progress-bar {
+  background-color: var(--color-admin-sub); /* -webkit- 用: プログレスバーの背景色 */
+}
+::-webkit-progress-value {
+  background-color: var(--color-main); /* -webkit- 用: プログレスバーの進捗部分色 */
+}
+::-moz-progress-bar {
+  background-color: var(--color-main); /* -moz- 用: プログレスバーの進捗部分色 */
+}
+
 .event-date {
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-h1);
+}
+.event-date-now{
+  color: var(--color-main);
+  font-weight: bold;
+}
+
+.event-detail-btn{
+  font-size:16px;
+  height: 35px;
+  padding:1rem;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
+}
+.event-detail-btn:hover{
+  color: var(--color-main);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-main);
 }
 
 .admin-card {
   border: 2px solid var(--color-main);
   border-radius: var(--control-radius);
+}
+.admin-card:hover{
+  background-color: var(--color-main);
 }
 
 .admin-icon {

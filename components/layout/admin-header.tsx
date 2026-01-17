@@ -15,7 +15,7 @@ export function AdminHeader() {
     <header className="w-full bg-white border-b border-gray-100">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 md:px-6">
         <Link
-          href="/admin"
+          href="/admin/home"
           className="flex items-center hover:opacity-80 transition-opacity"
         >
           ホーム
@@ -25,7 +25,7 @@ export function AdminHeader() {
           onClick={handleMenuToggle}
           aria-label={openMenu ? "Close menu" : "Open menu"}
           className="ml-4 inline-flex h-20 w-20 cursor-pointer items-center justify-center rounded-md bg-white hover:bg-gray-50 focus:outline-none border border-gray-100"
-          style={{ backgroundColor: "#ffffff" }}
+          style={{ backgroundColor: "#ffffff",boxShadow:'none' }}
         >
           <svg
             className="h-6 w-6"
@@ -62,7 +62,7 @@ export function AdminHeader() {
               onClick={handleMenuToggle}
               className="inline-flex h-20 w-20 items-center justify-center rounded-md bg-white hover:bg-gray-50 border border-gray-100"
               aria-label="Close menu"
-              style={{ backgroundColor: "#ffffff" }}
+              style={{ backgroundColor: "#ffffff",boxShadow:'none' }}
             >
               <svg
                 className="h-6 w-6"
@@ -115,7 +115,7 @@ export function AdminHeader() {
 
               <li>
                 <Link
-                  href="/admin/donations"
+                  href="/admin/notice"
                   onClick={() => setOpenMenu(false)}
                   className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
                 >

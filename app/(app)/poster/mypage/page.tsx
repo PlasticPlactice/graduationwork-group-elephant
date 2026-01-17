@@ -1,29 +1,70 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 import { ReviewPassedModal } from "@/components/modals/ReviewPassedModal";
+import { ProfileEditModal } from "@/components/modals/ProfileEditModal";
+import { MassageModal } from "@/components/modals/MassageModal";
+import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
+
+import Styles from "@/styles/app/poster.module.css";
 
 type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
+
+interface ProfileData {
+  nickName: string;
+  address: string;
+  addressDetail: string;
+  age: number;
+  gender: number;
+  introduction: string;
+}
 
 export default function MyPage() {
   // 初期表示時にモーダルを表示
   const [showModal, setShowModal] = useState(true);
+  // プロフィール編集、退会確認、DM（運営からのお知らせ）モーダルの表示
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [showDMModal, setShowDMModal] = useState(false);
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+
+  // ユーザーデータ
+  const [userData, setUserData] = useState<ProfileData | null>(null);
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/profile");
+      if (res.ok) {
+        const data = await res.json();
+        setUserData(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const sampleEvents = [
     {
       title: "第1回 文庫Xイベント",
       daysLeft: 10,
       description: "投稿可能期間中です！投稿してみましょう！",
       buttonText: "投稿へ",
+      href: "/post/barcode-scan",
     },
     {
       title: "第2回 文庫Xイベント",
       daysLeft: 15,
       description: "投稿可能期間中です！投稿してみましょう！",
       buttonText: "投稿へ",
+      href: "/post/barcode-scan",
     },
   ];
 
@@ -36,6 +77,7 @@ export default function MyPage() {
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
       buttonText: "投稿済み・編集する",
       buttonDisabled: false,
+      href: "/poster/edit",
     },
     {
       title: "色彩を持たない多崎つくると、彼の巡礼の年",
@@ -45,6 +87,7 @@ export default function MyPage() {
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
       buttonText: "投稿済み・編集不可",
       buttonDisabled: true,
+      href: undefined,
     },
     {
       title: "色彩を持たない多崎つくると、彼の巡礼の年",
@@ -54,6 +97,7 @@ export default function MyPage() {
         "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
       buttonText: "下書きの編集＆投稿",
       buttonDisabled: false,
+      href: "/poster/edit",
     },
   ];
 
@@ -66,6 +110,41 @@ export default function MyPage() {
 
   const [activeFilterTab, setActiveFilterTab] =
     useState<ReviewFilterTab>("all");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    if (isDeleting) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch("/api/user/withdraw", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        // 退会成功
+        alert("退会処理が完了しました。ご利用ありがとうございました。");
+        // ログアウトしてトップページへ
+        await signOut({ callbackUrl: "/" });
+      } else {
+        const data = await res.json();
+        alert(
+          data.message || "退会処理に失敗しました。もう一度お試しください。"
+        );
+        setIsDeleting(false);
+      }
+    } catch (error) {
+      console.error("Withdraw error:", error);
+      alert("退会処理中にエラーが発生しました。もう一度お試しください。");
+      setIsDeleting(false);
+    } finally {
+      setShowDeleteModal(false);
+    }
+  };
 
   const filteredReviews = sampleReviews.filter((review) => {
     if (activeFilterTab === "all") return true;
@@ -80,11 +159,20 @@ export default function MyPage() {
     <>
       {/* 1次審査通過モーダル */}
       <ReviewPassedModal open={showModal} onClose={() => setShowModal(false)} />
+      {/* 退会確認モーダル */}
+      <AccountDeleteModal
+        open={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteAccount}
+        isLoading={isDeleting}
+      />
       <div className="min-h-screen bg-white px-4 py-4 box-border">
         <div className="text-center mt-3 relative">
           <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
           <div className="flex items-center justify-center gap-3 mt-1">
-            <div className="text-rose-500 font-bold">○○○さん</div>
+            <div className="text-rose-500 font-bold">
+              {userData?.nickName || "ゲスト"}さん
+            </div>
           </div>
           <div
             className="absolute right-3 top-2 flex items-center"
@@ -97,6 +185,7 @@ export default function MyPage() {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              onClick={() => setShowDMModal(true)}
             >
               <path
                 d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v11A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5v-11z"
@@ -113,6 +202,11 @@ export default function MyPage() {
                 strokeLinejoin="round"
               />
             </svg>
+            <MassageModal
+              open={showDMModal}
+              onClose={() => setShowDMModal(false)}
+              userName={userData?.nickName || "ゲスト"}
+            />
           </div>
         </div>
 
@@ -144,7 +238,7 @@ export default function MyPage() {
                   daysLeft={event.daysLeft}
                   description={event.description}
                   buttonText={event.buttonText}
-                  href="/posts/bookshelf"
+                  href={event.href}
                 />
               </div>
             ))}
@@ -248,21 +342,21 @@ export default function MyPage() {
 
                     {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
                     <div className="mt-4">
-                      <button
-                        className={`${
-                          review.buttonDisabled
-                            ? "w-full text-white px-3 py-2 rounded-md font-bold"
-                            : "w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
-                        }`}
-                        style={
-                          review.buttonDisabled
-                            ? { backgroundColor: "var(--color-sub)" }
-                            : {}
-                        }
-                        disabled={review.buttonDisabled}
-                      >
-                        {review.buttonText}
-                      </button>
+                      {review.href ? (
+                        <Link href={review.href}>
+                          <button className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold">
+                            {review.buttonText}
+                          </button>
+                        </Link>
+                      ) : (
+                        <button
+                          className="w-full text-white px-3 py-2 rounded-md font-bold cursor-not-allowed"
+                          style={{ backgroundColor: "var(--color-sub)" }}
+                          disabled
+                        >
+                          {review.buttonText}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -279,18 +373,24 @@ export default function MyPage() {
                 }}
               >
                 <li style={{ borderColor: "var(--color-sub)" }}>
-                  <a
-                    href="/mypage/edit"
-                    className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-sky-300"
-                    style={{ color: "var(--color-text)" }}
-                    aria-label="プロフィールの編集へ"
+                  <button
+                    onClick={() => setShowEditProfileModal(true)}
+                    className={`${Styles.mypage__linkButton}`}
                   >
                     プロフィールの編集
-                  </a>
+                  </button>
                 </li>
+                {userData && (
+                  <ProfileEditModal
+                    open={showEditProfileModal}
+                    onClose={() => setShowEditProfileModal(false)}
+                    profileData={userData}
+                    onUpdate={fetchUserData}
+                  />
+                )}
                 <li style={{ borderColor: "var(--color-sub)" }}>
                   <a
-                    href="/mypage/password"
+                    href="/poster/mypage/password"
                     className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-sky-300"
                     style={{ color: "var(--color-text)" }}
                     aria-label="パスワードの変更へ"
@@ -300,7 +400,11 @@ export default function MyPage() {
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>
                   <a
-                    href="/account/delete"
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowDeleteModal(true);
+                    }}
                     className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
                     aria-label="退会手続きへ"
                     style={{ color: "red" }}

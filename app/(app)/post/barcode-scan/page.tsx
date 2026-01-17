@@ -1,26 +1,40 @@
 "use client";
 
-import Styles from "@/styles/app/account-create.module.css";
+import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Html5Qrcode } from "html5-qrcode";
 
-import Modal from "@/app/(app)/poster/barcode-scan/Modal";
+import Modal from "@/app/(app)/Modal";
 
 const QR_REGION_ID = "barcode-scan-reader";
+
+type RakutenBookItem = {
+  title: string;
+  author: string;
+  mediumImageUrl?: string;
+};
 
 export default function BarcodeScanPage() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isbnInput, setIsbnInput] = useState("");
   const [detectedIsbn, setDetectedIsbn] = useState<string | null>(null);
+  const [selectedIsbn, setSelectedIsbn] = useState<string | null>(null);
+  const [bookLoading, setBookLoading] = useState(false);
+  const [bookError, setBookError] = useState<string | null>(null);
+  const [bookItem, setBookItem] = useState<RakutenBookItem | null>(null);
+  const [lastFetchedIsbn, setLastFetchedIsbn] = useState<string | null>(null);
   const [scanStatus, setScanStatus] = useState(
     "冊子のバーコードを読み込む必要があります。"
   );
   const [scanError, setScanError] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const fetchIdRef = useRef(0);
+  const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const validateIsbn13 = useCallback((value: string) => {
     if (!/^\d{13}$/.test(value)) return false;
@@ -48,6 +62,48 @@ export default function BarcodeScanPage() {
     }
   }, []);
 
+  const fetchBookInfo = useCallback(
+    async (isbn: string) => {
+      if (isbn === lastFetchedIsbn) return;
+
+      const fetchId = ++fetchIdRef.current;
+      setBookLoading(true);
+      setBookError(null);
+      setBookItem(null);
+
+      try {
+        const res = await fetch(`/api/books?isbn=${isbn}`);
+        if (fetchId !== fetchIdRef.current) return;
+
+        if (!res.ok) {
+          setBookError("本情報の取得に失敗しました。");
+          return;
+        }
+
+        const data = await res.json();
+        const firstItem = data?.Items?.[0]?.Item;
+        if (!firstItem) {
+          setBookError("本情報が見つかりませんでした。");
+          return;
+        }
+
+        setBookItem({
+          title: firstItem.title ?? "",
+          author: firstItem.author ?? "",
+          mediumImageUrl: firstItem.mediumImageUrl,
+        });
+        setLastFetchedIsbn(isbn);
+      } catch (error) {
+        console.error("Failed to fetch book info", error);
+        if (fetchId === fetchIdRef.current)
+          setBookError("本情報の取得に失敗しました。");
+      } finally {
+        if (fetchId === fetchIdRef.current) setBookLoading(false);
+      }
+    },
+    [lastFetchedIsbn]
+  );
+
   const handleScanSuccess = useCallback(
     async (decodedText: string) => {
       const normalized = decodedText.replace(/[^0-9]/g, "");
@@ -55,10 +111,13 @@ export default function BarcodeScanPage() {
 
       // Ignore lower (price/classification) code starting with 191/192
       if (normalized.startsWith("191") || normalized.startsWith("192")) {
-        setScanStatus((prev) => {
-          const warningMsg = "上のバーコードを読み取ってください。";
-          return prev === warningMsg ? prev : warningMsg;
-        });
+        if (warningTimerRef.current) {
+          clearTimeout(warningTimerRef.current);
+        }
+        setShowWarning(true);
+        warningTimerRef.current = setTimeout(() => {
+          setShowWarning(false);
+        }, 2000);
         return;
       }
 
@@ -68,13 +127,22 @@ export default function BarcodeScanPage() {
       if (normalized.length !== 13) return;
       if (!validateIsbn13(normalized)) return;
 
+      // Clear warning if it was showing
+      if (warningTimerRef.current) {
+        clearTimeout(warningTimerRef.current);
+        warningTimerRef.current = null;
+      }
+      setShowWarning(false);
+
       setDetectedIsbn(normalized);
       setIsbnInput(normalized);
+      setSelectedIsbn(normalized);
+      fetchBookInfo(normalized);
       await stopScanner();
       setScanStatus("ISBNを検出しました。入力欄をご確認ください。");
       setConfirmOpen(true);
     },
-    [stopScanner, validateIsbn13]
+    [fetchBookInfo, stopScanner, validateIsbn13]
   );
 
   const handleScanFailure = useCallback((error: string) => {
@@ -101,8 +169,8 @@ export default function BarcodeScanPage() {
       await scannerRef.current.start(
         { facingMode: "environment" },
         {
-          fps: 10,
-          qrbox: { width: 300, height: 200 },
+          fps: 60,
+          aspectRatio: 1.5,
           disableFlip: true,
         },
         handleScanSuccess,
@@ -124,6 +192,9 @@ export default function BarcodeScanPage() {
     return () => {
       // Cleanup camera on unmount to avoid iOS black screen issues when returning
       stopScanner();
+      if (warningTimerRef.current) {
+        clearTimeout(warningTimerRef.current);
+      }
     };
   }, [stopScanner]);
 
@@ -135,12 +206,39 @@ export default function BarcodeScanPage() {
     }
     setDetectedIsbn(normalized);
     setIsbnInput(normalized);
+    setSelectedIsbn(normalized);
+    fetchBookInfo(normalized);
     setConfirmOpen(true);
     setScanError(null);
-  }, [isbnInput, validateIsbn13]);
+  }, [fetchBookInfo, isbnInput, validateIsbn13]);
+
+  const displayIsbn = selectedIsbn ?? detectedIsbn ?? (isbnInput || "未取得");
 
   return (
     <div>
+      {/* Warning overlay for 191/192 barcode detection */}
+      <div
+        aria-hidden
+        className={`pointer-events-none fixed inset-0 z-50 flex items-center justify-center pb-[25vh] transition-all duration-300 ${
+          showWarning ? "opacity-100 bg-black/70" : "opacity-0 bg-transparent"
+        }`}
+      >
+        <div
+          className={`text-center text-white px-6 py-8 transition-all duration-300 ${
+            showWarning
+              ? "translate-y-0 opacity-100"
+              : "translate-y-5 opacity-0"
+          }`}
+        >
+          <div className="text-5xl mb-4">⚠️</div>
+          <p className="text-lg leading-relaxed">
+            上のISBNバーコードを
+            <br />
+            読み取ってください
+          </p>
+        </div>
+      </div>
+
       <Link href="/" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
         <span>&lt;</span> ファンサイトはこちら
       </Link>
@@ -162,7 +260,11 @@ export default function BarcodeScanPage() {
               className={`${Styles.barcodeScan__reader}`}
               id={QR_REGION_ID}
               aria-label="バーコード読み取りエリア"
-              style={{ opacity: isScanning ? 1 : 0.01 }}
+              style={{
+                opacity: isScanning ? 1 : 0.01,
+                width: "100%",
+                height: "100%",
+              }}
             />
             {!isScanning && (
               <div className={Styles.barcodeScan__placeholder}>
@@ -217,9 +319,46 @@ export default function BarcodeScanPage() {
             <div className="mb-10">
               <p>ISBNコード</p>
               <div className={`border rounded-sm py-2 mb-4 ${Styles.text16px}`}>
-                <p className={`font-bold text-center`}>
-                  {detectedIsbn ?? (isbnInput || "未取得")}
-                </p>
+                <p className={`font-bold text-center`}>{displayIsbn}</p>
+              </div>
+              <div className="mb-6">
+                <p className="font-bold mb-2">本情報</p>
+                <div className="border rounded-sm p-3">
+                  {bookLoading && <p>本情報を取得中...</p>}
+                  {!bookLoading && bookError && (
+                    <p className={`${Styles.warningColor} ${Styles.text12px}`}>
+                      {bookError}
+                    </p>
+                  )}
+                  {!bookLoading && !bookError && bookItem && (
+                    <div className="flex gap-3 items-start">
+                      {bookItem.mediumImageUrl ? (
+                        <Image
+                          src={bookItem.mediumImageUrl}
+                          alt={bookItem.title || "book image"}
+                          width={100}
+                          height={140}
+                          className="rounded"
+                        />
+                      ) : (
+                        <div className="w-[100px] h-[140px] bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+                          No Image
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-bold mb-2 break-words">
+                          {bookItem.title}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {bookItem.author}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {!bookLoading && !bookError && !bookItem && (
+                    <p className={Styles.text12px}>ISBNを確認しています...</p>
+                  )}
+                </div>
               </div>
               <p className={`font-bold text-center ${Styles.text16px}`}>
                 こちらのISBNで登録を進めますか？
@@ -234,9 +373,11 @@ export default function BarcodeScanPage() {
                 </p>
               </div>
             </div>
-            <button type="button" className={`w-full mb-3`}>
-              登録へ
-            </button>
+            <Link href="/poster/post">
+              <button type="button" className={`w-full mb-3`}>
+                登録へ
+              </button>
+            </Link>
             <button
               type="button"
               onClick={() => setConfirmOpen(false)}

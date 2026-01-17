@@ -10,11 +10,15 @@
   --color-bg: #ffffff;
   --color-input-bg: #6a8ca4;
   --color-input-text: rgba(106, 140, 164, 0.5);
-  --color-main: #FF4463;
+  --color-main: #98BCCA;
   --color-sub: #6a8ca4;
   --color-warning: #ff0000;
   --color-accent: #faf443;
   --color-event-button-bg: #6A8CA4;
+  --color-admin-sub:#727171;
+  --color-admin-active-background:#ACFEBC;
+  --color-admin-disable-background:#FFFF9A;
+  --color-admin-ban-background:#FF9C9C;
 
   /* spacing / sizes */
   --page-padding-sm: 16px;
@@ -108,6 +112,10 @@ select:focus,
   /* outline-offset: px; */
 }
 
+input[type="radio"] {
+  outline: none;
+}
+
 /* Buttons */
 button,
 .btn {
@@ -124,4 +132,19 @@ button,
   font-size: var(--font-size-base);
   font: bold;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* tiptapのcss */
+.ProseMirror {
+  min-height: 38.5rem !important;
+  line-height: normal !important;
+}
+
+.ProseMirror p {
+  line-height: 1.6 !important;
+  height: auto !important;
+}
+
+.ProseMirror:focus {
+  outline: none;
 }

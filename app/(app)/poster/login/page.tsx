@@ -1,11 +1,51 @@
 "use client";
 
 import loginModule from "@/styles/app/login.module.css";
-import Styles from "@/styles/app/account-create.module.css";
+import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const [accountId, setAccountId] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    if (!accountId || !password) {
+      setError("アカウントIDとパスワードを入力してください");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const result = await signIn("user", {
+        account_id: accountId,
+        password: password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(result.error);
+        setIsLoading(false);
+      } else if (result?.ok) {
+        router.push("/poster/mypage");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("ログイン処理中にエラーが発生しました");
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div>
       <Link href="/" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
@@ -23,10 +63,15 @@ export default function LoginPage() {
           <h1 className="font-bold text-center">ログイン</h1>
         </div>
 
-        <form action="" method="post">
+        <form onSubmit={handleSubmit}>
+          {error && (
+            <div className="mb-4 p-3 bg-rose-100 border border-rose-500 text-rose-700 rounded">
+              {error}
+            </div>
+          )}
           <div className="mb-4">
             <label
-              htmlFor="userId"
+              htmlFor="accountId"
               className={`font-bold ml-0.5 ${Styles.text16px}`}
             >
               ID
@@ -41,10 +86,13 @@ export default function LoginPage() {
               />
               <input
                 type="text"
-                name="userId"
-                id="userId"
+                name="accountId"
+                id="accountId"
                 placeholder="ユーザーIDを入力"
+                value={accountId}
+                onChange={(e) => setAccountId(e.target.value)}
                 className={`w-full ${loginModule.loginForm}`}
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -68,16 +116,16 @@ export default function LoginPage() {
                 name="password"
                 id="password"
                 placeholder="パスワードを入力"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className={`w-full ${loginModule.loginForm}`}
+                disabled={isLoading}
               />
             </div>
           </div>
-          {/* TODO: ログインロジックを実装後、onSubmitハンドラーを追加 */}
-          <Link href="/poster/mypage" className="w-full">
-            <button type="button" className="w-full">
-              ログイン
-            </button>
-          </Link>
+          <button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "ログイン中..." : "ログイン"}
+          </button>
         </form>
       </div>
     </div>
