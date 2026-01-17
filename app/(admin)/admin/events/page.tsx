@@ -26,26 +26,14 @@ export default function Page() {
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [eventNowData, setEventNowData] = useState<EventItem[]>([]);
+    const [eventEndData, setEventEndData] = useState<EventItem[]>([]);
     const [loadingEvents, setLoadingEvents] = useState(true)
-
-    // const [eventNowData, setEventNowData] = useState([
-    //     {
-    //         id: 1, title: "第5回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-    //         first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-    //         public_flag: "true"
-    //     },
-    //     {
-    //         id: 2, title: "第6回文庫X", detail: "大人気イベント文庫Xです。", status: "2", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-    //         first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-    //         public_flag: "true"
-    //     }
-    // ]);
     const formatDateTime = (iso?: string) => {
         if (!iso) return "";
         const d = new Date(iso);
         return d.toLocaleString("ja-JP", { dateStyle: "medium", timeStyle: "short" });
     };
-    // イベント取得（client component の副作用内で実行）
+    // 開催中のイベント取得
     useEffect(() => {
     let mounted = true;
     (async () => {
@@ -66,18 +54,26 @@ export default function Page() {
     return () => { mounted = false; };
     }, []);
 
-    const [eventEndData, setEventEndData] = useState([
-        {
-            id: 1, title: "第3回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag: "true"
-        },
-        {
-            id: 2, title: "第4回文庫X", detail: "大人気イベント文庫Xです。", status: "0", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag: "true"
+    // 終了済みのイベント取得
+    useEffect(() => {
+    let mounted = true;
+    (async () => {
+        try {
+        const res = await fetch('/api/events?status=3');
+        if (!res.ok) {
+            console.error('events fetch failed', await res.text());
+            return;
         }
-    ]);
+        const data = await res.json();
+        if (mounted) setEventEndData(data);
+        } catch (err) {
+        console.error(err);
+        } finally {
+        if (mounted) setLoadingEvents(false);
+        }
+    })();
+    return () => { mounted = false; };
+    }, []);
 
     const getProgressValue = (status: string) => {
         const statusMap: { [key: string]: number } = {

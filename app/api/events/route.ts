@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { Prisma } from '@prisma/client';
 
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const url = new URL(req.url);
+    const statusParam = url.searchParams.get('status');
+
+    const where: Prisma.EventWhereInput = { public_flag: true, deleted_flag: false };
+    if (statusParam !== null) {
+      const s = parseInt(statusParam, 10);
+      if (!isNaN(s)) where.status = s;
+    }
+
     const events = await prisma.event.findMany({
-      where: { public_flag: true,deleted_flag:false },
+      where,
       orderBy: { start_period: 'desc' },
       select: {
         id: true,
