@@ -3,10 +3,11 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } },
-) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(req: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
+
   const session = await getServerSession(authOptions);
 
   // 認証チェック
@@ -20,7 +21,7 @@ export async function GET(
   }
 
   try {
-    const userId = parseInt(params.id);
+    const userId = parseInt(id);
 
     if (isNaN(userId)) {
       return NextResponse.json({ message: "Invalid user ID" }, { status: 400 });
