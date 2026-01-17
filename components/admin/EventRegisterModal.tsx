@@ -3,6 +3,8 @@
 import { Icon } from "@iconify/react";
 import Textbox from '@/components/ui/admin-textbox';
 import "@/styles/admin/events.css"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface EventRegisterModalProps {
     isOpen: boolean;
@@ -10,13 +12,62 @@ interface EventRegisterModalProps {
 }
 
 export default function EventRegisterModal({ isOpen, onClose }: EventRegisterModalProps) {
+    const router = useRouter();
+
+    const [title, setTitle] = useState("");
+    const [detail, setDetail] = useState("");
+    const [startPeriod, setStartPeriod] = useState("");
+    const [endPeriod, setEndPeriod] = useState("");
+    const [firstVotingStart, setFirstVotingStart] = useState("");
+    const [firstVotingEnd, setFirstVotingEnd] = useState("");
+    const [secondVotingStart, setSecondVotingStart] = useState("");
+    const [secondVotingEnd, setSecondVotingEnd] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // フォーム送信処理をここに追加
-        console.log('フォームを送信');
-        onClose();
+        setSubmitting(true);
+
+        try {
+            const payload = {
+                title,
+                detail,
+                start_period: startPeriod,
+                end_period: endPeriod,
+                first_voting_start_period: firstVotingStart,
+                first_voting_end_period: firstVotingEnd,
+                second_voting_start_period: secondVotingStart,
+                second_voting_end_period: secondVotingEnd,
+                status: 0,
+                public_flag: false
+            };
+
+            const res = await fetch('/api/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                console.error('イベント登録エラー', err);
+                alert('イベント登録に失敗しました。');
+                setSubmitting(false);
+                return;
+            }
+
+            // 成功: モーダルを閉じて画面更新
+            onClose();
+            router.refresh();
+        } catch (err) {
+            console.error(err);
+            alert('通信エラーが発生しました。');
+        } finally {
+            setSubmitting(false);
+        }
+
     };
 
     return (
@@ -36,6 +87,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                             <Textbox
                                 id='title-form'
                                 name='title'
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
                                 className='w-full custom-input'
                                 style={{backgroundColor:'#F9FAFB'}}
                                 placeholder='イベントのタイトルを入力'
@@ -51,6 +104,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='event-start-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
+                                    value={startPeriod}
+                                    onChange={(e) => setStartPeriod(e.target.value)}
                                     style={{backgroundColor:'#F9FAFB'}}
                                 />
                                 <p>～</p>
@@ -59,6 +114,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='event-end-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
+                                    value={endPeriod}
+                                    onChange={(e) => setEndPeriod(e.target.value)}
                                     style={{backgroundColor:'#F9FAFB'}}
                                 />
                             </div>
@@ -73,6 +130,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='book-post-start-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
+                                    value={firstVotingStart}
+                                    onChange={(e) => setFirstVotingStart(e.target.value)}
                                     style={{backgroundColor:'#F9FAFB'}}
                                 />
                                 <p>～</p>
@@ -81,6 +140,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='book-post-end-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
+                                    value={firstVotingEnd}
+                                    onChange={(e) => setFirstVotingEnd(e.target.value)}
                                     style={{backgroundColor:'#F9FAFB'}}
                                 />
                             </div>
@@ -95,6 +156,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='book-vote-start-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
+                                    value={secondVotingStart}
+                                    onChange={(e) => setSecondVotingStart(e.target.value)}
                                     style={{backgroundColor:'#F9FAFB'}}
                                 />
                                 <p>～</p>
@@ -103,6 +166,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     name='book-vote-end-datetime'
                                     className='datetime-input'
                                     type='datetime-local'
+                                    value={secondVotingEnd}
+                                    onChange={(e) => setSecondVotingEnd(e.target.value)}
                                     style={{backgroundColor:'#F9FAFB'}}
                                 />
                             </div>
@@ -136,7 +201,7 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                         <div className='my-4'>
                             <label htmlFor="remarks" className='text-xl block'>備考欄</label>
                             <p className='event-detail-text text-sm'>イベントについての詳細を記入してください。 ※ユーザーには公開されません</p>
-                            <textarea name="remarks" id="remarks"></textarea>
+                            <textarea name="remarks" id="remarks" value={detail} onChange={(e) => setDetail(e.target.value)}></textarea>
                         </div>
 
                         <div className='flex justify-end gap-4'>
