@@ -15,7 +15,7 @@ export default function NoticeDisableModal({ isOpen, onClose }: NoticeDisableMod
             <div className="modal-content bg-white rounded-lg w-5/12 max-w-8xl max-h-[90vh] flex flex-col p-6"  onClick={(e) => e.stopPropagation()}>
                 <p className='text-center font-bold text-xl mb-3'>本当に非公開にしますか？</p>
                 <div className='flex justify-center gap-20'>
-                    <button className='back-btn modal-btn-common'>戻る</button>
+                    <button className='back-btn modal-btn-common' onClick={onClose}>戻る</button>
                     <button className='disable-btn modal-btn-common'>非公開にする</button>
                 </div>
             </div>
