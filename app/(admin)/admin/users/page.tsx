@@ -1,11 +1,16 @@
 "use client"
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Textbox from '@/components/ui/admin-textbox';
 import AdminButton from '@/components/ui/admin-button';
 import "@/styles/admin/users.css";
 import { Icon } from '@iconify/react';
+import UserDetailModal from "@/components/admin/UserDetailModal";
+import UserExitModal from '@/components/admin/UserExitModal'
 
 export default function Page() {
+    const [isUserExitModalOpen, setIsUserExitModalOpen] = useState(false);
+    const [isUserDetailModalOpen, setIsUserDetailModalOpen] = useState(false);
+
     const [currentPage, setCurrentPage] = useState<number>(1);
 
     // 検索フォームのstate
@@ -61,6 +66,24 @@ export default function Page() {
         { id: 7, nickname: "mark", status: "利用中", age: "50代", address: "岩手県紫波町",review:15 },
     ];
 
+
+    // モーダルが開いている時に背景のスクロールを防ぐ
+    useEffect(() => {
+        if (isUserDetailModalOpen || isUserExitModalOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        
+        // クリーンアップ関数
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isUserDetailModalOpen,isUserExitModalOpen]);
+
+    const handleUserDetail = () => {
+        setIsUserDetailModalOpen(true);
+    };
     return (
         <main className="users-container">
             {/*---------------------------
@@ -271,7 +294,7 @@ export default function Page() {
                     <tbody className="border">
                         {dummyusersData.map((users) => {
                             return (
-                                <tr key={users.id} className="users-record">
+                                <tr key={users.id} className="users-record" onClick={handleUserDetail}>
                                     <td className='py-2 pl-10'><span className={`status-badge ${getStatusClass(users.status)}`}>{users.status}</span></td>
                                     <td className="">{users.id}</td>
                                     <td className="">{users.nickname}</td>
@@ -314,6 +337,17 @@ export default function Page() {
                 >5</button>
                 <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
             </div>
+            {/* モーダル */}
+            <UserDetailModal
+                isOpen={isUserDetailModalOpen}
+                onClose={() => setIsUserDetailModalOpen(false)}
+                onOpenUserExit={() => setIsUserExitModalOpen(true)}
+            />
+
+            <UserExitModal
+                isOpen={isUserExitModalOpen}
+                onClose={() => setIsUserExitModalOpen(false)}
+            />
         </main>
     );
 }

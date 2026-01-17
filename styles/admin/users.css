@@ -115,3 +115,139 @@ details[open] .icon {
 .page-arrow {
   color: var(--color-admin-sub);
 }
+
+/* モーダル */
+.user-detail-modal{
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+  display: flex;
+  flex-direction: column;
+}
+.modal-scroll-area {
+  overflow-y: auto;
+  flex: 1;
+}
+.close-btn{
+  background-color: var(--color-bg);
+  box-shadow: none;
+}
+.user-data-title{
+  color: var(--color-sub);
+}
+.status{
+  color: #48885A;
+  background-color: var(--color-admin-active-background);
+  border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.table-head {
+  background-color: var(--color-main);
+  font-size: var(--font-size-base);
+  color: var(--color-bg);
+  border: 1px solid var(--color-main);
+}
+.event-table {
+  table-layout: fixed;
+  width: 100%;
+}
+.event-table th,
+.event-table td{
+  border-bottom: 1px solid var(--color-input-bg);
+  word-break: break-word;
+  box-sizing: border-box;
+}
+.head-check{
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid #6A8CA4;
+  border-radius: 2px;
+}
+summary {
+  list-style-type: none;
+}
+details[open] .icon {
+  transform: rotate(180deg);
+}
+.title-text{
+  color: var(--color-main);
+  border-bottom: 1px solid var(--color-main);
+}
+.status-text{
+  color: #1E40AF;
+  background-color: #DBEAFE;
+  border-radius: var(--control-radius);
+}
+.accordion-toggle{
+  background-color: var(--color-bg);
+  box-shadow: none;
+  color: var(--color-text);
+  font-size: var(--font-size-h1);
+}
+.details-content > div {
+  width: 100%;
+  box-sizing: border-box;
+}
+/* アコーディオン */
+/* アコーディオンの中 */
+.details-content h3{
+  font-size: var(--font-size-h1);
+}
+.book-review-section{
+  overflow-y: auto;
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
+  max-width: 100%;
+  max-height: 21rem; /* 必要に応じて調整 */
+}
+.book-review-section p {
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.book-data{
+  border-bottom: 1px solid #A0B7C7;
+  margin: 0 0 0.5rem 0;
+}
+.book-head{
+  color: #A0B7C7;
+}
+.book-content{
+  font-size: 20px;
+  margin: 0 0 0.6rem 0;
+}
+.data-row-link{
+  background-color: var(--color-bg);
+  color: var(--color-main);
+  box-shadow: none;
+}
+.exit-btn {
+  width: 10rem;
+  height: 2.5rem;
+  font-size: 1.5rem;
+  box-shadow: none;
+  padding: 1.5rem 0;
+}
+
+/* 退会モーダル */
+.user-exit-modal{
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.exit-area{
+  height: 10rem;
+}
+.exit-modal-common{
+  width: 13rem;
+  height: 2.5rem;
+  font-size: 1.5rem;
+  box-shadow: none;
+  margin: 1rem 0;
+  padding: 1.5rem 0;
+}
+.back-btn{
+  background-color: var(--color-bg);
+  color: var(--color-admin-sub);
+  border: 1px solid var(--color-admin-sub);
+}
