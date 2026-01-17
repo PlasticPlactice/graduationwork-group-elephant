@@ -7,23 +7,64 @@ import { Icon } from "@iconify/react";
 import EventRegisterModal from '@/components/admin/EventRegisterModal';
 import EventEditModal from '@/components/admin/EventEditModal'
 
+type EventItem = {
+    id: number;
+    title: string;
+    detail?: string;
+    status: string;
+    start_period?: string;
+    end_period?: string;
+    first_voting_start_period?: string;
+    first_voting_end_period?: string;
+    second_voting_start_period?: string;
+    second_voting_end_period?: string;
+    public_flag?: string;
+};
+
 export default function Page() {
     const router = useRouter();
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [eventNowData, setEventNowData] = useState<EventItem[]>([]);
+    const [loadingEvents, setLoadingEvents] = useState(true)
 
-    const [eventNowData, setEventNowData] = useState([
-        {
-            id: 1, title: "第5回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag: "true"
-        },
-        {
-            id: 2, title: "第6回文庫X", detail: "大人気イベント文庫Xです。", status: "2", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag: "true"
+    // const [eventNowData, setEventNowData] = useState([
+    //     {
+    //         id: 1, title: "第5回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
+    //         first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
+    //         public_flag: "true"
+    //     },
+    //     {
+    //         id: 2, title: "第6回文庫X", detail: "大人気イベント文庫Xです。", status: "2", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
+    //         first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
+    //         public_flag: "true"
+    //     }
+    // ]);
+    const formatDateTime = (iso?: string) => {
+        if (!iso) return "";
+        const d = new Date(iso);
+        return d.toLocaleString("ja-JP", { dateStyle: "medium", timeStyle: "short" });
+    };
+    // イベント取得（client component の副作用内で実行）
+    useEffect(() => {
+    let mounted = true;
+    (async () => {
+        try {
+        const res = await fetch('/api/events');
+        if (!res.ok) {
+            console.error('events fetch failed', await res.text());
+            return;
         }
-    ]);
+        const data = await res.json();
+        if (mounted) setEventNowData(data);
+        } catch (err) {
+        console.error(err);
+        } finally {
+        if (mounted) setLoadingEvents(false);
+        }
+    })();
+    return () => { mounted = false; };
+    }, []);
 
     const [eventEndData, setEventEndData] = useState([
         {
@@ -125,7 +166,7 @@ export default function Page() {
                     <div className='flex items-center justify-between pb-3 event-title-section'>
                         <div className='flex items-center'>
                             <p className='font-bold event-title'>{ now.title}</p>
-                            <p className='ml-3'>{now.start_period} ~ { now.end_period}</p>
+                            <p className='ml-3'>{formatDateTime(now.start_period)} ~ {formatDateTime(now.end_period)}</p>
                         </div>
                         <div className='flex items-center mr-10'>
                             <p>イベントの公開</p>
@@ -184,22 +225,22 @@ export default function Page() {
 
                     <div className="row">
                         <div className="label text-center">開始日</div>
-                            <div className="content">{now.start_period}</div>
+                            <div className="content">{formatDateTime(now.start_period)}</div>
                     </div>
 
                     <div className="row">
                         <div className="label text-center">書評投稿期間</div>
-                        <div className="content">{now.first_voting_start_period} - {now.first_voting_end_period}</div>
+                        <div className="content">{formatDateTime(now.first_voting_start_period)} - {formatDateTime(now.first_voting_end_period)}</div>
                     </div>
 
                     <div className="row">
                         <div className="label text-center">1次審査期間</div>
-                            <div className="content">{now.first_voting_end_period} - { now.second_voting_start_period}</div>
+                            <div className="content">{formatDateTime(now.first_voting_end_period)} - {formatDateTime(now.second_voting_start_period)}</div>
                     </div>
 
                     <div className="row">
                         <div className="label text-center">2次審査期間</div>
-                            <div className="content">{now.second_voting_start_period} - {now.second_voting_end_period}</div>
+                            <div className="content">{formatDateTime(now.second_voting_start_period)} - {formatDateTime(now.second_voting_end_period)}</div>
                     </div>
 
                     <div className="row">
