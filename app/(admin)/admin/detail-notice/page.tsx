@@ -3,6 +3,7 @@ import "@/styles/admin/detail-notice.css"
 import "@/styles/admin/notice-upload.css"
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
+import NoticeDisableModal from "@/components/admin/NoticeDisableModal";
 
 export default function Page() 
 {
@@ -10,20 +11,28 @@ export default function Page()
     const handleEdit = () => {
         router.push('/admin/edit-notice')
     }
-      // モーダル制御
-      const [modalIndex, setModalIndex] = useState<number | null>(null);
-      const openPreview = (index: number) => setModalIndex(index);
-      const closeModal = () => setModalIndex(null);
-    
-      // Esc で閉じる
-      useEffect(() => {
-        if (modalIndex === null) return;
-        const onKey = (e: KeyboardEvent) => {
-          if (e.key === "Escape") closeModal();
-        };
-        window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
-      }, [modalIndex]);
+    // モーダル制御
+    const [modalIndex, setModalIndex] = useState<number | null>(null);
+    const [isNoticeDisableModalOpen, setIsNoticeDisableModalOpen] = useState(false);
+    const openPreview = (index: number) => setModalIndex(index);
+    const closeModal = () => setModalIndex(null);
+
+    // Esc で閉じる
+    useEffect(() => {
+    if (modalIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape") closeModal();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    }, [modalIndex]);
+
+    const handleNoticeDisable = () => {
+        setIsNoticeDisableModalOpen(true)
+    }
+    const closeNoticeDisableModal = () => {
+        setIsNoticeDisableModalOpen(false)
+    }
     
     return (
         <main className="p-6">
@@ -54,8 +63,8 @@ export default function Page()
                 <img src="/admin/JYUN923_4_TP_V4.jpg"  onClick={() => openPreview(0)} alt="添付画像" className='img-border w-full h-full object-cover h-20 flex items-center justify-center text-sm text-black'/>
             </div>
 
-            <div className="btn-gruop flex items-center">
-                <button className="not-public-btn">非公開にする</button>
+            <div className="btn-group flex items-center">
+                <button className="not-public-btn" onClick={handleNoticeDisable}>非公開にする</button>
                 <div className="ml-auto flex gap-2">
                     <button className="close-btn">閉じる</button>
                     <button onClick={handleEdit} className="edit-btn">編集する</button>
@@ -75,7 +84,9 @@ export default function Page()
             </div>
           </div>
         </div>
-      )}
+            )}
+        {/* モーダル */}
+        <NoticeDisableModal isOpen={isNoticeDisableModalOpen} onClose={closeNoticeDisableModal} />
         </main>
     )
 };
