@@ -1,10 +1,9 @@
-"use client";
+﻿"use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { Pagination } from "@/components/ui/pagination";
-import { Suspense } from "react";
 
 export default function EventPage() {
   // 仮のイベントデータ（例として3件）
@@ -12,9 +11,9 @@ export default function EventPage() {
     {
       title: "第4回 文庫Xイベント",
       daysLeft: 10,
-      description: "投票期間中です！投票してみましょう！",
+      description: "投票期間中です！投票してみましょう。",
       buttonText: "投票する",
-      href: "/posts/bookshelf",
+      href: "/event/vote/4",
       isFinished: false,
     },
   ];
@@ -23,9 +22,9 @@ export default function EventPage() {
     {
       title: "第3回 文庫Xイベント",
       daysLeft: "終了",
-      description: "入選作品が決定しました！確認してみましょう！",
+      description: "入選作品が決定しました。確認してみましょう。",
       buttonText: "確認する",
-      href: "/posts/bookshelf",
+      href: "/event/result/3",
       isFinished: true,
     },
     {
@@ -33,7 +32,7 @@ export default function EventPage() {
       daysLeft: "終了",
       description: "次回イベントもお楽しみに！",
       buttonText: "詳細を見る",
-      href: "/posts/bookshelf",
+      href: "/event/result/2",
       isFinished: true,
     },
     {
@@ -41,7 +40,7 @@ export default function EventPage() {
       daysLeft: "終了",
       description: "次回イベントもお楽しみに！",
       buttonText: "詳細を見る",
-      href: "/posts/bookshelf",
+      href: "/event/result/1",
       isFinished: true,
     },
   ];
@@ -98,7 +97,7 @@ export default function EventPage() {
         </div>
 
         {/* ページネーション */}
-        <Suspense>
+        <Suspense fallback={null}>
           <Pagination totalPages={3} currentPage={1} />
         </Suspense>
       </div>
