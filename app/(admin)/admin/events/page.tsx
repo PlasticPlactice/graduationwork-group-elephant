@@ -25,9 +25,11 @@ export default function Page() {
     const router = useRouter();
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
     const [eventNowData, setEventNowData] = useState<EventItem[]>([]);
     const [eventEndData, setEventEndData] = useState<EventItem[]>([]);
     const [loadingEvents, setLoadingEvents] = useState(true)
+
     const formatDateTime = (iso?: string) => {
         if (!iso) return "";
         const d = new Date(iso);
@@ -143,14 +145,17 @@ export default function Page() {
     const handleRegister = () => {
         setIsRegisterModalOpen(true);
     };
-    const handleEdit = () => {
+    const handleEdit = (event: EventItem) => {
+        setSelectedEvent(event);
         setIsEditModalOpen(true);
     };
 
     const closeModal = () => {
         setIsRegisterModalOpen(false);
         setIsEditModalOpen(false);
+        setSelectedEvent(null);
     }
+
     const handledetail = () => {
         router.push('/admin/events-details')
     }
@@ -219,7 +224,7 @@ export default function Page() {
                             label='編集'
                             type="button" 
                             className='edit_btn'
-                            onClick={handleEdit}
+                            onClick={() => handleEdit(now)}
                         />
                     </div>
 
@@ -322,7 +327,7 @@ export default function Page() {
                                 label='編集'
                                 type="button"
                                 className='edit_btn'
-                                onClick={handleEdit}
+                                onClick={() => handleEdit(end)}
                             />
                         </div>
 
@@ -364,7 +369,7 @@ export default function Page() {
 
             {/* モーダル */}
             <EventRegisterModal isOpen={isRegisterModalOpen} onClose={closeModal} />
-            <EventEditModal isOpen={isEditModalOpen} onClose={closeModal} />
+            <EventEditModal isOpen={isEditModalOpen} onClose={closeModal} event={selectedEvent} />
         </main>
     )
 }

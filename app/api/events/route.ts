@@ -89,3 +89,30 @@ export async function POST(req: Request) {
   }
 }
 // todo:アップデート処理
+export async function PATCH(req: Request) {
+  try {
+    const body = await req.json();
+    if (!body?.id) return NextResponse.json({ error: 'id is required' }, { status: 400 });
+
+    const updateData: Prisma.EventUpdateInput = {};
+    if ('title' in body) updateData.title = body.title;
+    if ('detail' in body) updateData.detail = body.detail;
+    if ('start_period' in body && body.start_period) updateData.start_period = new Date(body.start_period);
+    if ('end_period' in body && body.end_period) updateData.end_period = new Date(body.end_period);
+    if ('first_voting_start_period' in body && body.first_voting_start_period) updateData.first_voting_start_period = new Date(body.first_voting_start_period);
+    if ('first_voting_end_period' in body && body.first_voting_end_period) updateData.first_voting_end_period = new Date(body.first_voting_end_period);
+    if ('second_voting_start_period' in body && body.second_voting_start_period) updateData.second_voting_start_period = new Date(body.second_voting_start_period);
+    if ('second_voting_end_period' in body && body.second_voting_end_period) updateData.second_voting_end_period = new Date(body.second_voting_end_period);
+    if ('public_flag' in body) updateData.public_flag = Boolean(body.public_flag);
+    if ('status' in body) updateData.status = Number(body.status);
+
+    const updated = await prisma.event.update({
+      where: { id: Number(body.id) },
+      data: updateData,
+    });
+
+    return NextResponse.json(updated);
+  } catch (err) {
+    return NextResponse.json({ error: 'Server error', detail: (err as Error).message }, { status: 500 });
+  }
+}
