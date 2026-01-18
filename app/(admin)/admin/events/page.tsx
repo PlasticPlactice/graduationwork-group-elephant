@@ -5,7 +5,7 @@ import { useState,useEffect } from 'react';
 import "@/styles/admin/events.css"
 import { Icon } from "@iconify/react";
 import EventRegisterModal from '@/components/admin/EventRegisterModal';
-import EventEditModal from '@/components/admin/EventEditModal'
+import EventEditModal from '@/components/admin/EventEditModal';
 
 type EventItem = {
     id: number;
@@ -18,7 +18,7 @@ type EventItem = {
     first_voting_end_period?: string;
     second_voting_start_period?: string;
     second_voting_end_period?: string;
-    public_flag?: string;
+    public_flag?: boolean | string;
 };
 
 export default function Page() {
@@ -38,12 +38,13 @@ export default function Page() {
     let mounted = true;
     (async () => {
         try {
-        const res = await fetch('/api/events');
+        const res = await fetch('/api/events?status=0,1,2');
         if (!res.ok) {
             console.error('events fetch failed', await res.text());
             return;
         }
         const data = await res.json();
+        console.log(data);
         if (mounted) setEventNowData(data);
         } catch (err) {
         console.error(err);
@@ -101,20 +102,27 @@ export default function Page() {
         return <Icon icon='material-symbols:circle' className='m-auto text-white'></Icon>;
     };
 
+    
+    // handleToggleNowEvent:
     const handleToggleNowEvent = (id: number) => {
-        setEventNowData(prev => prev.map(event => 
-            event.id === id 
-                ? { ...event, public_flag: event.public_flag === "true" ? "false" : "true" }
+        setEventNowData(prev =>
+            prev.map(event =>
+            event.id === id
+                ? { ...event, public_flag: !(event.public_flag === true || event.public_flag === "true") }
                 : event
-        ));
+            )
+        );
     };
 
+    // handleToggleEndEvent:
     const handleToggleEndEvent = (id: number) => {
-        setEventEndData(prev => prev.map(event => 
-            event.id === id 
-                ? { ...event, public_flag: event.public_flag === "true" ? "false" : "true" }
+        setEventEndData(prev =>
+            prev.map(event =>
+            event.id === id
+                ? { ...event, public_flag: !(event.public_flag === true || event.public_flag === "true") }
                 : event
-        ));
+            )
+        );
     };
 
 
@@ -146,6 +154,7 @@ export default function Page() {
     const handledetail = () => {
         router.push('/admin/events-details')
     }
+    // todo:トグルのオンオフによる公開非公開の変更処理
 
     return (
         <main>
@@ -166,11 +175,12 @@ export default function Page() {
                         </div>
                         <div className='flex items-center mr-10'>
                             <p>イベントの公開</p>
+                            {/* todo:トグルのオンオフによる公開非公開の変更処理 */}
                             <label className="toggle-switch ml-7">
                                 <input 
                                     type="checkbox" 
                                     id={`myToggle-${now.id}`}
-                                    checked={now.public_flag === "true"}
+                                    checked={now.public_flag === true || now.public_flag === "true"}
                                     onChange={() => handleToggleNowEvent(now.id)}
                                     aria-label='イベントの公開トグル'
                                 />
@@ -273,7 +283,7 @@ export default function Page() {
                                     <input 
                                         type="checkbox" 
                                         id={`myToggle-${end.id}`}
-                                        checked={end.public_flag === "true"}
+                                        checked={end.public_flag === true || end.public_flag === "true"}
                                         onChange={() => handleToggleEndEvent(end.id)}
                                         aria-label='イベントの公開トグル'
                                     />

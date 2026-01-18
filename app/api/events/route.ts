@@ -9,9 +9,20 @@ export async function GET(req: Request) {
     const statusParam = url.searchParams.get('status');
 
     const where: Prisma.EventWhereInput = { public_flag: true, deleted_flag: false };
+
     if (statusParam !== null) {
-      const s = parseInt(statusParam, 10);
-      if (!isNaN(s)) where.status = s;
+      // special keyword "now" -> [0,1,2]
+      if (statusParam === 'now') {
+        where.status = { in: [0, 1, 2] } as Prisma.IntFilter;
+      } else {
+        // allow comma-separated list like "0,1,2" or single number "1"
+        const parts = statusParam.split(',').map(s => parseInt(s, 10)).filter(n => !isNaN(n));
+        if (parts.length === 1) {
+          where.status = parts[0];
+        } else if (parts.length > 1) {
+          where.status = { in: parts } as Prisma.IntFilter;
+        }
+      }
     }
 
     const events = await prisma.event.findMany({
@@ -77,3 +88,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Server error', detail: (err as Error).message }, { status: 500 });
   }
 }
+// todo:アップデート処理
