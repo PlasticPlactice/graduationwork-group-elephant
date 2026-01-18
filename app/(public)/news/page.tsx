@@ -1,18 +1,53 @@
 import React from "react";
 import { ListPageLayout } from "@/components/templates/ListPageLayout";
 
-const newsItems = Array.from({ length: 4 }, (_, i) => ({
-  id: i + 1,
-  date: "2025-10-01",
-  title: "第１回文庫Xが開催されました！",
-  image: "/top/image.png",
-}));
+interface ItemProps {
+  id: number;
+  date: string;
+  title: string;
+  image: string;
+}
 
-// TODO: 実際のデータとページネーションロジックを実装する
-const totalPages = 5;
-const currentPage = 1;
+interface ApiResponse {
+  data: ItemProps[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
 
-export default function NewsPage() {
+async function getNewsData(page: number): Promise<ApiResponse | null> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const response = await fetch(
+      `${baseUrl}/api/notifications?type=0&page=${page}`,
+      { cache: "no-store" },
+    );
+
+    if (!response.ok) {
+      console.error("Failed to fetch news data");
+      return null;
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    return null;
+  }
+}
+
+export default async function NewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const currentPage = params.page ? parseInt(params.page, 10) : 1;
+
+  const apiData = await getNewsData(currentPage);
+
+  const newsItems = apiData?.data || [];
+  const totalPages = apiData?.totalPages || 1;
+
   return (
     <ListPageLayout
       title="お知らせ一覧"
