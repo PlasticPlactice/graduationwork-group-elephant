@@ -1,18 +1,24 @@
 import React from "react";
 import { ListPageLayout } from "@/components/templates/ListPageLayout";
+import { getNotificationData } from "@/lib/api/notifications";
+import { NotificationType } from "@/lib/types/notification";
 
-const donationItems = Array.from({ length: 4 }, (_, i) => ({
-  id: i + 1,
-  date: "2025-10-01",
-  title: "○○様よりご寄付をいただきました！",
-  image: "/top/image.png",
-}));
+export default async function DonationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const currentPage = params.page ? parseInt(params.page, 10) : 1;
 
-// TODO: 実際のデータとページネーションロジックを実装する
-const totalPages = 5;
-const currentPage = 1;
+  const apiData = await getNotificationData(
+    NotificationType.DONATION,
+    currentPage,
+  );
 
-export default function DonationPage() {
+  const donationItems = apiData?.data || [];
+  const totalPages = apiData?.totalPages || 1;
+
   return (
     <ListPageLayout
       title="みなさまからの寄贈本"
