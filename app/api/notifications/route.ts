@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NotificationItem, NotificationType } from "@/lib/types/notification";
 
-interface NotificationItem {
-  id: number;
-  date: string;
-  title: string;
-  image: string;
-}
+// 1ページあたりの表示件数
+const ITEMS_PER_PAGE = 4;
+
+// 許可される通知タイプの値
+const VALID_NOTIFICATION_TYPES = [
+  NotificationType.NEWS,
+  NotificationType.DONATION,
+];
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,7 +27,6 @@ export async function GET(req: NextRequest) {
 
     const type = parseInt(notificationType, 10);
     const page = pageParam ? parseInt(pageParam, 10) : 1;
-    const itemsPerPage = 4;
 
     if (isNaN(type) || isNaN(page) || page < 1) {
       return NextResponse.json(
@@ -33,24 +35,32 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // 通知タイプの範囲チェック
+    if (!VALID_NOTIFICATION_TYPES.includes(type)) {
+      return NextResponse.json(
+        {
+          error: `無効なtypeパラメータです。許可される値は ${VALID_NOTIFICATION_TYPES.join(", ")} です。`,
+        },
+        { status: 400 },
+      );
+    }
+
+    // 共通のWHERE条件を定義
+    const whereCondition = {
+      notification_type: type,
+      public_flag: true,
+      deleted_flag: false,
+      draft_flag: false,
+    };
+
     // 総件数を取得
     const totalCount = await prisma.notification.count({
-      where: {
-        notification_type: type,
-        public_flag: true,
-        deleted_flag: false,
-        draft_flag: false,
-      },
+      where: whereCondition,
     });
 
     // Notificationデータを取得
     const notifications = await prisma.notification.findMany({
-      where: {
-        notification_type: type,
-        public_flag: true,
-        deleted_flag: false,
-        draft_flag: false,
-      },
+      where: whereCondition,
       include: {
         notificationFiles: {
           where: {
@@ -67,26 +77,22 @@ export async function GET(req: NextRequest) {
       orderBy: {
         public_date: "desc",
       },
-      skip: (page - 1) * itemsPerPage,
-      take: itemsPerPage,
+      skip: (page - 1) * ITEMS_PER_PAGE,
+      take: ITEMS_PER_PAGE,
     });
 
-    // ItemProps 形式に変換
-    const items: NotificationItem[] = notifications.map((notification) => {
-      const image =
+    // NotificationItem 形式に変換
+    const items: NotificationItem[] = notifications.map((notification) => ({
+      id: notification.id,
+      date: notification.public_date.toISOString().split("T")[0],
+      title: notification.title,
+      image:
         notification.notificationFiles.length > 0
           ? notification.notificationFiles[0].file.data_path
-          : "/top/image.png";
+          : "/top/image.png",
+    }));
 
-      return {
-        id: notification.id,
-        date: notification.public_date.toISOString().split("T")[0],
-        title: notification.title,
-        image: image,
-      };
-    });
-
-    const totalPages = Math.ceil(totalCount / itemsPerPage);
+    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
     return NextResponse.json({
       data: items,
