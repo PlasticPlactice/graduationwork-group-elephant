@@ -70,6 +70,29 @@ export default function EventRegisterModal({ isOpen, onClose,event }: EventRegis
         e.preventDefault();
         if (!event) return onClose();
 
+        // 開始日時と終了日時のチェック
+        if (start && end) {
+            if (new Date(start) > new Date(end)) {
+                alert('イベント開始日時よりイベント終了日時の方が早いです。');
+                return;
+            }
+        }
+        // 一次審査開始日時と一次審査終了日時のチェック
+        if (firstStart && firstEnd) {
+            if (new Date(firstStart) > new Date(firstEnd)) {
+                alert('一次審査開始日時より一次審査終了日時の方が早いです。');
+                return;
+            }
+        }
+        // 二次審査開始日時と二次審査終了日時のチェック
+        if (secondStart && secondEnd) {
+            if (new Date(secondStart) > new Date(secondEnd)) {
+                alert('二次審査開始日時より二次審査終了日時の方が早いです。');
+                return;
+            }
+        }
+
+
         try {
         const payload = {
             id: event.id,
@@ -150,6 +173,7 @@ export default function EventRegisterModal({ isOpen, onClose,event }: EventRegis
                                     type='datetime-local'
                                     style={{ backgroundColor: '#F9FAFB' }}
                                     value={end}
+                                    onChange={(e)=>setEnd(e.target.value)}
                                 />
                             </div>
                         </div>

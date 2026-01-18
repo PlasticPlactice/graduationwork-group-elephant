@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import type { Prisma } from '@prisma/client';
 
 
+// 一覧取得
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
@@ -49,18 +50,20 @@ export async function GET(req: Request) {
   }
 }
 
+// 登録処理
+// todo:バリデーションチェック
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
     const required = [
-      'title',
-      'start_period',
-      'end_period',
-      'first_voting_start_period',
-      'first_voting_end_period',
-      'second_voting_start_period',
-      'second_voting_end_period'
+      'title',// イベントタイトル
+      'start_period',// イベント開始日時
+      'end_period',// イベント終了日時
+      'first_voting_start_period',// 一次審査開始日時
+      'first_voting_end_period',// 一次審査終了日時
+      'second_voting_start_period',// 二次審査開始日時
+      'second_voting_end_period',// 二次審査終了日時
     ];
     for (const k of required) {
       if (!body[k]) {
@@ -68,6 +71,9 @@ export async function POST(req: Request) {
       }
     }
 
+    // イベント開始日時がイベント終了日時より後の場合エラー⇒「イベント開始日時よりイベント終了日時の方が早いです。」とアラートで表示する
+    // 一次審査開始日時が一次審査終了日時より後の場合エラー⇒「一次審査開始日時より一次審査終了日時の方が早いです。」とアラートで表示する
+    // 二次審査開始日時が二次審査終了日時より後の場合エラー⇒「二次審査開始日時より二次審査終了日時の方が早いです。」とアラートで表示する
     const created = await prisma.event.create({
       data: {
         title: body.title,
@@ -88,7 +94,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Server error', detail: (err as Error).message }, { status: 500 });
   }
 }
-// todo:アップデート処理
+// 更新処理
 export async function PATCH(req: Request) {
   try {
     const body = await req.json();

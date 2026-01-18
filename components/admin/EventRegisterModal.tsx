@@ -30,6 +30,33 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
         e.preventDefault();
         setSubmitting(true);
 
+        // 開始日時と終了日時のチェック
+        if (startPeriod && endPeriod) {
+            if (new Date(startPeriod) > new Date(endPeriod)) {
+                alert('イベント開始日時よりイベント終了日時の方が早いです。');
+                setSubmitting(false);
+                return;
+            }
+        }
+
+        // 一次審査開始日時と一次審査終了日時のチェック
+        if (firstVotingStart && firstVotingEnd) {
+            if (new Date(firstVotingStart) > new Date(firstVotingEnd)) {
+                alert('一次審査開始日時より一次審査終了日時の方が早いです。');
+                setSubmitting(false);
+                return;
+            }
+        }
+
+        // 二次審査開始日時と二次審査終了日時のチェック
+        if (secondVotingStart && secondVotingEnd) {
+            if (new Date(secondVotingStart) > new Date(secondVotingEnd)) {
+                alert('二次審査開始日時より二次審査終了日時の方が早いです。');
+                setSubmitting(false);
+                return;
+            }
+        }
+
         try {
             const payload = {
                 title,
