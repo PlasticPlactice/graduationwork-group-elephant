@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { NotificationItem, NotificationType } from "@/lib/types/notification";
+import {
+  NotificationItem,
+  NotificationType,
+  NotificationTypeValue,
+} from "@/lib/types/notification";
 
 // 1ページあたりの表示件数
 const ITEMS_PER_PAGE = 4;
 
 // 許可される通知タイプの値
-const VALID_NOTIFICATION_TYPES = [
+const VALID_NOTIFICATION_TYPES: readonly NotificationTypeValue[] = [
   NotificationType.NEWS,
   NotificationType.DONATION,
-];
+] as const;
 
 export async function GET(req: NextRequest) {
   try {
@@ -36,7 +40,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 通知タイプの範囲チェック
-    if (!VALID_NOTIFICATION_TYPES.includes(type)) {
+    if (!VALID_NOTIFICATION_TYPES.includes(type as NotificationTypeValue)) {
       return NextResponse.json(
         {
           error: `無効なtypeパラメータです。許可される値は ${VALID_NOTIFICATION_TYPES.join(", ")} です。`,
