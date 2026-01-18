@@ -1,13 +1,21 @@
 ﻿import { NextResponse, type NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
-export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
-  if (!token || token.role !== "admin") {
+const SESSION_COOKIES = [
+  "__Secure-next-auth.session-token",
+  "next-auth.session-token",
+];
+
+export function middleware(request: NextRequest) {
+  const hasSession = SESSION_COOKIES.some((name) =>
+    Boolean(request.cookies.get(name)?.value)
+  );
+
+  if (!hasSession) {
     const signInUrl = new URL("/admin", request.url);
     signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
     return NextResponse.redirect(signInUrl);
   }
+
   return NextResponse.next();
 }
 
