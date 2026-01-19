@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import type { Prisma } from '@prisma/client';
+import { validateEventDates } from '@/lib/validateEventDates';
 
 
 // 一覧取得
@@ -74,6 +75,41 @@ export async function POST(req: Request) {
     // イベント開始日時がイベント終了日時より後の場合エラー⇒「イベント開始日時よりイベント終了日時の方が早いです。」とアラートで表示する
     // 一次審査開始日時が一次審査終了日時より後の場合エラー⇒「一次審査開始日時より一次審査終了日時の方が早いです。」とアラートで表示する
     // 二次審査開始日時が二次審査終了日時より後の場合エラー⇒「二次審査開始日時より二次審査終了日時の方が早いです。」とアラートで表示する
+    const startPeriod = new Date(body.start_period);
+    const endPeriod = new Date(body.end_period);
+    const firstVotingStart = new Date(body.first_voting_start_period);
+    const firstVotingEnd = new Date(body.first_voting_end_period);
+    const secondVotingStart = new Date(body.second_voting_start_period);
+    const secondVotingEnd = new Date(body.second_voting_end_period);
+    // 日付形式のバリデーション
+    if (isNaN(startPeriod.getTime())) {
+      return NextResponse.json({ error: 'start_period is invalid date' }, { status: 400 });
+    }
+    if (isNaN(endPeriod.getTime())) {
+      return NextResponse.json({ error: 'end_period is invalid date' }, { status: 400 });
+    }
+    if (isNaN(firstVotingStart.getTime())) {
+      return NextResponse.json({ error: 'first_voting_start_period is invalid date' }, { status: 400 });
+    }
+    if (isNaN(firstVotingEnd.getTime())) {
+      return NextResponse.json({ error: 'first_voting_end_period is invalid date' }, { status: 400 });
+    }
+    if (isNaN(secondVotingStart.getTime())) {
+      return NextResponse.json({ error: 'second_voting_start_period is invalid date' }, { status: 400 });
+    }
+    if (isNaN(secondVotingEnd.getTime())) {
+      return NextResponse.json({ error: 'second_voting_end_period is invalid date' }, { status: 400 });
+    }
+    // 期間の前後関係バリデーション
+    if (startPeriod > endPeriod) {
+      return NextResponse.json({ error: 'イベント開始日時よりイベント終了日時の方が早いです。' }, { status: 400 });
+    }
+    if (firstVotingStart > firstVotingEnd) {
+      return NextResponse.json({ error: '一次審査開始日時より一次審査終了日時の方が早いです。' }, { status: 400 });
+    }
+    if (secondVotingStart > secondVotingEnd) {
+      return NextResponse.json({ error: '二次審査開始日時より二次審査終了日時の方が早いです。' }, { status: 400 });
+    }
     const created = await prisma.event.create({
       data: {
         title: body.title,
@@ -85,7 +121,7 @@ export async function POST(req: Request) {
         first_voting_end_period: new Date(body.first_voting_end_period),
         second_voting_start_period: new Date(body.second_voting_start_period),
         second_voting_end_period: new Date(body.second_voting_end_period),
-        public_flag: Boolean(body.public_flag ?? true),
+        public_flag: typeof body.public_flag === 'boolean' ? body.public_flag : false
       },
     });
 
@@ -100,6 +136,25 @@ export async function PATCH(req: Request) {
     const body = await req.json();
     if (!body?.id) return NextResponse.json({ error: 'id is required' }, { status: 400 });
 
+    // 既存イベントを取得して、部分更新時の比較基準にする
+    const id = Number(body.id);
+    const existing = await prisma.event.findUnique({ where: { id } });
+    if (!existing) return NextResponse.json({ error: 'event not found' }, { status: 404 });
+
+    // マージして検証（body にある場合はそれを使い、なければ既存値を使う）
+    const merged = {
+      start_period: body.start_period ?? existing.start_period,
+      end_period: body.end_period ?? existing.end_period,
+      first_voting_start_period: body.first_voting_start_period ?? existing.first_voting_start_period,
+      first_voting_end_period: body.first_voting_end_period ?? existing.first_voting_end_period,
+      second_voting_start_period: body.second_voting_start_period ?? existing.second_voting_start_period,
+      second_voting_end_period: body.second_voting_end_period ?? existing.second_voting_end_period,
+    };
+
+    const err = validateEventDates(merged);
+    if (err) return NextResponse.json({ error: err }, { status: 400 });
+
+    // 更新データ構築（body に含まれるものだけ変換して設定）
     const updateData: Prisma.EventUpdateInput = {};
     if ('title' in body) updateData.title = body.title;
     if ('detail' in body) updateData.detail = body.detail;
@@ -113,7 +168,7 @@ export async function PATCH(req: Request) {
     if ('status' in body) updateData.status = Number(body.status);
 
     const updated = await prisma.event.update({
-      where: { id: Number(body.id) },
+      where: { id },
       data: updateData,
     });
 

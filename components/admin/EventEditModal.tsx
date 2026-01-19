@@ -4,6 +4,9 @@ import { Icon } from "@iconify/react";
 import Textbox from '@/components/ui/admin-textbox';
 import "@/styles/admin/events.css"
 import { useEffect, useState, startTransition } from "react";
+import { useRouter } from "next/navigation";
+import { validateEventDates } from '@/lib/validateEventDates';
+import { toDateTimeLocalValue, toISOStringFromLocal } from '@/lib/dateUtils';
 
 type EventItem = {
   id: number;
@@ -25,14 +28,8 @@ interface EventRegisterModalProps {
     event?: EventItem | null;
 }
 
-const toDateTimeLocalValue = (iso?: string) => {
-  if (!iso) return "";
-  const d = new Date(iso);
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0,16);
-};
-
-export default function EventRegisterModal({ isOpen, onClose,event }: EventRegisterModalProps) {
+export default function EventEditModal({ isOpen, onClose,event }: EventRegisterModalProps) {
+    const router = useRouter();
     const [title, setTitle] = useState("");
     const [detail, setDetail] = useState("");
     const [start, setStart] = useState("");
@@ -70,27 +67,15 @@ export default function EventRegisterModal({ isOpen, onClose,event }: EventRegis
         e.preventDefault();
         if (!event) return onClose();
 
-        // 開始日時と終了日時のチェック
-        if (start && end) {
-            if (new Date(start) > new Date(end)) {
-                alert('イベント開始日時よりイベント終了日時の方が早いです。');
-                return;
-            }
-        }
-        // 一次審査開始日時と一次審査終了日時のチェック
-        if (firstStart && firstEnd) {
-            if (new Date(firstStart) > new Date(firstEnd)) {
-                alert('一次審査開始日時より一次審査終了日時の方が早いです。');
-                return;
-            }
-        }
-        // 二次審査開始日時と二次審査終了日時のチェック
-        if (secondStart && secondEnd) {
-            if (new Date(secondStart) > new Date(secondEnd)) {
-                alert('二次審査開始日時より二次審査終了日時の方が早いです。');
-                return;
-            }
-        }
+        const err = validateEventDates({
+            start_period: start,
+            end_period: end,
+            first_voting_start_period: firstStart,
+            first_voting_end_period: firstEnd,
+            second_voting_start_period: secondStart,
+            second_voting_end_period: secondEnd,
+        });
+        if (err) { alert(err); return; }
 
 
         try {
@@ -98,12 +83,12 @@ export default function EventRegisterModal({ isOpen, onClose,event }: EventRegis
             id: event.id,
             title,
             detail,
-            start_period: start ? new Date(start).toISOString() : null,
-            end_period: end ? new Date(end).toISOString() : null,
-            first_voting_start_period: firstStart ? new Date(firstStart).toISOString() : null,
-            first_voting_end_period: firstEnd ? new Date(firstEnd).toISOString() : null,
-            second_voting_start_period: secondStart ? new Date(secondStart).toISOString() : null,
-            second_voting_end_period: secondEnd ? new Date(secondEnd).toISOString() : null,
+            start_period: toISOStringFromLocal(start),
+            end_period: toISOStringFromLocal(end),
+            first_voting_start_period: toISOStringFromLocal(firstStart),
+            first_voting_end_period: toISOStringFromLocal(firstEnd),
+            second_voting_start_period: toISOStringFromLocal(secondStart),
+            second_voting_end_period: toISOStringFromLocal(secondEnd),
             public_flag: publicFlag,
             status: nextStatus,
         };
@@ -115,15 +100,18 @@ export default function EventRegisterModal({ isOpen, onClose,event }: EventRegis
         });
 
         if (!res.ok) {
-            console.error('update failed', await res.text());
-            alert('更新に失敗しました');
+            const errorText = await res.text();
+            console.error('update failed', errorText);
+            alert('更新に失敗しました: ' + (errorText || res.statusText));
             return;
         }
 
+        // 成功: モーダルを閉じて画面更新
+        await Promise.resolve(router.refresh());    
         onClose();
         } catch (err) {
         console.error(err);
-        alert('通信エラー');
+        alert('イベントの更新処理中に通信エラーが発生しました。時間をかけてもう一度お試しください。解決しない場合は管理者にお問い合わせください。');
         }
     };
 

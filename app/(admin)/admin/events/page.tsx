@@ -6,6 +6,7 @@ import "@/styles/admin/events.css"
 import { Icon } from "@iconify/react";
 import EventRegisterModal from '@/components/admin/EventRegisterModal';
 import EventEditModal from '@/components/admin/EventEditModal';
+import { formatDateTime } from '@/lib/dateUtils';
 
 type EventItem = {
     id: number;
@@ -30,51 +31,43 @@ export default function Page() {
     const [eventEndData, setEventEndData] = useState<EventItem[]>([]);
     const [loadingEvents, setLoadingEvents] = useState(true)
 
-    const formatDateTime = (iso?: string) => {
-        if (!iso) return "";
-        const d = new Date(iso);
-        return d.toLocaleString("ja-JP", { dateStyle: "medium", timeStyle: "short" });
-    };
-    // 開催中のイベント取得
+    // 置き換え前：2つの useEffect（開催中・終了済）
+    // ↓ 置き換え後：
     useEffect(() => {
     let mounted = true;
-    (async () => {
-        try {
-        const res = await fetch('/api/events?status=0,1,2');
-        if (!res.ok) {
-            console.error('events fetch failed', await res.text());
-            return;
-        }
-        const data = await res.json();
-        console.log(data);
-        if (mounted) setEventNowData(data);
-        } catch (err) {
-        console.error(err);
-        } finally {
-        if (mounted) setLoadingEvents(false);
-        }
-    })();
-    return () => { mounted = false; };
-    }, []);
 
-    // 終了済みのイベント取得
-    useEffect(() => {
-    let mounted = true;
-    (async () => {
+    const fetchEvents = async () => {
+        setLoadingEvents(true);
         try {
-        const res = await fetch('/api/events?status=3');
-        if (!res.ok) {
-            console.error('events fetch failed', await res.text());
-            return;
+        const [resNow, resEnd] = await Promise.all([
+            fetch('/api/events?status=0,1,2'),
+            fetch('/api/events?status=3'),
+        ]);
+
+        if (!resNow.ok) {
+            console.error('events fetch failed (now)', await resNow.text());
         }
-        const data = await res.json();
-        if (mounted) setEventEndData(data);
+        if (!resEnd.ok) {
+            console.error('events fetch failed (end)', await resEnd.text());
+        }
+
+        const [nowData, endData] = await Promise.all([
+            resNow.ok ? resNow.json() : [],
+            resEnd.ok ? resEnd.json() : [],
+        ]);
+
+        if (mounted) {
+            setEventNowData(nowData);
+            setEventEndData(endData);
+        }
         } catch (err) {
         console.error(err);
         } finally {
         if (mounted) setLoadingEvents(false);
         }
-    })();
+    };
+
+    fetchEvents();
     return () => { mounted = false; };
     }, []);
 

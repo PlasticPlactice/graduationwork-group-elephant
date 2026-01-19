@@ -5,6 +5,8 @@ import Textbox from '@/components/ui/admin-textbox';
 import "@/styles/admin/events.css"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { validateEventDates } from '@/lib/validateEventDates';
+import { toISOStringFromLocal } from '@/lib/dateUtils';
 
 interface EventRegisterModalProps {
     isOpen: boolean;
@@ -30,45 +32,28 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
         e.preventDefault();
         setSubmitting(true);
 
-        // 開始日時と終了日時のチェック
-        if (startPeriod && endPeriod) {
-            if (new Date(startPeriod) > new Date(endPeriod)) {
-                alert('イベント開始日時よりイベント終了日時の方が早いです。');
-                setSubmitting(false);
-                return;
-            }
-        }
-
-        // 一次審査開始日時と一次審査終了日時のチェック
-        if (firstVotingStart && firstVotingEnd) {
-            if (new Date(firstVotingStart) > new Date(firstVotingEnd)) {
-                alert('一次審査開始日時より一次審査終了日時の方が早いです。');
-                setSubmitting(false);
-                return;
-            }
-        }
-
-        // 二次審査開始日時と二次審査終了日時のチェック
-        if (secondVotingStart && secondVotingEnd) {
-            if (new Date(secondVotingStart) > new Date(secondVotingEnd)) {
-                alert('二次審査開始日時より二次審査終了日時の方が早いです。');
-                setSubmitting(false);
-                return;
-            }
-        }
+        const err = validateEventDates({
+            start_period: startPeriod,
+            end_period: endPeriod,
+            first_voting_start_period: firstVotingStart,
+            first_voting_end_period: firstVotingEnd,
+            second_voting_start_period: secondVotingStart,
+            second_voting_end_period: secondVotingEnd,
+        });
+        if (err) { alert(err); setSubmitting(false); return; }
 
         try {
             const payload = {
                 title,
                 detail,
-                start_period: startPeriod,
-                end_period: endPeriod,
-                first_voting_start_period: firstVotingStart,
-                first_voting_end_period: firstVotingEnd,
-                second_voting_start_period: secondVotingStart,
-                second_voting_end_period: secondVotingEnd,
+                start_period: toISOStringFromLocal(startPeriod),
+                end_period: toISOStringFromLocal(endPeriod),
+                first_voting_start_period: toISOStringFromLocal(firstVotingStart),
+                first_voting_end_period: toISOStringFromLocal(firstVotingEnd),
+                second_voting_start_period: toISOStringFromLocal(secondVotingStart),
+                second_voting_end_period: toISOStringFromLocal(secondVotingEnd),
                 status: 0,
-                public_flag: false
+                public_flag: true
             };
 
             const res = await fetch('/api/events', {
@@ -86,11 +71,11 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
             }
 
             // 成功: モーダルを閉じて画面更新
+            await Promise.resolve(router.refresh());
             onClose();
-            router.refresh();
         } catch (err) {
             console.error(err);
-            alert('通信エラーが発生しました。');
+            alert('イベントの登録処理中に通信エラーが発生しました。時間をかけてもう一度お試しください。解決しない場合は管理者にお問い合わせください。');
         } finally {
             setSubmitting(false);
         }
