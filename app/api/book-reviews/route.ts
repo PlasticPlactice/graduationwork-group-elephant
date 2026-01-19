@@ -80,6 +80,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(review, { status: 201 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { message: "Failed to create review" },
       { status: 500 }
