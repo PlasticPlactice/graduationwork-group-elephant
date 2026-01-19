@@ -408,21 +408,9 @@ export function BookshelfTop() {
     <>
 
       <div className="mb-6 flex flex-col items-center gap-3 text-center px-4">
-        <div className="w-full max-w-sm">
-          <Link href="/event">
-            <button
-              type="button"
-              className="w-full bg-white border font-bold h-auto rounded-lg shadow hover:bg-slate-50 transition-colors"
-              style={{ padding: "12px 0" }}
-            >
-              すべてのイベント
-            </button>
-          </Link>
-        </div>
         <h1 className="text-2xl font-bold text-slate-900">
           第〇回文庫Xイベント
         </h1>
-
       </div>
       <div
         ref={shelfAreaRef}
