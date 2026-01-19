@@ -32,7 +32,6 @@ export default function Page() {
     const [loadingEvents, setLoadingEvents] = useState(true)
 
     // 置き換え前：2つの useEffect（開催中・終了済）
-    // ↓ 置き換え後：
     useEffect(() => {
     let mounted = true;
 
@@ -107,6 +106,9 @@ export default function Page() {
                 : event
             )
         );
+        const current = eventNowData.find(e => e.id === id);
+        const newFlag = !(current?.public_flag === true || current?.public_flag === "true");
+        updatePublicFlag(id, newFlag);
     };
 
     // handleToggleEndEvent:
@@ -118,6 +120,31 @@ export default function Page() {
                 : event
             )
         );
+        const current = eventEndData.find(e => e.id === id);
+        const newFlag = !(current?.public_flag === true || current?.public_flag === "true");
+        updatePublicFlag(id, newFlag);
+    };
+
+    const updatePublicFlag = async (id: number, newFlag: boolean) => {
+        try {
+            const res = await fetch('/api/events', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, public_flag: newFlag }),
+            });
+            if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text || res.statusText);
+            }
+            const updated = await res.json();
+            // サーバー帰り値でローカルを同期
+            setEventNowData(prev => prev.map(e => e.id === id ? { ...e, public_flag: updated.public_flag } : e));
+            setEventEndData(prev => prev.map(e => e.id === id ? { ...e, public_flag: updated.public_flag } : e));
+        } catch (err) {
+            console.error(err);
+            alert('公開設定の更新に失敗しました。');
+            router.refresh();
+        }
     };
 
 
