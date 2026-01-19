@@ -7,5 +7,5 @@ export async function preparePostConfirm(prevState: any, formData: FormData) {
   const id = crypto.randomUUID();
 
   
-  redirect("/poster/post-confirm");
+  redirect("/post/post-confirm");
 }
