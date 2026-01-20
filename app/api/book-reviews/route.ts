@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+// 取得
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -25,7 +26,7 @@ export async function GET() {
 
     const reviews = await prisma.bookReview.findMany({
       where: {
-        user_id: 4,
+        user_id: userId,
         deleted_flag: false,
       },
       orderBy: {
@@ -52,10 +53,18 @@ export async function POST(req: Request) {
 
     const review = await prisma.bookReview.create({
       data: {
-        user_id: body.user_id,
+        user: {
+          connect: {
+            id: body.user_id
+          },
+        },
+        book: {
+          connect: {
+            isbn: body.isbn
+          },
+        },
         event_id: body.event_id,
         review: body.review,
-        isbn: body.isbn,
         book_title: body.book_title,
         book_title_ruby: body.book_title_ruby,
         author: body.author,

@@ -3,10 +3,12 @@
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Html5Qrcode } from "html5-qrcode";
 
 import Modal from "@/app/(app)/Modal";
+import { title } from "process";
 
 const QR_REGION_ID = "barcode-scan-reader";
 
@@ -17,6 +19,8 @@ type RakutenBookItem = {
 };
 
 export default function BarcodeScanPage() {
+  const router = useRouter();
+
   const [helpOpen, setHelpOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isbnInput, setIsbnInput] = useState("");
@@ -92,6 +96,18 @@ export default function BarcodeScanPage() {
           author: firstItem.author ?? "",
           mediumImageUrl: firstItem.mediumImageUrl,
         });
+
+        const bookItemDraft = {
+          isbn: isbn,
+          title: firstItem.title ?? "",
+          author: firstItem.author ?? ""
+        }
+
+        sessionStorage.setItem(
+          "bookItemDraft",
+          JSON.stringify(bookItemDraft)
+        )
+
         setLastFetchedIsbn(isbn);
       } catch (error) {
         console.error("Failed to fetch book info", error);
@@ -103,6 +119,10 @@ export default function BarcodeScanPage() {
     },
     [lastFetchedIsbn]
   );
+
+  const handleConfirm = () => {
+    router.push("/post/post");
+  }
 
   const handleScanSuccess = useCallback(
     async (decodedText: string) => {
@@ -373,8 +393,8 @@ export default function BarcodeScanPage() {
                 </p>
               </div>
             </div>
-            <Link href="/poster/post">
-              <button type="button" className={`w-full mb-3`}>
+            <Link href="/post/post">
+              <button type="button" onClick={handleConfirm} className={`w-full mb-3`}>
                 登録へ
               </button>
             </Link>

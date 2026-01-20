@@ -1,7 +1,8 @@
 "use client";
 
 import Styles from "@/styles/app/poster.module.css";
-import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { preparePostConfirm } from "./actions";
 import { useActionState } from "react";
 // tiptapのimport
@@ -12,7 +13,18 @@ import Color from "@tiptap/extension-color";
 import { TextStyle } from "@tiptap/extension-text-style";
 import CharacterCount from "@tiptap/extension-character-count";
 
+interface ProfileData {
+  nickName: string;
+  address: string;
+  addressDetail: string;
+  age: number;
+  gender: number;
+  introduction: string;
+}
+
 export default function PostPage() {
+    const router = useRouter();
+
     // HTML送信用
     const [html, setHtml] = useState('');
     // 本のデザイン選択の状態管理用
@@ -29,6 +41,13 @@ export default function PostPage() {
     const [colorActive, setColorActive] = useState<string>('#000000');
 
     const [state, formAction] = useActionState(preparePostConfirm, null);
+    const [bookData, setBookData] = useState({
+        isbn: "",
+        title: "",
+        author: ""
+    });
+     // ユーザーデータ
+    const [userData, setUserData] = useState<ProfileData | null>(null);
 
     // 色選択用の配列
     const colors = [
@@ -53,6 +72,58 @@ export default function PostPage() {
         { name: '模様なし', value: 'none', bg: '/app/stop-pattern.png' }
     ];
 
+    const fetchUserData = useCallback(async () => {
+        try {
+          const res = await fetch("/api/user/profile");
+          if (res.ok) {
+            const data = await res.json();
+            setUserData(data);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user data", error);
+        }
+      }, []);
+
+    useEffect(() => {
+        const draft = sessionStorage.getItem("bookItemDraft");
+
+        if(!draft) return;
+
+        const bookData = JSON.parse(draft);
+
+        fetchUserData();
+
+        setBookData({
+            isbn: bookData.isbn,
+            title: bookData.title,
+            author: bookData.author
+        })
+    }, []);
+
+    const [ form, setForm ] = useState({
+        user_id: 4,
+        review: "",
+        color: "#FFFFFFF",
+        pattern: "dot",
+        pattern_color: "#FFFFFF",
+        isbn: "",
+        book_title: "",
+        evaluations_status: 1,
+        nickname: "",
+        address: "",
+        age: 1,
+        gender: 1,
+        self_introduction: "",
+    })
+    
+    const handleConfirm = () => {
+        sessionStorage.setItem(
+            "bookReviewDraft",
+            JSON.stringify(form) 
+        )
+        router.push('/post/post-confirm');
+    };
+
     // tiptapに関する関数
     const bubbleRef = useRef<HTMLDivElement>(null);
 
@@ -74,7 +145,22 @@ export default function PostPage() {
             limit: maxLength,
         }),
         ],
-        content: "",
+        content: form.review,
+        onUpdate({ editor }) {
+            setForm({
+                ...form,
+                color: bookColor,
+                pattern: pattern,
+                pattern_color: patternColor,
+                review: editor.getHTML(),
+                isbn: bookData.isbn,
+                book_title: bookData.title,
+                nickname: userData ? userData.nickName : "",
+                address: userData ? userData.address + userData.addressDetail : "",
+                age: userData ? userData.age : 1,
+                self_introduction: userData ? userData.introduction : "",
+            });
+        },
     });
 
     // boldボタンの状態管理
@@ -149,20 +235,19 @@ export default function PostPage() {
             <a href="" className={`block font-bold ${Styles.subColor}`}><span>&lt;</span> マイページに戻る</a>
 
             <div className="py-2 flex items-center justify-between border-t">
-                <p className={`${Styles.subColor}`}>本のタイトル</p>
-                <p className={`w-2/3`}>色彩を持たない多崎をつくると、彼の巡礼の年</p>
+                <p className={`${Styles.subColor}`}>タイトル</p>
+                <p className={`w-2/3`}>{bookData.title}</p>
             </div>
             <div className="py-2 flex items-center justify-between border-t border-b">
                 <p className={`${Styles.subColor}`}>著者</p>
-                <p className={`w-2/3`}>村上春樹</p>
+                <p className={`w-2/3`}>{bookData.author}</p>
             </div>
 
             <div className={`mt-6`}>
                 <p className={`font-bold text-center`}>書評本文</p>
 
-                <div className={`flex justify-between items-end my-2`}>
+                <div className={`my-2`}>
                     <p className={``}>残り<span className="text-red-400 font-bold text-xl">{Math.max(remaining, 0)}</span>文字</p>
-                    <button className={`${Styles.oneTimeKeepButton}`}>一時保存</button>
                 </div>
 
                 <form action={formAction} onSubmit={handleSubmit}>
@@ -230,7 +315,13 @@ export default function PostPage() {
                                         <button 
                                             key={color.value} 
                                             type="button" 
-                                            onClick={() => {setBookColor(color.value)}} 
+                                            onClick={() => {
+                                                setBookColor(color.value);
+                                                setForm((prev) => ({
+                                                    ...prev,
+                                                    color: color.value,
+                                                }));
+                                            }} 
                                             style={{ backgroundColor: color.value }} 
                                             aria-label={color.name} 
                                             className={`relative w-12 h-12 rounded-full transition-all duration-200 hover:scale-110 ${Styles.colorButton}`} >
@@ -248,7 +339,13 @@ export default function PostPage() {
                                 <button 
                                     key={item.value}
                                     type="button"
-                                    onClick={() => {setPattern(item.value)}}
+                                    onClick={() => {
+                                                setPattern(item.value);
+                                                setForm((prev) => ({
+                                                    ...prev,
+                                                    pattern: item.value,
+                                                }));
+                                            }} 
                                     style={{ backgroundImage: `url(${item.bg})`, backgroundSize: 'cover', width: '72px', height: '72px', backgroundColor: "#FFFFFF" }} 
                                     className={`relative mb-4 px-4 py-2 rounded-sm border`}
                                 >
@@ -266,7 +363,13 @@ export default function PostPage() {
                                         <button 
                                             key={color.value} 
                                             type="button" 
-                                            onClick={() => {setPatternColor(color.value)}} 
+                                            onClick={() => {
+                                                setPatternColor(color.value);
+                                                setForm((prev) => ({
+                                                    ...prev,
+                                                    pattern_color: color.value,
+                                                }));
+                                            }} 
                                             style={{ backgroundColor: color.value }} 
                                             aria-label={color.name} 
                                             className={`relative w-12 h-12 rounded-full transition-all duration-200 hover:scale-110 ${Styles.colorButton}`} >
@@ -279,7 +382,7 @@ export default function PostPage() {
                             </div>
                         </div>
                     </div>
-                    <button type="submit" className="w-full mt-7 font-bold">確認画面へ</button>
+                    <button type="submit" onClick={handleConfirm} className="w-full mt-7 font-bold">確認画面へ</button>
                     <p className={`mt-2 mb-3 ${Styles.mainColor} ${Styles.text12px}`}>下書きはマイページから確認することができます。</p>
                 </form>
             </div>
