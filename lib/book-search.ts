@@ -33,8 +33,8 @@ function formatBookFromDb(book: Book): BookInfo {
  */
 async function searchRakutenBooks(
   isbn: string,
-  appId: string
-): Promise<Omit<BookInfo, "source"> & { source: "RakutenBooks" } | null> {
+  appId: string,
+): Promise<(Omit<BookInfo, "source"> & { source: "RakutenBooks" }) | null> {
   const url = `https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?applicationId=${appId}&isbn=${isbn}`;
   try {
     const response = await fetch(url);
@@ -58,7 +58,6 @@ async function searchRakutenBooks(
     }
     return null;
   } catch (error) {
-    console.error("Error in searchRakutenBooks:", error);
     return null;
   }
 }
@@ -71,13 +70,12 @@ async function searchRakutenBooks(
  */
 async function searchGoogleBooks(
   isbn: string,
-  apiKey: string
-): Promise<Omit<BookInfo, "source"> & { source: "GoogleBooks" } | null> {
+  apiKey: string,
+): Promise<(Omit<BookInfo, "source"> & { source: "GoogleBooks" }) | null> {
   const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${apiKey}`;
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      console.error("Google Books API request failed");
       return null;
     }
     const data = await response.json();
@@ -96,7 +94,6 @@ async function searchGoogleBooks(
     }
     return null;
   } catch (error) {
-    console.error("Error in searchGoogleBooks:", error);
     return null;
   }
 }
@@ -126,7 +123,9 @@ export async function searchBook(isbn: string): Promise<BookInfo | null> {
   // 2. 外部APIで検索
   const rakutenAppId = process.env.RAKUTEN_APP_ID;
   const googleApiKey = process.env.GOOGLE_BOOKS_API_KEY;
-  let bookData: Omit<BookInfo, "source"> & { source: "RakutenBooks" | "GoogleBooks" } | null = null;
+  let bookData:
+    | (Omit<BookInfo, "source"> & { source: "RakutenBooks" | "GoogleBooks" })
+    | null = null;
 
   if (rakutenAppId) {
     bookData = await searchRakutenBooks(isbn, rakutenAppId);

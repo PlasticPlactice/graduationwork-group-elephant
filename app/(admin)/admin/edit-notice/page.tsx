@@ -88,21 +88,15 @@ export default function Page() {
 
     const fetchNotification = async () => {
       try {
-        console.log("Fetching notification with ID:", notificationId);
         const res = await fetch(`/api/admin/notifications/${notificationId}`, {
           credentials: "include",
         });
 
-        console.log("Response status:", res.status);
-
         if (!res.ok) {
-          const errorData = await res.text();
-          console.error("Error response:", errorData);
           throw new Error(`お知らせの取得に失敗しました: ${res.status}`);
         }
 
         const data = await res.json();
-        console.log("Fetched data:", data);
 
         // フォームに填入
         setTitle(data.title || "");
@@ -129,17 +123,11 @@ export default function Page() {
 
         // 添付ファイルを処理
         if (data.notificationFiles && data.notificationFiles.length > 0) {
-          console.log("Processing files:", data.notificationFiles);
-
           // 最初のファイルをサムネイルとして扱う
           const firstFile = data.notificationFiles[0];
           if (firstFile?.file?.data_path) {
             setExistingThumbnailPath(firstFile.file.data_path);
             setThumbnailPreview(firstFile.file.data_path);
-            console.log(
-              "Set thumbnail preview from existing file:",
-              firstFile.file.data_path,
-            );
           }
 
           // 2番目以降のファイルを添付ファイルとして表示
@@ -174,7 +162,6 @@ export default function Page() {
           }
         }
       } catch (error) {
-        console.error("Error fetching notification:", error);
         setErrorMessage(
           error instanceof Error
             ? error.message
@@ -323,7 +310,6 @@ export default function Page() {
       const uploadedFile = await res.json();
       return uploadedFile.id;
     } catch (error: unknown) {
-      console.error("Upload error:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
@@ -385,7 +371,6 @@ export default function Page() {
 
       // 既存のサムネイルがあり、新しいサムネイルが選択されていない場合は保持
       if (existingThumbnailPath && !thumbnailFile) {
-        console.log("Keeping existing thumbnail");
         // 既存のサムネイルファイル ID を取得する必要がありますが、
         // 簡略化のため、既存ファイルは編集しないようにします
       }
@@ -403,7 +388,6 @@ export default function Page() {
         uploadedCount++;
       } else if (existingThumbnailPath) {
         // 既存のサムネイルを保持する場合、ここで処理
-        console.log("Using existing thumbnail, not uploading new one");
       }
 
       for (const file of attachedFiles) {
@@ -455,7 +439,6 @@ export default function Page() {
         router.push("/admin/notice");
       }, 2000);
     } catch (error: unknown) {
-      console.error("Submit error:", error);
       const errorMessage =
         error instanceof Error
           ? error.message

@@ -29,9 +29,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
   const session = await getServerSession(authOptions);
   const rawId = normalizeId(context.params?.id, req.nextUrl.pathname);
 
-  console.log("[notifications/:id GET] params:", context.params);
-  console.log("[notifications/:id GET] raw id param:", rawId);
-
   // 認証チェック
   if (!session?.user?.id || session.user.role !== "admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -39,7 +36,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
 
   try {
     const notificationId = Number(rawId);
-    console.log("[notifications/:id GET] parsed id:", notificationId);
     if (!Number.isFinite(notificationId)) {
       return NextResponse.json(
         { message: "Invalid ID", rawId },
@@ -86,9 +82,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
   const session = await getServerSession(authOptions);
   const rawId = normalizeId(context.params?.id, req.nextUrl.pathname);
 
-  console.log("[notifications/:id PUT] params:", context.params);
-  console.log("[notifications/:id PUT] raw id param:", rawId);
-
   // 認証チェック
   if (!session?.user?.id || session.user.role !== "admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -104,10 +97,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     }
 
     const body = await req.json();
-    console.log(
-      "[notifications/:id PUT] request body:",
-      JSON.stringify(body).substring(0, 500),
-    );
 
     const {
       title,
@@ -162,18 +151,12 @@ export async function PUT(req: NextRequest, context: RouteContext) {
           { status: 400 },
         );
       }
-    } catch (parseError) {
-      console.error("Error parsing notification_type:", parseError);
+    } catch {
       return NextResponse.json(
         { message: "Failed to parse notification_type" },
         { status: 400 },
       );
     }
-
-    console.log(
-      "[notifications/:id PUT] parsed notification_type:",
-      notificationTypeInt,
-    );
 
     // Date オブジェクトへの変換
     let publicDateObj: Date;
@@ -189,10 +172,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
           { status: 400 },
         );
       }
-      console.log(
-        "[notifications/:id PUT] public_date converted to:",
-        publicDateObj.toISOString(),
-      );
 
       if (public_end_date && public_end_date.trim() !== "") {
         publicEndDateObj = new Date(public_end_date);
@@ -205,13 +184,8 @@ export async function PUT(req: NextRequest, context: RouteContext) {
             { status: 400 },
           );
         }
-        console.log(
-          "[notifications/:id PUT] public_end_date converted to:",
-          publicEndDateObj.toISOString(),
-        );
       }
-    } catch (dateError) {
-      console.error("Error parsing dates:", dateError);
+    } catch {
       return NextResponse.json(
         { message: "Failed to parse date fields" },
         { status: 400 },
@@ -231,10 +205,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
         });
 
         // 通知を更新
-        console.log(
-          "[notifications/:id PUT] updating notification:",
-          notificationId,
-        );
         const updateData: Prisma.NotificationUpdateInput = {
           title,
           detail,
@@ -250,11 +220,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
           updateData.public_end_date = publicEndDateObj;
         }
 
-        console.log(
-          "[notifications/:id PUT] update data keys:",
-          Object.keys(updateData),
-        );
-
         const updatedNotification = await tx.notification.update({
           where: { id: notificationId },
           data: updateData,
@@ -265,11 +230,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 
         // 新しい関連ファイルを作成
         if (fileIds && fileIds.length > 0) {
-          console.log(
-            "[notifications/:id PUT] creating",
-            fileIds.length,
-            "files",
-          );
           await tx.notificationFile.createMany({
             data: fileIds.map((fileId: number, index: number) => ({
               notification_id: notificationId,
@@ -277,17 +237,14 @@ export async function PUT(req: NextRequest, context: RouteContext) {
               sort_order: index,
             })),
           });
-          console.log("[notifications/:id PUT] files created successfully");
         }
         return updatedNotification;
       },
       { timeout: 10000 },
     );
 
-    console.log("[notifications/:id PUT] transaction completed successfully");
     return NextResponse.json(transaction, { status: 200 });
   } catch (error) {
-    console.error(`Error updating notification ${rawId}:`, error);
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
     const errorStack = error instanceof Error ? error.stack : undefined;
@@ -310,9 +267,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 export async function DELETE(req: NextRequest, context: RouteContext) {
   const session = await getServerSession(authOptions);
   const rawId = normalizeId(context.params?.id, req.nextUrl.pathname);
-
-  console.log("[notifications/:id DELETE] params:", context.params);
-  console.log("[notifications/:id DELETE] raw id param:", rawId);
 
   // 認証チェック
   if (!session?.user?.id || session.user.role !== "admin") {
@@ -340,8 +294,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
       { message: "Notification deleted successfully" },
       { status: 200 },
     );
-  } catch (error) {
-    console.error(`Error deleting notification ${rawId}:`, error);
+  } catch {
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 },

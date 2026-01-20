@@ -17,11 +17,10 @@ export async function GET(req: NextRequest) {
     } else {
       return NextResponse.json(
         { error: "書籍が見つかりませんでした" },
-        { status: 404 }
+        { status: 404 },
       );
     }
   } catch (error) {
-    console.error("Book search API error:", error);
     return NextResponse.json({ error: "サーバーエラー" }, { status: 500 });
   }
 }

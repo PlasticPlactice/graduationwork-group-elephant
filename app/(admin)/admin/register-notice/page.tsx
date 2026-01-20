@@ -187,7 +187,6 @@ export default function Page() {
       const uploadedFile = await res.json();
       return uploadedFile.id;
     } catch (error: unknown) {
-      console.error("Upload error:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
@@ -314,7 +313,6 @@ export default function Page() {
         router.push("/admin/notice");
       }, 2000);
     } catch (error: unknown) {
-      console.error("Submit error:", error);
       const errorMessage =
         error instanceof Error
           ? error.message

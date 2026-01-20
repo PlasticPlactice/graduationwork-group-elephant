@@ -103,7 +103,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(newFile, { status: 201 });
   } catch (error: unknown) {
-    console.error("Error uploading file:", error);
     const errorMessage =
       error instanceof Error
         ? error.message

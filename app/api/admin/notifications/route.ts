@@ -112,8 +112,7 @@ export async function GET(req: NextRequest) {
       pageSize: PAGE_SIZE,
       totalPages: Math.ceil(total / PAGE_SIZE),
     });
-  } catch (error) {
-    console.error("Error fetching notifications:", error);
+  } catch {
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 },
@@ -178,8 +177,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(newNotification, { status: 201 });
-  } catch (error) {
-    console.error("Error creating notification:", error);
+  } catch {
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 },
