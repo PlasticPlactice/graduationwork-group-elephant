@@ -296,7 +296,7 @@ export default function Page() {
                     <summary className='flex items-center justify-between'>
                         <div className='summary_title'>
                             <h2 className='font-bold'>{end.title}</h2>
-                            <p>{end.start_period} ~ {end.end_period}</p>
+                            <p>{formatDateTime(end.start_period)} ~ {formatDateTime(end.end_period)}</p>
                         </div>
                         <Icon icon="ep:arrow-up" rotate={2} width={40} className='icon'></Icon>
                     </summary>
@@ -359,22 +359,22 @@ export default function Page() {
 
                             <div className="row">
                                 <div className="label text-center">開始日</div>
-                                <div className="content">{end.start_period}</div>
+                                <div className="content">{formatDateTime(end.start_period)}</div>
                             </div>
 
                             <div className="row">
                                 <div className="label text-center">書評投稿期間</div>
-                                <div className="content">{end.first_voting_start_period} - {end.first_voting_end_period}</div>
+                                <div className="content">{formatDateTime(end.first_voting_start_period)} - {formatDateTime(end.first_voting_end_period)}</div>
                             </div>
 
                             <div className="row">
                                 <div className="label text-center">1次審査期間</div>
-                                <div className="content">{end.first_voting_end_period} - {end.second_voting_start_period}</div>
+                                <div className="content">{formatDateTime(end.first_voting_end_period)} - {formatDateTime(end.second_voting_start_period)}</div>
                             </div>
 
                             <div className="row">
                                 <div className="label text-center">2次審査期間</div>
-                                <div className="content">{end.second_voting_start_period} - {end.second_voting_end_period}</div>
+                                <div className="content">{formatDateTime(end.second_voting_start_period)} - {formatDateTime(end.second_voting_end_period)}</div>
                             </div>
 
                             <div className="row">
