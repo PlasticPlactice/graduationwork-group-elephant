@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
@@ -28,7 +28,7 @@ type RemoteNotificationFile = {
   };
 };
 
-export default function Page() {
+function EditNoticeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const notificationIdParam = searchParams.get("id");
@@ -801,5 +801,13 @@ export default function Page() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="p-6">読み込み中...</div>}>
+      <EditNoticeContent />
+    </Suspense>
   );
 }

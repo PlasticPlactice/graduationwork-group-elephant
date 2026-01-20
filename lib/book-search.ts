@@ -39,7 +39,6 @@ async function searchRakutenBooks(
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      console.error("Rakuten Books API request failed");
       return null;
     }
     const data = await response.json();
@@ -57,7 +56,7 @@ async function searchRakutenBooks(
       };
     }
     return null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -93,7 +92,7 @@ async function searchGoogleBooks(
       };
     }
     return null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

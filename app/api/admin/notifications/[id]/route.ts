@@ -5,9 +5,9 @@ import { authOptions } from "@/lib/auth";
 import { Prisma } from "@prisma/client";
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 const normalizeId = (
@@ -27,7 +27,8 @@ const normalizeId = (
  */
 export async function GET(req: NextRequest, context: RouteContext) {
   const session = await getServerSession(authOptions);
-  const rawId = normalizeId(context.params?.id, req.nextUrl.pathname);
+  const params = await context.params;
+  const rawId = normalizeId(params?.id, req.nextUrl.pathname);
 
   // 認証チェック
   if (!session?.user?.id || session.user.role !== "admin") {
@@ -80,7 +81,8 @@ export async function GET(req: NextRequest, context: RouteContext) {
  */
 export async function PUT(req: NextRequest, context: RouteContext) {
   const session = await getServerSession(authOptions);
-  const rawId = normalizeId(context.params?.id, req.nextUrl.pathname);
+  const params = await context.params;
+  const rawId = normalizeId(params?.id, req.nextUrl.pathname);
 
   // 認証チェック
   if (!session?.user?.id || session.user.role !== "admin") {
@@ -266,7 +268,8 @@ export async function PUT(req: NextRequest, context: RouteContext) {
  */
 export async function DELETE(req: NextRequest, context: RouteContext) {
   const session = await getServerSession(authOptions);
-  const rawId = normalizeId(context.params?.id, req.nextUrl.pathname);
+  const params = await context.params;
+  const rawId = normalizeId(params?.id, req.nextUrl.pathname);
 
   // 認証チェック
   if (!session?.user?.id || session.user.role !== "admin") {

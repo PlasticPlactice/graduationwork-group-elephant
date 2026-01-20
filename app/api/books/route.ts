@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
         { status: 404 },
       );
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "サーバーエラー" }, { status: 500 });
   }
 }
