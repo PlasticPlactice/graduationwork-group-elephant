@@ -22,9 +22,10 @@ import Modal from "@/app/(app)/Modal";
 const MOBILE_MAX_BOOKS_PER_SHELF = 8;
 const DESKTOP_MAX_BOOKS_PER_SHELF = 15;
 const MAX_SHELVES = 3;
-const SHELF_SPACER_CLASS = "h-32 w-6 opacity-0 sm:h-36 lg:h-40";
+const SHELF_SPACER_CLASS = "h-32 w-8 opacity-0 sm:h-36 sm:w-8 lg:h-40";
 const TUTORIAL_STORAGE_KEY = "bookshelf_tutorial_done_v2";
 const EVENT_INFO_STORAGE_KEY = "bookshelf_event_info_seen_v1";
+const BOOK_INDEX_BY_ID = new Map(BOOKS.map((book, index) => [book.id, index]));
 
 const createEmptyShelves = () =>
   Array.from({ length: MAX_SHELVES }, () => [] as Book[]);
@@ -45,18 +46,17 @@ type ModalState = {
 function renderShelfRow(
   books: typeof BOOKS,
   rowKey: string,
+  maxBooksPerShelf: number,
   onBookSelect?: (book: Book) => void,
   favorites?: string[],
   votedBookId?: string | null
 ) {
   if (books.length === 0) return null;
-
   return (
     <div
       key={rowKey}
-      className="flex w-full max-w-5xl items-end justify-start gap-1 sm:gap-2"
+      className="flex w-full max-w-6xl items-end justify-start gap-2 pl-10 pr-6 sm:gap-2 sm:pl-12 sm:pr-8 lg:gap-3 lg:pl-[6.5rem] lg:pr-10"
     >
-      <div className={`${SHELF_SPACER_CLASS} sm:w-8`} aria-hidden="true" />
       {books.map((book, idx) => {
         let bottomColor: string | undefined = undefined;
         if (votedBookId === book.id) {
@@ -69,13 +69,12 @@ function renderShelfRow(
             key={`${book.id}-${idx}`}
             book={book}
             heightClass="h-32 sm:h-36 lg:h-40"
-            widthClass="w-8 sm:w-9 lg:w-10"
+            widthClass="w-9 sm:w-10 lg:w-12"
             onClick={onBookSelect ? () => onBookSelect(book) : undefined}
             bottomColor={bottomColor}
           />
         );
       })}
-      <div className={`${SHELF_SPACER_CLASS} sm:w-8`} aria-hidden="true" />
     </div>
   );
 }
@@ -255,6 +254,7 @@ export function BookshelfTop() {
   const [tutorialBookId, setTutorialBookId] = useState<string | null>(null);
   const [isEventInfoOpen, setIsEventInfoOpen] = useState(false);
   const [isScatterView, setIsScatterView] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     const seenEventInfo = window.localStorage.getItem(EVENT_INFO_STORAGE_KEY);
@@ -288,16 +288,62 @@ export function BookshelfTop() {
 
   useEffect(() => {
     const updateMax = () => {
+      const nextIsDesktop = window.innerWidth >= 1024;
+      setIsDesktop(nextIsDesktop);
       setMaxBooksPerShelf(
-        window.innerWidth >= 1024
-          ? DESKTOP_MAX_BOOKS_PER_SHELF
-          : MOBILE_MAX_BOOKS_PER_SHELF
+        nextIsDesktop ? DESKTOP_MAX_BOOKS_PER_SHELF : MOBILE_MAX_BOOKS_PER_SHELF
       );
     };
     updateMax();
     window.addEventListener("resize", updateMax);
     return () => window.removeEventListener("resize", updateMax);
   }, []);
+
+  useEffect(() => {
+    setBooksState((prevState) => {
+      const shelfBooks = prevState.shelves.flat();
+      const scatterById = new Map(
+        prevState.scatter.map((entry) => [entry.book.id, entry])
+      );
+      const nextShelves = createEmptyShelves();
+      let shelfCursor = 0;
+      let positionInShelf = 0;
+      for (const book of shelfBooks) {
+        if (shelfCursor >= MAX_SHELVES) break;
+        if (positionInShelf >= maxBooksPerShelf) {
+          shelfCursor += 1;
+          positionInShelf = 0;
+        }
+        if (shelfCursor >= MAX_SHELVES) break;
+        nextShelves[shelfCursor].push(book);
+        positionInShelf += 1;
+      }
+
+      const shelfBookIds = new Set(
+        nextShelves.flat().map((book) => book.id)
+      );
+      const nextScatter: ScatterEntry[] = [];
+      for (const entry of prevState.scatter) {
+        if (!shelfBookIds.has(entry.book.id)) {
+          nextScatter.push(entry);
+        }
+      }
+
+      for (const book of shelfBooks) {
+        if (shelfBookIds.has(book.id)) continue;
+        const slotIndex = BOOK_INDEX_BY_ID.get(book.id);
+        if (slotIndex === undefined) continue;
+        if (!scatterById.has(book.id)) {
+          nextScatter.push({ book, slotIndex });
+        }
+      }
+
+      return {
+        shelves: nextShelves,
+        scatter: nextScatter,
+      };
+    });
+  }, [maxBooksPerShelf]);
 
   useEffect(() => {
     if (tutorialStep !== 4) return;
@@ -500,6 +546,7 @@ export function BookshelfTop() {
               renderShelfRow(
                 books,
                 `shelf-${idx}`,
+                maxBooksPerShelf,
                 handleShelfBookSelect,
                 favorites,
                 votedBookId
@@ -557,6 +604,7 @@ export function BookshelfTop() {
         bookSlots={scatter}
         onBookSelect={handleScatterBookSelect}
         onBackToShelf={scrollToShelf}
+        isDesktop={isDesktop}
         containerRef={scatterAreaRef}
       />
       <BookReviewModal

@@ -103,4 +103,97 @@ export const BOOKS: Book[] = [
     review:
       "旅する料理人が各地で学んだレシピとエッセイ。市松模様のリズムに合わせて、キッチンに立ちたくなるアイデアが次々湧いてきます。",
   },
+  {
+    id: "b13",
+    pattern: "dot",
+    baseColor: "#ffffff",
+    patternColor: "#3b82f6",
+    review:
+      "夜の図書館で出会った短い会話が、静かに人生を動かしていく物語。ページをめくるたびに星明かりが増えていくような読後感です。",
+  },
+  {
+    id: "b14",
+    pattern: "stripe",
+    baseColor: "#fff7ed",
+    patternColor: "#fb923c",
+    review:
+      "小さな喫茶店を舞台にした連作短編集。香ばしい匂いと温かい言葉が、ストライプのリズムで心に残ります。",
+  },
+  {
+    id: "b15",
+    pattern: "check",
+    baseColor: "#f0fdf4",
+    patternColor: "#22c55e",
+    review:
+      "山道を旅する二人の会話がやさしく響くロードノベル。市松模様のように、笑いと静けさが交互に訪れます。",
+  },
+  {
+    id: "b16",
+    pattern: "none",
+    baseColor: "#f8fafc",
+    review:
+      "白い表紙に似合う、静謐な詩集。短い言葉がゆっくりと胸に沈み、余白がやさしく広がります。",
+  },
+  {
+    id: "b17",
+    pattern: "dot",
+    baseColor: "#ffffff",
+    patternColor: "#a855f7",
+    review:
+      "街の片隅で拾った手紙が導くミステリ。点がつながる瞬間の気持ちよさが、ドットのように跳ねます。",
+  },
+  {
+    id: "b18",
+    pattern: "stripe",
+    baseColor: "#fff1f2",
+    patternColor: "#f43f5e",
+    review:
+      "姉妹のすれ違いと再会を描く家族小説。甘さと切なさが交互に現れるストライプ模様です。",
+  },
+  {
+    id: "b19",
+    pattern: "check",
+    baseColor: "#ecfeff",
+    patternColor: "#06b6d4",
+    review:
+      "海辺の町で始まる小さな探偵譚。チェック柄みたいに軽快で、最後にふっと笑顔になります。",
+  },
+  {
+    id: "b20",
+    pattern: "none",
+    baseColor: "#f9fafb",
+    review:
+      "季節ごとの風景を綴ったエッセイ集。静かな紙面の中に、風の音が通り抜けていきます。",
+  },
+  {
+    id: "b21",
+    pattern: "dot",
+    baseColor: "#ffffff",
+    patternColor: "#0ea5e9",
+    review:
+      "夢と現実の境目を行き来する幻想短編。小さな点が波のようにつながり、世界が揺らぎます。",
+  },
+  {
+    id: "b22",
+    pattern: "stripe",
+    baseColor: "#fefce8",
+    patternColor: "#eab308",
+    review:
+      "老舗の和菓子店を継ぐ若者の成長譚。まっすぐなストライプが背中を押してくれます。",
+  },
+  {
+    id: "b23",
+    pattern: "check",
+    baseColor: "#eef2ff",
+    patternColor: "#6366f1",
+    review:
+      "学生寮で起きた小さな事件を追う青春ミステリ。チェック柄のようにテンポ良く読めます。",
+  },
+  {
+    id: "b24",
+    pattern: "none",
+    baseColor: "#f1f5f9",
+    review:
+      "山奥の小学校で過ごしたひと夏の記録。余白のある語り口が、静かな余韻を残します。",
+  },
 ];
