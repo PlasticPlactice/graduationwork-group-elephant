@@ -10,6 +10,8 @@ export async function GET() {
 
     const userId = Number(session?.user?.id);
 
+    console.log("Fetching reviews for user ID:", userId);
+
     if (!userId || Number.isNaN(userId)) {
       return NextResponse.json(
         { message: "Invalid user id" },

@@ -14,6 +14,26 @@ export default function PostConfirmPage({
   const router = useRouter();
   const [data, setData] = useState<any>(null);
 
+  const registerBookReview = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/api/book-reviews", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data),
+      });
+
+      if(!res.ok) {
+        alert("登録に失敗しました。");
+        return;
+      }
+
+      sessionStorage.removeItem("bookReviewDraft");
+      router.push("/post/post-complete");
+    } catch(e) {
+      alert("通信に失敗しました。")
+    }
+  }
+
   useEffect(() => {
     console.log(sessionStorage.getItem("bookReviewDraft"))
     const draft = sessionStorage.getItem("bookReviewDraft");
@@ -64,25 +84,7 @@ export default function PostConfirmPage({
           </div>
         </div>
 
-        <button className={`w-full mt-10`} onClick={async () => {
-          try {
-            const res = await fetch("http://localhost:3000/api/book-reviews", {
-              method: "POST",
-              headers: {"Content-Type": "application/json"},
-              body: JSON.stringify(data),
-            });
-
-            if(!res.ok) {
-              alert("登録に失敗しました。");
-              return;
-            }
-
-            sessionStorage.removeItem("bookReviewDraft");
-            router.push("/post/post-complete");
-          } catch(e) {
-            alert("通信に失敗しました。")
-          }
-        }}>
+        <button className={`w-full mt-10`} onClick={registerBookReview}>
           登録
         </button>
         <Link href="post" className="w-full mt-4 block">

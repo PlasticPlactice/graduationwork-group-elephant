@@ -15,12 +15,19 @@ import Styles from "@/styles/app/poster.module.css";
 type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
 
 interface ProfileData {
+  id: number;
   nickName: string;
   address: string;
   addressDetail: string;
   age: number;
   gender: number;
   introduction: string;
+}
+
+interface BookReviewData {
+  title: string;
+  status: string;
+  excerpt: string;
 }
 
 export default function MyPage() {
@@ -33,6 +40,8 @@ export default function MyPage() {
 
   // ユーザーデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
+  // ユーザの書評データ
+  const [bookReviewData, setBookReviewData] = useState<BookReviewData | null>(null);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -46,8 +55,27 @@ export default function MyPage() {
     }
   }, []);
 
+  const fetchBookReviewData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/book-reviews", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if(res.ok) {
+        const data = await res.json();
+        console.log("Book Review Data:", data);
+        setBookReviewData(data);
+      }
+    } catch (error) {
+      console.error("Failed to Fetch book review data")
+    }
+  }, []);
+
   useEffect(() => {
     fetchUserData();
+    fetchBookReviewData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
