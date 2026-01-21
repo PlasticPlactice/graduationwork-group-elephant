@@ -55,9 +55,27 @@ export default function MyPage() {
     }
   }, []);
 
+  const fetchBookReviewDataById = useCallback(async (bookReviewId: number) => {
+    try {
+      const res = await fetch(`/api/book-reviews/detail/${bookReviewId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if(res.ok) {
+        const data = await res.json();
+        console.log("Book Review Detail Data:", data);
+        setBookReviewData(data);
+      }
+    } catch (error) {
+      console.error("Failed to Fetch book review detail data")
+    }
+  }, []);
+
   const fetchBookReviewData = useCallback(async () => {
     try {
-      const res = await fetch("/api/book-reviews", {
+      const res = await fetch("/api/book-reviews/mypage", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -66,6 +84,23 @@ export default function MyPage() {
       if(res.ok) {
         const data = await res.json();
         console.log("Book Review Data:", data);
+        setBookReviewData(data);
+      }
+    } catch (error) {
+      console.error("Failed to Fetch book review data")
+    }
+  }, []);
+  const fetchBookReviewDataByEventId = useCallback(async (eventId: number) => {
+    try {
+      const res = await fetch(`/api/book-reviews/event/${eventId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if(res.ok) {
+        const data = await res.json();
+        console.log("イベントBook Review Data:", data);
         setBookReviewData(data);
       }
     } catch (error) {
@@ -371,11 +406,11 @@ export default function MyPage() {
                     {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
                     <div className="mt-4">
                       {review.href ? (
-                        <Link href={review.href}>
-                          <button className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold">
+                        // <Link href={review.href}>
+                          <button type="button" onClick={() => fetchBookReviewDataById(7)} className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold">
                             {review.buttonText}
                           </button>
-                        </Link>
+                        // </Link>
                       ) : (
                         <button
                           className="w-full text-white px-3 py-2 rounded-md font-bold cursor-not-allowed"

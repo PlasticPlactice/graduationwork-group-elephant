@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import Link from "next/link";
-import { POST } from "@/app/api/book-reviews/route";
+import { POST } from "@/app/api/book-reviews/mypage/route";
 
 export default function PostConfirmPage({
 }: {
