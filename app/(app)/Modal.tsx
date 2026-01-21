@@ -26,13 +26,13 @@ export default function Modal({ open, onClose, children }: ModalProps) {
 
   return createPortal(
     <div
-      className={`${Styles.modalOverlay}`}
+      className={`${Styles.modalOverlay} ${open ? Styles.modalOverlayOpen : ""}`}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className={`${Styles.modalContent}`}
+        className={`${Styles.modalContent} ${open ? Styles.modalContentOpen : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

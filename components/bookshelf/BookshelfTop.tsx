@@ -18,11 +18,13 @@ import {
   ScatterArea,
   type ScatterEntry,
 } from "@/components/bookshelf/ScatterArea";
+import Modal from "@/app/(app)/Modal";
 
 const MAX_BOOKS_PER_SHELF = 8;
 const MAX_SHELVES = 3;
 const SHELF_SPACER_CLASS = "h-32 w-6 opacity-0 sm:h-36 lg:h-40";
 const TUTORIAL_STORAGE_KEY = "bookshelf_tutorial_done_v2";
+const EVENT_INFO_STORAGE_KEY = "bookshelf_event_info_seen_v1";
 
 const createEmptyShelves = () =>
   Array.from({ length: MAX_SHELVES }, () => [] as Book[]);
@@ -244,13 +246,22 @@ export function BookshelfTop() {
   const [modalState, setModalState] = useState<ModalState | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [votedBookId, setVotedBookId] = useState<string | null>(null);
-  const [tutorialStep, setTutorialStep] = useState<1 | 2 | 3 | 4 | null>(null);
+  const [tutorialStep, setTutorialStep] = useState<0 | 1 | 2 | 3 | 4 | null>(
+    null
+  );
   const [tutorialBookId, setTutorialBookId] = useState<string | null>(null);
+  const [isEventInfoOpen, setIsEventInfoOpen] = useState(false);
 
   useEffect(() => {
+    const seenEventInfo = window.localStorage.getItem(EVENT_INFO_STORAGE_KEY);
+    if (!seenEventInfo) {
+      window.localStorage.setItem(EVENT_INFO_STORAGE_KEY, "1");
+      setIsEventInfoOpen(true);
+      return;
+    }
     const done = window.localStorage.getItem(TUTORIAL_STORAGE_KEY);
     if (!done) {
-      setTutorialStep(1);
+      setTutorialStep(0);
     }
   }, []);
 
@@ -353,6 +364,14 @@ export function BookshelfTop() {
     setModalState(null);
   }, []);
 
+  const handleCloseEventInfo = useCallback(() => {
+    setIsEventInfoOpen(false);
+    const done = window.localStorage.getItem(TUTORIAL_STORAGE_KEY);
+    if (!done && tutorialStep === null) {
+      setTutorialStep(0);
+    }
+  }, [tutorialStep]);
+
   const handleCompleteBook = useCallback(() => {
     if (!modalState) return;
     const completedBookId = modalState.book.id;
@@ -408,9 +427,19 @@ export function BookshelfTop() {
     <>
 
       <div className="mb-6 flex flex-col items-center gap-3 text-center px-4">
-        <h1 className="text-2xl font-bold text-slate-900">
-          第〇回文庫Xイベント
-        </h1>
+        <div className="flex items-center justify-center gap-2">
+          <h1 className="text-2xl font-bold text-slate-900">
+            第〇回文庫Xイベント
+          </h1>
+          <button
+            type="button"
+            onClick={() => setIsEventInfoOpen(true)}
+            aria-label="文庫Xイベントの説明を表示"
+            className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-pink-400 bg-white text-sm font-black text-pink-500 shadow-sm transition hover:-translate-y-0.5 hover:bg-pink-50 hover:text-pink-600"
+          >
+            ?
+          </button>
+        </div>
       </div>
       <div
         ref={shelfAreaRef}
@@ -482,20 +511,49 @@ export function BookshelfTop() {
           }
         }}
       />
-      {tutorialStep === 1 ? (
+      {!isEventInfoOpen && tutorialStep === 0 ? (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 px-4">
+          <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 text-center text-slate-900 shadow-xl">
+            <p className="text-base font-bold text-pink-500">
+              チュートリアルを開始します
+            </p>
+            <p className="mt-2 text-sm text-slate-600">
+              画面のガイドに沿って操作してください。
+            </p>
+            <button
+              type="button"
+              onClick={() => setTutorialStep(1)}
+              className="mt-5 rounded-full bg-pink-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-pink-600"
+            >
+              はじめる
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                window.localStorage.setItem(TUTORIAL_STORAGE_KEY, "1");
+                setTutorialStep(null);
+              }}
+              className="absolute bottom-3 right-4 text-xs font-semibold text-slate-400 transition hover:text-pink-500"
+            >
+              スキップ
+            </button>
+          </div>
+        </div>
+      ) : null}
+      {!isEventInfoOpen && tutorialStep === 1 ? (
         <TutorialOverlay
           targetRef={scatterBookRef as RefObject<HTMLElement>}
           message="下の本をタップしてください。"
           preferPlacement="bottom"
         />
       ) : null}
-      {tutorialStep === 2 ? (
+      {!isEventInfoOpen && tutorialStep === 2 ? (
         <TutorialOverlay
           targetRef={actionButtonRef as RefObject<HTMLElement>}
           message="本棚にしまうボタンを押してください。"
         />
       ) : null}
-      {tutorialStep === 3 ? (
+      {!isEventInfoOpen && tutorialStep === 3 ? (
         <TutorialOverlay
           targetRef={shelfAreaRef as RefObject<HTMLElement>}
           message="本棚にしまわれました。次は投票の説明です。"
@@ -503,7 +561,7 @@ export function BookshelfTop() {
           onNext={() => setTutorialStep(4)}
         />
       ) : null}
-      {tutorialStep === 4 ? (
+      {!isEventInfoOpen && tutorialStep === 4 ? (
         <TutorialOverlay
           targetRef={voteButtonRef as RefObject<HTMLElement>}
           message="ここから投票できます。"
@@ -512,6 +570,51 @@ export function BookshelfTop() {
           onNext={completeTutorial}
         />
       ) : null}
+      <Modal open={isEventInfoOpen} onClose={handleCloseEventInfo}>
+        <div className="relative overflow-hidden rounded-2xl border-2 border-pink-200 bg-gradient-to-br from-amber-50 via-pink-50 to-sky-50 p-6 text-left text-slate-900 shadow-xl">
+          <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-amber-200/60" />
+          <div className="absolute -bottom-12 -left-12 h-28 w-28 rounded-full bg-sky-200/60" />
+          <div className="relative">
+            <h2 className="text-lg font-black text-pink-500">
+              文庫Xイベントについて
+            </h2>
+            <p className="mt-3 text-sm font-semibold text-slate-700">
+              本を買って、書いて、投票でつながる読書イベント！
+            </p>
+            <ul className="mt-3 space-y-2 text-sm text-slate-700">
+              <li className="flex gap-2">
+                <span className="font-bold text-pink-500">1.</span>
+                <span>本を買って書評を投稿する。</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-pink-500">2.</span>
+                <span>ユーザーが投票してくれる。</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="font-bold text-pink-500">3.</span>
+                <span>
+                  票が多かった書評が、実際に本のカバーとして文庫Xで販売されます。
+                </span>
+              </li>
+            </ul>
+            <div className="mt-4 rounded-xl bg-white/80 px-4 py-3 text-xs font-semibold text-pink-600 shadow-sm">
+              あなたの言葉が本の顔になるかも！
+            </div>
+          </div>
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                handleCloseEventInfo();
+              }}
+              className="rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-semibold text-slate-500 transition hover:border-pink-300 hover:text-pink-500"
+            >
+              閉じる
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
