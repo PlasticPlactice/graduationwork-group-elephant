@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -20,7 +19,8 @@ import {
 } from "@/components/bookshelf/ScatterArea";
 import Modal from "@/app/(app)/Modal";
 
-const MAX_BOOKS_PER_SHELF = 8;
+const MOBILE_MAX_BOOKS_PER_SHELF = 8;
+const DESKTOP_MAX_BOOKS_PER_SHELF = 15;
 const MAX_SHELVES = 3;
 const SHELF_SPACER_CLASS = "h-32 w-6 opacity-0 sm:h-36 lg:h-40";
 const TUTORIAL_STORAGE_KEY = "bookshelf_tutorial_done_v2";
@@ -54,7 +54,7 @@ function renderShelfRow(
   return (
     <div
       key={rowKey}
-      className="flex w-full max-w-5xl items-end justify-start gap-2"
+      className="flex w-full max-w-5xl items-end justify-start gap-1 sm:gap-2"
     >
       <div className={`${SHELF_SPACER_CLASS} sm:w-8`} aria-hidden="true" />
       {books.map((book, idx) => {
@@ -69,7 +69,7 @@ function renderShelfRow(
             key={`${book.id}-${idx}`}
             book={book}
             heightClass="h-32 sm:h-36 lg:h-40"
-            widthClass="w-9 sm:w-10 lg:w-12"
+            widthClass="w-8 sm:w-9 lg:w-10"
             onClick={onBookSelect ? () => onBookSelect(book) : undefined}
             bottomColor={bottomColor}
           />
@@ -238,6 +238,9 @@ export function BookshelfTop() {
   const voteButtonRef = useRef<HTMLButtonElement | null>(null);
   const scatterBookRef = useRef<HTMLElement | null>(null);
 
+  const [maxBooksPerShelf, setMaxBooksPerShelf] = useState(
+    MOBILE_MAX_BOOKS_PER_SHELF
+  );
   const [booksState, setBooksState] = useState<BooksState>(() => ({
     shelves: createEmptyShelves(),
     scatter: createInitialScatterEntries(),
@@ -251,6 +254,7 @@ export function BookshelfTop() {
   );
   const [tutorialBookId, setTutorialBookId] = useState<string | null>(null);
   const [isEventInfoOpen, setIsEventInfoOpen] = useState(false);
+  const [isScatterView, setIsScatterView] = useState(false);
 
   useEffect(() => {
     const seenEventInfo = window.localStorage.getItem(EVENT_INFO_STORAGE_KEY);
@@ -263,6 +267,36 @@ export function BookshelfTop() {
     if (!done) {
       setTutorialStep(0);
     }
+  }, []);
+
+  useEffect(() => {
+    const updateButtonState = () => {
+      const target = scatterTopRef.current;
+      if (!target) return;
+      const threshold =
+        target.getBoundingClientRect().top + window.scrollY - 120;
+      setIsScatterView(window.scrollY >= threshold);
+    };
+    updateButtonState();
+    window.addEventListener("scroll", updateButtonState, { passive: true });
+    window.addEventListener("resize", updateButtonState);
+    return () => {
+      window.removeEventListener("scroll", updateButtonState);
+      window.removeEventListener("resize", updateButtonState);
+    };
+  }, []);
+
+  useEffect(() => {
+    const updateMax = () => {
+      setMaxBooksPerShelf(
+        window.innerWidth >= 1024
+          ? DESKTOP_MAX_BOOKS_PER_SHELF
+          : MOBILE_MAX_BOOKS_PER_SHELF
+      );
+    };
+    updateMax();
+    window.addEventListener("resize", updateMax);
+    return () => window.removeEventListener("resize", updateMax);
   }, []);
 
   useEffect(() => {
@@ -304,7 +338,7 @@ export function BookshelfTop() {
       }
 
       const targetShelfIndex = prevState.shelves.findIndex(
-        (shelf) => shelf.length < MAX_BOOKS_PER_SHELF
+        (shelf) => shelf.length < maxBooksPerShelf
       );
       if (targetShelfIndex === -1) {
         return prevState;
@@ -362,7 +396,7 @@ export function BookshelfTop() {
 
   const handleCloseReview = useCallback(() => {
     setModalState(null);
-  }, []);
+  }, [maxBooksPerShelf]);
 
   const handleCloseEventInfo = useCallback(() => {
     setIsEventInfoOpen(false);
@@ -380,7 +414,7 @@ export function BookshelfTop() {
       return;
     }
     const hasSpace = booksState.shelves.some(
-      (shelf) => shelf.length < MAX_BOOKS_PER_SHELF
+      (shelf) => shelf.length < maxBooksPerShelf
     );
     if (!hasSpace) {
       window.alert("本棚に空きがありません。");
@@ -392,7 +426,13 @@ export function BookshelfTop() {
       setTutorialBookId(completedBookId);
       setTutorialStep(3);
     }
-  }, [booksState.shelves, modalState, moveScatterBookToShelf, tutorialStep]);
+  }, [
+    booksState.shelves,
+    maxBooksPerShelf,
+    modalState,
+    moveScatterBookToShelf,
+    tutorialStep,
+  ]);
 
   const scrollToScatter = useCallback(() => {
     const target = scatterTopRef.current;
@@ -443,7 +483,7 @@ export function BookshelfTop() {
       </div>
       <div
         ref={shelfAreaRef}
-        className="relative mx-auto w-full max-w-md sm:max-w-4xl"
+        className="relative mx-auto w-full max-w-md sm:max-w-4xl lg:max-w-6xl"
       >
         <div className="relative h-[73vh] w-full overflow-hidden">
           <Image
@@ -468,7 +508,7 @@ export function BookshelfTop() {
           />
         </div>
       </div>
-      <div className="mt-4 flex flex-col items-center gap-2 text-pink-500">
+      <div className="mt-4 flex flex-col items-center gap-2 text-pink-500 lg:hidden">
         <button
           type="button"
           onClick={scrollToScatter}
@@ -479,6 +519,37 @@ export function BookshelfTop() {
             ▼
           </span>
         </button>
+      </div>
+      <div className="fixed bottom-6 right-6 z-40 hidden lg:flex flex-col items-center gap-2 text-pink-500">
+        {isScatterView ? (
+          <button
+            type="button"
+            onClick={scrollToShelf}
+            aria-label="本棚へ戻る"
+            className="leading-none"
+          >
+            <span
+              aria-hidden="true"
+              className="text-4xl font-black leading-none"
+            >
+              ▲
+            </span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={scrollToScatter}
+            aria-label="下の本へ移動"
+            className="leading-none"
+          >
+            <span
+              aria-hidden="true"
+              className="text-4xl font-black leading-none"
+            >
+              ▼
+            </span>
+          </button>
+        )}
       </div>
       <div ref={scatterTopRef} />
       <ScatterArea

@@ -58,9 +58,9 @@ export function ScatterArea({
   return (
     <div
       ref={containerRef}
-      className={`relative mx-auto mt-12 w-full max-w-5xl px-4 ${className}`}
+      className={`relative mx-auto mt-12 w-full max-w-6xl px-4 ${className}`}
     >
-      <div className="mb-4 flex flex-col items-center text-pink-500">
+      <div className="mb-4 flex flex-col items-center text-pink-500 lg:hidden">
         {onBackToShelf ? (
           <button
             type="button"
