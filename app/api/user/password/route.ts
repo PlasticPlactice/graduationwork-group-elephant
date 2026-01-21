@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import bcrypt from "bcrypt";
 
 export async function PUT(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string };
+  } | null;
+  const sessionUser = session?.user;
 
-  if (!session || !session.user || !session.user.id) {
+  if (!sessionUser?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
@@ -19,14 +22,14 @@ export async function PUT(req: NextRequest) {
     if (!currentPassword || !newPassword || !confirmPassword) {
       return NextResponse.json(
         { message: "すべてのフィールドが必須です" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (newPassword !== confirmPassword) {
       return NextResponse.json(
         { message: "新しいパスワードが一致しません" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -39,11 +42,11 @@ export async function PUT(req: NextRequest) {
           message:
             "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const userId = parseInt(session.user.id);
+    const userId = parseInt(sessionUser.id);
 
     // ユーザーを取得
     const user = await prisma.user.findUnique({
@@ -53,20 +56,20 @@ export async function PUT(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { message: "ユーザーが見つかりません" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // 現在のパスワードを検証
     const isPasswordValid = await bcrypt.compare(
       currentPassword,
-      user.password
+      user.password,
     );
 
     if (!isPasswordValid) {
       return NextResponse.json(
         { message: "現在のパスワードが正しくありません" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -84,13 +87,13 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(
       { message: "パスワードが正常に変更されました" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Password change error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Textbox from '@/components/ui/admin-textbox';
-import "@/styles/admin/register-notice.css"
+import Image from "next/image";
+import Textbox from "@/components/ui/admin-textbox";
+import "@/styles/admin/register-notice.css";
 // tiptap
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -20,10 +21,9 @@ import Underline from "@tiptap/extension-underline";
  */
 
 export default function Page() {
-
   // tiptap のエディタを初期化
-    const editor = useEditor({
-        immediatelyRender:false,
+  const editor = useEditor({
+    immediatelyRender: false,
     // クライアント限定で動かす（"use client" 指定済み）
     extensions: [
       // 基本のノード/マークを提供
@@ -43,7 +43,6 @@ export default function Page() {
 
   // エディタの HTML を保持（フォーム送信用）
   const [html, setHtml] = useState<string>("");
-
 
   // 選択中の色（UI 表示用）
   const [activeColor, setActiveColor] = useState<string>("#000000");
@@ -80,7 +79,10 @@ export default function Page() {
     setActiveColor(color);
   };
   // キーボードから色を適用するハンドラ
-  const handleColorKey = (e: React.KeyboardEvent<HTMLButtonElement>, color: string) => {
+  const handleColorKey = (
+    e: React.KeyboardEvent<HTMLButtonElement>,
+    color: string,
+  ) => {
     if (e.key === "Enter" || e.key === " " || e.code === "Space") {
       e.preventDefault();
       applyColor(color);
@@ -97,57 +99,59 @@ export default function Page() {
     // 実際の送信処理はここに書く（fetch / form action 等）
     console.log("送信するHTML:", latestHtml);
     alert("送信（デモ）: コンソールを確認してください");
-    };
-    
-    // サムネイルのプレビューURLを保持
-    const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  };
 
-    // ファイル選択時にDataURLを作ってプレビューにセットする
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // サムネイルのプレビューURLを保持
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+
+  // ファイル選択時にDataURLを作ってプレビューにセットする
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-        setThumbnailPreview(reader.result as string);
+      setThumbnailPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
-    };
+  };
 
-    // 添付ファイルのプレビュー情報（左から順に表示）
-    type UploadPreview = { kind: "image"; src: string; name: string } | { kind: "file"; name: string };
-    const [uploadPreviews, setUploadPreviews] = useState<UploadPreview[]>([]);
+  // 添付ファイルのプレビュー情報（左から順に表示）
+  type UploadPreview =
+    | { kind: "image"; src: string; name: string }
+    | { kind: "file"; name: string };
+  const [uploadPreviews, setUploadPreviews] = useState<UploadPreview[]>([]);
 
-    // File -> DataURL のヘルパー
-    const fileToDataURL = (file: File) =>
+  // File -> DataURL のヘルパー
+  const fileToDataURL = (file: File) =>
     new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result));
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(file);
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
     });
 
-    // 添付ファイル選択ハンドラ（複数選択を想定、最大4件を表示）
-    const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        e.currentTarget.value = "";
-        if (!file) return;
+  // 添付ファイル選択ハンドラ（複数選択を想定、最大4件を表示）
+  const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.currentTarget.value = "";
+    if (!file) return;
 
     // 既存プレビューに追加（最大4件）
     const prev = uploadPreviews.slice();
     if (file.type.startsWith("image/")) {
-        const src = await fileToDataURL(file);
-        prev.push({ kind: "image", src, name: file.name });
+      const src = await fileToDataURL(file);
+      prev.push({ kind: "image", src, name: file.name });
     } else {
-        prev.push({ kind: "file", name: file.name });
+      prev.push({ kind: "file", name: file.name });
     }
     setUploadPreviews(prev.slice(0, 4));
   };
-  
+
   // 指定インデックスのプレビューを削除する（UIからの削除）
-    const removeUploadPreview = (index: number) => {
-      setUploadPreviews(prev => prev.filter((_, i) => i !== index));
-    };
-    
+  const removeUploadPreview = (index: number) => {
+    setUploadPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
   // モーダル制御
   const [modalIndex, setModalIndex] = useState<number | null>(null);
   const openPreview = (index: number) => setModalIndex(index);
@@ -163,94 +167,115 @@ export default function Page() {
     return () => window.removeEventListener("keydown", onKey);
   }, [modalIndex]);
   return (
-    <main className="p-6">  
+    <main className="p-6">
       <form onSubmit={handleSubmit}>
-              {/* サムネインポート */}
+        {/* サムネインポート */}
         <section className="thumbnail-container h-50">
-            <div className="thumbnail-inner flex justify-center">
-                <input
-                    id="thumbnail"
-                    type="file"
-                    name="file"
-                    className="thumbnail-btn"
-                    accept="image/*"
-                    required
-                    onChange={(e) => {
-                        const file = e.target.files && e.target.files[0];
-                        if (!file) {
-                            return;
-                        }
-                        const maxSize = 10 * 1024 * 1024; // 5MB
-                        const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-                        if (!allowedTypes.includes(file.type)) {
-                            alert("画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます。");
-                            e.target.value = "";
-                            return;
-                        }
-                        if (file.size > maxSize) {
-                            alert("ファイルサイズが大きすぎます。10MB以下の画像を選択してください。");
-                            e.target.value = "";
-                            return;
-                        }
-                        handleFileChange(e);
-                    }}
-
-                />
-                {/* プレビュー画像を container 全体に表示 */}
-                {thumbnailPreview && (
-                <img src={thumbnailPreview} alt="thumbnail preview" className="thumbnail-preview"/>
-                )}
-                <label htmlFor="thumbnail" className="thumbnail-label inline-block px-3 py-2 cursor-pointer">
-                    サムネイルを選択
-                </label>
-            </div>
+          <div className="thumbnail-inner flex justify-center">
+            <input
+              id="thumbnail"
+              type="file"
+              name="file"
+              className="thumbnail-btn"
+              accept="image/*"
+              required
+              onChange={(e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) {
+                  return;
+                }
+                const maxSize = 10 * 1024 * 1024; // 5MB
+                const allowedTypes = [
+                  "image/jpeg",
+                  "image/png",
+                  "image/gif",
+                  "image/webp",
+                ];
+                if (!allowedTypes.includes(file.type)) {
+                  alert(
+                    "画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます。",
+                  );
+                  e.target.value = "";
+                  return;
+                }
+                if (file.size > maxSize) {
+                  alert(
+                    "ファイルサイズが大きすぎます。10MB以下の画像を選択してください。",
+                  );
+                  e.target.value = "";
+                  return;
+                }
+                handleFileChange(e);
+              }}
+            />
+            {/* プレビュー画像を container 全体に表示 */}
+            {thumbnailPreview && (
+              <Image
+                src={thumbnailPreview}
+                alt="thumbnail preview"
+                className="thumbnail-preview"
+                width={200}
+                height={200}
+              />
+            )}
+            <label
+              htmlFor="thumbnail"
+              className="thumbnail-label inline-block px-3 py-2 cursor-pointer"
+            >
+              サムネイルを選択
+            </label>
+          </div>
         </section>
         <Textbox
-            type="text"
-            className="title w-full my-5"
-            placeholder="タイトル"
-            required
+          type="text"
+          className="title w-full my-5"
+          placeholder="タイトル"
+          required
         />
         <div className="flex justify-between items-center mb-5">
-            <div className="flex gap-10">
-                <div className="flex items-center">
-                    <input
-                        type="radio"
-                        className="notice-radio"
-                        name="notice-type"
-                        id="notice"
-                        value="notice"
-                        defaultChecked
-                    />
-                    <label htmlFor="notice" className="radio-label">お知らせ</label>
-                </div>          
-                <div className="flex items-center">
-                    <input
-                        type="radio"
-                        className="notice-radio"
-                        name="notice-type"
-                        id="donation"
-                        value="donation"
-                    />
-                    <label htmlFor="donation" className="radio-label">寄贈</label>
-                </div>
-            </div> 
-               
-            <div className="flex items-center gap-4">
-                <Textbox
-                    type="datetime-local"
-                    placeholder="公開開始"
-                    name="public-start-datetime"
-                    className="datetime-box"
-                    required
-                />          
-                <p>	&minus;</p>
-                <Textbox
-                    type="datetime-local"
-                    placeholder="公開終了"
-                    name="public-end-datetime"
-                />
+          <div className="flex gap-10">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                className="notice-radio"
+                name="notice-type"
+                id="notice"
+                value="notice"
+                defaultChecked
+              />
+              <label htmlFor="notice" className="radio-label">
+                お知らせ
+              </label>
             </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                className="notice-radio"
+                name="notice-type"
+                id="donation"
+                value="donation"
+              />
+              <label htmlFor="donation" className="radio-label">
+                寄贈
+              </label>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Textbox
+              type="datetime-local"
+              placeholder="公開開始"
+              name="public-start-datetime"
+              className="datetime-box"
+              required
+            />
+            <p> &minus;</p>
+            <Textbox
+              type="datetime-local"
+              placeholder="公開終了"
+              name="public-end-datetime"
+            />
+          </div>
         </div>
         {/* ツールバー */}
         <div className="flex items-center gap-2 design-container py-2 pl-3">
@@ -303,7 +328,8 @@ export default function Page() {
               aria-label="赤"
               className={`w-8 h-8 rounded-full border color-btn ${activeColor === "#ff0000" ? "ring-2 ring-gray-700" : ""}`}
               style={{ backgroundColor: "#ff0000" }}
-            >赤
+            >
+              赤
             </button>
             <button
               type="button"
@@ -312,97 +338,130 @@ export default function Page() {
               aria-label="青"
               className={`w-8 h-8 rounded-full border color-btn ${activeColor === "#0000ff" ? "ring-2 ring-gray-700" : ""}`}
               style={{ backgroundColor: "#0000ff" }}
-            >青
+            >
+              青
             </button>
           </div>
         </div>
 
         {/* エディタ本体 */}
         <div className="editor-container">
-          <EditorContent editor={editor} className="p-3 min-h-[200px]" required/>
+          <EditorContent
+            editor={editor}
+            className="p-3 min-h-[200px]"
+            required
+          />
         </div>
-        
-              {/* 添付画像・ファイル */}
-        <label htmlFor="upload" className="block">添付画像・ファイル</label>
+
+        {/* 添付画像・ファイル */}
+        <label htmlFor="upload" className="block">
+          添付画像・ファイル
+        </label>
         <div className="flex items-center gap-10">
-            <input
-                id="upload"
-                type="file"
-                name="upload"
-                className="upload-btn"
-                onChange={handleUploadChange}
-            />
-            <label htmlFor="upload" className="upload-label inline-block h-fit px-3 py-2 cursor-pointer">
+          <input
+            id="upload"
+            type="file"
+            name="upload"
+            className="upload-btn"
+            onChange={handleUploadChange}
+          />
+          <label
+            htmlFor="upload"
+            className="upload-label inline-block h-fit px-3 py-2 cursor-pointer"
+          >
             添付する画像・ファイルを選択
-            </label>
-            
-           <div className="flex gap-5">
-                {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  className="upload-preview"
-                  key={i}
-                  onClick={() => { if (uploadPreviews[i]) openPreview(i); }}
-                  role={uploadPreviews[i] ? "button" : undefined}
-                  aria-label={uploadPreviews[i] ? `プレビュー ${i+1}` : undefined}
-                  >
-                    {uploadPreviews[i] ? (
-                      <>
-                      {uploadPreviews[i].kind === "image" ? (
-                        <div className="relative overflow-hidden">
-                          <img
-                            src={uploadPreviews[i].src}
-                            alt={uploadPreviews[i].name}
-                            className="w-full h-full object-cover"
-                            // width={80}
-                            // height={80}
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center text-sm">
-                          <span>{uploadPreviews[i].name}</span>
-                        </div>
-                        )}
-                        <div className="">
-                          <button
-                            type="button"
-                            aria-label="プレビューを削除"
-                            className="remove-btn"
-                            onClick={(e) => { e.stopPropagation(); removeUploadPreview(i); }}
-                          >
-                            &times;
-                          </button>
+          </label>
+
+          <div className="flex gap-5">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                className="upload-preview"
+                key={i}
+                onClick={() => {
+                  if (uploadPreviews[i]) openPreview(i);
+                }}
+                role={uploadPreviews[i] ? "button" : undefined}
+                aria-label={
+                  uploadPreviews[i] ? `プレビュー ${i + 1}` : undefined
+                }
+              >
+                {uploadPreviews[i] ? (
+                  <>
+                    {uploadPreviews[i].kind === "image" ? (
+                      <div className="relative overflow-hidden">
+                        <Image
+                          src={uploadPreviews[i].src}
+                          alt={uploadPreviews[i].name}
+                          className="w-full h-full object-cover"
+                          width={80}
+                          height={80}
+                        />
                       </div>
-                    </>
                     ) : (
-                    <div className="p-2 h-20 flex items-center justify-center text-sm text-black">
-                        未選択
-                    </div>
+                      <div className="flex items-center justify-center text-sm">
+                        <span>{uploadPreviews[i].name}</span>
+                      </div>
                     )}
-                </div>
-                ))}
-            </div>
+                    <div className="">
+                      <button
+                        type="button"
+                        aria-label="プレビューを削除"
+                        className="remove-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeUploadPreview(i);
+                        }}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-2 h-20 flex items-center justify-center text-sm text-black">
+                    未選択
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* フォーム送信用の hidden input */}
         <input type="hidden" name="content" value={html} />
 
         <div className="mt-4 flex justify-end gap-5">
-            <button type="button" className="draft-btn">下書きとして保存</button>
-            <input type="submit" className="submit-btn" value="登録" />
+          <button type="button" className="draft-btn">
+            下書きとして保存
+          </button>
+          <input type="submit" className="submit-btn" value="登録" />
         </div>
       </form>
 
       {/* プレビューモーダル */}
       {modalIndex !== null && uploadPreviews[modalIndex] && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 preview-modal" onClick={closeModal}>
-          <div className="bg-white rounded p-4 max-w-[100%] max-h-[100%] overflow-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 preview-modal"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white rounded p-4 max-w-[100%] max-h-[100%] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-start gap-4">
               <h3 className="text-lg font-medium">プレビュー</h3>
-              <button type="button" onClick={closeModal} className="close-btn">&times;</button>
+              <button type="button" onClick={closeModal} className="close-btn">
+                &times;
+              </button>
             </div>
             <div className="mt-4">
               {uploadPreviews[modalIndex].kind === "image" ? (
-                <img src={uploadPreviews[modalIndex].src} alt={uploadPreviews[modalIndex].name} className="max-w-full max-h-[80vh] object-contain" />
+                <Image
+                  src={uploadPreviews[modalIndex].src}
+                  alt={uploadPreviews[modalIndex].name}
+                  className="max-w-full max-h-[80vh] object-contain"
+                  width={800}
+                  height={600}
+                />
               ) : (
                 <div className="p-4">
                   <p className="font-medium">ファイル名</p>

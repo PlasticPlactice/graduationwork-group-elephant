@@ -1,17 +1,20 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 
 export async function POST() {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string };
+  } | null;
+  const sessionUser = session?.user;
 
-  if (!session || !session.user || !session.user.id) {
+  if (!sessionUser?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const userId = parseInt(session.user.id);
+    const userId = parseInt(sessionUser.id);
 
     // ユーザーの存在確認
     const user = await prisma.user.findUnique({
@@ -40,7 +43,7 @@ export async function POST() {
     console.error("Withdraw error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

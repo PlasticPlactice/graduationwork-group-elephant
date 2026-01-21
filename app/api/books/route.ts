@@ -13,11 +13,28 @@ export async function GET(req: NextRequest) {
     const bookInfo = await searchBook(isbn);
 
     if (bookInfo) {
-      return NextResponse.json(bookInfo);
+      const legacyShape = {
+        Items: [
+          {
+            Item: {
+              title: bookInfo.title,
+              author: bookInfo.author,
+              mediumImageUrl: bookInfo.imageUrl,
+              imageUrl: bookInfo.imageUrl,
+              publisher: bookInfo.publisher,
+              salesDate: bookInfo.publishedDate,
+              itemCaption: bookInfo.description,
+              source: bookInfo.source,
+            },
+          },
+        ],
+      };
+
+      return NextResponse.json({ ...bookInfo, ...legacyShape });
     } else {
       return NextResponse.json(
         { error: "書籍が見つかりませんでした" },
-        { status: 404 }
+        { status: 404 },
       );
     }
   } catch (error) {
