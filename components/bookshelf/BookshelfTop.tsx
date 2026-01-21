@@ -495,6 +495,10 @@ export function BookshelfTop() {
     window.localStorage.setItem(TUTORIAL_STORAGE_KEY, "1");
     setTutorialStep(null);
     setModalState(null);
+    setBooksState({
+      shelves: createEmptyShelves(),
+      scatter: createInitialScatterEntries(),
+    });
     scrollToScatter();
   }, [scrollToScatter]);
 

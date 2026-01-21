@@ -123,7 +123,7 @@ export function ScatterArea({
             bottom: slot.bottom,
             right: slot.right,
             transform: transforms,
-            zIndex: slot.zIndex ?? entryIdx + 1,
+            zIndex: book.id === "b1" ? 40 : slot.zIndex ?? entryIdx + 1,
           };
 
           return (
