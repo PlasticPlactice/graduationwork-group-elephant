@@ -631,10 +631,13 @@ function EditNoticeContent() {
               onChange={handleThumbnailChange}
             />
             {thumbnailPreview && (
-              <img
+              <Image
                 src={thumbnailPreview}
                 alt="thumbnail preview"
                 className="thumbnail-preview"
+                width={400}
+                height={225}
+                unoptimized
               />
             )}
             <label
@@ -841,10 +844,13 @@ function EditNoticeContent() {
                 }}
               >
                 {preview.kind === "image" ? (
-                  <img
+                  <Image
                     src={preview.src}
                     alt={preview.name}
                     className="w-full h-full object-cover rounded"
+                    width={120}
+                    height={120}
+                    unoptimized
                   />
                 ) : (
                   <div className="flex items-center justify-center text-xs p-2 break-words w-full h-full rounded">
@@ -916,10 +922,13 @@ function EditNoticeContent() {
             <div className="mt-4">
               {attachedFilePreviews[modalIndex].kind === "image" ? (
                 <div className="relative w-full" style={{ maxHeight: "70vh" }}>
-                  <img
+                  <Image
                     src={attachedFilePreviews[modalIndex].src}
                     alt={attachedFilePreviews[modalIndex].name}
                     className="object-contain"
+                    width={1200}
+                    height={900}
+                    unoptimized
                     style={{
                       maxHeight: "70vh",
                       width: "auto",
