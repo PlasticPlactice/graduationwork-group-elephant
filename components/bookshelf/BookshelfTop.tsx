@@ -22,7 +22,6 @@ import Modal from "@/app/(app)/Modal";
 const MOBILE_MAX_BOOKS_PER_SHELF = 8;
 const DESKTOP_MAX_BOOKS_PER_SHELF = 15;
 const MAX_SHELVES = 3;
-const SHELF_SPACER_CLASS = "h-32 w-8 opacity-0 sm:h-36 sm:w-8 lg:h-40";
 const TUTORIAL_STORAGE_KEY = "bookshelf_tutorial_done_v2";
 const EVENT_INFO_STORAGE_KEY = "bookshelf_event_info_seen_v1";
 const BOOK_INDEX_BY_ID = new Map(BOOKS.map((book, index) => [book.id, index]));
@@ -403,7 +402,7 @@ export function BookshelfTop() {
         scatter: updatedScatter,
       };
     });
-  }, []);
+  }, [maxBooksPerShelf]);
 
   const handleScatterBookSelect = useCallback(
     (entry: ScatterEntry) => {
@@ -442,7 +441,7 @@ export function BookshelfTop() {
 
   const handleCloseReview = useCallback(() => {
     setModalState(null);
-  }, [maxBooksPerShelf]);
+  }, []);
 
   const handleCloseEventInfo = useCallback(() => {
     setIsEventInfoOpen(false);
@@ -635,7 +634,12 @@ export function BookshelfTop() {
         }}
       />
       {!isEventInfoOpen && tutorialStep === 0 ? (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 px-4">
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="チュートリアル開始"
+        >
           <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 text-center text-slate-900 shadow-xl">
             <p className="text-base font-bold text-pink-500">
               チュートリアルを開始します

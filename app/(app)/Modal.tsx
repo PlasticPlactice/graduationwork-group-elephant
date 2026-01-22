@@ -32,7 +32,7 @@ export default function Modal({ open, onClose, children }: ModalProps) {
       aria-modal="true"
     >
       <div
-        className={`${Styles.modalContent} ${open ? Styles.modalContentOpen : ""}`}
+        className={`${Styles.modalContent} ${Styles.modalContentOpen}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

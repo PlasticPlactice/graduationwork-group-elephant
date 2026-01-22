@@ -33,11 +33,25 @@ const GOLDEN_ANGLE_DEG = 137.5;
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
+// Adjust right-side clamping so books don't overflow past the edge on small screens.
 const clampRight = (value: number, min: number, max: number) => {
   if (value <= 50) return Math.min(Math.max(value, min), max);
   return Math.min(Math.max(value, min), max - 6);
 };
 
+const SPECIAL_SLOTS_BY_BOOK_ID: Record<string, ScatterSlot> = {
+  b22: { top: "8%", left: "14%", rotation: 12 },
+};
+
+const SPECIAL_SLOTS_BY_PATTERN: Record<string, ScatterSlot> = {
+  "#0ea5e9": { top: "48%", left: "48%", rotation: -4 },
+};
+
+const SPECIAL_Z_INDEX_BY_BOOK_ID: Record<string, number> = {
+  b1: 40,
+};
+
+// Golden-angle spiral layout with tuned radius/scale per breakpoint.
 const getScatterSlot = (
   index: number,
   total: number,
@@ -111,11 +125,9 @@ export function ScatterArea({
         <div className="absolute inset-0 rounded-4xl border border-white/40 bg-white/50 shadow-[0_20px_45px_rgba(15,23,42,0.12)] backdrop-blur" />
         {scatterEntries.map(({ book, slotIndex }, entryIdx) => {
           const slot =
-            book.id === "b22"
-              ? { top: "8%", left: "14%", rotation: 12 }
-              : book.patternColor === "#0ea5e9"
-                ? { top: "48%", left: "48%", rotation: -4 }
-                : getScatterSlot(slotIndex, totalSlots, preset);
+            SPECIAL_SLOTS_BY_BOOK_ID[book.id] ??
+            SPECIAL_SLOTS_BY_PATTERN[book.patternColor] ??
+            getScatterSlot(slotIndex, totalSlots, preset);
           const transforms = [`rotate(${slot.rotation ?? 0}deg)`].join(" ");
           const style: CSSProperties = {
             top: slot.top,
@@ -123,7 +135,10 @@ export function ScatterArea({
             bottom: slot.bottom,
             right: slot.right,
             transform: transforms,
-            zIndex: book.id === "b1" ? 40 : slot.zIndex ?? entryIdx + 1,
+            zIndex:
+              SPECIAL_Z_INDEX_BY_BOOK_ID[book.id] ??
+              slot.zIndex ??
+              entryIdx + 1,
           };
 
           return (
