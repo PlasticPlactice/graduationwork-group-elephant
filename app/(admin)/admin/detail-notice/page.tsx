@@ -5,7 +5,7 @@ import "@/styles/admin/notice-upload.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import NoticeDisableModal from "@/components/admin/NoticeDisableModal";
 
 type ApiFile = {
@@ -50,7 +50,7 @@ const safePath = (p?: string | null): string | undefined => {
   return p.startsWith("/") ? p : `/${p}`;
 };
 
-export default function Page() {
+function DetailNoticeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -326,5 +326,13 @@ export default function Page() {
         isPublic={notification?.public_flag ?? false}
       />
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>読み込み中...</div>}>
+      <DetailNoticeContent />
+    </Suspense>
   );
 }
