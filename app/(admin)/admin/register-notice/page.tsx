@@ -15,8 +15,20 @@ import Image from "next/image";
 
 // 添付ファイルのプレビュー情報
 type UploadPreview =
-  | { kind: "image"; src: string; name: string; file?: File }
-  | { kind: "file"; name: string; file?: File };
+  | {
+      kind: "image";
+      src: string;
+      name: string;
+      file?: File;
+      mimeType?: string;
+    }
+  | {
+      kind: "file";
+      name: string;
+      file?: File;
+      mimeType?: string;
+      src?: string;
+    };
 
 export default function Page() {
   const router = useRouter();
@@ -26,8 +38,10 @@ export default function Page() {
   const [notificationType, setNotificationType] = useState<
     "notice" | "donation"
   >("notice");
+  const [isPublic, setIsPublic] = useState<boolean>(true);
   const [publicDateStart, setPublicDateStart] = useState<string>("");
-  const [publicDateEnd, setPublicDateEnd] = useState<string>(""); // 公開終了日は現在のAPIでは未使用
+  const [publicDateEnd, setPublicDateEnd] =
+    useState<string>("9999-12-31T23:59");
 
   // Tiptapエディタ
   const editor = useEditor({
@@ -134,8 +148,8 @@ export default function Page() {
     }
 
     // 最大4件まで
-    if (attachedFiles.length >= 4) {
-      alert("添付ファイルは最大4件までです。");
+    if (attachedFiles.length >= 6) {
+      alert("添付ファイルは最大6つまでです。");
       return;
     }
 
@@ -149,12 +163,22 @@ export default function Page() {
           src: URL.createObjectURL(file),
           name: file.name,
           file,
+          mimeType: file.type,
         },
       ]);
     } else {
       setAttachedFilePreviews((prev) => [
         ...prev,
-        { kind: "file", name: file.name, file },
+        {
+          kind: "file",
+          name: file.name,
+          file,
+          mimeType: file.type,
+          src:
+            file.type === "application/pdf"
+              ? URL.createObjectURL(file)
+              : undefined,
+        },
       ]);
     }
   };
@@ -163,6 +187,15 @@ export default function Page() {
   const removeAttachedFilePreview = (index: number) => {
     setAttachedFiles((prev) => prev.filter((_, i) => i !== index));
     setAttachedFilePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const isPdfPreview = (preview: UploadPreview) => {
+    if (preview.kind !== "file") return false;
+    const mime = preview.mimeType || preview.file?.type;
+    const lowerName = preview.name?.toLowerCase?.() || "";
+    return Boolean(
+      (mime && mime.includes("pdf")) || lowerName.endsWith(".pdf"),
+    );
   };
 
   // ファイルアップロード共通関数
@@ -236,15 +269,31 @@ export default function Page() {
       return;
     }
 
-    // 公開日時が現在時刻より過去ではないかチェック (下書きでなければ)
-    if (
-      !saveAsDraft &&
-      publicDateStart &&
-      parseISO(publicDateStart) < new Date()
-    ) {
-      setErrorMessage("公開開始日時は現在時刻より未来である必要があります。");
-      setIsLoading(false);
-      return;
+    // 公開日時が当日以降かチェック (下書きでなければ)
+    if (!saveAsDraft && publicDateStart) {
+      const selectedDate = parseISO(publicDateStart);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // 時刻を00:00:00にリセット
+
+      if (selectedDate < today) {
+        setErrorMessage("公開開始日時は本日以降の日付を選択してください。");
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    // 終了日時のバリデーション
+    if (!saveAsDraft && publicDateEnd && publicDateStart) {
+      const startDate = parseISO(publicDateStart);
+      const endDate = parseISO(publicDateEnd);
+
+      if (endDate <= startDate) {
+        setErrorMessage(
+          "公開終了日時は公開開始日時より後の日時を選択してください。",
+        );
+        setIsLoading(false);
+        return;
+      }
     }
 
     try {
@@ -272,10 +321,11 @@ export default function Page() {
       // 2. お知らせ作成API呼び出し
       setUploadProgress(75);
       const notificationTypeInt = notificationType === "notice" ? 0 : 1;
+      const shouldPublish = !saveAsDraft && isPublic;
       const notificationData = {
         title: title,
         detail: detailHtml,
-        public_flag: !saveAsDraft, // 下書きでなければ公開
+        public_flag: shouldPublish,
         public_date: saveAsDraft
           ? new Date().toISOString()
           : parseISO(publicDateStart).toISOString(), // 下書きの場合は現在時刻
@@ -385,8 +435,11 @@ export default function Page() {
       )}
       <form onSubmit={(e) => handleSubmit(e, false)}>
         {/* サムネイルインポート */}
-        <section className="thumbnail-container h-50">
-          <div className="thumbnail-inner flex justify-center relative">
+        <section className="thumbnail-container" style={{ height: "200px" }}>
+          <div
+            className="thumbnail-inner flex justify-center relative"
+            style={{ width: "100%", height: "100%" }}
+          >
             <input
               id="thumbnail"
               type="file"
@@ -396,20 +449,17 @@ export default function Page() {
               onChange={handleThumbnailChange}
             />
             {thumbnailPreview && (
-              <Image
+              <img
                 src={thumbnailPreview}
                 alt="thumbnail preview"
                 className="thumbnail-preview"
-                width={200}
-                height={200}
-                unoptimized
               />
             )}
             <label
               htmlFor="thumbnail"
               className="thumbnail-label inline-block px-3 py-2 cursor-pointer"
             >
-              サムネイルを選択
+              {thumbnailPreview ? "サムネイルを変更" : "サムネイルを選択"}
             </label>
           </div>
         </section>
@@ -423,7 +473,7 @@ export default function Page() {
           onChange={(e) => setTitle(e.target.value)}
         />
         <div className="flex justify-between items-center mb-5">
-          <div className="flex gap-10">
+          <div className="flex gap-10 items-center">
             <div className="flex items-center">
               <input
                 type="radio"
@@ -451,6 +501,37 @@ export default function Page() {
               <label htmlFor="donation" className="radio-label">
                 寄贈
               </label>
+            </div>
+
+            <div className="flex items-center gap-6 ml-8">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  className="notice-radio"
+                  name="publish-status"
+                  id="publish"
+                  value="public"
+                  checked={isPublic}
+                  onChange={() => setIsPublic(true)}
+                />
+                <label htmlFor="publish" className="radio-label">
+                  公開
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  className="notice-radio"
+                  name="publish-status"
+                  id="private"
+                  value="private"
+                  checked={!isPublic}
+                  onChange={() => setIsPublic(false)}
+                />
+                <label htmlFor="private" className="radio-label">
+                  非公開
+                </label>
+              </div>
             </div>
           </div>
 
@@ -572,24 +653,31 @@ export default function Page() {
                 onClick={() => openPreview(i)}
                 role="button"
                 aria-label={`プレビュー ${i + 1}`}
+                style={{
+                  backgroundColor: "transparent",
+                  border: "2px dashed #000000",
+                }}
               >
                 {preview.kind === "image" ? (
-                  <Image
+                  <img
                     src={preview.src}
                     alt={preview.name}
                     className="w-full h-full object-cover rounded"
-                    fill
-                    unoptimized
                   />
                 ) : (
-                  <div className="flex items-center justify-center text-xs p-2 break-words w-full h-full border border-gray-300 rounded">
+                  <div className="flex items-center justify-center text-xs p-2 break-words w-full h-full rounded">
                     <span className="truncate">{preview.name}</span>
                   </div>
                 )}
                 <button
                   type="button"
                   aria-label="プレビューを削除"
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                  className="absolute -top-2 -right-2 rounded w-6 h-6 flex items-center justify-center transition-colors"
+                  style={{
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                    color: "#000000",
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                     removeAttachedFilePreview(i);
@@ -599,7 +687,7 @@ export default function Page() {
                 </button>
               </div>
             ))}
-            {Array.from({ length: 4 - attachedFilePreviews.length }).map(
+            {Array.from({ length: 6 - attachedFilePreviews.length }).map(
               (_, i) => (
                 <div
                   key={`empty-${i}`}
@@ -652,20 +740,34 @@ export default function Page() {
             <div className="mt-4">
               {attachedFilePreviews[modalIndex].kind === "image" ? (
                 <div className="relative w-full" style={{ maxHeight: "70vh" }}>
-                  <Image
+                  <img
                     src={attachedFilePreviews[modalIndex].src}
                     alt={attachedFilePreviews[modalIndex].name}
                     className="object-contain"
-                    width={800}
-                    height={600}
-                    unoptimized
-                    style={{ maxHeight: "70vh", width: "auto", height: "auto" }}
+                    style={{
+                      maxHeight: "70vh",
+                      width: "auto",
+                      height: "auto",
+                    }}
                   />
                 </div>
               ) : (
                 <div className="p-4">
-                  <p className="font-medium">ファイル名</p>
-                  <p className="mt-2">
+                  {isPdfPreview(attachedFilePreviews[modalIndex]) &&
+                  attachedFilePreviews[modalIndex].src ? (
+                    <object
+                      data={attachedFilePreviews[modalIndex].src}
+                      type="application/pdf"
+                      className="w-full"
+                      style={{ maxHeight: "70vh", minHeight: "60vh" }}
+                    >
+                      <p className="text-sm text-gray-600">
+                        PDFプレビューを表示できません。以下からダウンロードしてください。
+                      </p>
+                    </object>
+                  ) : null}
+                  <p className="font-medium mt-4">ファイル名</p>
+                  <p className="mt-2 break-words">
                     {attachedFilePreviews[modalIndex].name}
                   </p>
                 </div>

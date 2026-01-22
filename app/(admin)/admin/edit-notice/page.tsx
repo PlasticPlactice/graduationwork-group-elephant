@@ -15,12 +15,27 @@ import Image from "next/image";
 
 // 添付ファイルのプレビュー情報
 type UploadPreview =
-  | { kind: "image"; src: string; name: string; file?: File }
-  | { kind: "file"; name: string; file?: File };
+  | {
+      kind: "image";
+      src: string;
+      name: string;
+      file?: File;
+      fileId?: number;
+      mimeType?: string;
+    }
+  | {
+      kind: "file";
+      name: string;
+      file?: File;
+      fileId?: number;
+      mimeType?: string;
+      src?: string;
+    };
 
 // APIレスポンス用の簡易型
 type RemoteNotificationFile = {
   file?: {
+    id?: number;
     original_filename?: string;
     name?: string;
     data_path?: string;
@@ -46,8 +61,10 @@ function EditNoticeContent() {
   const [notificationType, setNotificationType] = useState<
     "notice" | "donation"
   >("notice");
+  const [isPublic, setIsPublic] = useState<boolean>(true);
   const [publicDateStart, setPublicDateStart] = useState<string>("");
-  const [publicDateEnd, setPublicDateEnd] = useState<string>("");
+  const [publicDateEnd, setPublicDateEnd] =
+    useState<string>("9999-12-31T23:59"); // デフォルトは最大値(永続表示)
 
   // Tiptapエディタ
   const editor = useEditor({
@@ -67,10 +84,12 @@ function EditNoticeContent() {
   // アップロードファイル関連
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [existingThumbnailFileId, setExistingThumbnailFileId] = useState<
+    number | null
+  >(null);
   const [existingThumbnailPath, setExistingThumbnailPath] = useState<
     string | null
   >(null);
-  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [attachedFilePreviews, setAttachedFilePreviews] = useState<
     UploadPreview[]
   >([]);
@@ -103,6 +122,7 @@ function EditNoticeContent() {
         setNotificationType(
           data.notification_type === 0 ? "notice" : "donation",
         );
+        setIsPublic(Boolean(data.public_flag));
 
         if (data.public_date) {
           setPublicDateStart(
@@ -126,8 +146,12 @@ function EditNoticeContent() {
           // 最初のファイルをサムネイルとして扱う
           const firstFile = data.notificationFiles[0];
           if (firstFile?.file?.data_path) {
-            setExistingThumbnailPath(firstFile.file.data_path);
-            setThumbnailPreview(firstFile.file.data_path);
+            const path = firstFile.file.data_path.startsWith("/")
+              ? firstFile.file.data_path
+              : `/${firstFile.file.data_path}`;
+            setExistingThumbnailFileId(firstFile.file.id ?? null);
+            setExistingThumbnailPath(path);
+            setThumbnailPreview(path);
           }
 
           // 2番目以降のファイルを添付ファイルとして表示
@@ -138,22 +162,30 @@ function EditNoticeContent() {
                 const fileName =
                   nf.file?.original_filename || nf.file?.name || "ファイル";
                 const dataPath = nf.file?.data_path;
+                const fullPath = dataPath?.startsWith("/")
+                  ? dataPath
+                  : `/${dataPath}`;
                 const isImage =
                   nf.file?.type?.startsWith("image/") ||
                   fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
 
-                if (isImage && dataPath) {
+                if (isImage && fullPath) {
                   return {
                     kind: "image" as const,
-                    src: dataPath,
+                    src: fullPath,
                     name: fileName,
                     file: undefined,
+                    fileId: nf.file?.id,
+                    mimeType: nf.file?.type,
                   };
                 } else {
                   return {
                     kind: "file" as const,
                     name: fileName,
                     file: undefined,
+                    fileId: nf.file?.id,
+                    mimeType: nf.file?.type,
+                    src: fullPath,
                   };
                 }
               },
@@ -257,12 +289,11 @@ function EditNoticeContent() {
     }
 
     // 最大4件まで
-    if (attachedFiles.length >= 4) {
-      alert("添付ファイルは最大4件までです。");
+    if (attachedFilePreviews.length >= 6) {
+      alert("添付ファイルは最大6つまでです。");
       return;
     }
 
-    setAttachedFiles((prev) => [...prev, file]);
     // プレビュー表示用
     if (file.type.startsWith("image/")) {
       setAttachedFilePreviews((prev) => [
@@ -272,20 +303,38 @@ function EditNoticeContent() {
           src: URL.createObjectURL(file),
           name: file.name,
           file,
+          mimeType: file.type,
         },
       ]);
     } else {
       setAttachedFilePreviews((prev) => [
         ...prev,
-        { kind: "file", name: file.name, file },
+        {
+          kind: "file",
+          name: file.name,
+          file,
+          mimeType: file.type,
+          src:
+            file.type === "application/pdf"
+              ? URL.createObjectURL(file)
+              : undefined,
+        },
       ]);
     }
   };
 
   // 添付ファイルのプレビュー削除
   const removeAttachedFilePreview = (index: number) => {
-    setAttachedFiles((prev) => prev.filter((_, i) => i !== index));
     setAttachedFilePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const isPdfPreview = (preview: UploadPreview) => {
+    if (preview.kind !== "file") return false;
+    const mime = preview.mimeType || preview.file?.type;
+    const lowerName = preview.name?.toLowerCase?.() || "";
+    return Boolean(
+      (mime && mime.includes("pdf")) || lowerName.endsWith(".pdf"),
+    );
   };
 
   // ファイルアップロード共通関数
@@ -365,24 +414,52 @@ function EditNoticeContent() {
       return;
     }
 
+    // 公開日時が当日以降かチェック (下書きでなければ)
+    if (!saveAsDraft && publicDateStart) {
+      const selectedDate = parseISO(publicDateStart);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // 時刻を00:00:00にリセット
+
+      if (selectedDate < today) {
+        setErrorMessage("公開開始日時は本日以降の日付を選択してください。");
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    // 終了日時のバリデーション
+    if (!saveAsDraft && publicDateEnd && publicDateStart) {
+      const startDate = parseISO(publicDateStart);
+      const endDate = parseISO(publicDateEnd);
+
+      if (endDate <= startDate) {
+        setErrorMessage(
+          "公開終了日時は公開開始日時より後の日時を選択してください。",
+        );
+        setIsLoading(false);
+        return;
+      }
+    }
+
     try {
       // 1. ファイルアップロード
-      const uploadedFileIds: number[] = [];
-
-      // 既存のサムネイルがあり、新しいサムネイルが選択されていない場合は保持
-      if (existingThumbnailPath && !thumbnailFile) {
-        // 既存のサムネイルファイル ID を取得する必要がありますが、
-        // 簡略化のため、既存ファイルは編集しないようにします
-      }
-
-      const totalFiles = (thumbnailFile ? 1 : 0) + attachedFiles.length;
+      const filesNeedingUpload = attachedFilePreviews.filter(
+        (preview) => preview.file,
+      );
+      const totalFiles = (thumbnailFile ? 1 : 0) + filesNeedingUpload.length;
+      let uploadedThumbnailId: number | null = null;
+      const uploadedAttachmentIds: number[] = [];
       let uploadedCount = 0;
 
       if (thumbnailFile) {
-        setUploadProgress(Math.round(((uploadedCount / totalFiles) * 100) / 2));
+        if (totalFiles > 0) {
+          setUploadProgress(
+            Math.round(((uploadedCount / totalFiles) * 100) / 2),
+          );
+        }
         const fileId = await uploadFile(thumbnailFile);
         if (fileId !== null) {
-          uploadedFileIds.push(fileId);
+          uploadedThumbnailId = fileId;
           console.log("Uploaded new thumbnail with ID:", fileId);
         }
         uploadedCount++;
@@ -390,29 +467,58 @@ function EditNoticeContent() {
         // 既存のサムネイルを保持する場合、ここで処理
       }
 
-      for (const file of attachedFiles) {
-        setUploadProgress(Math.round(((uploadedCount / totalFiles) * 100) / 2));
-        const fileId = await uploadFile(file);
-        if (fileId !== null) uploadedFileIds.push(fileId);
+      for (const preview of attachedFilePreviews) {
+        if (!preview.file) continue; // 既存ファイルはこのループではスキップ
+        if (totalFiles > 0) {
+          setUploadProgress(
+            Math.round(((uploadedCount / totalFiles) * 100) / 2),
+          );
+        }
+        const fileId = await uploadFile(preview.file);
+        if (fileId !== null) uploadedAttachmentIds.push(fileId);
         uploadedCount++;
       }
 
-      setUploadProgress(50);
+      setUploadProgress(totalFiles > 0 ? 50 : 0);
+
+      // 既存ファイルIDを結合し、並び順を保った配列を作る
+      const attachmentFileIds: number[] = [];
+      let uploadIndex = 0;
+      for (const preview of attachedFilePreviews) {
+        if (preview.file && preview.fileId === undefined) {
+          const nextId = uploadedAttachmentIds[uploadIndex];
+          uploadIndex += 1;
+          if (typeof nextId === "number") attachmentFileIds.push(nextId);
+        } else if (typeof preview.fileId === "number") {
+          attachmentFileIds.push(preview.fileId);
+        }
+      }
+
+      // サムネイル: 新規があればそれを先頭に、なければ既存IDを先頭に置く
+      const finalFileIds: number[] = [];
+      if (thumbnailFile && uploadedThumbnailId !== null) {
+        finalFileIds.push(uploadedThumbnailId);
+      } else if (existingThumbnailFileId !== null) {
+        finalFileIds.push(existingThumbnailFileId);
+      }
+
+      finalFileIds.push(...attachmentFileIds);
 
       // 2. お知らせ更新API呼び出し
       setUploadProgress(75);
       const notificationTypeInt = notificationType === "notice" ? 0 : 1;
+      const shouldPublish = !saveAsDraft && isPublic;
       const notificationData = {
         title: title,
         detail: detailHtml,
-        public_flag: !saveAsDraft,
+        public_flag: shouldPublish,
         public_date: parseISO(publicDateStart).toISOString(),
         public_end_date: publicDateEnd
           ? parseISO(publicDateEnd).toISOString()
           : null,
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
-        fileIds: uploadedFileIds,
+        fileIds: finalFileIds,
       };
 
       const res = await fetch(`/api/admin/notifications/${notificationId}`, {
@@ -473,7 +579,7 @@ function EditNoticeContent() {
           role="alert"
         >
           <strong className="font-bold">エラー:</strong>
-          <span className="block sm:inline ml-2">{errorMessage}</span>
+          <span className="block sm:inline ml-8">{errorMessage}</span>
           <button
             type="button"
             className="absolute top-0 right-0 px-4 py-3 hover:bg-red-200 rounded transition-colors"
@@ -511,8 +617,11 @@ function EditNoticeContent() {
       )}
       <form onSubmit={(e) => handleSubmit(e, false)}>
         {/* サムネイルインポート */}
-        <section className="thumbnail-container h-50">
-          <div className="thumbnail-inner flex justify-center relative">
+        <section className="thumbnail-container" style={{ height: "200px" }}>
+          <div
+            className="thumbnail-inner flex justify-center relative"
+            style={{ width: "100%", height: "100%" }}
+          >
             <input
               id="thumbnail"
               type="file"
@@ -522,20 +631,17 @@ function EditNoticeContent() {
               onChange={handleThumbnailChange}
             />
             {thumbnailPreview && (
-              <Image
+              <img
                 src={thumbnailPreview}
                 alt="thumbnail preview"
                 className="thumbnail-preview"
-                width={200}
-                height={200}
-                unoptimized
               />
             )}
             <label
               htmlFor="thumbnail"
               className="thumbnail-label inline-block px-3 py-2 cursor-pointer"
             >
-              サムネイルを選択
+              {thumbnailPreview ? "サムネイルを変更" : "サムネイルを選択"}
             </label>
           </div>
         </section>
@@ -549,7 +655,7 @@ function EditNoticeContent() {
           onChange={(e) => setTitle(e.target.value)}
         />
         <div className="flex justify-between items-center mb-5">
-          <div className="flex gap-10">
+          <div className="flex gap-10 items-center">
             <div className="flex items-center">
               <input
                 type="radio"
@@ -577,6 +683,37 @@ function EditNoticeContent() {
               <label htmlFor="donation" className="radio-label">
                 寄贈
               </label>
+            </div>
+
+            <div className="flex items-center gap-6 ml-8">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  className="notice-radio"
+                  name="publish-status"
+                  id="publish"
+                  value="public"
+                  checked={isPublic}
+                  onChange={() => setIsPublic(true)}
+                />
+                <label htmlFor="publish" className="radio-label">
+                  公開
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  className="notice-radio"
+                  name="publish-status"
+                  id="private"
+                  value="private"
+                  checked={!isPublic}
+                  onChange={() => setIsPublic(false)}
+                />
+                <label htmlFor="private" className="radio-label">
+                  非公開
+                </label>
+              </div>
             </div>
           </div>
 
@@ -698,24 +835,31 @@ function EditNoticeContent() {
                 onClick={() => openPreview(i)}
                 role="button"
                 aria-label={`プレビュー ${i + 1}`}
+                style={{
+                  backgroundColor: "transparent",
+                  border: "2px dashed #000000",
+                }}
               >
                 {preview.kind === "image" ? (
-                  <Image
+                  <img
                     src={preview.src}
                     alt={preview.name}
                     className="w-full h-full object-cover rounded"
-                    fill
-                    unoptimized
                   />
                 ) : (
-                  <div className="flex items-center justify-center text-xs p-2 break-words w-full h-full border border-gray-300 rounded">
+                  <div className="flex items-center justify-center text-xs p-2 break-words w-full h-full rounded">
                     <span className="truncate">{preview.name}</span>
                   </div>
                 )}
                 <button
                   type="button"
                   aria-label="プレビューを削除"
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                  className="absolute -top-2 -right-2 rounded w-6 h-6 flex items-center justify-center transition-colors"
+                  style={{
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                    color: "#000000",
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                     removeAttachedFilePreview(i);
@@ -725,7 +869,7 @@ function EditNoticeContent() {
                 </button>
               </div>
             ))}
-            {Array.from({ length: 4 - attachedFilePreviews.length }).map(
+            {Array.from({ length: 6 - attachedFilePreviews.length }).map(
               (_, i) => (
                 <div
                   key={`empty-${i}`}
@@ -740,17 +884,11 @@ function EditNoticeContent() {
 
         <div className="mt-4 flex justify-end gap-5">
           <AdminButton
-            type="button"
-            className="draft-btn"
-            onClick={(e) => handleSubmit(e, true)}
-            disabled={isLoading}
-            label={isLoading ? "保存中..." : "下書きとして保存"}
-          />
-          <AdminButton
             type="submit"
             className="submit-btn"
             disabled={isLoading}
             label={isLoading ? "更新中..." : "更新"}
+            style={{ width: "20%" }}
           />
         </div>
       </form>
@@ -778,20 +916,34 @@ function EditNoticeContent() {
             <div className="mt-4">
               {attachedFilePreviews[modalIndex].kind === "image" ? (
                 <div className="relative w-full" style={{ maxHeight: "70vh" }}>
-                  <Image
+                  <img
                     src={attachedFilePreviews[modalIndex].src}
                     alt={attachedFilePreviews[modalIndex].name}
                     className="object-contain"
-                    width={800}
-                    height={600}
-                    unoptimized
-                    style={{ maxHeight: "70vh", width: "auto", height: "auto" }}
+                    style={{
+                      maxHeight: "70vh",
+                      width: "auto",
+                      height: "auto",
+                    }}
                   />
                 </div>
               ) : (
                 <div className="p-4">
-                  <p className="font-medium">ファイル名</p>
-                  <p className="mt-2">
+                  {isPdfPreview(attachedFilePreviews[modalIndex]) &&
+                  attachedFilePreviews[modalIndex].src ? (
+                    <object
+                      data={attachedFilePreviews[modalIndex].src}
+                      type="application/pdf"
+                      className="w-full"
+                      style={{ maxHeight: "70vh", minHeight: "60vh" }}
+                    >
+                      <p className="text-sm text-gray-600">
+                        PDFプレビューを表示できません。以下からダウンロードしてください。
+                      </p>
+                    </object>
+                  ) : null}
+                  <p className="font-medium mt-4">ファイル名</p>
+                  <p className="mt-2 break-words">
                     {attachedFilePreviews[modalIndex].name}
                   </p>
                 </div>

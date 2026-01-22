@@ -73,8 +73,23 @@ export default function Page() {
     return "非公開";
   };
 
+  const getStatusClass = (
+    public_flag: boolean,
+    draft_flag: boolean,
+  ): string => {
+    if (draft_flag) return "status status-draft";
+    if (public_flag) return "status status-public";
+    return "status status-private";
+  };
+
+  // タイトルを一定文字数で省略する
+  const getTitleSnippet = (title: string, maxLength: number = 25): string => {
+    if (title.length <= maxLength) return title;
+    return `${title.slice(0, maxLength)}…`;
+  };
+
   // WYSIWYGで保存されたHTMLからテキストだけを抽出して一覧に表示する
-  const getDetailSnippet = (html: string, maxLength: number = 80): string => {
+  const getDetailSnippet = (html: string, maxLength: number = 25): string => {
     const text = html
       .replace(/<[^>]+>/g, " ") // タグを削除
       .replace(/&nbsp;/g, " ")
@@ -85,7 +100,8 @@ export default function Page() {
   };
 
   const handleNoticeDetail = (id: number) => {
-    router.push(`/admin/edit-notice?id=${id}`);
+    // 一覧→詳細へ遷移に変更
+    router.push(`/admin/detail-notice?id=${id}`);
   };
 
   const handleRegister = () => {
@@ -468,17 +484,24 @@ export default function Page() {
                   }}
                 >
                   <td>
-                    <span className="ml-5 py-1 px-9 status">
+                    <span
+                      className={
+                        "ml-24 py-1 px-9 " +
+                        getStatusClass(notice.public_flag, notice.draft_flag)
+                      }
+                    >
                       {getStatusLabel(notice.public_flag, notice.draft_flag)}
                     </span>
                   </td>
-                  <td className="py-2 font-bold w-2/7">{notice.title}</td>
+                  <td className="py-2 font-bold w-2/7">
+                    {getTitleSnippet(notice.title)}
+                  </td>
                   <td className="notice-content w-2/7">
                     {getDetailSnippet(notice.detail)}
                   </td>
                   <td>
                     <div className="flex items-center">
-                      <p className="px-9">
+                      <p className="px-9 ml-20">
                         {format(
                           new Date(notice.public_date),
                           "yyyy年MM月dd日",
