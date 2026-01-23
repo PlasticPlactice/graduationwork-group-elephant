@@ -126,7 +126,9 @@ export function ScatterArea({
         {scatterEntries.map(({ book, slotIndex }, entryIdx) => {
           const slot =
             SPECIAL_SLOTS_BY_BOOK_ID[book.id] ??
-            SPECIAL_SLOTS_BY_PATTERN[book.patternColor] ??
+            (book.patternColor
+              ? SPECIAL_SLOTS_BY_PATTERN[book.patternColor]
+              : undefined) ??
             getScatterSlot(slotIndex, totalSlots, preset);
           const transforms = [`rotate(${slot.rotation ?? 0}deg)`].join(" ");
           const style: CSSProperties = {
