@@ -4,7 +4,7 @@
   color: var(--color-text);
 }
 
-details{
+details {
   border: 1px solid var(--color-main);
   border-radius: var(--control-radius);
 }
@@ -14,7 +14,7 @@ summary {
 }
 /* 検索ボックスエリア */
 .search-area {
-  border: 1px solid #8B8B8B;
+  border: 1px solid #8b8b8b;
   border-radius: var(--control-radius);
 }
 
@@ -30,7 +30,7 @@ details[open] .icon {
 }
 
 .custom-input-full {
-  height: 2.5rem ;
+  height: 2.5rem;
   width: 100%;
 }
 
@@ -66,14 +66,15 @@ details[open] .icon {
 .status-toggle.active {
   background-color: var(--color-bg);
   color: var(--color-input-bg);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md相当 */
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md相当 */
 }
 
-
-.tab{
+.tab {
   font-size: var(--page-padding-lg);
 }
-.notice-tab-link{
+.notice-tab-link {
   color: #000;
   background-color: #fff;
   box-shadow: none;
@@ -85,59 +86,71 @@ details[open] .icon {
 .notice-tab-link.active {
   border-bottom-color: var(--color-main);
 }
-.notice-tab{
-  border-color:var(--color-main);
+.notice-tab {
+  border-color: var(--color-main);
 }
-.notice-table{
+.notice-table {
   border-collapse: collapse;
 }
-.table-head{
+.table-head {
   background-color: var(--color-main);
   font-size: var(--font-size-base);
   color: var(--color-bg);
   border: 1px solid var(--color-main);
 }
 .notice-table th,
-.notice-table td{
-  border-bottom: 1px solid var(--color-input-bg);
-
-}
-.notice-tr{
+.notice-table td {
   border-bottom: 1px solid var(--color-input-bg);
 }
-.notice-content{
+.notice-tr {
+  border-bottom: 1px solid var(--color-input-bg);
+}
+.notice-content {
   color: var(--color-input-bg);
 }
-.status{
-  color: #1A6838;
-  font-weight: bold;
-  background-color: #DCFCE7;
+.status {
   border-radius: var(--control-radius);
 }
-.notice-record:hover{
+.status-public {
+  background-color: var(--color-admin-active-background);
+  color: var(--color-text);
+}
+.status-draft {
+  background-color: var(--color-admin-disable-background);
+  color: var(--color-text);
+}
+.status-private {
+  background-color: var(--color-admin-ban-background);
+  color: var(--color-text);
+}
+.notice-record:hover {
   background-color: var(--color-input-text);
 }
 
-.page-section{
-  gap: 1rem;
-
+/* テーブルヘッダーのソートボタンから影を除去 */
+.table-head button {
+  box-shadow: none !important;
 }
-.page-section .page-number{
+
+.page-section {
+  gap: 1rem;
+}
+.page-section .page-number {
   font-size: var(--font-size-h1);
   background-color: var(--color-bg);
   border-radius: var(--control-radius);
   color: var(--color-admin-sub);
 }
-.page-section .page-number:hover{
+.page-section .page-number:hover {
   font-size: var(--font-size-h1);
   background-color: var(--color-main);
   border-radius: var(--control-radius);
   color: var(--color-bg);
 }
-.page-section .page-number.active{
+.page-section .page-number.active {
   background-color: var(--color-main);
   color: var(--color-bg);
 }
-.page-arrow{
+.page-arrow {
   color: var(--color-admin-sub);
 }
