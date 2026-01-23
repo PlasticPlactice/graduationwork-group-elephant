@@ -12,8 +12,6 @@ import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
 import Styles from "@/styles/app/poster.module.css";
 
-type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
-
 interface ProfileData {
   id: number;
   nickName: string;
@@ -24,11 +22,17 @@ interface ProfileData {
   introduction: string;
 }
 
+type ReviewFilterTab = "all" | 1 | 2 | 3 | 4;
+type ReviewStatus = 1 | 2 | 3 | 4;
+
 interface BookReviewData {
-  title: string;
-  status: string;
-  excerpt: string;
+  id: number;
+  book_title: string;
+  evaluations_status: ReviewStatus;
+  review: string;
 }
+
+type BookReviewDataList = BookReviewData[];
 
 export default function MyPage() {
   // 初期表示時にモーダルを表示
@@ -41,7 +45,7 @@ export default function MyPage() {
   // ユーザーデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
   // ユーザの書評データ
-  const [bookReviewData, setBookReviewData] = useState<BookReviewData | null>(null);
+  const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -73,6 +77,7 @@ export default function MyPage() {
     }
   }, []);
 
+  // 初回レンダリング時にデータを取得
   useEffect(() => {
     fetchUserData();
     fetchBookReviewData();
@@ -129,17 +134,66 @@ export default function MyPage() {
     },
   ];
 
-  const REVIEW_FILTER_TABS = [
+  const REVIEW_FILTER_TABS: {
+    key: ReviewFilterTab;
+    label: string;
+  }[] = [
     { key: "all" as const, label: "全て" },
-    { key: "draft" as const, label: "下書き" },
-    { key: "reviewing" as const, label: "審査中" },
-    { key: "finished" as const, label: "終了済み" },
+    { key: 1, label: "下書き" },
+    { key: 2, label: "審査前" },
+    { key: 3, label: "審査中" },
+    { key: 4, label: "終了済み" },
   ];
 
+  const REVIEW_STATUS_MAP = {
+    1: {
+      label: "下書き",
+      badgeType: "gray",
+      canEdit: true
+    },
+    2: {
+      label: "１次審査前",
+      badgeType: "red",
+      canEdit: true
+    },
+    3: {
+      label: "審査中",
+      badgeType: "blue",
+      canEdit: false
+    },
+    4: {
+      label: "終了",
+      badgeType: "gray",
+      canEdit: false
+    },
+  } as const;
+
+  // 表示用にデータを整形
+  const uiReviews = bookReviewData.map((review) => {
+    const status = REVIEW_STATUS_MAP[review.evaluations_status];
+
+    return {
+      id: review.id,
+      title: review.book_title,
+      status: status.label,
+      evaluations_status: review.evaluations_status,
+      badgeType: status.badgeType,
+      excerpt: review.review,
+      buttonText: status.canEdit ? "投稿済み・編集する" : "投稿済み・編集不可",
+      href: status.canEdit ? "/poster/edit" : undefined,
+    }
+  })
+
+  
   const [activeFilterTab, setActiveFilterTab] =
-    useState<ReviewFilterTab>("all");
+  useState<ReviewFilterTab>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  const filteredReviews = uiReviews.filter((review) => {
+    if(activeFilterTab === "all") return true;
+    return review.evaluations_status === activeFilterTab;
+  })
 
   const handleDeleteAccount = async () => {
     if (isDeleting) return;
@@ -173,15 +227,6 @@ export default function MyPage() {
       setShowDeleteModal(false);
     }
   };
-
-  const filteredReviews = sampleReviews.filter((review) => {
-    if (activeFilterTab === "all") return true;
-    if (activeFilterTab === "draft") return review.status === "下書き";
-    if (activeFilterTab === "reviewing") return review.status.includes("審査");
-    if (activeFilterTab === "finished")
-      return review.status === "終了" || review.status === "終了済み";
-    return true;
-  });
 
   return (
     <>
