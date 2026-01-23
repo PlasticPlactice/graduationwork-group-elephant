@@ -9,6 +9,7 @@ type Params = {
   };
 };
 
+// 書評一つだけ取得
 export async function GET(
   req: Request,
   context: { params: Promise<{ id: string }> }
