@@ -6,13 +6,21 @@ import { useRouter } from "next/navigation";
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import Link from "next/link";
-import { POST } from "@/app/api/book-reviews/mypage/route";
 
 export default function PostConfirmPage({
 }: {
 }) {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    console.log(sessionStorage.getItem("bookReviewDraft"))
+    const raw = sessionStorage.getItem("bookReviewDraft");
+
+    if(!raw) return;
+
+    setData(JSON.parse(raw));
+  }, []);
 
   const registerBookReview = async () => {
     try {
@@ -34,16 +42,39 @@ export default function PostConfirmPage({
     }
   }
 
-  useEffect(() => {
-    console.log(sessionStorage.getItem("bookReviewDraft"))
-    const draft = sessionStorage.getItem("bookReviewDraft");
+  // PUT処理関数
+  const updateBookReview = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/book-reviews/mypage/edit`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
 
-    if(!draft) {
-      router.push("/api/book-reviews/new");
-      return;
+      if (!res.ok) {
+          alert("書評の編集に失敗しました。時間をおいて再度お試しください。");
+          return;
+      }
+
+      sessionStorage.removeItem("bookReviewDraft");
+      router.push("/poster/mypage");
+
+    } catch (error) {
+      console.error("Error editing book review:", error);
     }
-    setData(JSON.parse(draft));
-  }, []);
+  }
+
+  const handleSubmit = () => {
+    if (data.mode === "create") {
+      registerBookReview();
+    } else {
+      updateBookReview();
+    }
+  }
+
+  
 
   if (!data) return null;
 
@@ -84,7 +115,7 @@ export default function PostConfirmPage({
           </div>
         </div>
 
-        <button className={`w-full mt-10`} onClick={registerBookReview}>
+        <button className={`w-full mt-10`} onClick={handleSubmit}>
           登録
         </button>
         <Link href="post" className="w-full mt-4 block">

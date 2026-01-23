@@ -115,11 +115,14 @@ export default function PostPage() {
         gender: 1,
         self_introduction: "",
     })
-    
+
     const handleConfirm = () => {
         sessionStorage.setItem(
             "bookReviewDraft",
-            JSON.stringify(form) 
+            JSON.stringify({
+                mode: "create",
+                ...form
+            })
         )
         router.push('/post/post-confirm');
     };
