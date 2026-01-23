@@ -13,6 +13,8 @@ import { preparePostConfirm } from "./actions";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 
+import { BookReviewDeleteConfirmModal } from "@/components/modals/BookReviewDeleteConfirmModal";
+
 export default function PostPage() {
     const router = useRouter();
     
@@ -48,6 +50,8 @@ export default function PostPage() {
         self_introduction: "",
     })
     
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
     // 本のデザイン選択の状態管理用
     const [bookColor, setBookColor] = useState('#FFFFFF');
     const [patternColor, setPatternColor] = useState('#FFFFFF');
@@ -242,6 +246,13 @@ export default function PostPage() {
     }
 
     return (
+        <>
+
+        <BookReviewDeleteConfirmModal 
+            open={showDeleteModal} 
+            onClose={() => setShowDeleteModal(false)} 
+            bookReviewId={bookReviewData?.id}
+        />
         <div className={`${Styles.posterContainer}`}>
             <p className={`font-bold text-center my-3 ${Styles.text24px}`}>書評を修正</p>
             <a href="" className={`block font-bold ${Styles.subColor}`}><span>&lt;</span> マイページに戻る</a>
@@ -378,9 +389,11 @@ export default function PostPage() {
                         </div>
                     </div>
                     <button type="submit" onClick={handleConfirm} className="w-full mt-7 font-bold">確認画面へ</button>
-                    <p className={`mt-2 mb-3 ${Styles.mainColor} ${Styles.text12px}`}>下書きはマイページから確認することができます。</p>
+                    <p className={`mt-2 mb-2 ${Styles.mainColor} ${Styles.text12px}`}>下書きはマイページから確認することができます。</p>
+                    <button type="button" onClick={() => setShowDeleteModal(true)} className={`w-full ${Styles.barcodeScan__backButton}`}>削除する</button>
                 </form>
             </div>
         </div>
+        </>
     );
 }

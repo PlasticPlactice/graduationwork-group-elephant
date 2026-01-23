@@ -55,24 +55,6 @@ export default function MyPage() {
     }
   }, []);
 
-  const fetchBookReviewDataById = useCallback(async (bookReviewId: number) => {
-    try {
-      const res = await fetch(`/api/book-reviews/detail/${bookReviewId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if(res.ok) {
-        const data = await res.json();
-        console.log("Book Review Detail Data:", data);
-        setBookReviewData(data);
-      }
-    } catch (error) {
-      console.error("Failed to Fetch book review detail data")
-    }
-  }, []);
-
   const fetchBookReviewData = useCallback(async () => {
     try {
       const res = await fetch("/api/book-reviews/mypage", {
