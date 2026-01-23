@@ -2,10 +2,9 @@
 
 import { redirect } from "next/navigation";
 
-export async function preparePostConfirm(prevState: any, formData: FormData) {
-  const html = formData.get("content");
-  const id = crypto.randomUUID();
-
-  
+export async function preparePostConfirm(
+  _prevState: unknown,
+  _formData: FormData,
+) {
   redirect("/poster/post-confirm");
 }

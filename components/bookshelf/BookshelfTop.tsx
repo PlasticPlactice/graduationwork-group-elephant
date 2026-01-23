@@ -1,4 +1,5 @@
 ﻿"use client";
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import Image from "next/image";
 import {
@@ -48,7 +49,7 @@ function renderShelfRow(
   maxBooksPerShelf: number,
   onBookSelect?: (book: Book) => void,
   favorites?: string[],
-  votedBookId?: string | null
+  votedBookId?: string | null,
 ) {
   if (books.length === 0) return null;
   return (
@@ -150,15 +151,12 @@ function TutorialOverlay({
         : canPlaceBelow;
   const tooltipLeft = Math.min(
     Math.max(rect.left + rect.width / 2, 12 + tooltipWidth / 2),
-    viewportWidth - 12 - tooltipWidth / 2
+    viewportWidth - 12 - tooltipWidth / 2,
   );
   const rawTooltipTop = placeBelow
     ? highlightBottom + tooltipGap
     : highlightTop - tooltipGap;
-  const tooltipTop = Math.min(
-    Math.max(rawTooltipTop, 12),
-    viewportHeight - 12
-  );
+  const tooltipTop = Math.min(Math.max(rawTooltipTop, 12), viewportHeight - 12);
   const tooltipTransform = placeBelow
     ? "translateX(-50%)"
     : "translate(-50%, -100%)";
@@ -376,7 +374,7 @@ export function BookshelfTop() {
   const moveScatterBookToShelf = useCallback((bookId: string) => {
     setBooksState((prevState) => {
       const entryIndex = prevState.scatter.findIndex(
-        (entry) => entry.book.id === bookId
+        (entry) => entry.book.id === bookId,
       );
       if (entryIndex === -1) {
         return prevState;
@@ -384,6 +382,7 @@ export function BookshelfTop() {
 
       const targetShelfIndex = prevState.shelves.findIndex(
         (shelf) => shelf.length < maxBooksPerShelf
+
       );
       if (targetShelfIndex === -1) {
         return prevState;
@@ -391,10 +390,10 @@ export function BookshelfTop() {
 
       const entry = prevState.scatter[entryIndex];
       const updatedShelves = prevState.shelves.map((shelf, idx) =>
-        idx === targetShelfIndex ? [...shelf, entry.book] : shelf
+        idx === targetShelfIndex ? [...shelf, entry.book] : shelf,
       );
       const updatedScatter = prevState.scatter.filter(
-        (_, idx) => idx !== entryIndex
+        (_, idx) => idx !== entryIndex,
       );
 
       return {
@@ -412,7 +411,7 @@ export function BookshelfTop() {
       }
       setModalState({ book: entry.book, mode: "scatter" });
     },
-    [tutorialStep]
+    [tutorialStep],
   );
 
   const handleShelfBookSelect = useCallback((book: Book) => {
@@ -423,7 +422,7 @@ export function BookshelfTop() {
     setFavorites((prev) =>
       prev.includes(bookId)
         ? prev.filter((id) => id !== bookId)
-        : [...prev, bookId]
+        : [...prev, bookId],
     );
   }, []);
 
@@ -436,7 +435,7 @@ export function BookshelfTop() {
       setVotedBookId(bookId);
       return true;
     },
-    [votedBookId]
+    [votedBookId],
   );
 
   const handleCloseReview = useCallback(() => {
@@ -460,6 +459,7 @@ export function BookshelfTop() {
     }
     const hasSpace = booksState.shelves.some(
       (shelf) => shelf.length < maxBooksPerShelf
+
     );
     if (!hasSpace) {
       window.alert("本棚に空きがありません。");
@@ -514,7 +514,6 @@ export function BookshelfTop() {
 
   return (
     <>
-
       <div className="mb-6 flex flex-col items-center gap-3 text-center px-4">
         <div className="flex items-center justify-center gap-2">
           <h1 className="text-2xl font-bold text-slate-900">
@@ -552,8 +551,8 @@ export function BookshelfTop() {
                 maxBooksPerShelf,
                 handleShelfBookSelect,
                 favorites,
-                votedBookId
-              )
+                votedBookId,
+              ),
             )}
           />
         </div>

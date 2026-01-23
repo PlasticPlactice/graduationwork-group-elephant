@@ -13,6 +13,11 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      "@next/next/no-serialize-in-client-component": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

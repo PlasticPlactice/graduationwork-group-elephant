@@ -1,12 +1,12 @@
-.required{
-    color: #ff0000;
+.required {
+  color: #ff0000;
 }
-.thumbnail-container{
-    background-color: var(--color-main);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.thumbnail-container {
+  background-color: var(--color-main);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* プレビュー画像をコンテナ全体に広げる */
@@ -18,59 +18,61 @@
   object-fit: cover;
   object-position: center;
   display: block;
+  z-index: 1;
 }
 
 .thumbnail-btn {
-    display: none;
+  display: none;
 }
-.thumbnail-label{
-    color: var(--color-text);
-    background-color: var(--color-bg);
-    font-weight: bold;
-    border-radius: var(--control-radius);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 8px 12px;
-    cursor: pointer;
-    display: inline-block;
+.thumbnail-label {
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  font-weight: bold;
+  border-radius: var(--control-radius);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 8px 12px;
+  cursor: pointer;
+  display: inline-block;
+  z-index: 2;
 }
 
-.radio-label{
-    font-size: 20px;
+.radio-label {
+  font-size: 20px;
 }
-input[type='datetime-local']::before{
-    content: attr(placeholder);
-    color: var(--color-text);
+input[type="datetime-local"]::before {
+  content: attr(placeholder);
+  color: var(--color-text);
 }
 .design-btn,
 .color-btn {
-    box-shadow: none;
-    padding: 0.5rem 0;
-    height: fit-content;
-    width: 2.5rem;
+  box-shadow: none;
+  padding: 0.5rem 0;
+  height: fit-content;
+  width: 2.5rem;
 }
 
-.design-container{
-    border: 1px solid var(--color-main);
-    border-radius: var(--control-radius) var(--control-radius) 0px 0px;
+.design-container {
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius) var(--control-radius) 0px 0px;
 }
 
-.editor-container{
-    border: 1px solid var(--color-main);
-    border-radius: 0px 0px var(--control-radius) var(--control-radius);
+.editor-container {
+  border: 1px solid var(--color-main);
+  border-radius: 0px 0px var(--control-radius) var(--control-radius);
 }
 
 .upload-btn {
-    display: none;
+  display: none;
 }
-.upload-label{
-    color: var(--color-text);
-    background-color: var(--color-bg);
-    font-weight: bold;
-    border-radius: var(--control-radius);
-    border: 1px solid var(--color-text);
+.upload-label {
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  font-weight: bold;
+  border-radius: var(--control-radius);
+  border: 1px solid var(--color-text);
 }
 
 /* upload preview を枠いっぱいに埋める */
@@ -92,7 +94,7 @@ input[type='datetime-local']::before{
 }
 
 /* 中の img を枠いっぱいにして隙間をなくす */
-.upload-preview img { 
+.upload-preview img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -113,43 +115,46 @@ input[type='datetime-local']::before{
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background-color: #ff0000;
+  background-color: transparent;
+  color: #ff0000;
+  border: 2px solid #000000;
+  border-radius: 4px;
   padding: 0;
 }
 
 .draft-btn,
 .submit-btn {
-    font-size: var(--font-size-h1);
-    box-shadow: none;
+  font-size: var(--font-size-h1);
+  box-shadow: none;
 }
-.draft-btn{
-    background-color: #2563EB;
-    color: var(--color-bg);
+.draft-btn {
+  background-color: #2563eb;
+  color: var(--color-bg);
 }
-.draft-btn:hover{
-    background-color: var(--color-bg);
-    color: #2563EB;
-    border: 1px solid #2563EB;
+.draft-btn:hover {
+  background-color: var(--color-bg);
+  color: #2563eb;
+  border: 1px solid #2563eb;
 }
-.submit-btn{
-    background-color: #16A34A;
-    color: var(--color-bg);
+.submit-btn {
+  background-color: #16a34a;
+  color: var(--color-bg);
 }
-.submit-btn:hover{
-    background-color: var(--color-bg);
-    color: #16A34A;
-    border: 1px solid #16A34A;
+.submit-btn:hover {
+  background-color: var(--color-bg);
+  color: #16a34a;
+  border: 1px solid #16a34a;
 }
-.remove-btn{
-    height: fit-content;
+.remove-btn {
+  height: fit-content;
 }
 /* モーダル */
-.preview-modal{
-    background-color: rgba(0, 0, 0, 0.4);
+.preview-modal {
+  background-color: rgba(0, 0, 0, 0.4);
 }
-.close-btn{
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    box-shadow: none;
-    font-size: var(--font-size-h1);
+.close-btn {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: none;
+  font-size: var(--font-size-h1);
 }
