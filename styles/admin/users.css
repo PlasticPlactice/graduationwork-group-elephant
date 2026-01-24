@@ -31,7 +31,7 @@ details[open] .icon {
   max-width: 40rem;
 }
 .age-input {
-    width: 6rem;
+  width: 6rem;
 }
 .city-input {
   width: 7rem;
@@ -43,7 +43,6 @@ details[open] .icon {
   width: 15rem;
   height: 2.5rem;
 }
-
 
 .user-table {
   border-collapse: collapse;
@@ -59,13 +58,26 @@ details[open] .icon {
   border-bottom: 1px solid var(--color-input-bg);
 }
 
-.status-badge{
+.user-table th button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
+.user-table th button:focus {
+  outline: none;
+}
+
+.status-badge {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
 
 .active {
-  color: #48885A;
+  color: #48885a;
   background-color: var(--color-admin-active-background);
   border-radius: var(--control-radius);
   font-weight: bold;
@@ -94,7 +106,6 @@ details[open] .icon {
 
 .page-section {
   gap: 1rem;
-
 }
 .page-section .page-number {
   font-size: var(--font-size-h1);
@@ -117,7 +128,7 @@ details[open] .icon {
 }
 
 /* モーダル */
-.user-detail-modal{
+.user-detail-modal {
   background-color: rgba(0, 0, 0, 0.4);
 }
 .modal-content {
@@ -128,15 +139,15 @@ details[open] .icon {
   overflow-y: auto;
   flex: 1;
 }
-.close-btn{
+.close-btn {
   background-color: var(--color-bg);
   box-shadow: none;
 }
-.user-data-title{
+.user-data-title {
   color: var(--color-sub);
 }
-.status{
-  color: #48885A;
+.status {
+  color: #48885a;
   background-color: var(--color-admin-active-background);
   border-radius: var(--control-radius);
   font-weight: bold;
@@ -154,15 +165,15 @@ details[open] .icon {
   width: 100%;
 }
 .event-table th,
-.event-table td{
+.event-table td {
   border-bottom: 1px solid var(--color-input-bg);
   word-break: break-word;
   box-sizing: border-box;
 }
-.head-check{
+.head-check {
   width: 1.5rem;
   height: 1.5rem;
-  border: 1px solid #6A8CA4;
+  border: 1px solid #6a8ca4;
   border-radius: 2px;
 }
 summary {
@@ -171,16 +182,16 @@ summary {
 details[open] .icon {
   transform: rotate(180deg);
 }
-.title-text{
+.title-text {
   color: var(--color-main);
   border-bottom: 1px solid var(--color-main);
 }
-.status-text{
-  color: #1E40AF;
-  background-color: #DBEAFE;
+.status-text {
+  color: #1e40af;
+  background-color: #dbeafe;
   border-radius: var(--control-radius);
 }
-.accordion-toggle{
+.accordion-toggle {
   background-color: var(--color-bg);
   box-shadow: none;
   color: var(--color-text);
@@ -192,10 +203,10 @@ details[open] .icon {
 }
 /* アコーディオン */
 /* アコーディオンの中 */
-.details-content h3{
+.details-content h3 {
   font-size: var(--font-size-h1);
 }
-.book-review-section{
+.book-review-section {
   overflow-y: auto;
   border: 1px solid var(--color-main);
   border-radius: var(--control-radius);
@@ -203,22 +214,22 @@ details[open] .icon {
   max-height: 21rem; /* 必要に応じて調整 */
 }
 .book-review-section p {
-    line-height: 1.8;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
-.book-data{
-  border-bottom: 1px solid #A0B7C7;
+.book-data {
+  border-bottom: 1px solid #a0b7c7;
   margin: 0 0 0.5rem 0;
 }
-.book-head{
-  color: #A0B7C7;
+.book-head {
+  color: #a0b7c7;
 }
-.book-content{
+.book-content {
   font-size: 20px;
   margin: 0 0 0.6rem 0;
 }
-.data-row-link{
+.data-row-link {
   background-color: var(--color-bg);
   color: var(--color-main);
   box-shadow: none;
@@ -232,13 +243,13 @@ details[open] .icon {
 }
 
 /* 退会モーダル */
-.user-exit-modal{
+.user-exit-modal {
   background-color: rgba(0, 0, 0, 0.4);
 }
-.exit-area{
+.exit-area {
   height: 10rem;
 }
-.exit-modal-common{
+.exit-modal-common {
   width: 13rem;
   height: 2.5rem;
   font-size: 1.5rem;
@@ -246,7 +257,7 @@ details[open] .icon {
   margin: 1rem 0;
   padding: 1.5rem 0;
 }
-.back-btn{
+.back-btn {
   background-color: var(--color-bg);
   color: var(--color-admin-sub);
   border: 1px solid var(--color-admin-sub);
