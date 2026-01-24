@@ -3,6 +3,10 @@ import React, { useState, useEffect } from "react";
 import "@/styles/admin/users.css";
 import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
+import {
+  USER_STATUS_CLASS,
+  USER_STATUS_LABELS,
+} from "@/lib/constants/userStatus";
 
 interface UserDetailModalProps {
   isOpen: boolean;
@@ -86,6 +90,13 @@ export default function UserDetailModal({
     onOpenUserExit?.(userId);
   };
 
+  const statusClass = userDetail
+    ? USER_STATUS_CLASS[userDetail.user_status] || ""
+    : "";
+  const statusLabel = userDetail
+    ? USER_STATUS_LABELS[userDetail.user_status] || ""
+    : "";
+
   if (!isOpen) return null;
 
   return (
@@ -123,12 +134,8 @@ export default function UserDetailModal({
             <p>{String(userDetail.id).padStart(6, "0")}</p>
             <p>{userDetail.nickname}</p>
             <p>
-              <span className="status">
-                {userDetail.user_status === 0
-                  ? "利用中"
-                  : userDetail.user_status === 1
-                    ? "退会済み"
-                    : "BAN"}
+              <span className={`status-badge ${statusClass}`}>
+                {statusLabel}
               </span>
             </p>
             <p>{userDetail.age ? `${userDetail.age}代` : "-"}</p>

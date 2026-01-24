@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { USER_STATUS } from "@/lib/constants/userStatus";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user || !session.user.id) {
@@ -12,6 +12,24 @@ export async function POST() {
   }
 
   try {
+    let reason = "";
+    try {
+      const body = await req.json();
+      reason = (body?.reason ?? "").trim();
+    } catch {
+      return NextResponse.json(
+        { message: "Invalid request body" },
+        { status: 400 },
+      );
+    }
+
+    if (!reason) {
+      return NextResponse.json(
+        { message: "退会理由を入力してください" },
+        { status: 400 },
+      );
+    }
+
     const userId = parseInt(session.user.id);
 
     // ユーザーの存在確認
@@ -29,6 +47,7 @@ export async function POST() {
       data: {
         deleted_flag: true,
         user_status: USER_STATUS.WITHDRAWN,
+        user_stop_reason: reason,
         updated_at: new Date(),
       },
     });

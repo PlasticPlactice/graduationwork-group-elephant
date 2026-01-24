@@ -39,7 +39,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
 
     if (!reason) {
       return NextResponse.json(
-        { message: "退会理由を入力してください" },
+        { message: "アカウント停止理由を入力してください" },
         { status: 400 },
       );
     }
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     await prisma.user.update({
       where: { id: userId },
       data: {
-        user_status: USER_STATUS.WITHDRAWN,
+        user_status: USER_STATUS.BAN,
         deleted_flag: true,
         user_stop_reason: reason,
         updated_at: new Date(),
@@ -61,10 +61,10 @@ export async function POST(req: NextRequest, context: RouteContext) {
 
     return NextResponse.json({
       success: true,
-      message: "ユーザーを退会処理しました。",
+      message: "ユーザーをアカウント停止処理しました。",
     });
   } catch (error) {
-    console.error("Admin withdraw error:", error);
+    console.error("Admin account suspension error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 },

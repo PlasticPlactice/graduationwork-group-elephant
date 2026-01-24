@@ -37,9 +37,7 @@ export async function GET(req: NextRequest) {
       : null;
     const prefecture = searchParams.get("prefecture")?.trim() || "";
     const city = searchParams.get("city")?.trim() || "";
-    const status = searchParams.get("status")
-      ? parseInt(searchParams.get("status")!)
-      : null;
+    const statusParam = searchParams.get("status");
 
     // where句の条件を動的に構築
     const where: Prisma.UserWhereInput = {};
@@ -113,10 +111,23 @@ export async function GET(req: NextRequest) {
     }
 
     // ステータス検索（削除フラグロジック）
-    if (status !== null) {
-      where.user_status = status;
-      // ステータス 1（退会済み）または 2（BAN）が選ばれた場合のみ削除済みを含める
-      if (status === USER_STATUS.WITHDRAWN || status === USER_STATUS.BAN) {
+    // statusParam は上部で取得済み
+    if (statusParam === "all") {
+      // 明示的に「すべて」が指定された場合は削除フラグ・ステータスで絞らない
+    } else if (statusParam !== null && statusParam !== "") {
+      const statusValue = parseInt(statusParam, 10);
+      if (Number.isNaN(statusValue)) {
+        return NextResponse.json(
+          { message: "Invalid status parameter" },
+          { status: 400 },
+        );
+      }
+      where.user_status = statusValue;
+      // ステータス 1（退会済み）または 2（アカウント停止）が選ばれた場合のみ削除済みを含める
+      if (
+        statusValue === USER_STATUS.WITHDRAWN ||
+        statusValue === USER_STATUS.BAN
+      ) {
         // deleted_flag の制約なし（削除済みも含む）
       } else {
         // ACTIVE等の他のステータスは削除済みを除外

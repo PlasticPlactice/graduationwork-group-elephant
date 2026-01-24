@@ -74,7 +74,7 @@ export default function UserExitModal({
     }
     const trimmedReason = reason.trim();
     if (!trimmedReason) {
-      setError("退会理由を入力してください。");
+      setError("アカウント停止理由を入力してください。");
       return;
     }
 
@@ -91,13 +91,17 @@ export default function UserExitModal({
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || "退会処理に失敗しました。");
+        throw new Error(data.message || "アカウント停止処理に失敗しました。");
       }
 
       onWithdrawSuccess();
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : "退会処理に失敗しました。");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "アカウント停止処理に失敗しました。",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -121,7 +125,7 @@ export default function UserExitModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-2xl font-bold">ユーザー退会</h2>
+          <h2 className="text-2xl font-bold">ユーザーアカウント停止</h2>
           <button
             onClick={onClose}
             className="close-btn text-black"
@@ -162,7 +166,7 @@ export default function UserExitModal({
 
         <div className="mt-8 mx-10">
           <div className="flex items-center justify-between mb-2">
-            <h1 className="font-bold">退会理由</h1>
+            <h1 className="font-bold">アカウント停止理由</h1>
             <span className="text-sm text-gray-500">※必須</span>
           </div>
           <textarea
@@ -185,7 +189,7 @@ export default function UserExitModal({
             戻る
           </button>
           <AdminButton
-            label={isSubmitting ? "処理中..." : "退会"}
+            label={isSubmitting ? "処理中..." : "アカウント停止"}
             className="exit-decision-btn exit-modal-common"
             onClick={handleWithdraw}
             disabled={isSubmitting || !user}
