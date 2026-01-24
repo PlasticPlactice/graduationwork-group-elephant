@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+import { USER_STATUS } from "@/lib/constants/userStatus";
 
 export async function POST() {
   const session = await getServerSession(authOptions);
@@ -27,7 +28,7 @@ export async function POST() {
       where: { id: userId },
       data: {
         deleted_flag: true,
-        user_status: 0, // 退会済みステータス
+        user_status: USER_STATUS.WITHDRAWN,
         updated_at: new Date(),
       },
     });
@@ -40,7 +41,7 @@ export async function POST() {
     console.error("Withdraw error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

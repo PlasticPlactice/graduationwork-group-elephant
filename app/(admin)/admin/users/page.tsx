@@ -32,6 +32,7 @@ interface ApiResponse {
 export default function Page() {
   const [isUserExitModalOpen, setIsUserExitModalOpen] = useState(false);
   const [isUserDetailModalOpen, setIsUserDetailModalOpen] = useState(false);
+  const [exitUserId, setExitUserId] = useState<number | null>(null);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [users, setUsers] = useState<User[]>([]);
@@ -188,6 +189,12 @@ export default function Page() {
   const handleCloseUserDetail = () => {
     setIsUserDetailModalOpen(false);
     setSelectedUserId(null);
+  };
+
+  const handleWithdrawSuccess = () => {
+    setIsUserExitModalOpen(false);
+    setExitUserId(null);
+    fetchUsers(currentPage);
   };
   return (
     <main className="users-container">
@@ -586,9 +593,9 @@ export default function Page() {
       <UserDetailModal
         isOpen={isUserDetailModalOpen}
         onClose={handleCloseUserDetail}
-        onOpenUserExit={() => {
+        onOpenUserExit={(userId) => {
           setIsUserDetailModalOpen(false);
-          setSelectedUserId(null);
+          setExitUserId(userId);
           setIsUserExitModalOpen(true);
         }}
         userId={selectedUserId}
@@ -596,7 +603,12 @@ export default function Page() {
 
       <UserExitModal
         isOpen={isUserExitModalOpen}
-        onClose={() => setIsUserExitModalOpen(false)}
+        userId={exitUserId}
+        onClose={() => {
+          setIsUserExitModalOpen(false);
+          setExitUserId(null);
+        }}
+        onWithdrawSuccess={handleWithdrawSuccess}
       />
     </main>
   );

@@ -7,7 +7,7 @@ import AdminButton from "@/components/ui/admin-button";
 interface UserDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpenUserExit?: () => void;
+  onOpenUserExit?: (userId: number) => void;
   userId?: number | null;
 }
 
@@ -81,9 +81,9 @@ export default function UserDetailModal({
       : (userDetail?.bookReviews || []).slice(0, displayCount);
 
   const handleUserExit = () => {
-    // 詳細モーダルを閉じ、親に退会モーダルを開くよう通知
+    if (!userId) return;
     onClose();
-    onOpenUserExit?.();
+    onOpenUserExit?.(userId);
   };
 
   if (!isOpen) return null;
