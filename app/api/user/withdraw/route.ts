@@ -5,9 +5,12 @@ import { authOptions } from "@/lib/auth";
 import { USER_STATUS } from "@/lib/constants/userStatus";
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string };
+  } | null;
+  const sessionUser = session?.user;
 
-  if (!session || !session.user || !session.user.id) {
+  if (!sessionUser?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
@@ -30,7 +33,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = parseInt(session.user.id);
+    const userId = parseInt(sessionUser.id);
 
     // ユーザーの存在確認
     const user = await prisma.user.findUnique({
