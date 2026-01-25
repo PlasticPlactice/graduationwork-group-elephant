@@ -8,6 +8,7 @@ import StatusEditModal from "@/components/admin/StatusEditModal";
 import CsvOutputModal from "@/components/admin/CsvOutputModal";
 import AllMessageSendModal from "@/components/admin/AllMessageSendModal";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 // 静的なデータはコンポーネントの外に出す（再レンダリングごとの生成を防ぐ）
 const TABLE_DATA = [
@@ -153,10 +154,19 @@ const TABLE_DATA = [
   },
 ];
 
+// ステータス文字列を数値に変換するマップ
+const STATUS_STRING_TO_NUMBER: Record<string, number> = {
+  "評価前": 0,
+  "一次通過": 1,
+  "二次通過": 2,
+  "三次通過": 3,
+};
+
 export default function Page() {
   const [openRows, setOpenRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [displayCount, setDisplayCount] = useState<number | "all">(10);
+  const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]); // 選択された行IDを管理
 
   const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
   const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
@@ -167,6 +177,22 @@ export default function Page() {
 
   const toggleRow = (id: number) => {
     setOpenRows((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id],
+    );
+  };
+
+  // 全選択・全解除ハンドラ
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedRowIds(displayedData.map((row) => row.id));
+    } else {
+      setSelectedRowIds([]);
+    }
+  };
+
+  // 個別選択ハンドラ
+  const handleSelectRow = (id: number) => {
+    setSelectedRowIds((prev) =>
       prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id],
     );
   };
@@ -186,12 +212,15 @@ export default function Page() {
   }, [isStatusEditModalOpen]);
 
   const handleStatusEdit = () => {
+    if (selectedRowIds.length === 0) return alert("データが選択されていません");
     setIsStatusEditModalOpen(true);
   };
   const handleCsvOutput = () => {
+    // CSV出力は今回は表示中のデータを対象とする（要件に応じて選択データのみに変更も可）
     setIsCsvOutputModalOpen(true);
   };
   const handleAllMessageSend = () => {
+    if (selectedRowIds.length === 0) return alert("データが選択されていません");
     setIsAllMessageSendModalOpen(true);
   };
   const closeModal = () => {
@@ -207,6 +236,24 @@ export default function Page() {
   // 表示するデータをスライス
   const displayedData =
     displayCount === "all" ? TABLE_DATA : TABLE_DATA.slice(0, displayCount);
+
+  // 選択されたデータを取得
+  const selectedData = TABLE_DATA.filter((row) => selectedRowIds.includes(row.id));
+
+  // StatusEditModal用にデータを整形（ステータスを数値に変換）
+  const statusTargetReviews = selectedData.map((row) => ({
+    id: row.id,
+    title: row.title,
+    nickname: row.nickname,
+    status: STATUS_STRING_TO_NUMBER[row.status] ?? 0,
+  }));
+
+  // AllMessageSendModal用にデータを整形
+  const messageTargetReviews = selectedData.map((row) => ({
+    id: row.id,
+    title: row.title,
+    nickname: row.nickname,
+  }));
 
   return (
     <main>
@@ -311,8 +358,14 @@ export default function Page() {
           <thead className="table-head">
             <tr>
               <th className="py-2">
-                {/* <input type="checkbox" className='head-check' disabled/> */}
-                <div className="ml-3 head-check bg-white"></div>
+                <div className="ml-3 bg-white flex items-center justify-center">
+                  <input 
+                    type="checkbox" 
+                    className="head-check" 
+                    onChange={handleSelectAll}
+                    checked={displayedData.length > 0 && selectedRowIds.length === displayedData.length}
+                  />
+                </div>
               </th>
               <th className="w-[27.777%]">
                 <div className="flex justify-center items-center">
@@ -347,10 +400,15 @@ export default function Page() {
           {/* アコーディオン */}
           <tbody className="border">
             {displayedData.map((row) => (
-              <>
-                <tr key={row.id} className="table-row">
+              <React.Fragment key={row.id}>
+                <tr  className="table-row">
                   <td className="pl-3">
-                    <input type="checkbox" className="head-check" />
+                    <input 
+                      type="checkbox" 
+                      className="head-check" 
+                      checked={selectedRowIds.includes(row.id)}
+                      onChange={() => handleSelectRow(row.id)}
+                    />
                   </td>
                   <td className="text-center">
                     <span className="status-text font-bold py-1 px-6">
@@ -445,7 +503,7 @@ export default function Page() {
                     </td>
                   </tr>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>
@@ -512,7 +570,11 @@ export default function Page() {
         </div>
       )}
       {/* モーダル */}
-      <StatusEditModal isOpen={isStatusEditModalOpen} onClose={closeModal} />
+      <StatusEditModal 
+        isOpen={isStatusEditModalOpen} 
+        onClose={closeModal} 
+        selectedReviews={statusTargetReviews}
+      />
       <CsvOutputModal
         isOpen={isCsvOutputModalOpen}
         onClose={closeModal}
@@ -521,6 +583,7 @@ export default function Page() {
       <AllMessageSendModal
         isOpen={isAllMessageSendModalOpen}
         onClose={closeModal}
+        selectedReviews={messageTargetReviews}
       />
     </main>
   );
