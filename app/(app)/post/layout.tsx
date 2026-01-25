@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { AfterLoginHeader } from "@/components/layout/after-login-header";
+import { Providers } from "@/app/providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,7 +16,11 @@ export default function RootLayout({
     <html lang="ja">
       <body suppressHydrationWarning className="antialiased min-h-screen flex flex-col">
         <AfterLoginHeader />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          <Providers>
+            {children}
+          </Providers>
+          </main>
       </body>
     </html>
   );
