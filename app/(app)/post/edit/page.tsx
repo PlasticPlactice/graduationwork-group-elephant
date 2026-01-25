@@ -2,8 +2,9 @@
 
 import Styles from "@/styles/app/poster.module.css";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSession } from "next-auth/react";
 // tiptapのimport
-import { EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, parseIndentedBlocks, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BubbleMenu } from "@tiptap/extension-bubble-menu";
 import Color from "@tiptap/extension-color";
@@ -18,6 +19,9 @@ import { BookReviewDeleteConfirmModal } from "@/components/modals/BookReviewDele
 export default function PostPage() {
     const router = useRouter();
     
+    const {data: session, status} = useSession();
+    const userId = session?.user?.id;
+
     // HTML送信用
     const [html, setHtml] = useState('');
     // 文字数管理用
@@ -30,14 +34,28 @@ export default function PostPage() {
     const [colorActive, setColorActive] = useState<string>('#000000');
 
     const [state, formAction] = useActionState(preparePostConfirm, null);
-    const [formData, setFormData] = useState<any>(null);
     const [bookReviewData, setBookReviewData] = useState<any>(null);
 
-    const [form, setForm] = useState({
-        bookReview_id: undefined as number | undefined,
-        user_id: 4,
+    const [form, setForm] = useState<{
+        bookReview_id: number | null;
+        user_id: number | null;
+        review: string;
+        color: string;
+        pattern: string;
+        pattern_color: string;
+        isbn: string;
+        book_title: string;
+        evaluations_status: number;
+        nickname: string;
+        address: string;
+        age: number;
+        gender: number;
+        self_introduction: string;
+        }>({
+        bookReview_id: null,
+        user_id: null,
         review: "",
-        color: "#FFFFFFF",
+        color: "#FFFFFF",
         pattern: "dot",
         pattern_color: "#FFFFFF",
         isbn: "",
@@ -48,7 +66,7 @@ export default function PostPage() {
         age: 1,
         gender: 1,
         self_introduction: "",
-    })
+        });
     
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -91,7 +109,6 @@ export default function PostPage() {
           });
           if(res.ok) {
             const data = await res.json();
-            console.log("Book Review Detail Data:", data);
             setBookReviewData(data);
           }
         } catch (error) {
@@ -101,7 +118,16 @@ export default function PostPage() {
 
     // データ取得の実行
     useEffect(() => {
-        fetchBookReviewDataById(7);
+        const draft = sessionStorage.getItem("bookReviewIdDraft");
+
+        if(!draft) return;
+
+        const parsed = JSON.parse(draft);
+
+        const bookReviewId = 
+            typeof parsed === "number" ? parsed : parsed.bookReviewId;
+
+        fetchBookReviewDataById(bookReviewId);
     }, [fetchBookReviewDataById]);
 
     // tiptapに関する関数

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
@@ -11,9 +12,10 @@ import { MassageModal } from "@/components/modals/MassageModal";
 import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
 import Styles from "@/styles/app/poster.module.css";
+import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 
 interface ProfileData {
-  id: number;
+  userId: number;
   nickName: string;
   address: string;
   addressDetail: string;
@@ -35,6 +37,8 @@ interface BookReviewData {
 type BookReviewDataList = BookReviewData[];
 
 export default function MyPage() {
+  const router = useRouter();
+
   // 初期表示時にモーダルを表示
   const [showModal, setShowModal] = useState(true);
   // プロフィール編集、退会確認、DM（運営からのお知らせ）モーダルの表示
@@ -69,7 +73,6 @@ export default function MyPage() {
       });
       if(res.ok) {
         const data = await res.json();
-        console.log("Book Review Data:", data);
         setBookReviewData(data);
       }
     } catch (error) {
@@ -173,7 +176,7 @@ export default function MyPage() {
     const status = REVIEW_STATUS_MAP[review.evaluations_status];
 
     return {
-      id: review.id,
+      bookReviewId: review.id,
       title: review.book_title,
       status: status.label,
       evaluations_status: review.evaluations_status,
@@ -184,12 +187,11 @@ export default function MyPage() {
     }
   })
 
-  
   const [activeFilterTab, setActiveFilterTab] =
   useState<ReviewFilterTab>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const filteredReviews = uiReviews.filter((review) => {
     if(activeFilterTab === "all") return true;
     return review.evaluations_status === activeFilterTab;
@@ -227,6 +229,17 @@ export default function MyPage() {
       setShowDeleteModal(false);
     }
   };
+
+  const handleEditButton = (bookReview_id: number) => {
+    sessionStorage.setItem(
+      "bookReviewIdDraft",
+      JSON.stringify({
+        bookReviewId: bookReview_id
+      })
+    )
+
+    router.push("/post/edit")
+  }
 
   return (
     <>
@@ -416,7 +429,11 @@ export default function MyPage() {
                     {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
                     <div className="mt-4">
                       {review.href ? (
-                          <button className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold">
+                          <button 
+                            type="button"
+                            className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
+                            onClick={() => handleEditButton(review.bookReviewId)}
+                            >
                             {review.buttonText}
                           </button>
                       ) : (

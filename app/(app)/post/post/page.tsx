@@ -1,6 +1,7 @@
 "use client";
 
 import Styles from "@/styles/app/poster.module.css";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { preparePostConfirm } from "./actions";
@@ -24,6 +25,9 @@ interface ProfileData {
 
 export default function PostPage() {
     const router = useRouter();
+
+    const { data: session, status } = useSession();
+    const userId = session?.user?.id;
 
     // HTML送信用
     const [html, setHtml] = useState('');
@@ -100,10 +104,24 @@ export default function PostPage() {
         })
     }, []);
 
-    const [ form, setForm ] = useState({
-        user_id: 4,
+    const [form, setForm] = useState<{
+        user_id: number | null;
+        review: string;
+        color: string;
+        pattern: string;
+        pattern_color: string;
+        isbn: string;
+        book_title: string;
+        evaluations_status: number;
+        nickname: string;
+        address: string;
+        age: number;
+        gender: number;
+        self_introduction: string;
+        }>({
+        user_id: null,
         review: "",
-        color: "#FFFFFFF",
+        color: "#FFFFFF",
         pattern: "dot",
         pattern_color: "#FFFFFF",
         isbn: "",
@@ -114,7 +132,7 @@ export default function PostPage() {
         age: 1,
         gender: 1,
         self_introduction: "",
-    })
+        });
 
     const handleConfirm = () => {
         sessionStorage.setItem(
@@ -156,12 +174,6 @@ export default function PostPage() {
                 pattern: pattern,
                 pattern_color: patternColor,
                 review: editor.getHTML(),
-                isbn: bookData.isbn,
-                book_title: bookData.title,
-                nickname: userData ? userData.nickName : "",
-                address: userData ? userData.address + userData.addressDetail : "",
-                age: userData ? userData.age : 1,
-                self_introduction: userData ? userData.introduction : "",
             });
         },
     });
@@ -196,6 +208,22 @@ export default function PostPage() {
         if(!editor) return;
         setHtml(editor.getHTML());
     };
+
+    useEffect(() => {
+        if(!userId || !userData) return;
+
+        setForm((prev) => ({
+            ...prev,
+            user_id: Number(userId),
+            isbn: bookData.isbn,
+            book_title: bookData.title,
+            nickname: userData.nickName,
+            address: userData.address,
+            age: userData.age,
+            self_introduction: userData.introduction
+        }));
+
+    }, [userId, userData]);
 
     useEffect(() => {
         if(!editor) return;
