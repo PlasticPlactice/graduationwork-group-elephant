@@ -1,0 +1,64 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+type Params = {
+  params: {
+    id: string;
+  };
+};
+
+// 閲覧者の書評閲覧用のAPI
+export async function GET(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const { params } = context;
+    const { id } = await params;
+
+    const eventId = Number(id);
+
+    if (Number.isNaN(eventId)) {
+      return NextResponse.json(
+        { message: "Invalid review id" },
+        { status: 400 }
+      );
+    }
+
+    const reviews = await prisma.bookReview.findMany({
+      where: {
+        event_id: eventId,
+        public_flag: true,
+        deleted_flag: false,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
+    if (!reviews) {
+      return NextResponse.json(
+        { message: "Review not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(reviews);
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Failed to fetch review" },
+      { status: 500 }
+    );
+  }
+}
