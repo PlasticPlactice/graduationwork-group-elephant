@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-// 取得
+// mypage向け - 指定したユーザIDの書評をすべて取得
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
