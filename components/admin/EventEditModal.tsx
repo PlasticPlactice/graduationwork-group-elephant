@@ -3,20 +3,116 @@
 import { Icon } from "@iconify/react";
 import Textbox from '@/components/ui/admin-textbox';
 import "@/styles/admin/events.css"
+import { useEffect, useState, startTransition } from "react";
+import { useRouter } from "next/navigation";
+import { validateEventDates } from '@/lib/validateEventDates';
+import { toDateTimeLocalValue, toISOStringFromLocal } from '@/lib/dateUtils';
+
+type EventItem = {
+  id: number;
+  title: string;
+  detail?: string;
+  status?: string | number;
+  start_period?: string;
+  end_period?: string;
+  first_voting_start_period?: string;
+  first_voting_end_period?: string;
+  second_voting_start_period?: string;
+  second_voting_end_period?: string;
+  public_flag?: boolean | string;
+};
 
 interface EventRegisterModalProps {
     isOpen: boolean;
     onClose: () => void;
+    event?: EventItem | null;
 }
 
-export default function EventRegisterModal({ isOpen, onClose }: EventRegisterModalProps) {
+export default function EventEditModal({ isOpen, onClose,event }: EventRegisterModalProps) {
+    const router = useRouter();
+    const [title, setTitle] = useState("");
+    const [detail, setDetail] = useState("");
+    const [start, setStart] = useState("");
+    const [end, setEnd] = useState("");
+    const [firstStart, setFirstStart] = useState("");
+    const [firstEnd, setFirstEnd] = useState("");
+    const [secondStart, setSecondStart] = useState("");
+    const [secondEnd, setSecondEnd] = useState("");
+    const [publicFlag, setPublicFlag] = useState(false);
+    const [currentStatus, setCurrentStatus] = useState<number | null>(null);
+    const [nextStatus, setNextStatus] = useState<number>(0);
+
+    useEffect(() => {
+        if (isOpen && event) {
+        startTransition(() => {
+            setTitle(event.title ?? "");
+            setDetail(event.detail ?? "");
+            setStart(toDateTimeLocalValue(event.start_period));
+            setEnd(toDateTimeLocalValue(event.end_period));
+            setFirstStart(toDateTimeLocalValue(event.first_voting_start_period));
+            setFirstEnd(toDateTimeLocalValue(event.first_voting_end_period));
+            setSecondStart(toDateTimeLocalValue(event.second_voting_start_period));
+            setSecondEnd(toDateTimeLocalValue(event.second_voting_end_period));
+            setPublicFlag(event.public_flag === true || event.public_flag === "true");
+            const initStatus = Number(event.status ?? 0);
+            setCurrentStatus(initStatus);
+            setNextStatus(initStatus);
+        });
+        }
+    }, [isOpen, event]);
+    
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // フォーム送信処理をここに追加
-        console.log('フォームを送信');
+        if (!event) return onClose();
+
+        const err = validateEventDates({
+            start_period: start,
+            end_period: end,
+            first_voting_start_period: firstStart,
+            first_voting_end_period: firstEnd,
+            second_voting_start_period: secondStart,
+            second_voting_end_period: secondEnd,
+        });
+        if (err) { alert(err); return; }
+
+
+        try {
+        const payload = {
+            id: event.id,
+            title,
+            detail,
+            start_period: toISOStringFromLocal(start),
+            end_period: toISOStringFromLocal(end),
+            first_voting_start_period: toISOStringFromLocal(firstStart),
+            first_voting_end_period: toISOStringFromLocal(firstEnd),
+            second_voting_start_period: toISOStringFromLocal(secondStart),
+            second_voting_end_period: toISOStringFromLocal(secondEnd),
+            public_flag: publicFlag,
+            status: nextStatus,
+        };
+
+        const res = await fetch('/api/events', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('update failed', errorText);
+            alert('更新に失敗しました: ' + (errorText || res.statusText));
+            return;
+        }
+
+        // 成功: モーダルを閉じて画面更新
+        await Promise.resolve(router.refresh());    
         onClose();
+        } catch (err) {
+        console.error(err);
+        alert('イベントの更新処理中に通信エラーが発生しました。時間をかけてもう一度お試しください。解決しない場合は管理者にお問い合わせください。');
+        }
     };
 
     return (
@@ -39,7 +135,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                 className='w-full custom-input'
                                 style={{backgroundColor:'#F9FAFB'}}
                                 placeholder='イベントのタイトルを入力'
-                                value={'第1回文庫X'}
+                                value={title}
+                                onChange={(e)=> setTitle(e.target.value)}
                             />
                         </div>
 
@@ -53,7 +150,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     className='datetime-input'
                                     type='datetime-local'
                                     style={{ backgroundColor: '#F9FAFB' }}
-                                    value={'2024-10-30 12:00'}
+                                    value={start}
+                                    onChange={(e)=>setStart(e.target.value)}
                                 />
                                 <p>～</p>
                                 <Textbox
@@ -62,7 +160,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     className='datetime-input'
                                     type='datetime-local'
                                     style={{ backgroundColor: '#F9FAFB' }}
-                                    value={'2025-10-30 12:00'}
+                                    value={end}
+                                    onChange={(e)=>setEnd(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -77,7 +176,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     className='datetime-input'
                                     type='datetime-local'
                                     style={{ backgroundColor: '#F9FAFB' }}
-                                    value={'2024-11-30 12:00'}
+                                    value={firstStart}
+                                    onChange={(e)=>setFirstStart(e.target.value)}
                                 />
                                 <p>～</p>
                                 <Textbox
@@ -86,7 +186,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     className='datetime-input'
                                     type='datetime-local'
                                     style={{ backgroundColor: '#F9FAFB' }}
-                                    value={'2024-12-30 12:00'}
+                                    value={firstEnd}
+                                    onChange={(e)=>setFirstEnd(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -101,7 +202,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     className='datetime-input'
                                     type='datetime-local'
                                     style={{ backgroundColor: '#F9FAFB' }}
-                                    value={'2025-01-05 12:00'}
+                                    value={secondStart}
+                                    onChange={(e)=>setSecondStart(e.target.value)}
                                 />
                                 <p>～</p>
                                 <Textbox
@@ -110,7 +212,8 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                                     className='datetime-input'
                                     type='datetime-local'
                                     style={{ backgroundColor: '#F9FAFB' }}
-                                    value={'2025-02-05 12:00'}
+                                    value={secondEnd}
+                                    onChange={(e)=>setSecondEnd(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -143,13 +246,28 @@ export default function EventRegisterModal({ isOpen, onClose }: EventRegisterMod
                         <div className='my-4'>
                             <label htmlFor="remarks" className='text-lg block'>現在のステータス</label>
                             <div className="flex items-center gap-3">
-                                <span className="now-status py-1 px-6 rounded-4xl font-bold">一次審査中</span>
+                                {/* todo:statusが0なら開催前、1なら一次審査中、2なら二次審査中、3なら終了済にする */}
+                                <span className="now-status py-1 px-6 rounded-4xl font-bold">
+                                    {(() => {
+                                        switch (currentStatus) {
+                                            case 0: return "開催前";
+                                            case 1: return "一次審査中";
+                                            case 2: return "二次審査中";
+                                            case 3: return "終了済";
+                                            default: return "未設定";
+                                        }
+                                    })()}
+                                </span>
                                 <Icon icon='mdi:arrow-up-bold' rotate={1} width={30}></Icon>
-                                <select className="next-status">
-                                    <option value="開催前">開催前</option>
-                                    <option value="一次審査中">一次審査中</option>
-                                    <option value="二次審査中">二次審査中</option>
-                                    <option value="終了済">終了済</option>
+                                <select
+                                    className="next-status"
+                                    value={String(nextStatus)}
+                                    onChange={(e) => setNextStatus(Number(e.target.value))}
+                                >
+                                    <option value="0">開催前</option>
+                                    <option value="1">一次審査中</option>
+                                    <option value="2">二次審査中</option>
+                                    <option value="3">終了済</option>
                                 </select>
                             </div>
                         </div>
