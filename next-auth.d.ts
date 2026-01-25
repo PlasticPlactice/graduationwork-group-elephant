@@ -1,4 +1,7 @@
 import { DefaultSession } from "next-auth";
+import type { AuthOptions } from "next-auth";
+
+export type NextAuthOptions = AuthOptions;
 
 declare module "next-auth" {
   /**
