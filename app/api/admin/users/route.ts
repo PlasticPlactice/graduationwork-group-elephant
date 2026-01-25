@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { USER_STATUS } from "@/lib/constants/userStatus";
@@ -8,15 +8,18 @@ import { Prisma } from "@prisma/client";
 const PAGE_SIZE = 7;
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string; role?: string };
+  } | null;
+  const user = session?.user;
 
   // 認証チェック
-  if (!session || !session.user || !session.user.id) {
+  if (!user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   // 管理者権限チェック
-  if (session.user.role !== "admin") {
+  if (user.role !== "admin") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 

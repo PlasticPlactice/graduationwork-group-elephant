@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { Prisma } from "@prisma/client";
@@ -26,12 +26,15 @@ const normalizeId = (
  * 管理者用: 特定のお知らせの詳細を取得する
  */
 export async function GET(req: NextRequest, context: RouteContext) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string; role?: string };
+  } | null;
+  const user = session?.user;
   const params = await context.params;
   const rawId = normalizeId(params?.id, req.nextUrl.pathname);
 
   // 認証チェック
-  if (!session?.user?.id || session.user.role !== "admin") {
+  if (!user?.id || user.role !== "admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
@@ -80,12 +83,15 @@ export async function GET(req: NextRequest, context: RouteContext) {
  * 管理者用: 特定のお知らせを更新する
  */
 export async function PUT(req: NextRequest, context: RouteContext) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string; role?: string };
+  } | null;
+  const user = session?.user;
   const params = await context.params;
   const rawId = normalizeId(params?.id, req.nextUrl.pathname);
 
   // 認証チェック
-  if (!session?.user?.id || session.user.role !== "admin") {
+  if (!user?.id || user.role !== "admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
@@ -105,7 +111,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       detail,
       public_flag,
       public_date,
-      public_end_date,
       notification_type,
       draft_flag,
       fileIds, // 追加: 添付ファイルのID配列
@@ -162,7 +167,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 
     // Date オブジェクトへの変換
     let publicDateObj: Date;
-    let publicEndDateObj: Date | null = null;
     try {
       publicDateObj = new Date(public_date);
       if (isNaN(publicDateObj.getTime())) {
@@ -174,19 +178,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
           { status: 400 },
         );
       }
-
-      if (public_end_date && public_end_date.trim() !== "") {
-        publicEndDateObj = new Date(public_end_date);
-        if (isNaN(publicEndDateObj.getTime())) {
-          return NextResponse.json(
-            {
-              message: "Invalid public_end_date format",
-              receivedPublicEndDate: public_end_date,
-            },
-            { status: 400 },
-          );
-        }
-      }
     } catch {
       return NextResponse.json(
         { message: "Failed to parse date fields" },
@@ -196,7 +187,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 
     // 既存のNotificationFileを削除し、新しいもので再作成
     const transaction = await prisma.$transaction(
-      async (tx) => {
+      async (tx: Prisma.TransactionClient) => {
         // 既存の関連ファイルを全て削除
         console.log(
           "[notifications/:id PUT] deleting old files for:",
@@ -216,11 +207,6 @@ export async function PUT(req: NextRequest, context: RouteContext) {
           draft_flag: draft_flag ?? true,
           updated_at: new Date(),
         };
-
-        // public_end_date は optional なので、null でも OK
-        if (publicEndDateObj !== null) {
-          updateData.public_end_date = publicEndDateObj;
-        }
 
         const updatedNotification = await tx.notification.update({
           where: { id: notificationId },
@@ -267,12 +253,15 @@ export async function PUT(req: NextRequest, context: RouteContext) {
  * 管理者用: 特定のお知らせを削除する (ソフトデリート)
  */
 export async function DELETE(req: NextRequest, context: RouteContext) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string; role?: string };
+  } | null;
+  const user = session?.user;
   const params = await context.params;
   const rawId = normalizeId(params?.id, req.nextUrl.pathname);
 
   // 認証チェック
-  if (!session?.user?.id || session.user.role !== "admin") {
+  if (!user?.id || user.role !== "admin") {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 

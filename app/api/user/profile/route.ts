@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string };
+  } | null;
+  const sessionUser = session?.user;
 
-  if (!session || !session.user || !session.user.id) {
+  if (!sessionUser?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(session.user.id) },
+      where: { id: parseInt(sessionUser.id) },
     });
 
     if (!user) {
@@ -33,15 +36,18 @@ export async function GET() {
     console.error(error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string };
+  } | null;
+  const sessionUser = session?.user;
 
-  if (!session || !session.user || !session.user.id) {
+  if (!sessionUser?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
@@ -54,7 +60,7 @@ export async function PUT(req: NextRequest) {
     if (!nickName || !address) {
       return NextResponse.json(
         { message: "ニックネームと居住地は必須です" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -63,7 +69,7 @@ export async function PUT(req: NextRequest) {
     if (isNaN(parsedAge) || parsedAge < 10 || parsedAge > 99) {
       return NextResponse.json(
         { message: "年齢の値が不正です" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -72,7 +78,7 @@ export async function PUT(req: NextRequest) {
     if (![1, 2, 3].includes(parsedGender)) {
       return NextResponse.json(
         { message: "性別の値が不正です" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -80,12 +86,12 @@ export async function PUT(req: NextRequest) {
     if (address === "岩手県" && !addressDetail) {
       return NextResponse.json(
         { message: "岩手県を選択した場合は、市区町村も選択してください" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: parseInt(session.user.id) },
+      where: { id: parseInt(sessionUser.id) },
       data: {
         nickname: nickName,
         address: address,
@@ -105,7 +111,7 @@ export async function PUT(req: NextRequest) {
     console.error(error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
