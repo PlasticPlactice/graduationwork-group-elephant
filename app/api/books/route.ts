@@ -37,8 +37,7 @@ export async function GET(req: NextRequest) {
         { status: 404 },
       );
     }
-  } catch (error) {
-    console.error("Book search API error:", error);
+  } catch {
     return NextResponse.json({ error: "サーバーエラー" }, { status: 500 });
   }
 }
