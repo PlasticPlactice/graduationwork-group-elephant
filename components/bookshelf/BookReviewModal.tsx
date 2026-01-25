@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type Ref } from "react";
 import type { Book } from "@/components/bookshelf/bookData";
 
 type BookReviewModalProps = {
@@ -13,6 +13,8 @@ type BookReviewModalProps = {
   isVoted?: boolean;
   onToggleFavorite?: () => void;
   onToggleVote?: () => void;
+  actionButtonRef?: Ref<HTMLButtonElement>;
+  voteButtonRef?: Ref<HTMLButtonElement>;
 };
 
 export function BookReviewModal({
@@ -25,6 +27,8 @@ export function BookReviewModal({
   isVoted = false,
   onToggleFavorite,
   onToggleVote,
+  actionButtonRef,
+  voteButtonRef,
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -33,15 +37,12 @@ export function BookReviewModal({
   useEffect(() => {
     if (!open) return;
 
-    // save previously focused element to restore later
     previousActiveElementRef.current =
       document.activeElement as HTMLElement | null;
 
-    // lock body scroll
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    // focus the close button (or modal container) when opened
     const focusTarget = closeButtonRef.current ?? modalRef.current;
     focusTarget?.focus();
 
@@ -53,7 +54,6 @@ export function BookReviewModal({
       }
 
       if (e.key === "Tab") {
-        // focus trap: keep focus inside modal
         const container = modalRef.current;
         if (!container) return;
 
@@ -72,7 +72,6 @@ export function BookReviewModal({
         const lastIndex = nodes.length - 1;
 
         if (!e.shiftKey) {
-          // Tab
           const nextIndex =
             currentIndex === -1 || currentIndex === lastIndex
               ? 0
@@ -80,7 +79,6 @@ export function BookReviewModal({
           nodes[nextIndex].focus();
           e.preventDefault();
         } else {
-          // Shift + Tab
           const prevIndex = currentIndex <= 0 ? lastIndex : currentIndex - 1;
           nodes[prevIndex].focus();
           e.preventDefault();
@@ -91,7 +89,6 @@ export function BookReviewModal({
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      // restore body scroll and focus
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
       previousActiveElementRef.current?.focus();
@@ -104,7 +101,7 @@ export function BookReviewModal({
       : "!bg-white !text-red-500 !border-[rgba(239,68,68,0.3)] !shadow-none"
   }`;
 
-  const favoriteButtonClass = `flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
+  const favoriteButtonClass = `flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
     isFavorited ? "!text-yellow-400" : "!text-gray-400"
   }`;
 
@@ -130,23 +127,22 @@ export function BookReviewModal({
     >
       <div
         ref={modalRef}
-        className="relative flex w-full max-w-md flex-col rounded-3xl bg-transparent px-6 py-8 sm:max-w-lg"
+        className="relative flex h-[90vh] w-full max-w-md flex-col rounded-3xl bg-white px-4 py-8 shadow-2xl sm:max-w-lg sm:px-6"
         onClick={(event) => event.stopPropagation()}
         tabIndex={-1}
       >
-        <div className="relative z-10">
-          <div className="h-[600px] overflow-y-auto bg-white px-6 py-6 text-base leading-relaxed text-slate-800 sm:h-[680px]">
+        <div className="relative z-10 flex h-full flex-col">
+          <div className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
             {book.review ?? "書評がまだ登録されていません。"}
           </div>
-        </div>
 
-        <div className="relative z-10 mt-6 flex flex-col gap-4">
-          <div className="flex flex-col gap-3">
+          <div className="mt-6 flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={handleVoteClick}
                 aria-pressed={isVoted}
+                ref={voteButtonRef}
                 className={voteButtonClass}
               >
                 <svg
@@ -160,7 +156,7 @@ export function BookReviewModal({
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M9 14l2 2 4-4m6 2a9 9 0 11-18 0 9 0 0118 0z"
+                    d="M9 14l2 2 4-4m6 2a9 9 0 1 1 -18 0 9 9 0 0 1 18 0z"
                   />
                 </svg>
                 <span>{isVoted ? "投票済み" : "投票する"}</span>
@@ -172,13 +168,15 @@ export function BookReviewModal({
                 className={favoriteButtonClass}
                 aria-pressed={isFavorited}
                 aria-label={
-                  isFavorited ? "ブックマーク済み" : "ブックマークに追加"
+                  isFavorited
+                    ? "ブックマーク済み"
+                    : "ブックマークに追加"
                 }
                 style={{ borderColor: "#f6e05e" }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
+                  className="h-7 w-7 sm:h-8 sm:w-8"
                   fill={isFavorited ? "currentColor" : "none"}
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -193,25 +191,14 @@ export function BookReviewModal({
               </button>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={onComplete}
-                className="flex-[0.7] rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
-              >
-                {actionLabel}
-              </button>
-
-              <button
-                type="button"
-                ref={closeButtonRef}
-                onClick={onClose}
-                className="flex-[0.3] rounded-full border !border-gray-300 !bg-gray-100 px-4 py-3 text-sm font-semibold !text-gray-700 transition hover:!bg-gray-200 focus:outline-none focus-visible:ring-4 !focus-visible:ring-gray-200"
-                style={{ boxShadow: "none" }}
-              >
-                閉じる
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onComplete}
+              ref={actionButtonRef}
+              className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
+            >
+              {actionLabel}
+            </button>
           </div>
         </div>
       </div>

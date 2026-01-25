@@ -1,18 +1,21 @@
 import React from "react";
 import { ListPageLayout } from "@/components/templates/ListPageLayout";
+import { getNotificationData } from "@/lib/api/notifications";
+import { NotificationType } from "@/lib/types/notification";
 
-const newsItems = Array.from({ length: 4 }, (_, i) => ({
-  id: i + 1,
-  date: "2025-10-01",
-  title: "第１回文庫Xが開催されました！",
-  image: "/top/image.png",
-}));
+export default async function NewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const currentPage = params.page ? parseInt(params.page, 10) : 1;
 
-// TODO: 実際のデータとページネーションロジックを実装する
-const totalPages = 5;
-const currentPage = 1;
+  const apiData = await getNotificationData(NotificationType.NEWS, currentPage);
 
-export default function NewsPage() {
+  const newsItems = apiData?.data || [];
+  const totalPages = apiData?.totalPages || 1;
+
   return (
     <ListPageLayout
       title="お知らせ一覧"
