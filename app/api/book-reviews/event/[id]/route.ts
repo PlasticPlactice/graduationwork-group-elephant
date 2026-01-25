@@ -9,6 +9,7 @@ type Params = {
   };
 };
 
+// 管理者向け - 指定したイベントIDの書評をすべて取得するAPI
 export async function GET(
   req: Request,
   context: { params: Promise<{ id: string }> }
