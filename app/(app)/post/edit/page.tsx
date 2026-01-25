@@ -1,9 +1,10 @@
 "use client";
 
 import Styles from "@/styles/app/poster.module.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useSession } from "next-auth/react";
 // tiptapのimport
-import { EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, parseIndentedBlocks, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BubbleMenu } from "@tiptap/extension-bubble-menu";
 import Color from "@tiptap/extension-color";
@@ -11,14 +12,18 @@ import { TextStyle } from "@tiptap/extension-text-style";
 import CharacterCount from "@tiptap/extension-character-count";
 import { preparePostConfirm } from "./actions";
 import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+
+import { BookReviewDeleteConfirmModal } from "@/components/modals/BookReviewDeleteConfirmModal";
 
 export default function PostPage() {
+    const router = useRouter();
+    
+    const {data: session, status} = useSession();
+    const userId = session?.user?.id;
+
     // HTML送信用
     const [html, setHtml] = useState('');
-    // 本のデザイン選択の状態管理用
-    const [bookColor, setBookColor] = useState('#FFFFFF');
-    const [patternColor, setPatternColor] = useState('#FFFFFF');
-    const [pattern, setPattern] = useState('dot');
     // 文字数管理用
     const maxLength = 500;
     const [remaining, setRemaining] = useState(maxLength);
@@ -29,7 +34,47 @@ export default function PostPage() {
     const [colorActive, setColorActive] = useState<string>('#000000');
 
     const [state, formAction] = useActionState(preparePostConfirm, null);
+    const [bookReviewData, setBookReviewData] = useState<any>(null);
 
+    const [form, setForm] = useState<{
+        bookReview_id: number | null;
+        user_id: number | null;
+        review: string;
+        color: string;
+        pattern: string;
+        pattern_color: string;
+        isbn: string;
+        book_title: string;
+        evaluations_status: number;
+        nickname: string;
+        address: string;
+        age: number;
+        gender: number;
+        self_introduction: string;
+        }>({
+        bookReview_id: null,
+        user_id: null,
+        review: "",
+        color: "#FFFFFF",
+        pattern: "dot",
+        pattern_color: "#FFFFFF",
+        isbn: "",
+        book_title: "",
+        evaluations_status: 1,
+        nickname: "",
+        address: "",
+        age: 1,
+        gender: 1,
+        self_introduction: "",
+        });
+    
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    // 本のデザイン選択の状態管理用
+    const [bookColor, setBookColor] = useState('#FFFFFF');
+    const [patternColor, setPatternColor] = useState('#FFFFFF');
+    const [pattern, setPattern] = useState("dot");
+    
     // 色選択用の配列
     const colors = [
         { name: 'ホワイト', value: '#FFFFFF' },
@@ -47,11 +92,43 @@ export default function PostPage() {
     ];
 
     const patterns = [
-        { name: 'ドット', value: 'dot', bg: '/app/bubble-pattern.png' },
+        { name: 'dot', value: 'dot', bg: '/app/bubble-pattern.png' },
         { name: 'ストライプ', value: 'stripe', bg: '/app/stripe-pattern.png' },
         { name: 'チェック', value: 'check', bg: '/app/check-pattern.png' },
         { name: '模様なし', value: 'none', bg: '/app/stop-pattern.png' }
     ];
+
+    // 指定したIDの書評データを取得
+    const fetchBookReviewDataById = useCallback(async (bookReviewId: number) => {
+        try {
+          const res = await fetch(`/api/book-reviews/detail/${bookReviewId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if(res.ok) {
+            const data = await res.json();
+            setBookReviewData(data);
+          }
+        } catch (error) {
+          console.error("Failed to Fetch book review detail data")
+        }
+      }, []);
+
+    // データ取得の実行
+    useEffect(() => {
+        const draft = sessionStorage.getItem("bookReviewIdDraft");
+
+        if(!draft) return;
+
+        const parsed = JSON.parse(draft);
+
+        const bookReviewId = 
+            typeof parsed === "number" ? parsed : parsed.bookReviewId;
+
+        fetchBookReviewDataById(bookReviewId);
+    }, [fetchBookReviewDataById]);
 
     // tiptapに関する関数
     const bubbleRef = useRef<HTMLDivElement>(null);
@@ -75,6 +152,22 @@ export default function PostPage() {
         }),
         ],
         content: "",
+        onUpdate({ editor }) {
+            setForm({
+                ...form,
+                bookReview_id: bookReviewData?.id,
+                color: bookColor,
+                pattern: pattern,
+                pattern_color: patternColor,
+                review: editor.getHTML(),
+                isbn: "",
+                book_title: "",
+                nickname: "",
+                address: "",
+                age: 1,
+                self_introduction: "",
+            });
+        }
     });
 
     // boldボタンの状態管理
@@ -103,11 +196,26 @@ export default function PostPage() {
         setColorActive(color);
     };
 
+    // form送信時にHTMLをセット
     const handleSubmit = (e: React.FormEvent) => {
         if(!editor) return;
         setHtml(editor.getHTML());
     };
 
+    // 書評データが取得できたら本のデザイン初期値をセット
+    const initializedRef = useRef(false);
+    useEffect(() => {
+        if (!bookReviewData) return;
+        if (initializedRef.current) return;
+
+        setBookColor(bookReviewData.color || '#FFFFFF');
+        setPatternColor(bookReviewData.pattern_color || '#FFFFFF');
+        setPattern(bookReviewData.pattern || 'dot');
+        
+        initializedRef.current = true;
+    },  [bookReviewData]);
+
+    // エディタ内容が更新されたらHTMLをセット
     useEffect(() => {
         if(!editor) return;
         const updateHtml = () => {
@@ -127,6 +235,7 @@ export default function PostPage() {
         }
     }, [editor]);
 
+    // 文字数カウントの更新
     useEffect(() => {
         if(!editor) return;
         const updateCount = () => {
@@ -143,18 +252,44 @@ export default function PostPage() {
         };
     }, [editor]);
 
+    // 書評データが取得できたらエディタに内容をセット
+    useEffect(() => {
+        if(!editor || !bookReviewData) return;
+
+        editor.commands.setContent(bookReviewData.review ?? "");
+    },[editor, bookReviewData]);
+
+    const handleConfirm = () => {
+        const draft = sessionStorage.setItem(
+            "bookReviewDraft",
+            JSON.stringify({
+                mode: "edit",
+                id: bookReviewData?.id,
+                ...form
+            })
+        )
+        router.push('/post/post-confirm');
+    }
+
     return (
+        <>
+
+        <BookReviewDeleteConfirmModal 
+            open={showDeleteModal} 
+            onClose={() => setShowDeleteModal(false)} 
+            bookReviewId={bookReviewData?.id}
+        />
         <div className={`${Styles.posterContainer}`}>
             <p className={`font-bold text-center my-3 ${Styles.text24px}`}>書評を修正</p>
             <a href="" className={`block font-bold ${Styles.subColor}`}><span>&lt;</span> マイページに戻る</a>
 
             <div className="py-2 flex items-center justify-between border-t">
                 <p className={`${Styles.subColor}`}>本のタイトル</p>
-                <p className={`w-2/3`}>色彩を持たない多崎をつくると、彼の巡礼の年</p>
+                <p className={`w-2/3`}>{bookReviewData?.book_title}</p>
             </div>
             <div className="py-2 flex items-center justify-between border-t border-b">
                 <p className={`${Styles.subColor}`}>著者</p>
-                <p className={`w-2/3`}>村上春樹</p>
+                <p className={`w-2/3`}>{bookReviewData?.author}</p>
             </div>
 
             <div className={`mt-6`}>
@@ -279,10 +414,12 @@ export default function PostPage() {
                             </div>
                         </div>
                     </div>
-                    <button type="submit" className="w-full mt-7 font-bold">確認画面へ</button>
-                    <p className={`mt-2 mb-3 ${Styles.mainColor} ${Styles.text12px}`}>下書きはマイページから確認することができます。</p>
+                    <button type="submit" onClick={handleConfirm} className="w-full mt-7 font-bold">確認画面へ</button>
+                    <p className={`mt-2 mb-2 ${Styles.mainColor} ${Styles.text12px}`}>下書きはマイページから確認することができます。</p>
+                    <button type="button" onClick={() => setShowDeleteModal(true)} className={`w-full ${Styles.barcodeScan__backButton}`}>削除する</button>
                 </form>
             </div>
         </div>
+        </>
     );
 }

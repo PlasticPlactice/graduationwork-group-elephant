@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
@@ -11,10 +12,10 @@ import { MassageModal } from "@/components/modals/MassageModal";
 import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
 import Styles from "@/styles/app/poster.module.css";
-
-type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
+import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 
 interface ProfileData {
+  userId: number;
   nickName: string;
   address: string;
   addressDetail: string;
@@ -23,7 +24,21 @@ interface ProfileData {
   introduction: string;
 }
 
+type ReviewFilterTab = "all" | 1 | 2 | 3 | 4;
+type ReviewStatus = 1 | 2 | 3 | 4;
+
+interface BookReviewData {
+  id: number;
+  book_title: string;
+  evaluations_status: ReviewStatus;
+  review: string;
+}
+
+type BookReviewDataList = BookReviewData[];
+
 export default function MyPage() {
+  const router = useRouter();
+
   // 初期表示時にモーダルを表示
   const [showModal, setShowModal] = useState(true);
   // プロフィール編集、退会確認、DM（運営からのお知らせ）モーダルの表示
@@ -33,6 +48,8 @@ export default function MyPage() {
 
   // ユーザーデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
+  // ユーザの書評データ
+  const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -46,8 +63,27 @@ export default function MyPage() {
     }
   }, []);
 
+  const fetchBookReviewData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/book-reviews/mypage", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if(res.ok) {
+        const data = await res.json();
+        setBookReviewData(data);
+      }
+    } catch (error) {
+      console.error("Failed to Fetch book review data")
+    }
+  }, []);
+
+  // 初回レンダリング時にデータを取得
   useEffect(() => {
     fetchUserData();
+    fetchBookReviewData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -101,17 +137,65 @@ export default function MyPage() {
     },
   ];
 
-  const REVIEW_FILTER_TABS = [
+  const REVIEW_FILTER_TABS: {
+    key: ReviewFilterTab;
+    label: string;
+  }[] = [
     { key: "all" as const, label: "全て" },
-    { key: "draft" as const, label: "下書き" },
-    { key: "reviewing" as const, label: "審査中" },
-    { key: "finished" as const, label: "終了済み" },
+    { key: 1, label: "下書き" },
+    { key: 2, label: "審査前" },
+    { key: 3, label: "審査中" },
+    { key: 4, label: "終了済み" },
   ];
 
+  const REVIEW_STATUS_MAP = {
+    1: {
+      label: "下書き",
+      badgeType: "gray",
+      canEdit: true
+    },
+    2: {
+      label: "１次審査前",
+      badgeType: "red",
+      canEdit: true
+    },
+    3: {
+      label: "審査中",
+      badgeType: "blue",
+      canEdit: false
+    },
+    4: {
+      label: "終了",
+      badgeType: "gray",
+      canEdit: false
+    },
+  } as const;
+
+  // 表示用にデータを整形
+  const uiReviews = bookReviewData.map((review) => {
+    const status = REVIEW_STATUS_MAP[review.evaluations_status];
+
+    return {
+      bookReviewId: review.id,
+      title: review.book_title,
+      status: status.label,
+      evaluations_status: review.evaluations_status,
+      badgeType: status.badgeType,
+      excerpt: review.review,
+      buttonText: status.canEdit ? "投稿済み・編集する" : "投稿済み・編集不可",
+      href: status.canEdit ? "/poster/edit" : undefined,
+    }
+  })
+
   const [activeFilterTab, setActiveFilterTab] =
-    useState<ReviewFilterTab>("all");
+  useState<ReviewFilterTab>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const filteredReviews = uiReviews.filter((review) => {
+    if(activeFilterTab === "all") return true;
+    return review.evaluations_status === activeFilterTab;
+  })
 
   const handleDeleteAccount = async () => {
     if (isDeleting) return;
@@ -146,14 +230,16 @@ export default function MyPage() {
     }
   };
 
-  const filteredReviews = sampleReviews.filter((review) => {
-    if (activeFilterTab === "all") return true;
-    if (activeFilterTab === "draft") return review.status === "下書き";
-    if (activeFilterTab === "reviewing") return review.status.includes("審査");
-    if (activeFilterTab === "finished")
-      return review.status === "終了" || review.status === "終了済み";
-    return true;
-  });
+  const handleEditButton = (bookReview_id: number) => {
+    sessionStorage.setItem(
+      "bookReviewIdDraft",
+      JSON.stringify({
+        bookReviewId: bookReview_id
+      })
+    )
+
+    router.push("/post/edit")
+  }
 
   return (
     <>
@@ -343,11 +429,13 @@ export default function MyPage() {
                     {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
                     <div className="mt-4">
                       {review.href ? (
-                        <Link href={review.href}>
-                          <button className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold">
+                          <button 
+                            type="button"
+                            className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
+                            onClick={() => handleEditButton(review.bookReviewId)}
+                            >
                             {review.buttonText}
                           </button>
-                        </Link>
                       ) : (
                         <button
                           className="w-full text-white px-3 py-2 rounded-md font-bold cursor-not-allowed"
