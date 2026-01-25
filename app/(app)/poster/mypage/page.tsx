@@ -207,6 +207,7 @@ export default function MyPage() {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ reason: "ユーザーからの退会申請" }),
       });
 
       if (res.ok) {
@@ -217,7 +218,7 @@ export default function MyPage() {
       } else {
         const data = await res.json();
         alert(
-          data.message || "退会処理に失敗しました。もう一度お試しください。"
+          data.message || "退会処理に失敗しました。もう一度お試しください。",
         );
         setIsDeleting(false);
       }
@@ -414,8 +415,8 @@ export default function MyPage() {
                           review.badgeType === "red"
                             ? "bg-rose-50 text-rose-600 border border-rose-100"
                             : review.badgeType === "blue"
-                            ? "bg-sky-50 text-sky-600 border border-sky-100"
-                            : "bg-slate-100 text-slate-600 border border-slate-200"
+                              ? "bg-sky-50 text-sky-600 border border-sky-100"
+                              : "bg-slate-100 text-slate-600 border border-slate-200"
                         }`}
                       >
                         {review.status}
