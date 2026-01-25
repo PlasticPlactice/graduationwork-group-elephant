@@ -9,13 +9,16 @@ type RouteContext = { params: Promise<{ id: string }> };
 export async function POST(req: NextRequest, context: RouteContext) {
   const { id } = await context.params;
 
-  const session = await getServerSession(authOptions);
+  const session = (await getServerSession(authOptions)) as {
+    user?: { id?: string; role?: string };
+  } | null;
+  const user = session?.user;
 
-  if (!session || !session.user || !session.user.id) {
+  if (!user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  if (session.user.role !== "admin") {
+  if (user.role !== "admin") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
