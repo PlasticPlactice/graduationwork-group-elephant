@@ -1,4 +1,6 @@
-﻿import type { CSSProperties, Ref } from "react";
+﻿"use client";
+
+import type { CSSProperties, Ref } from "react";
 import type { Book } from "@/components/bookshelf/bookData";
 import { BOOKS } from "@/components/bookshelf/bookData";
 import { ScatterBook } from "@/components/bookshelf/ScatterBook";
@@ -57,6 +59,7 @@ const getScatterSlot = (
   total: number,
   preset: "desktop" | "mobile"
 ): ScatterSlot => {
+  const round = (v: number, digits = 4) => Number(v.toFixed(digits));
   const normalized = Math.sqrt((index + 0.5) / Math.max(total, 1));
   const radius =
     preset === "desktop"
@@ -64,14 +67,16 @@ const getScatterSlot = (
       : 6 + normalized * 44;
   const angle = index * GOLDEN_ANGLE_DEG;
   const radians = (angle * Math.PI) / 180;
-  const left =
-    preset === "desktop"
-      ? clamp(46 + Math.cos(radians) * radius, 8, 86)
-      : clampRight(44 + Math.cos(radians) * radius, 6, 84);
-  const top =
+  const left = round(
+  preset === "desktop"
+    ? clamp(46 + Math.cos(radians) * radius, 8, 86)
+    : clampRight(44 + Math.cos(radians) * radius, 6, 84)
+  );
+  const top = round(
     preset === "desktop"
       ? clamp(40 + Math.sin(radians) * (radius * 0.85), 6, 80)
-      : clamp(38 + Math.sin(radians) * (radius * 1.1), 6, 84);
+      : clamp(38 + Math.sin(radians) * (radius * 1.1), 6, 84)
+  );
   const rotation = ((angle % 30) - 15) * 1.2;
 
   return {
