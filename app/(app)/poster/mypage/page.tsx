@@ -40,7 +40,7 @@ export default function MyPage() {
   const router = useRouter();
 
   // 初期表示時にモーダルを表示
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   // プロフィール編集、退会確認、DM（運営からのお知らせ）モーダルの表示
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showDMModal, setShowDMModal] = useState(false);
@@ -50,6 +50,8 @@ export default function MyPage() {
   const [userData, setUserData] = useState<ProfileData | null>(null);
   // ユーザの書評データ
   const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
+  // 未読メッセージデータ
+  const [unreadMessage, setUnreadMessage] = useState<any>(null);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -71,19 +73,55 @@ export default function MyPage() {
           "Content-Type": "application/json",
         },
       });
-      if(res.ok) {
+      if (res.ok) {
         const data = await res.json();
         setBookReviewData(data);
       }
     } catch (error) {
-      console.error("Failed to Fetch book review data")
+      console.error("Failed to Fetch book review data");
     }
   }, []);
+
+  // 未読メッセージ取得
+  const fetchUnreadMessage = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/messages/unread");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.unreadMessage) {
+          setUnreadMessage(data.unreadMessage);
+          setShowModal(true); // 未読がある場合のみモーダルを開く
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+    }
+  }, []);
+
+  // メッセージ既読化処理
+  const handleConfirmRead = async () => {
+    if (!unreadMessage) {
+      setShowModal(false);
+      return;
+    }
+    try {
+      await fetch(`/api/user/messages/${unreadMessage.id}/read`, {
+        method: "PATCH",
+      });
+      setShowModal(false);
+      setUnreadMessage(null);
+    } catch (error) {
+      console.error("Failed to mark as read:", error);
+      // エラーでもとりあえず閉じる（UX優先）
+      setShowModal(false);
+    }
+  };
 
   // 初回レンダリング時にデータを取得
   useEffect(() => {
     fetchUserData();
     fetchBookReviewData();
+    fetchUnreadMessage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -152,22 +190,22 @@ export default function MyPage() {
     1: {
       label: "下書き",
       badgeType: "gray",
-      canEdit: true
+      canEdit: true,
     },
     2: {
       label: "１次審査前",
       badgeType: "red",
-      canEdit: true
+      canEdit: true,
     },
     3: {
       label: "審査中",
       badgeType: "blue",
-      canEdit: false
+      canEdit: false,
     },
     4: {
       label: "終了",
       badgeType: "gray",
-      canEdit: false
+      canEdit: false,
     },
   } as const;
 
@@ -184,18 +222,18 @@ export default function MyPage() {
       excerpt: review.review,
       buttonText: status.canEdit ? "投稿済み・編集する" : "投稿済み・編集不可",
       href: status.canEdit ? "/poster/edit" : undefined,
-    }
-  })
+    };
+  });
 
   const [activeFilterTab, setActiveFilterTab] =
-  useState<ReviewFilterTab>("all");
+    useState<ReviewFilterTab>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const filteredReviews = uiReviews.filter((review) => {
-    if(activeFilterTab === "all") return true;
+    if (activeFilterTab === "all") return true;
     return review.evaluations_status === activeFilterTab;
-  })
+  });
 
   const handleDeleteAccount = async () => {
     if (isDeleting) return;
@@ -235,17 +273,22 @@ export default function MyPage() {
     sessionStorage.setItem(
       "bookReviewIdDraft",
       JSON.stringify({
-        bookReviewId: bookReview_id
-      })
-    )
+        bookReviewId: bookReview_id,
+      }),
+    );
 
-    router.push("/post/edit")
-  }
+    router.push("/post/edit");
+  };
 
   return (
     <>
       {/* 1次審査通過モーダル */}
-      <ReviewPassedModal open={showModal} onClose={() => setShowModal(false)} />
+      <ReviewPassedModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleConfirmRead}
+        message={unreadMessage?.message?.message}
+      />
       {/* 退会確認モーダル */}
       <AccountDeleteModal
         open={showDeleteModal}
@@ -430,13 +473,13 @@ export default function MyPage() {
                     {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
                     <div className="mt-4">
                       {review.href ? (
-                          <button 
-                            type="button"
-                            className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
-                            onClick={() => handleEditButton(review.bookReviewId)}
-                            >
-                            {review.buttonText}
-                          </button>
+                        <button
+                          type="button"
+                          className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
+                          onClick={() => handleEditButton(review.bookReviewId)}
+                        >
+                          {review.buttonText}
+                        </button>
                       ) : (
                         <button
                           className="w-full text-white px-3 py-2 rounded-md font-bold cursor-not-allowed"

@@ -9,160 +9,23 @@ import CsvOutputModal from "@/components/admin/CsvOutputModal";
 import AllMessageSendModal from "@/components/admin/AllMessageSendModal";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { REVIEW_STATUS_LABELS } from "@/lib/constants/reviewStatus";
 
-// 静的なデータはコンポーネントの外に出す（再レンダリングごとの生成を防ぐ）
-const TABLE_DATA = [
-  {
-    id: 10,
-    title: "転生したらスライムだった件",
-    nickname: "象花たろう",
-    status: "一次通過",
-    votes: 30,
-  },
-  {
-    id: 11,
-    title: "本好きの下剋上",
-    nickname: "山田太郎",
-    status: "一次通過",
-    votes: 45,
-  },
-  {
-    id: 12,
-    title: "無職転生",
-    nickname: "佐藤花子",
-    status: "一次通過",
-    votes: 15,
-  },
-  {
-    id: 13,
-    title: "オーバーロード",
-    nickname: "田中一郎",
-    status: "一次通過",
-    votes: 28,
-  },
-  {
-    id: 14,
-    title: "この素晴らしい世界に祝福を!",
-    nickname: "鈴木次郎",
-    status: "一次通過",
-    votes: 52,
-  },
-  {
-    id: 15,
-    title: "Re:ゼロから始める異世界生活",
-    nickname: "高橋三郎",
-    status: "一次通過",
-    votes: 38,
-  },
-  {
-    id: 16,
-    title: "幼女戦記",
-    nickname: "伊藤四郎",
-    status: "一次通過",
-    votes: 22,
-  },
-  {
-    id: 17,
-    title: "ログ・ホライズン",
-    nickname: "渡辺五郎",
-    status: "一次通過",
-    votes: 19,
-  },
-  {
-    id: 18,
-    title: "ソードアート・オンライン",
-    nickname: "中村六郎",
-    status: "一次通過",
-    votes: 67,
-  },
-  {
-    id: 19,
-    title: "魔法科高校の劣等生",
-    nickname: "小林七郎",
-    status: "一次通過",
-    votes: 41,
-  },
-  {
-    id: 20,
-    title: "ダンジョンに出会いを求めるのは間違っているだろうか",
-    nickname: "加藤八郎",
-    status: "一次通過",
-    votes: 33,
-  },
-  {
-    id: 21,
-    title: "ゲート 自衛隊 彼の地にて、斯く戦えり",
-    nickname: "吉田九郎",
-    status: "一次通過",
-    votes: 25,
-  },
-  {
-    id: 22,
-    title: "盾の勇者の成り上がり",
-    nickname: "山本十郎",
-    status: "一次通過",
-    votes: 44,
-  },
-  {
-    id: 23,
-    title: "転生賢者の異世界ライフ",
-    nickname: "松本花子",
-    status: "一次通過",
-    votes: 31,
-  },
-  {
-    id: 24,
-    title: "薬屋のひとりごと",
-    nickname: "井上美咲",
-    status: "一次通過",
-    votes: 58,
-  },
-  {
-    id: 25,
-    title: "異世界食堂",
-    nickname: "木村健太",
-    status: "一次通過",
-    votes: 27,
-  },
-  {
-    id: 26,
-    title: "蜘蛛ですが、なにか?",
-    nickname: "林美穂",
-    status: "一次通過",
-    votes: 36,
-  },
-  {
-    id: 27,
-    title: "勇者パーティーを追放されたビーストテイマー",
-    nickname: "清水大輔",
-    status: "一次通過",
-    votes: 20,
-  },
-  {
-    id: 28,
-    title: "陰の実力者になりたくて!",
-    nickname: "森田裕子",
-    status: "一次通過",
-    votes: 49,
-  },
-  {
-    id: 29,
-    title: "最強陰陽師の異世界転生記",
-    nickname: "石川雄一",
-    status: "一次通過",
-    votes: 34,
-  },
-];
-
-// ステータス文字列を数値に変換するマップ
-const STATUS_STRING_TO_NUMBER: Record<string, number> = {
-  "評価前": 0,
-  "一次通過": 1,
-  "二次通過": 2,
-  "三次通過": 3,
-};
+// APIから取得するデータの型定義
+interface ReviewData {
+  id: number;
+  book_title: string;
+  nickname: string;
+  evaluations_status: number;
+  evaluations_count: number;
+  review: string;
+  author: string | null;
+  publishers: string | null;
+  isbn: string;
+}
 
 export default function Page() {
+  const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [openRows, setOpenRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [displayCount, setDisplayCount] = useState<number | "all">(10);
@@ -174,6 +37,24 @@ export default function Page() {
     useState(false);
 
   const router = useRouter();
+
+  // データ取得
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch("/api/admin/reviews");
+        if (res.ok) {
+          const data = await res.json();
+          setReviews(data);
+        } else {
+          console.error("Failed to fetch reviews");
+        }
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   const toggleRow = (id: number) => {
     setOpenRows((prev) =>
@@ -235,23 +116,23 @@ export default function Page() {
 
   // 表示するデータをスライス
   const displayedData =
-    displayCount === "all" ? TABLE_DATA : TABLE_DATA.slice(0, displayCount);
+    displayCount === "all" ? reviews : reviews.slice(0, displayCount);
 
   // 選択されたデータを取得
-  const selectedData = TABLE_DATA.filter((row) => selectedRowIds.includes(row.id));
+  const selectedData = reviews.filter((row) => selectedRowIds.includes(row.id));
 
   // StatusEditModal用にデータを整形（ステータスを数値に変換）
   const statusTargetReviews = selectedData.map((row) => ({
     id: row.id,
-    title: row.title,
+    title: row.book_title,
     nickname: row.nickname,
-    status: STATUS_STRING_TO_NUMBER[row.status] ?? 0,
+    status: row.evaluations_status,
   }));
 
   // AllMessageSendModal用にデータを整形
   const messageTargetReviews = selectedData.map((row) => ({
     id: row.id,
-    title: row.title,
+    title: row.book_title,
     nickname: row.nickname,
   }));
 
@@ -359,11 +240,14 @@ export default function Page() {
             <tr>
               <th className="py-2">
                 <div className="ml-3 bg-white flex items-center justify-center">
-                  <input 
-                    type="checkbox" 
-                    className="head-check" 
+                  <input
+                    type="checkbox"
+                    className="head-check"
                     onChange={handleSelectAll}
-                    checked={displayedData.length > 0 && selectedRowIds.length === displayedData.length}
+                    checked={
+                      displayedData.length > 0 &&
+                      selectedRowIds.length === displayedData.length
+                    }
                   />
                 </div>
               </th>
@@ -401,31 +285,31 @@ export default function Page() {
           <tbody className="border">
             {displayedData.map((row) => (
               <React.Fragment key={row.id}>
-                <tr  className="table-row">
+                <tr className="table-row">
                   <td className="pl-3">
-                    <input 
-                      type="checkbox" 
-                      className="head-check" 
+                    <input
+                      type="checkbox"
+                      className="head-check"
                       checked={selectedRowIds.includes(row.id)}
                       onChange={() => handleSelectRow(row.id)}
                     />
                   </td>
                   <td className="text-center">
                     <span className="status-text font-bold py-1 px-6">
-                      {row.status}
+                      {REVIEW_STATUS_LABELS[row.evaluations_status] ?? "-"}
                     </span>
                   </td>
                   <td className="text-left">
                     <span>{row.id}</span>
                   </td>
                   <td>
-                    <span className="title-text">{row.title}</span>
+                    <span className="title-text">{row.book_title}</span>
                   </td>
                   <td>
                     <span>{row.nickname}</span>
                   </td>
                   <td>
-                    <span>{row.votes}</span>
+                    <span>{row.evaluations_count}</span>
                   </td>
                   <td>
                     <button
@@ -447,18 +331,7 @@ export default function Page() {
                         <section className="w-4/7">
                           <h3 className="font-bold mb-2 ml-4">書評本文</h3>
                           <div className="book-review-section w-auto h-84 ml-4 p-2">
-                            <p>
-                              １ヶ月前、私は会社の先輩の冴子さえこさんと付き合うことになった。
-                              前からずっと気になっていた先輩に断れるのを覚悟で呑みに誘った。
-                              「美味しいお酒が呑めるなら一緒に呑んでもいいけど」
-                              普段あまり笑顔を見せない冴子さんが少し楽しそうに笑みを浮かべているのを見て、私は内心ガッツポーズをした。
-                              大分酔いが回って来た頃、私は思いきって冴子さんに
-                              「彼氏さんどんな人なんですか？」と探りを入れた。
-                              社内でも美人で仕事もできる冴子さんがモテないわけがないのだけど、人づてにフリーらしいと聞いて本当かどうか確かめたかった。「今は一人」「へぇ～意外ですね。私が男なら冴子さんみたいな素敵な人、絶対落としに行きますよ！」「藍田あいだは男じゃないから落としには来ないってこと？」全くもって予想外の返答に私は持っていたグラスを落としそうになった。「…女が落としに行っても冴子さんは落ちてくれるんですか？」平然を装いながら、でも内心では耳元にも聞こえるくらいに心臓がドキドキしていた。「男とか女とかそんな些末なこと、どうでもいいでしょ」当たり前のことを聞くなと言わんばかりの態度に私は思いきって
-                              エクスアーマータイプ：モノケロス。リバティー・アライアンスの紋章に描かれたモノケロスを外観モチーフに取り入れた最新型のアーマータイプである。ポーンA1などの生命保護機能を重要視した汎用アーマータイプと異なり、より攻撃的な目的をもって開発された経緯を持つ。また使用者の能力・適正に依存する部分が多く、白堊理研の人体強化計画によって生み出された強化兵士を素体として装着することを前提としている。
-                              リバティー・アライアンスにとって脅威となる「ゾアントロプス・レーヴェ」「パラポーン・エクスパンダー」といった強力な個体に対抗するべく、素体となる強化兵士は全身の知覚、筋力を強制的に向上させられている。彼らは
-                              機械部品に頼らない生物としての強化を施され、ヒトという種の枠の中で生きながらに最大限の戦闘能力を獲得したが、代償としてすべての個体が人格面に何らかの障害を抱えている。実戦では一体がモノケロスを纏って対エクスパンダーに投入された記録があり、短時間ではあるが互角以上の戦闘能力を発揮したこの個体には「白麟角」と呼ばれる特別な呼称が与えられた。
-                            </p>
+                            <p className="whitespace-pre-wrap">{row.review}</p>
                           </div>
                         </section>
 
@@ -467,26 +340,22 @@ export default function Page() {
                           <div>
                             <div className="book-data">
                               <h4 className="book-head">タイトル</h4>
-                              <p className="book-content">
-                                転生したらスライムだった件
-                              </p>
+                              <p className="book-content">{row.book_title}</p>
                             </div>
 
                             <div className="book-data">
                               <h4 className="book-head">著者</h4>
-                              <p className="book-content">伏瀬</p>
+                              <p className="book-content">{row.author}</p>
                             </div>
 
                             <div className="book-data">
                               <h4 className="book-head">出版社</h4>
-                              <p className="book-content">マイクロマガジン社</p>
+                              <p className="book-content">{row.publishers}</p>
                             </div>
 
                             <div className="book-data">
                               <h4 className="book-head">ISBN</h4>
-                              <p className="book-content">
-                                978-4-89637-459-9(一巻)
-                              </p>
+                              <p className="book-content">{row.isbn}</p>
                             </div>
                           </div>
                           <div className="flex justify-end ">
@@ -570,15 +439,15 @@ export default function Page() {
         </div>
       )}
       {/* モーダル */}
-      <StatusEditModal 
-        isOpen={isStatusEditModalOpen} 
-        onClose={closeModal} 
+      <StatusEditModal
+        isOpen={isStatusEditModalOpen}
+        onClose={closeModal}
         selectedReviews={statusTargetReviews}
       />
       <CsvOutputModal
         isOpen={isCsvOutputModalOpen}
         onClose={closeModal}
-        data={displayedData} // 現在表示されているデータを渡す
+        data={displayedData}
       />
       <AllMessageSendModal
         isOpen={isAllMessageSendModalOpen}

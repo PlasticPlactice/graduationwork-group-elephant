@@ -5,7 +5,7 @@ import AdminButton from "@/components/ui/admin-button";
 // 出力するデータの型定義
 export interface CsvRecord {
   id: number;
-  title: string;
+  book_title: string;
   nickname: string;
   // 構造的部分型により、これ以外のプロパティを持っていても許容される
 }
@@ -29,7 +29,7 @@ export default function CsvOutputModal({
 
     const csvBody = data
       .map((record) => {
-        const escapedTitle = record.title.replace(/"/g, '""');
+        const escapedTitle = record.book_title.replace(/"/g, '""');
         const escapedNickname = record.nickname.replace(/"/g, '""');
         return `${record.id},"${escapedTitle}","${escapedNickname}"`;
       })
@@ -91,7 +91,7 @@ export default function CsvOutputModal({
               {data.map((record) => (
                 <tr key={record.id} className="status-record text-center">
                   <td>{record.id}</td>
-                  <td>{record.title}</td>
+                  <td>{record.book_title}</td>
                   <td>{record.nickname}</td>
                 </tr>
               ))}
