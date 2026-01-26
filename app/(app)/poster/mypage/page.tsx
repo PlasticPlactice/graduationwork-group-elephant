@@ -12,7 +12,6 @@ import { MassageModal } from "@/components/modals/MassageModal";
 import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
 import Styles from "@/styles/app/poster.module.css";
-import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 
 interface ProfileData {
   userId: number;
@@ -25,16 +24,14 @@ interface ProfileData {
 }
 
 type ReviewFilterTab = "all" | 1 | 2 | 3 | 4;
-type ReviewStatus = 1 | 2 | 3 | 4;
+type ReviewStatusCode = 1 | 2 | 3 | 4;
 
 interface BookReviewData {
   id: number;
   book_title: string;
-  evaluations_status: ReviewStatus;
+  evaluations_status: number;
   review: string;
 }
-
-type BookReviewDataList = BookReviewData[];
 
 export default function MyPage() {
   const router = useRouter();
@@ -51,7 +48,15 @@ export default function MyPage() {
   // ユーザの書評データ
   const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
   // 未読メッセージデータ
-  const [unreadMessage, setUnreadMessage] = useState<any>(null);
+  interface UnreadMessage {
+    id: number;
+    message: {
+      message: string;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  }
+  const [unreadMessage, setUnreadMessage] = useState<UnreadMessage | null>(null);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -78,7 +83,7 @@ export default function MyPage() {
         setBookReviewData(data);
       }
     } catch (error) {
-      console.error("Failed to Fetch book review data");
+      console.error("Failed to Fetch book review data", error);
     }
   }, []);
 
@@ -142,39 +147,6 @@ export default function MyPage() {
     },
   ];
 
-  const sampleReviews = [
-    {
-      title: "色彩を持たない多崎つくると、彼の巡礼の年",
-      status: "1次審査前",
-      badgeType: "red",
-      excerpt:
-        "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "投稿済み・編集する",
-      buttonDisabled: false,
-      href: "/poster/edit",
-    },
-    {
-      title: "色彩を持たない多崎つくると、彼の巡礼の年",
-      status: "1次審査中",
-      badgeType: "blue",
-      excerpt:
-        "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "投稿済み・編集不可",
-      buttonDisabled: true,
-      href: undefined,
-    },
-    {
-      title: "色彩を持たない多崎つくると、彼の巡礼の年",
-      status: "下書き",
-      badgeType: "gray",
-      excerpt:
-        "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "下書きの編集＆投稿",
-      buttonDisabled: false,
-      href: "/poster/edit",
-    },
-  ];
-
   const REVIEW_FILTER_TABS: {
     key: ReviewFilterTab;
     label: string;
@@ -209,19 +181,27 @@ export default function MyPage() {
     },
   } as const;
 
+  // DB/APIの文字列・数値をUI用コード(1..4)へ正規化
+  const normalizeStatus = (val: number): ReviewStatusCode => {
+    return val === 1 || val === 2 || val === 3 || val === 4
+      ? (val as ReviewStatusCode)
+      : 2;
+  };
+
   // 表示用にデータを整形
   const uiReviews = bookReviewData.map((review) => {
-    const status = REVIEW_STATUS_MAP[review.evaluations_status];
+    const code = normalizeStatus(review.evaluations_status);
+    const status = REVIEW_STATUS_MAP[code];
 
     return {
       bookReviewId: review.id,
       title: review.book_title,
-      status: status.label,
-      evaluations_status: review.evaluations_status,
-      badgeType: status.badgeType,
+      status: status?.label ?? "未分類",
+      evaluations_status: code,
+      badgeType: status?.badgeType ?? "gray",
       excerpt: review.review,
-      buttonText: status.canEdit ? "投稿済み・編集する" : "投稿済み・編集不可",
-      href: status.canEdit ? "/poster/edit" : undefined,
+      buttonText: status?.canEdit ? "投稿済み・編集する" : "投稿済み・編集不可",
+      href: status?.canEdit ? "/poster/edit" : undefined,
     };
   });
 
