@@ -1,7 +1,8 @@
 ﻿"use client";
 
-import { useEffect, useRef, type Ref } from "react";
+import { useEffect, useRef, type CSSProperties, type Ref } from "react";
 import type { Book } from "@/components/bookshelf/bookData";
+import styles from "@/components/bookshelf/BookReviewModal.module.css";
 
 type BookReviewModalProps = {
   book?: Book | null;
@@ -98,10 +99,10 @@ export function BookReviewModal({
   const voteButtonClass = `flex h-14 min-h-[3.5rem] flex-1 items-center justify-center gap-3 rounded-full border border-solid text-base font-bold tracking-wide transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-200 appearance-none shadow-none ${
     isVoted
       ? "!bg-red-500 !text-white !border-red-500 ![box-shadow:0_10px_24px_rgba(239,68,68,0.3)]"
-      : "!bg-white !text-red-500 !border-[rgba(239,68,68,0.3)] !shadow-none"
+      : "!bg-red-50 !text-red-600 !border-red-400 ![box-shadow:0_10px_20px_rgba(239,68,68,0.18)]"
   }`;
 
-  const favoriteButtonClass = `flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
+  const favoriteButtonClass = `flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
     isFavorited ? "!text-yellow-400" : "!text-gray-400"
   }`;
 
@@ -117,6 +118,11 @@ export function BookReviewModal({
     }
   };
 
+  const coverStyle: CSSProperties = {
+    ["--book-cover-color" as const]: book.baseColor,
+    ["--book-cover-accent" as const]: book.patternColor ?? book.baseColor,
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-8"
@@ -127,78 +133,84 @@ export function BookReviewModal({
     >
       <div
         ref={modalRef}
-        className="relative flex h-[90vh] w-full max-w-md flex-col rounded-3xl bg-white px-4 py-8 shadow-2xl sm:max-w-lg sm:px-6"
+        className="relative flex h-[90vh] w-full max-w-md flex-col sm:max-w-lg"
         onClick={(event) => event.stopPropagation()}
         tabIndex={-1}
       >
-        <div className="relative z-10 flex h-full flex-col">
-          <div className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
-            {book.review ?? "書評がまだ登録されていません。"}
-          </div>
+        <div className={styles.bookOpen} style={coverStyle}>
+          <div className={styles.bookOpenCover} aria-hidden="true" />
+          <div className={styles.bookOpenEdge} aria-hidden="true" />
+          <div className={styles.bookOpenContent}>
+            <div className="relative z-10 flex h-full flex-col px-4 py-8 sm:px-6">
+              <div className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
+                {book.review ?? "書評がまだ登録されていません。"}
+              </div>
 
-          <div className="mt-6 flex flex-col gap-4">
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={handleVoteClick}
-                aria-pressed={isVoted}
-                ref={voteButtonRef}
-                className={voteButtonClass}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 14l2 2 4-4m6 2a9 9 0 1 1 -18 0 9 9 0 0 1 18 0z"
-                  />
-                </svg>
-                <span>{isVoted ? "投票済み" : "投票する"}</span>
-              </button>
+              <div className="mt-6 flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleVoteClick}
+                    aria-pressed={isVoted}
+                    ref={voteButtonRef}
+                    className={voteButtonClass}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 14l2 2 4-4m6 2a9 9 0 1 1 -18 0 9 9 0 0 1 18 0z"
+                      />
+                    </svg>
+                    <span>{isVoted ? "投票済み" : "投票する"}</span>
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => onToggleFavorite?.()}
-                className={favoriteButtonClass}
-                aria-pressed={isFavorited}
-                aria-label={
-                  isFavorited
-                    ? "ブックマーク済み"
-                    : "ブックマークに追加"
-                }
-                style={{ borderColor: "#f6e05e" }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-7 w-7 sm:h-8 sm:w-8"
-                  fill={isFavorited ? "currentColor" : "none"}
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
+                  <button
+                    type="button"
+                    onClick={() => onToggleFavorite?.()}
+                    className={favoriteButtonClass}
+                    aria-pressed={isFavorited}
+                    aria-label={
+                      isFavorited
+                        ? "ブックマーク済み"
+                        : "ブックマークに追加"
+                    }
+                    style={{ borderColor: "#f6e05e" }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 sm:h-9 sm:w-9"
+                      fill={isFavorited ? "currentColor" : "none"}
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 5v16l7-5 7 5V5a2 2 0 00-2-2H7a2 2 0 00-2 2z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={onComplete}
+                  ref={actionButtonRef}
+                  className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 5v16l7-5 7 5V5a2 2 0 00-2-2H7a2 2 0 00-2 2z"
-                  />
-                </svg>
-              </button>
+                  {actionLabel}
+                </button>
+              </div>
             </div>
-
-            <button
-              type="button"
-              onClick={onComplete}
-              ref={actionButtonRef}
-              className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
-            >
-              {actionLabel}
-            </button>
           </div>
         </div>
       </div>
