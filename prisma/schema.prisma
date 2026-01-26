@@ -32,6 +32,7 @@ model User {
   bookReviews              BookReview[]
   userMessages             UserMessage[]
   reactions                Reaction[]
+  bookReviewReactions      BookReviewReaction[]
 
   @@index([deleted_flag])
   @@index([user_status])
@@ -124,14 +125,16 @@ model BookReview {
 
 model BookReviewReaction {
   id                       Int      @id @default(autoincrement())
+  user_id                  Int
   reaction_id              Int
   book_review_id           Int
   created_at               DateTime  @default(now()) @db.Timestamptz(3)
 
+  user                     User @relation(fields: [user_id], references: [id])
   reaction                 Reaction @relation(fields: [reaction_id], references: [id])
   bookReview               BookReview @relation(fields: [book_review_id], references: [id])
 
-  @@unique([reaction_id, book_review_id])
+  @@unique([user_id, reaction_id, book_review_id])
   @@index([book_review_id])
 }
 
