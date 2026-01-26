@@ -118,10 +118,10 @@ export function BookReviewModal({
     }
   };
 
-  const coverStyle: CSSProperties = {
-    ["--book-cover-color" as const]: book.baseColor,
-    ["--book-cover-accent" as const]: book.patternColor ?? book.baseColor,
-  };
+  const coverStyle = {
+    "--book-cover-color": book.baseColor,
+    "--book-cover-accent": book.patternColor ?? book.baseColor,
+  } as CSSProperties;
 
   return (
     <div
