@@ -60,6 +60,13 @@ export function ShelfBook({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       className={[containerClass, interactiveClasses].filter(Boolean).join(" ")}
+      style={
+        bottomColor
+          ? {
+              boxShadow: `0 6px 12px rgba(15, 23, 42, 0.18), 0 0 0 3px ${bottomColor}`,
+            }
+          : undefined
+      }
       aria-label={label ?? book.id}
     >
       {bottomColor ? (
