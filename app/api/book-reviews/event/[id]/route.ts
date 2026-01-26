@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -11,16 +11,15 @@ type Params = {
 
 export async function GET(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as {
+      user?: { id?: string };
+    } | null;
 
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const { params } = context;
@@ -31,7 +30,7 @@ export async function GET(
     if (Number.isNaN(eventId)) {
       return NextResponse.json(
         { message: "Invalid review id" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -48,7 +47,7 @@ export async function GET(
     if (!reviews) {
       return NextResponse.json(
         { message: "Review not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -56,7 +55,7 @@ export async function GET(
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to fetch review" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
