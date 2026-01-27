@@ -2,29 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export function AfterLoginHeader() {
-  const router = useRouter();
   const pathname = usePathname();
   const isLoginPage = pathname === "/poster/login";
   const isMyPage = pathname === "/poster/mypage";
-
-  const handleLogout = async () => {
-    try {
-      const res = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-
-      if (res.ok) {
-        // ログアウト後はトップページまたはログインページへ
-        router.push("/");
-        router.refresh();
-      }
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
 
   return (
     <header className="w-full bg-white border-b border-gray-100">
@@ -46,14 +29,7 @@ export function AfterLoginHeader() {
 
         {!isLoginPage && (
           <div className="flex items-center gap-6">
-            {isMyPage ? (
-              <button
-                onClick={handleLogout}
-                className="btn text-base font-bold text-[#FF5555] hover:text-[#ff3333] transition-colors"
-              >
-                ログアウト
-              </button>
-            ) : (
+            {!isMyPage && (
               <Link
                 href="/poster/mypage"
                 className="btn text-base font-bold text-[#FF5555] hover:text-[#ff3333] transition-colors"
