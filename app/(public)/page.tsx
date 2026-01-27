@@ -45,6 +45,9 @@ export default function Home() {
               </div>
             </div>
             <h1 className="heroTitle">象と花プロジェクト</h1>
+            <a className="heroBunkoBadge" href="#bunko-x">
+              文庫<span>X</span>はこちら
+            </a>
           </div>
         </div>
         <section id="about" className="about">
