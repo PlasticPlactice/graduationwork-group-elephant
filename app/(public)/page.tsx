@@ -30,30 +30,24 @@ export default function Home() {
     <div>
       <main>
         <div className="hero">
-          {/* Desktop image */}
-          <div className="heroImage heroImage--desktop">
-            <Image
-              src="/top/top.jpg"
-              alt="Top Image Desktop"
-              fill
-              priority
-              sizes="(min-width: 768px) 100vw, 100vw"
-              style={{ objectFit: "contain" }}
-            />
-          </div>
-          {/* Mobile image */}
-          <div className="heroImage heroImage--mobile">
-            <Image
-              src="/top/top.jpg"
-              alt="Top Image Mobile"
-              fill
-              priority
-              sizes="100vw"
-              style={{ objectFit: "contain" }}
-            />
+          <div className="heroContent">
+            <div className="heroPoster" role="img" aria-label="トップ画像">
+              <div className="posterStack">
+                <Image
+                  src="/top/retop.png"
+                  alt=""
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="posterLayer posterLayer--1"
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+            </div>
+            <h1 className="heroTitle">象と花プロジェクト</h1>
           </div>
         </div>
-        <section className="about">
+        <section id="about" className="about">
           <div className="about__inner">
             <h2 className="about__title">
               <span className="about__title-line"></span>
@@ -84,7 +78,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bunko-x">
+        <section id="bunko-x" className="bunko-x">
           <div className="bunko-x__inner">
             {/* 投票可能なイベント */}
             <div className="bunko-x__events">
@@ -159,7 +153,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="news">
+        <section id="news" className="news">
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
@@ -322,6 +316,7 @@ export default function Home() {
         </section>
 
         <section
+          id="donation"
           className="news"
           style={{
             backgroundColor: "#F1F0E8",
