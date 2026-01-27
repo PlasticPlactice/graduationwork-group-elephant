@@ -1,370 +1,459 @@
-"use client"
-import Textbox from '@/components/ui/admin-textbox';
-import AdminButton from '@/components/ui/admin-button';
-import "@/styles/admin/events-details.css"
-import { Icon } from '@iconify/react';
-import { useState,useEffect } from 'react';
+"use client";
+import Textbox from "@/components/ui/admin-textbox";
+import AdminButton from "@/components/ui/admin-button";
+import "@/styles/admin/events-details.css";
+import { Icon } from "@iconify/react";
+import { useState, useEffect } from "react";
 import StatusEditModal from "@/components/admin/StatusEditModal";
-import CsvOutputModal from '@/components/admin/CsvOutputModal';
-import AllMessageSendModal from "@/components/admin/AllMessageSendModal"
-import { useRouter } from 'next/navigation';
+import CsvOutputModal from "@/components/admin/CsvOutputModal";
+import AllMessageSendModal from "@/components/admin/AllMessageSendModal";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { REVIEW_STATUS_LABELS } from "@/lib/constants/reviewStatus";
 
-export default function Page() { 
-    const [openRows, setOpenRows] = useState<number[]>([]);
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [displayCount, setDisplayCount] = useState<number | "all">(10);
+// APIから取得するデータの型定義
+interface ReviewData {
+  id: number;
+  book_title: string;
+  nickname: string;
+  evaluations_status: number;
+  evaluations_count: number;
+  review: string;
+  author: string | null;
+  publishers: string | null;
+  isbn: string;
+}
 
-    const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
-    const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
-    const [isAllMessageSendModalOpen, setIsAllMessageSendModalOpen] = useState(false);
+export default function Page() {
+  const [reviews, setReviews] = useState<ReviewData[]>([]);
+  const [openRows, setOpenRows] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [displayCount, setDisplayCount] = useState<number | "all">(10);
+  const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]); // 選択された行IDを管理
 
-    const router = useRouter();
+  const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
+  const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
+  const [isAllMessageSendModalOpen, setIsAllMessageSendModalOpen] =
+    useState(false);
 
-    const toggleRow = (id: number) => {
-        setOpenRows(prev => 
-            prev.includes(id) 
-                ? prev.filter(rowId => rowId !== id)
-                : [...prev, id]
-        );
-    };
+  const router = useRouter();
 
-    // モーダルが開いている時に背景のスクロールを防ぐ
-    useEffect(() => {
-        if (isStatusEditModalOpen) {
-            document.body.style.overflow = 'hidden';
+  // データ取得
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch("/api/admin/reviews");
+        if (res.ok) {
+          const data = await res.json();
+          setReviews(data);
         } else {
-            document.body.style.overflow = 'unset';
+          console.error("Failed to fetch reviews");
         }
-        
-        // クリーンアップ関数
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isStatusEditModalOpen]);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+    fetchReviews();
+  }, []);
 
-    const handleStatusEdit = () => {
-        setIsStatusEditModalOpen(true)
+  const toggleRow = (id: number) => {
+    setOpenRows((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id],
+    );
+  };
+
+  // 全選択・全解除ハンドラ
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedRowIds(displayedData.map((row) => row.id));
+    } else {
+      setSelectedRowIds([]);
     }
-    const handleCsvOutput = () => {
-        setIsCsvOutputModalOpen(true)
-    }
-    const handleAllMessageSend = () => {
-        setIsAllMessageSendModalOpen(true);
-    }
-    const closeModal = () => {
-        setIsStatusEditModalOpen(false)
-        setIsCsvOutputModalOpen(false)
-        setIsAllMessageSendModalOpen(false)
+  };
+
+  // 個別選択ハンドラ
+  const handleSelectRow = (id: number) => {
+    setSelectedRowIds((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id],
+    );
+  };
+
+  // モーダルが開いている時に背景のスクロールを防ぐ
+  useEffect(() => {
+    if (isStatusEditModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
     }
 
-    const handlepreview = () => {
-        router.push('/admin/print-preview')
-    }
+    // クリーンアップ関数
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isStatusEditModalOpen]);
 
-    // サンプルデータ
-    const tableData = [
-        { id: 10, title: '転生したらスライムだった件', nickname: '象花たろう', status: '一次通過', votes: 30 },
-        { id: 11, title: '本好きの下剋上', nickname: '山田太郎', status: '一次通過', votes: 45 },
-        { id: 12, title: '無職転生', nickname: '佐藤花子', status: '一次通過', votes: 15 },
-        { id: 13, title: 'オーバーロード', nickname: '田中一郎', status: '一次通過', votes: 28 },
-        { id: 14, title: 'この素晴らしい世界に祝福を!', nickname: '鈴木次郎', status: '一次通過', votes: 52 },
-        { id: 15, title: 'Re:ゼロから始める異世界生活', nickname: '高橋三郎', status: '一次通過', votes: 38 },
-        { id: 16, title: '幼女戦記', nickname: '伊藤四郎', status: '一次通過', votes: 22 },
-        { id: 17, title: 'ログ・ホライズン', nickname: '渡辺五郎', status: '一次通過', votes: 19 },
-        { id: 18, title: 'ソードアート・オンライン', nickname: '中村六郎', status: '一次通過', votes: 67 },
-        { id: 19, title: '魔法科高校の劣等生', nickname: '小林七郎', status: '一次通過', votes: 41 },
-        { id: 20, title: 'ダンジョンに出会いを求めるのは間違っているだろうか', nickname: '加藤八郎', status: '一次通過', votes: 33 },
-        { id: 21, title: 'ゲート 自衛隊 彼の地にて、斯く戦えり', nickname: '吉田九郎', status: '一次通過', votes: 25 },
-        { id: 22, title: '盾の勇者の成り上がり', nickname: '山本十郎', status: '一次通過', votes: 44 },
-        { id: 23, title: '転生賢者の異世界ライフ', nickname: '松本花子', status: '一次通過', votes: 31 },
-        { id: 24, title: '薬屋のひとりごと', nickname: '井上美咲', status: '一次通過', votes: 58 },
-        { id: 25, title: '異世界食堂', nickname: '木村健太', status: '一次通過', votes: 27 },
-        { id: 26, title: '蜘蛛ですが、なにか?', nickname: '林美穂', status: '一次通過', votes: 36 },
-        { id: 27, title: '勇者パーティーを追放されたビーストテイマー', nickname: '清水大輔', status: '一次通過', votes: 20 },
-        { id: 28, title: '陰の実力者になりたくて!', nickname: '森田裕子', status: '一次通過', votes: 49 },
-        { id: 29, title: '最強陰陽師の異世界転生記', nickname: '石川雄一', status: '一次通過', votes: 34 },
-    ];
-    // 表示するデータをスライス
-    const displayedData = displayCount === "all" 
-        ? tableData 
-        : tableData.slice(0, displayCount);
-        
-    return (
-        <main>
-            {/*---------------------------
+  const handleStatusEdit = () => {
+    if (selectedRowIds.length === 0) return alert("データが選択されていません");
+    setIsStatusEditModalOpen(true);
+  };
+  const handleCsvOutput = () => {
+    // CSV出力は今回は表示中のデータを対象とする（要件に応じて選択データのみに変更も可）
+    setIsCsvOutputModalOpen(true);
+  };
+  const handleAllMessageSend = () => {
+    if (selectedRowIds.length === 0) return alert("データが選択されていません");
+    setIsAllMessageSendModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsStatusEditModalOpen(false);
+    setIsCsvOutputModalOpen(false);
+    setIsAllMessageSendModalOpen(false);
+  };
+
+  const handlepreview = () => {
+    router.push("/admin/print-preview");
+  };
+
+  // 表示するデータをスライス
+  const displayedData =
+    displayCount === "all" ? reviews : reviews.slice(0, displayCount);
+
+  // 選択されたデータを取得
+  const selectedData = reviews.filter((row) => selectedRowIds.includes(row.id));
+
+  // StatusEditModal用にデータを整形（ステータスを数値に変換）
+  const statusTargetReviews = selectedData.map((row) => ({
+    id: row.id,
+    title: row.book_title,
+    nickname: row.nickname,
+    status: row.evaluations_status,
+  }));
+
+  // AllMessageSendModal用にデータを整形
+  const messageTargetReviews = selectedData.map((row) => ({
+    id: row.id,
+    title: row.book_title,
+    nickname: row.nickname,
+  }));
+
+  return (
+    <main>
+      {/*---------------------------
             検索ボックス
             ---------------------------*/}
-            <details className="px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-accordion">
-                <summary className='flex items-center justify-between'>
-                    検索ボックス
-                    <Icon icon="ep:arrow-up" rotate={2} width={20} className='icon'></Icon>
-                </summary>
-                
-                <div className="">
-                    <label htmlFor='title_box'>書籍タイトル</label>
-                    <Textbox 
-                        size="lg" 
-                        className="custom-input-full"
-                        id='title_box'
-                    />
-                </div>
-                <div className="">
-                    <label htmlFor='nickname_box'>ニックネーム</label>
-                    <Textbox
-                        className='custom-input-full'
-                        type='text'
-                        id='nickname_box'
-                    />
-                </div>
+      <details className="px-5 pt-3 pb-6 mx-8 my-6 shadow-sm search-accordion">
+        <summary className="flex items-center justify-between">
+          検索ボックス
+          <Icon
+            icon="ep:arrow-up"
+            rotate={2}
+            width={20}
+            className="icon"
+          ></Icon>
+        </summary>
 
-                <div>
-                    <label htmlFor='status' className='block'>ステータス</label>
-                    <select className='input-group' id='status'>
-                        <option value="評価前">評価前</option>
-                        <option value="一次通過">一次通過</option>
-                        <option value="二次通過">二次通過</option>
-                        <option value="三次通過">三次通過</option>
-                    </select>
-                </div>
+        <div className="">
+          <label htmlFor="title_box">書籍タイトル</label>
+          <Textbox size="lg" className="custom-input-full" id="title_box" />
+        </div>
+        <div className="">
+          <label htmlFor="nickname_box">ニックネーム</label>
+          <Textbox
+            className="custom-input-full"
+            type="text"
+            id="nickname_box"
+          />
+        </div>
 
-                <div className='flex justify-center'>
-                    <AdminButton
-                        label="検索" 
-                        type="submit" 
-                        icon="mdi:search"
-                        iconPosition="left"
-                        className='mt-5 search-btn'
+        <div>
+          <label htmlFor="status" className="block">
+            ステータス
+          </label>
+          <select className="input-group" id="status">
+            <option value="評価前">評価前</option>
+            <option value="一次通過">一次通過</option>
+            <option value="二次通過">二次通過</option>
+            <option value="三次通過">三次通過</option>
+          </select>
+        </div>
+
+        <div className="flex justify-center">
+          <AdminButton
+            label="検索"
+            type="submit"
+            icon="mdi:search"
+            iconPosition="left"
+            className="mt-5 search-btn"
+          />
+        </div>
+      </details>
+
+      <div className="flex justify-between">
+        <div className="flex items-center mx-8 gap-3">
+          <label htmlFor="cotent-select">表示数</label>
+          <select
+            className="all-select"
+            id="cotent-select"
+            value={displayCount}
+            onChange={(e) => {
+              const value = e.target.value;
+              setDisplayCount(value === "all" ? "all" : Number(value));
+            }}
+          >
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="all">全件表示</option>
+          </select>
+          <button className="choice-btn font-bold">一括選択</button>
+        </div>
+
+        <div className="flex justify-end mx-8 gap-3">
+          <AdminButton
+            label="ステータス変更"
+            icon="material-symbols:edit-outline"
+            iconPosition="left"
+            className="w-auto"
+            onClick={handleStatusEdit}
+          />
+          <AdminButton
+            label="メッセージ送信"
+            icon="ic:baseline-message"
+            iconPosition="left"
+            className="w-auto"
+            onClick={handleAllMessageSend}
+          />
+          <AdminButton
+            label="選択したデータのCSV出力"
+            icon="material-symbols:download"
+            iconPosition="left"
+            className="w-auto"
+            onClick={handleCsvOutput}
+          />
+        </div>
+      </div>
+      <div className="mx-8 mt-8">
+        <table className="w-full event-table">
+          <thead className="table-head">
+            <tr>
+              <th className="py-2">
+                <div className="ml-3 bg-white flex items-center justify-center">
+                  <input
+                    type="checkbox"
+                    className="head-check"
+                    onChange={handleSelectAll}
+                    checked={
+                      displayedData.length > 0 &&
+                      selectedRowIds.length === displayedData.length
+                    }
+                  />
+                </div>
+              </th>
+              <th className="w-[27.777%]">
+                <div className="flex justify-center items-center">
+                  ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
+                </div>
+              </th>
+              <th className="w-[11.111%]">
+                <div className="flex items-center justify-start">
+                  ID<Icon icon="uil:arrow" rotate={1}></Icon>
+                </div>
+              </th>
+              <th className="w-[27.777%]">
+                <div className="flex items-center">
+                  書籍タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
+                </div>
+              </th>
+              <th className="w-1/6">
+                <div className="flex items-center">
+                  ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
+                </div>
+              </th>
+              <th className="w-[11.111%]">
+                <div className="flex items-center">
+                  投票数<Icon icon="uil:arrow" rotate={1}></Icon>
+                </div>
+              </th>
+              <th className="w-[5.555%]">
+                {/* <Icon icon='fe:arrow-up'></Icon> */}
+              </th>
+            </tr>
+          </thead>
+          {/* アコーディオン */}
+          <tbody className="border">
+            {displayedData.map((row) => (
+              <React.Fragment key={row.id}>
+                <tr className="table-row">
+                  <td className="pl-3">
+                    <input
+                      type="checkbox"
+                      className="head-check"
+                      checked={selectedRowIds.includes(row.id)}
+                      onChange={() => handleSelectRow(row.id)}
                     />
-                </div>
-            </details>
-
-            <div className='flex justify-between'>
-                <div className='flex items-center mx-8 gap-3'>
-                    <label htmlFor='cotent-select'>表示数</label>
-                    <select
-                        className='all-select'
-                        id='cotent-select'
-                        value={displayCount}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            setDisplayCount(value === "all" ? "all" : Number(value));
-                        }}
+                  </td>
+                  <td className="text-center">
+                    <span className="status-text font-bold py-1 px-6">
+                      {REVIEW_STATUS_LABELS[row.evaluations_status] ?? "-"}
+                    </span>
+                  </td>
+                  <td className="text-left">
+                    <span>{row.id}</span>
+                  </td>
+                  <td>
+                    <span className="title-text">{row.book_title}</span>
+                  </td>
+                  <td>
+                    <span>{row.nickname}</span>
+                  </td>
+                  <td>
+                    <span>{row.evaluations_count}</span>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => toggleRow(row.id)}
+                      className="accordion-toggle"
                     >
-                        <option value="10">10</option>
-                        <option value="15">15</option>
-                        <option value="20">20</option>
-                        <option value="25">25</option>
-                        <option value="30">30</option>
-                        <option value="all">全件表示</option>
-                    </select>
-                    <button className='choice-btn font-bold'>一括選択</button>
-                </div>
+                      <Icon
+                        icon="fe:arrow-up"
+                        rotate={2}
+                        className={`icon transition-transform ${openRows.includes(row.id) ? "rotate-180" : "rotate-0"}`}
+                      />
+                    </button>
+                  </td>
+                </tr>
+                {openRows.includes(row.id) && (
+                  <tr key={`${row.id}-details`} className="details-row">
+                    <td colSpan={7} className="details-content">
+                      <div className="p-4 flex">
+                        <section className="w-4/7">
+                          <h3 className="font-bold mb-2 ml-4">書評本文</h3>
+                          <div className="book-review-section w-auto h-84 ml-4 p-2">
+                            <p className="whitespace-pre-wrap">{row.review}</p>
+                          </div>
+                        </section>
 
-                <div className='flex justify-end mx-8 gap-3'>
-                    <AdminButton
-                        label='ステータス変更'
-                        icon='material-symbols:edit-outline'
-                        iconPosition='left'
-                        className='w-auto'
-                        onClick={handleStatusEdit}
-                    />
-                    <AdminButton
-                        label='メッセージ送信'
-                        icon='ic:baseline-message'
-                        iconPosition='left'
-                        className='w-auto'
-                        onClick={handleAllMessageSend}
-                    />
-                    <AdminButton
-                        label='選択したデータのCSV出力'
-                        icon='material-symbols:download'
-                        iconPosition='left'
-                        className='w-auto'
-                        onClick={handleCsvOutput}
-                    />
-                </div>
-            </div>
-            <div className='mx-8 mt-8'>
-                <table className="w-full event-table">
-                    <thead className='table-head'>
-                        <tr>
-                            <th className='py-2'>
-                                {/* <input type="checkbox" className='head-check' disabled/> */}
-                                <div className='ml-3 head-check bg-white'></div>
-                            </th>
-                            <th className='w-[27.777%]'>
-                                <div className='flex justify-center items-center'>
-                                    ステータス<Icon icon='uil:arrow' rotate={1}></Icon>
-                                </div>
-                            </th>
-                            <th className='w-[11.111%]'>
-                                <div className='flex items-center justify-start'>
-                                    ID<Icon icon='uil:arrow' rotate={1}></Icon>
-                                </div>
-                            </th>
-                            <th className='w-[27.777%]'>
-                                <div className='flex items-center'>
-                                    書籍タイトル<Icon icon='uil:arrow' rotate={1}></Icon>
-                                </div>
-                            </th>
-                            <th className='w-1/6'>
-                                <div className='flex items-center'>
-                                    ニックネーム<Icon icon='uil:arrow' rotate={1}></Icon>
-                                </div>
-                            </th>
-                            <th className='w-[11.111%]'>
-                                <div className='flex items-center'>
-                                    投票数<Icon icon='uil:arrow' rotate={1}></Icon>
-                                </div>
-                            </th>
-                            <th className='w-[5.555%]'>
-                                {/* <Icon icon='fe:arrow-up'></Icon> */}
-                            </th>
-                        </tr>
-                    </thead>
-                    {/* アコーディオン */}
-                    <tbody className='border'>
-                        {displayedData.map((row) => (
-                            <>
-                                <tr key={row.id} className='table-row'>
-                                    <td className='pl-3'>
-                                        <input type="checkbox" className='head-check'/>
-                                    </td>
-                                    <td className='text-center'>
-                                        <span className='status-text font-bold py-1 px-6'>{row.status}</span>
-                                    </td>
-                                    <td className='text-left'>
-                                        <span>{row.id}</span>
-                                    </td>
-                                    <td>
-                                        <span className='title-text'>{row.title}</span>
-                                    </td>
-                                    <td>
-                                        <span>{row.nickname}</span>
-                                    </td>
-                                    <td>
-                                        <span>{row.votes}</span>
-                                    </td>
-                                    <td>
-                                        <button 
-                                            onClick={() => toggleRow(row.id)}
-                                            className='accordion-toggle'
-                                        >
-                                            <Icon 
-                                                icon='fe:arrow-up' 
-                                                rotate={2}
-                                                className={`icon transition-transform ${openRows.includes(row.id) ? 'rotate-180' : 'rotate-0'}`}                                            />
-                                        </button>
-                                    </td>
-                                </tr>
-                                {openRows.includes(row.id) && (
-                                    <tr key={`${row.id}-details`} className='details-row'>
-                                        <td colSpan={7} className='details-content'>
-                                            <div className='p-4 flex'>
-                                                <section className='w-4/7'>
-                                                    <h3 className='font-bold mb-2 ml-4'>書評本文</h3>
-                                                    <div className='book-review-section w-auto h-84 ml-4 p-2'>
-                                                        <p>１ヶ月前、私は会社の先輩の冴子さえこさんと付き合うことになった。
-                                                            前からずっと気になっていた先輩に断れるのを覚悟で呑みに誘った。
-                                                            「美味しいお酒が呑めるなら一緒に呑んでもいいけど」
-                                                            普段あまり笑顔を見せない冴子さんが少し楽しそうに笑みを浮かべているのを見て、私は内心ガッツポーズをした。
-                                                            大分酔いが回って来た頃、私は思いきって冴子さんに
-                                                            「彼氏さんどんな人なんですか？」と探りを入れた。
-                                                            社内でも美人で仕事もできる冴子さんがモテないわけがないのだけど、人づてにフリーらしいと聞いて本当かどうか確かめたかった。「今は一人」「へぇ～意外ですね。私が男なら冴子さんみたいな素敵な人、絶対落としに行きますよ！」「藍田あいだは男じゃないから落としには来ないってこと？」全くもって予想外の返答に私は持っていたグラスを落としそうになった。「…女が落としに行っても冴子さんは落ちてくれるんですか？」平然を装いながら、でも内心では耳元にも聞こえるくらいに心臓がドキドキしていた。「男とか女とかそんな些末なこと、どうでもいいでしょ」当たり前のことを聞くなと言わんばかりの態度に私は思いきって
-                                                            エクスアーマータイプ：モノケロス。リバティー・アライアンスの紋章に描かれたモノケロスを外観モチーフに取り入れた最新型のアーマータイプである。ポーンA1などの生命保護機能を重要視した汎用アーマータイプと異なり、より攻撃的な目的をもって開発された経緯を持つ。また使用者の能力・適正に依存する部分が多く、白堊理研の人体強化計画によって生み出された強化兵士を素体として装着することを前提としている。
-                                                            リバティー・アライアンスにとって脅威となる「ゾアントロプス・レーヴェ」「パラポーン・エクスパンダー」といった強力な個体に対抗するべく、素体となる強化兵士は全身の知覚、筋力を強制的に向上させられている。彼らは 機械部品に頼らない生物としての強化を施され、ヒトという種の枠の中で生きながらに最大限の戦闘能力を獲得したが、代償としてすべての個体が人格面に何らかの障害を抱えている。実戦では一体がモノケロスを纏って対エクスパンダーに投入された記録があり、短時間ではあるが互角以上の戦闘能力を発揮したこの個体には「白麟角」と呼ばれる特別な呼称が与えられた。
-                                                        </p>
-                                                    </div>
-                                                </section>
+                        <section className="ml-10 w-3/7">
+                          <h3 className="font-bold mb-2">書籍情報</h3>
+                          <div>
+                            <div className="book-data">
+                              <h4 className="book-head">タイトル</h4>
+                              <p className="book-content">{row.book_title}</p>
+                            </div>
 
-                                                <section className='ml-10 w-3/7'>
-                                                    <h3 className='font-bold mb-2'>書籍情報</h3>
-                                                    <div>
-                                                        <div className='book-data'>
-                                                            <h4 className='book-head'>タイトル</h4>
-                                                            <p className='book-content'>転生したらスライムだった件</p>
-                                                        </div>
+                            <div className="book-data">
+                              <h4 className="book-head">著者</h4>
+                              <p className="book-content">{row.author}</p>
+                            </div>
 
-                                                        <div className='book-data'>
-                                                            <h4 className='book-head'>著者</h4>
-                                                            <p className='book-content'>伏瀬</p>
-                                                        </div>
+                            <div className="book-data">
+                              <h4 className="book-head">出版社</h4>
+                              <p className="book-content">{row.publishers}</p>
+                            </div>
 
-                                                        <div className='book-data'>
-                                                            <h4 className='book-head'>出版社</h4>
-                                                            <p className='book-content'>マイクロマガジン社</p>
-                                                        </div>
+                            <div className="book-data">
+                              <h4 className="book-head">ISBN</h4>
+                              <p className="book-content">{row.isbn}</p>
+                            </div>
+                          </div>
+                          <div className="flex justify-end ">
+                            <AdminButton
+                              label="印刷プレビュー"
+                              icon="material-symbols:print"
+                              iconPosition="left"
+                              className="print-preview-btn w-auto"
+                              onClick={handlepreview}
+                            />
+                          </div>
+                        </section>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-                                                        <div className='book-data'>
-                                                            <h4 className='book-head'>ISBN</h4>
-                                                            <p className='book-content'>978-4-89637-459-9(一巻)</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className='flex justify-end '>
-                                                        <AdminButton
-                                                            label='印刷プレビュー'
-                                                            icon='material-symbols:print'
-                                                            iconPosition='left'
-                                                            className='print-preview-btn w-auto'   
-                                                            onClick={handlepreview}
-                                                        />
-                                                    </div>
-                                                </section>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )}
-                            </>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            <div className='flex justify-end mr-8 my-5'>
-                <AdminButton
-                        label='全件CSV出力'
-                        icon='material-symbols:download'
-                        iconPosition='left'
-                        className='w-auto'
-                        onClick={handleCsvOutput}
-                    />
-            </div>
-            {/* ページネーション */}
-            {displayCount !== "all" && (
-                <div className="flex items-center justify-center my-5 page-section">
-                    <Icon icon="weui:arrow-filled" rotate={2} width={20} className="page-arrow"></Icon>
-                    <button
-                        type="button"
-                        className={`px-4 py-1 page-number ${currentPage === 1 ? 'active' : ''}`}
-                        onClick={() => setCurrentPage(1)}
-                        aria-current={currentPage === 1 ? "page" : undefined}
-                    >1</button>
-                    <button
-                        type="button"
-                        className={`px-4 py-1 page-number ${currentPage === 2 ? 'active' : ''}`}
-                        onClick={() => setCurrentPage(2)}
-                        aria-current={currentPage === 2 ? "page" : undefined}
-                    >2</button>
-                    <button
-                        type="button"
-                        className={`px-4 py-1 page-number ${currentPage === 3 ? 'active' : ''}`}
-                        onClick={() => setCurrentPage(3)}
-                        aria-current={currentPage === 3 ? "page" : undefined}
-                    >3</button>
-                    <span className="px-4 py-1 page-number" aria-hidden="true">...</span>
-                    <button
-                        type="button"
-                        className={`px-4 py-1 page-number ${currentPage === 5 ? 'active' : ''}`}
-                        onClick={() => setCurrentPage(5)}
-                        aria-current={currentPage === 5 ? "page" : undefined}
-                    >5</button>
-                    <Icon icon="weui:arrow-filled" width={20} className="page-arrow"></Icon>
-                </div>
-            )}
-            {/* モーダル */}
-            <StatusEditModal isOpen={isStatusEditModalOpen} onClose={closeModal} />
-            <CsvOutputModal isOpen={isCsvOutputModalOpen} onClose={closeModal} />
-            <AllMessageSendModal isOpen={isAllMessageSendModalOpen} onClose={closeModal}/>
-        </main>
-    )    
+      <div className="flex justify-end mr-8 my-5">
+        <AdminButton
+          label="全件CSV出力"
+          icon="material-symbols:download"
+          iconPosition="left"
+          className="w-auto"
+          onClick={handleCsvOutput}
+        />
+      </div>
+      {/* ページネーション */}
+      {displayCount !== "all" && (
+        <div className="flex items-center justify-center my-5 page-section">
+          <Icon
+            icon="weui:arrow-filled"
+            rotate={2}
+            width={20}
+            className="page-arrow"
+          ></Icon>
+          <button
+            type="button"
+            className={`px-4 py-1 page-number ${currentPage === 1 ? "active" : ""}`}
+            onClick={() => setCurrentPage(1)}
+            aria-current={currentPage === 1 ? "page" : undefined}
+          >
+            1
+          </button>
+          <button
+            type="button"
+            className={`px-4 py-1 page-number ${currentPage === 2 ? "active" : ""}`}
+            onClick={() => setCurrentPage(2)}
+            aria-current={currentPage === 2 ? "page" : undefined}
+          >
+            2
+          </button>
+          <button
+            type="button"
+            className={`px-4 py-1 page-number ${currentPage === 3 ? "active" : ""}`}
+            onClick={() => setCurrentPage(3)}
+            aria-current={currentPage === 3 ? "page" : undefined}
+          >
+            3
+          </button>
+          <span className="px-4 py-1 page-number" aria-hidden="true">
+            ...
+          </span>
+          <button
+            type="button"
+            className={`px-4 py-1 page-number ${currentPage === 5 ? "active" : ""}`}
+            onClick={() => setCurrentPage(5)}
+            aria-current={currentPage === 5 ? "page" : undefined}
+          >
+            5
+          </button>
+          <Icon
+            icon="weui:arrow-filled"
+            width={20}
+            className="page-arrow"
+          ></Icon>
+        </div>
+      )}
+      {/* モーダル */}
+      <StatusEditModal
+        isOpen={isStatusEditModalOpen}
+        onClose={closeModal}
+        selectedReviews={statusTargetReviews}
+      />
+      <CsvOutputModal
+        isOpen={isCsvOutputModalOpen}
+        onClose={closeModal}
+        data={displayedData}
+      />
+      <AllMessageSendModal
+        isOpen={isAllMessageSendModalOpen}
+        onClose={closeModal}
+        selectedReviews={messageTargetReviews}
+      />
+    </main>
+  );
 }
