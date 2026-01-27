@@ -2,13 +2,31 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function AdminHeader() {
   const [openMenu, setOpenMenu] = useState(false);
+  const router = useRouter();
 
   const handleMenuToggle = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     setOpenMenu((v) => !v);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (res.ok) {
+        setOpenMenu(false);
+        router.push("/");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -21,27 +39,29 @@ export function AdminHeader() {
           ホーム
         </Link>
 
-        <button
-          onClick={handleMenuToggle}
-          aria-label={openMenu ? "Close menu" : "Open menu"}
-          className="ml-4 inline-flex h-20 w-20 cursor-pointer items-center justify-center rounded-md bg-white hover:bg-gray-50 focus:outline-none border border-gray-100"
-          style={{ backgroundColor: "#ffffff",boxShadow:'none' }}
-        >
-          <svg
-            className="h-6 w-6"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#111827"
-            xmlns="http://www.w3.org/2000/svg"
+        <div className="flex items-center">
+          <button
+            onClick={handleMenuToggle}
+            aria-label={openMenu ? "Close menu" : "Open menu"}
+            className="ml-4 inline-flex h-20 w-20 cursor-pointer items-center justify-center rounded-md bg-white hover:bg-gray-50 focus:outline-none border border-gray-100"
+            style={{ backgroundColor: "#ffffff", boxShadow: "none" }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
+            <svg
+              className="h-6 w-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#111827"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
 
         <div
           className={`fixed inset-0 z-[9998] pointer-events-${
@@ -62,7 +82,7 @@ export function AdminHeader() {
               onClick={handleMenuToggle}
               className="inline-flex h-20 w-20 items-center justify-center rounded-md bg-white hover:bg-gray-50 border border-gray-100"
               aria-label="Close menu"
-              style={{ backgroundColor: "#ffffff",boxShadow:'none' }}
+              style={{ backgroundColor: "#ffffff", boxShadow: "none" }}
             >
               <svg
                 className="h-6 w-6"
@@ -130,6 +150,16 @@ export function AdminHeader() {
                   className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
                 >
                   パスワード変更
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="#"
+                  onClick={handleLogout}
+                  className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
+                >
+                  ログアウト
                 </Link>
               </li>
             </ul>
