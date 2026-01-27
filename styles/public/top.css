@@ -218,6 +218,7 @@
 }
 .about {
   --section-slant: 96px;
+  --section-gap: 20px;
   position: relative;
   overflow: hidden;
   padding: 100px 20px calc(100px + var(--section-slant));
@@ -308,7 +309,7 @@
 .bunko-x {
   background:
     linear-gradient(160deg, #6f92a9 0%, #567b92 55%, #45667b 100%);
-  margin-top: calc(-1 * var(--section-slant, 96px));
+  margin-top: calc(-1 * var(--section-slant, 96px) + var(--section-gap, 12px));
   padding: calc(80px + var(--section-slant, 96px)) 20px 40px;
   color: #ffffff;
   font-family: serif;
@@ -562,10 +563,11 @@
   }
   .about {
     --section-slant: 128px;
+    --section-gap: 24px;
     padding-bottom: calc(120px + var(--section-slant));
   }
   .bunko-x {
-    margin-top: calc(-1 * var(--section-slant));
+    margin-top: calc(-1 * var(--section-slant) + var(--section-gap, 16px));
     padding-top: calc(110px + var(--section-slant));
   }
   .heroImage--desktop {
