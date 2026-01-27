@@ -89,6 +89,12 @@
   outline: none;
 }
 
+@media (max-height: 830px) {
+  .heroBunkoBadge {
+    display: none;
+  }
+}
+
 @keyframes heroBadgePop {
   0% {
     opacity: 0;
