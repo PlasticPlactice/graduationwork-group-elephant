@@ -1,3 +1,7 @@
+:root {
+  --bunko-x-accent: #ff4d6d;
+}
+
 .hero {
   --header-offset: 88px;
   position: relative;
@@ -79,7 +83,7 @@
   animation: heroBadgePop 260ms ease-out 1800ms forwards;
 }
 .heroBunkoBadge span {
-  color: #ff4d6d;
+  color: var(--bunko-x-accent);
   margin: 0 2px;
 }
 .heroBunkoBadge:hover,
@@ -345,7 +349,7 @@
   margin-bottom: 40px;
 }
 .text-red {
-  color: #ff4d6d;
+  color: var(--bunko-x-accent);
 }
 .bunko-x__text {
   font-size: 16px;

@@ -98,8 +98,8 @@ export default function Home() {
                   daysLeft={10}
                   description="投票期間中です！投票してみましょう！"
                   buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="var(--color-main)"
-                  buttonTextColor="var(--color-main)"
+                  buttonBorderColor="var(--bunko-x-accent)"
+                  buttonTextColor="var(--bunko-x-accent)"
                 />
 
                 {/* Card 2 */}
@@ -108,8 +108,8 @@ export default function Home() {
                   daysLeft={10}
                   description="投票期間中です！投票してみましょう！"
                   buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="var(--color-main)"
-                  buttonTextColor="var(--color-main)"
+                  buttonBorderColor="var(--bunko-x-accent)"
+                  buttonTextColor="var(--bunko-x-accent)"
                 />
               </div>
 
@@ -118,7 +118,7 @@ export default function Home() {
                   className="w-full mb-24"
                   href="/event"
                   style={{
-                    backgroundColor: "var(--color-main)",
+                    backgroundColor: "var(--bunko-x-accent)",
                     color: "var(--color-white)",
                     width: "100%",
                     maxWidth: "400px",
