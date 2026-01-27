@@ -27,7 +27,7 @@ export default function PostPage() {
   const router = useRouter();
 
   const { data: session, status } = useSession();
-  const userId = (session?.user as any)?.id;
+  const userId = (session?.user as { id?: string })?.id;
 
   // HTML送信用
   const [html, setHtml] = useState("");

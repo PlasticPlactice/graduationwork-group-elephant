@@ -6,7 +6,9 @@ import { prisma } from "@/lib/prisma";
 // 取得
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as {
+      user?: { id?: string };
+    } | null;
 
     const userId = Number((session as any)?.user?.id);
 
@@ -16,7 +18,7 @@ export async function GET() {
       return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
     }
 
-    if (!session || !(session as any).user?.id) {
+    if (!session || !session.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 

@@ -11,6 +11,8 @@ interface TimelineStep {
 interface ReviewPassedModalProps {
   open: boolean;
   onClose: () => void;
+  onConfirm?: () => void;
+  message?: string;
   bookTitle?: string;
   passedDate?: string;
   timeline?: TimelineStep[];
@@ -19,6 +21,8 @@ interface ReviewPassedModalProps {
 export const ReviewPassedModal: React.FC<ReviewPassedModalProps> = ({
   open,
   onClose,
+  onConfirm,
+  message,
   bookTitle = "色彩を持たない多崎つくると、彼の巡礼の年",
   passedDate = "2025年12月8日",
   timeline = [
@@ -94,6 +98,14 @@ export const ReviewPassedModal: React.FC<ReviewPassedModalProps> = ({
     }
   };
 
+  const handleConfirm = () => {
+    if (onConfirm) {
+      onConfirm();
+    } else {
+      onClose();
+    }
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -127,7 +139,7 @@ export const ReviewPassedModal: React.FC<ReviewPassedModalProps> = ({
               おめでとうございます！
             </h2>
             <p className="text-center text-slate-700 mb-4">
-              1次審査を通過しました。
+              {message || "1次審査を通過しました。"}
             </p>
             <div className="bg-slate-50 rounded-lg p-4 mb-6">
               <div className="text-xs text-slate-500 mb-1">タイトル</div>
@@ -210,7 +222,7 @@ export const ReviewPassedModal: React.FC<ReviewPassedModalProps> = ({
             </div>
             <button
               className="w-full bg-rose-400 text-white font-bold py-2 rounded-md text-center border-none focus:outline-none focus:ring-2 focus:ring-rose-300 focus:ring-offset-2"
-              onClick={onClose}
+              onClick={handleConfirm}
               ref={confirmBtnRef}
             >
               確認
