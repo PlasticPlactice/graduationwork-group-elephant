@@ -154,13 +154,12 @@ export function AdminHeader() {
               </li>
 
               <li>
-                <Link
-                  href="#"
+                <button
                   onClick={handleLogout}
-                  className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
+                  className="w-full group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
                 >
                   ログアウト
-                </Link>
+                </button>
               </li>
             </ul>
           </nav>
