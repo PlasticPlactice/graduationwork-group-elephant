@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import "@/styles/admin/header.css"
 
 export function AdminHeader() {
   const [openMenu, setOpenMenu] = useState(false);
@@ -107,7 +108,7 @@ export function AdminHeader() {
                 <Link
                   href="/admin/notice"
                   onClick={() => setOpenMenu(false)}
-                  className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
+                  className="group relative block rounded-md px-4 py-3 text-left text-lg font-bold text-gray-800 hover:opacity-90 focus:outline-none"
                 >
                   お知らせ管理
                 </Link>
@@ -117,7 +118,7 @@ export function AdminHeader() {
                 <Link
                   href="/admin/events"
                   onClick={() => setOpenMenu(false)}
-                  className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
+                  className="group relative block rounded-md px-4 py-3 text-left text-lg font-bold text-gray-800 hover:opacity-90 focus:outline-none"
                 >
                   イベント管理
                 </Link>
@@ -127,7 +128,7 @@ export function AdminHeader() {
                 <Link
                   href="/admin/users"
                   onClick={() => setOpenMenu(false)}
-                  className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
+                  className="group relative block rounded-md px-4 py-3 text-left text-lg font-bold text-gray-800 hover:opacity-90 focus:outline-none"
                 >
                   ユーザー管理
                 </Link>
@@ -137,7 +138,7 @@ export function AdminHeader() {
                 <Link
                   href="/admin/notice"
                   onClick={() => setOpenMenu(false)}
-                  className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
+                  className="group relative block rounded-md px-4 py-3 text-left text-lg font-bold text-gray-800 hover:opacity-90 focus:outline-none"
                 >
                   寄贈情報管理
                 </Link>
@@ -147,7 +148,7 @@ export function AdminHeader() {
                 <Link
                   href="/admin/password"
                   onClick={() => setOpenMenu(false)}
-                  className="group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
+                  className="group relative block rounded-md px-4 py-3 text-left text-lg font-bold text-gray-800 hover:opacity-90 focus:outline-none"
                 >
                   パスワード変更
                 </Link>
@@ -156,9 +157,9 @@ export function AdminHeader() {
               <li>
                 <button
                   onClick={handleLogout}
-                  className="w-full group relative block rounded-md px-4 py-3 text-left text-sm text-gray-800 hover:opacity-90 focus:outline-none"
+                  className="logout-btn"
                 >
-                  ログアウト
+                  <span className="text-lg font-bold logout-text">ログアウト</span>
                 </button>
               </li>
             </ul>
