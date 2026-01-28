@@ -108,6 +108,7 @@
     grid-template-areas: "text poster";
     column-gap: 48px;
     align-items: center;
+    width: min(900px, 100%);
   }
   .heroText {
     grid-area: text;
@@ -137,6 +138,11 @@
   .about {
     clip-path: none;
     padding-bottom: 100px;
+  }
+  .about__inner,
+  .bunko-x__inner,
+  .news__inner {
+    max-width: 900px;
   }
   .bunko-x {
     clip-path: none;
