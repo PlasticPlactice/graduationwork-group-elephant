@@ -95,6 +95,11 @@ export async function GET(req: NextRequest) {
         nf.file.data_path.toLowerCase().endsWith(".pdf"),
       );
 
+      const attachments = notification.notificationFiles.map((nf) => ({
+        name: nf.file.name,
+        url: nf.file.data_path,
+      }));
+
       return {
         id: notification.id,
         date: notification.public_date.toISOString().split("T")[0],
@@ -105,6 +110,7 @@ export async function GET(req: NextRequest) {
             ? notification.notificationFiles[0].file.data_path
             : "/top/image.png",
         pdfUrl: pdfFile ? pdfFile.file.data_path : undefined,
+        attachments,
       };
     });
 
