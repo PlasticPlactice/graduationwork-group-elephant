@@ -186,6 +186,7 @@ async function main() {
       data: {
         book_review_id: reviews[i].id,
         reaction_id: reaction.id,
+        user_id: reviews[i].user_id
       },
     });
   }
