@@ -55,14 +55,19 @@
     "Hiragino Mincho Pro", "MS Mincho", serif;
   letter-spacing: 0.08em;
   margin: 6px 0 18px;
-  background: linear-gradient(90deg, #0f5a44 0%, #3db7c5 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 0 currentColor, 0.6px 0 currentColor, -0.6px 0 currentColor;
+  color: #0f5a44;
   opacity: 0;
   transform: translateY(10px);
   animation: heroTitleReveal 1400ms ease-out 220ms forwards;
+}
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .heroTitle {
+    background: linear-gradient(90deg, #0f5a44 0%, #3db7c5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 0 currentColor, 0.6px 0 currentColor, -0.6px 0 currentColor;
+  }
 }
 .heroTitle br {
   display: none;
