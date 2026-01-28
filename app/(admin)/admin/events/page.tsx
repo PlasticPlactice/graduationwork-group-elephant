@@ -5,38 +5,70 @@ import { useState,useEffect } from 'react';
 import "@/styles/admin/events.css"
 import { Icon } from "@iconify/react";
 import EventRegisterModal from '@/components/admin/EventRegisterModal';
-import EventEditModal from '@/components/admin/EventEditModal'
+import EventEditModal from '@/components/admin/EventEditModal';
+import { formatDateTime } from '@/lib/dateUtils';
+
+type EventItem = {
+    id: number;
+    title: string;
+    detail?: string;
+    status: string;
+    start_period?: string;
+    end_period?: string;
+    first_voting_start_period?: string;
+    first_voting_end_period?: string;
+    second_voting_start_period?: string;
+    second_voting_end_period?: string;
+    public_flag?: boolean | string;
+};
 
 export default function Page() {
     const router = useRouter();
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+    const [eventNowData, setEventNowData] = useState<EventItem[]>([]);
+    const [eventEndData, setEventEndData] = useState<EventItem[]>([]);
+    const [loadingEvents, setLoadingEvents] = useState(true)
 
-    const [eventNowData, setEventNowData] = useState([
-        {
-            id: 1, title: "第5回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag: "true"
-        },
-        {
-            id: 2, title: "第6回文庫X", detail: "大人気イベント文庫Xです。", status: "2", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag: "true"
-        }
-    ]);
+    // 置き換え前：2つの useEffect（開催中・終了済）
+    useEffect(() => {
+    let mounted = true;
 
-    const [eventEndData, setEventEndData] = useState([
-        {
-            id: 1, title: "第3回文庫X", detail: "大人気イベント文庫Xです。", status: "1", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag: "true"
-        },
-        {
-            id: 2, title: "第4回文庫X", detail: "大人気イベント文庫Xです。", status: "0", start_period: "20XX年XX月xx日 xx:xx", end_period: "20XX年XX月xx日 xx:xx",
-            first_voting_start_period: "20XX年XX月xx日 xx:xx", first_voting_end_period: "20XX年XX月xx日 xx:xx", second_voting_start_period: "20XX年XX月xx日 xx:xx", second_voting_end_period: "20XX年XX月xx日 xx:xx",
-            public_flag: "true"
+    const fetchEvents = async () => {
+        setLoadingEvents(true);
+        try {
+        const [resNow, resEnd] = await Promise.all([
+            fetch('/api/events?status=0,1,2'),
+            fetch('/api/events?status=3'),
+        ]);
+
+        if (!resNow.ok) {
+            console.error('events fetch failed (now)', await resNow.text());
         }
-    ]);
+        if (!resEnd.ok) {
+            console.error('events fetch failed (end)', await resEnd.text());
+        }
+
+        const [nowData, endData] = await Promise.all([
+            resNow.ok ? resNow.json() : [],
+            resEnd.ok ? resEnd.json() : [],
+        ]);
+
+        if (mounted) {
+            setEventNowData(nowData);
+            setEventEndData(endData);
+        }
+        } catch (err) {
+        console.error(err);
+        } finally {
+        if (mounted) setLoadingEvents(false);
+        }
+    };
+
+    fetchEvents();
+    return () => { mounted = false; };
+    }, []);
 
     const getProgressValue = (status: string) => {
         const statusMap: { [key: string]: number } = {
@@ -64,20 +96,55 @@ export default function Page() {
         return <Icon icon='material-symbols:circle' className='m-auto text-white'></Icon>;
     };
 
+    
+    // handleToggleNowEvent:
     const handleToggleNowEvent = (id: number) => {
-        setEventNowData(prev => prev.map(event => 
-            event.id === id 
-                ? { ...event, public_flag: event.public_flag === "true" ? "false" : "true" }
+        setEventNowData(prev =>
+            prev.map(event =>
+            event.id === id
+                ? { ...event, public_flag: !(event.public_flag === true || event.public_flag === "true") }
                 : event
-        ));
+            )
+        );
+        const current = eventNowData.find(e => e.id === id);
+        const newFlag = !(current?.public_flag === true || current?.public_flag === "true");
+        updatePublicFlag(id, newFlag);
     };
 
+    // handleToggleEndEvent:
     const handleToggleEndEvent = (id: number) => {
-        setEventEndData(prev => prev.map(event => 
-            event.id === id 
-                ? { ...event, public_flag: event.public_flag === "true" ? "false" : "true" }
+        setEventEndData(prev =>
+            prev.map(event =>
+            event.id === id
+                ? { ...event, public_flag: !(event.public_flag === true || event.public_flag === "true") }
                 : event
-        ));
+            )
+        );
+        const current = eventEndData.find(e => e.id === id);
+        const newFlag = !(current?.public_flag === true || current?.public_flag === "true");
+        updatePublicFlag(id, newFlag);
+    };
+
+    const updatePublicFlag = async (id: number, newFlag: boolean) => {
+        try {
+            const res = await fetch('/api/events', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, public_flag: newFlag }),
+            });
+            if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text || res.statusText);
+            }
+            const updated = await res.json();
+            // サーバー帰り値でローカルを同期
+            setEventNowData(prev => prev.map(e => e.id === id ? { ...e, public_flag: updated.public_flag } : e));
+            setEventEndData(prev => prev.map(e => e.id === id ? { ...e, public_flag: updated.public_flag } : e));
+        } catch (err) {
+            console.error(err);
+            alert('公開設定の更新に失敗しました。');
+            router.refresh();
+        }
     };
 
 
@@ -98,17 +165,21 @@ export default function Page() {
     const handleRegister = () => {
         setIsRegisterModalOpen(true);
     };
-    const handleEdit = () => {
+    const handleEdit = (event: EventItem) => {
+        setSelectedEvent(event);
         setIsEditModalOpen(true);
     };
 
     const closeModal = () => {
         setIsRegisterModalOpen(false);
         setIsEditModalOpen(false);
+        setSelectedEvent(null);
     }
+
     const handledetail = () => {
         router.push('/admin/events-details')
     }
+    // todo:トグルのオンオフによる公開非公開の変更処理
 
     return (
         <main>
@@ -125,15 +196,16 @@ export default function Page() {
                     <div className='flex items-center justify-between pb-3 event-title-section'>
                         <div className='flex items-center'>
                             <p className='font-bold event-title'>{ now.title}</p>
-                            <p className='ml-3'>{now.start_period} ~ { now.end_period}</p>
+                            <p className='ml-3'>{formatDateTime(now.start_period)} ~ {formatDateTime(now.end_period)}</p>
                         </div>
                         <div className='flex items-center mr-10'>
                             <p>イベントの公開</p>
+                            {/* todo:トグルのオンオフによる公開非公開の変更処理 */}
                             <label className="toggle-switch ml-7">
                                 <input 
                                     type="checkbox" 
                                     id={`myToggle-${now.id}`}
-                                    checked={now.public_flag === "true"}
+                                    checked={now.public_flag === true || now.public_flag === "true"}
                                     onChange={() => handleToggleNowEvent(now.id)}
                                     aria-label='イベントの公開トグル'
                                 />
@@ -172,7 +244,7 @@ export default function Page() {
                             label='編集'
                             type="button" 
                             className='edit_btn'
-                            onClick={handleEdit}
+                            onClick={() => handleEdit(now)}
                         />
                     </div>
 
@@ -184,22 +256,22 @@ export default function Page() {
 
                     <div className="row">
                         <div className="label text-center">開始日</div>
-                            <div className="content">{now.start_period}</div>
+                            <div className="content">{formatDateTime(now.start_period)}</div>
                     </div>
 
                     <div className="row">
                         <div className="label text-center">書評投稿期間</div>
-                        <div className="content">{now.first_voting_start_period} - {now.first_voting_end_period}</div>
+                        <div className="content">{formatDateTime(now.first_voting_start_period)} - {formatDateTime(now.first_voting_end_period)}</div>
                     </div>
 
                     <div className="row">
                         <div className="label text-center">1次審査期間</div>
-                            <div className="content">{now.first_voting_end_period} - { now.second_voting_start_period}</div>
+                            <div className="content">{formatDateTime(now.first_voting_end_period)} - {formatDateTime(now.second_voting_start_period)}</div>
                     </div>
 
                     <div className="row">
                         <div className="label text-center">2次審査期間</div>
-                            <div className="content">{now.second_voting_start_period} - {now.second_voting_end_period}</div>
+                            <div className="content">{formatDateTime(now.second_voting_start_period)} - {formatDateTime(now.second_voting_end_period)}</div>
                     </div>
 
                     <div className="row">
@@ -224,7 +296,7 @@ export default function Page() {
                     <summary className='flex items-center justify-between'>
                         <div className='summary_title'>
                             <h2 className='font-bold'>{end.title}</h2>
-                            <p>{end.start_period} ~ {end.end_period}</p>
+                            <p>{formatDateTime(end.start_period)} ~ {formatDateTime(end.end_period)}</p>
                         </div>
                         <Icon icon="ep:arrow-up" rotate={2} width={40} className='icon'></Icon>
                     </summary>
@@ -236,7 +308,7 @@ export default function Page() {
                                     <input 
                                         type="checkbox" 
                                         id={`myToggle-${end.id}`}
-                                        checked={end.public_flag === "true"}
+                                        checked={end.public_flag === true || end.public_flag === "true"}
                                         onChange={() => handleToggleEndEvent(end.id)}
                                         aria-label='イベントの公開トグル'
                                     />
@@ -275,7 +347,7 @@ export default function Page() {
                                 label='編集'
                                 type="button"
                                 className='edit_btn'
-                                onClick={handleEdit}
+                                onClick={() => handleEdit(end)}
                             />
                         </div>
 
@@ -287,22 +359,22 @@ export default function Page() {
 
                             <div className="row">
                                 <div className="label text-center">開始日</div>
-                                <div className="content">{end.start_period}</div>
+                                <div className="content">{formatDateTime(end.start_period)}</div>
                             </div>
 
                             <div className="row">
                                 <div className="label text-center">書評投稿期間</div>
-                                <div className="content">{end.first_voting_start_period} - {end.first_voting_end_period}</div>
+                                <div className="content">{formatDateTime(end.first_voting_start_period)} - {formatDateTime(end.first_voting_end_period)}</div>
                             </div>
 
                             <div className="row">
                                 <div className="label text-center">1次審査期間</div>
-                                <div className="content">{end.first_voting_end_period} - {end.second_voting_start_period}</div>
+                                <div className="content">{formatDateTime(end.first_voting_end_period)} - {formatDateTime(end.second_voting_start_period)}</div>
                             </div>
 
                             <div className="row">
                                 <div className="label text-center">2次審査期間</div>
-                                <div className="content">{end.second_voting_start_period} - {end.second_voting_end_period}</div>
+                                <div className="content">{formatDateTime(end.second_voting_start_period)} - {formatDateTime(end.second_voting_end_period)}</div>
                             </div>
 
                             <div className="row">
@@ -317,7 +389,7 @@ export default function Page() {
 
             {/* モーダル */}
             <EventRegisterModal isOpen={isRegisterModalOpen} onClose={closeModal} />
-            <EventEditModal isOpen={isEditModalOpen} onClose={closeModal} />
+            <EventEditModal isOpen={isEditModalOpen} onClose={closeModal} event={selectedEvent} />
         </main>
     )
 }
