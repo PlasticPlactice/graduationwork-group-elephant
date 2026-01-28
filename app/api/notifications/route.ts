@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
         id: notification.id,
         date: notification.public_date.toISOString().split("T")[0],
         title: notification.title,
-        content: notification.detail,
+        content: notification.detail || undefined,
         image:
           notification.notificationFiles.length > 0
             ? notification.notificationFiles[0].file.data_path
