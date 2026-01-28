@@ -97,7 +97,7 @@ export async function POST(req: Request) {
         color: color || "#D1D5DB",
         pattern: "default", // デフォルト値
         pattern_color: "#FFFFFF", // デフォルト値
-        user_status: 1, // 1:有効 (仮定)
+        user_status: 0,
         updated_at: new Date(),
       },
     });

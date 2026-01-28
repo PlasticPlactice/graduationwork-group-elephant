@@ -6,6 +6,8 @@ export interface NotificationItem {
   date: string;
   title: string;
   image: string;
+  content?: string;
+  pdfUrl?: string;
 }
 
 /**

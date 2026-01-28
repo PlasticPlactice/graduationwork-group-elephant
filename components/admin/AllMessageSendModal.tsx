@@ -1,65 +1,117 @@
-"use client"
-import AdminButton from '@/components/ui/admin-button';
+"use client";
 
-interface CsvOutputModalPops {
-    isOpen: boolean;
-    onClose: () => void;
+import { useState } from "react";
+import AdminButton from "@/components/ui/admin-button";
+
+// 選択された書評データの型定義（エクスポートして他でも再利用可能に）
+export interface MessageTargetReview {
+  id: number;
+  title: string;
+  nickname: string;
 }
 
-export default function CsvOutputModal({ isOpen, onClose }: CsvOutputModalPops) {
-    if (!isOpen) return null;
+interface AllMessageSendModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  selectedReviews: MessageTargetReview[]; // 親から選択されたデータを受け取る
+}
 
-    // サンプルデータ10件
-    const statusRecords = [
-        { id: 10, title: '転生したらスライムだった件', nickname: '象花たろう' },
-        { id: 11, title: '本好きの下剋上', nickname: '山田太郎' },
-        { id: 12, title: '無職転生', nickname: '佐藤花子' },
-        { id: 13, title: 'オーバーロード', nickname: '田中一郎' },
-        { id: 14, title: 'この素晴らしい世界に祝福を!', nickname: '鈴木次郎' },
-        { id: 15, title: 'Re:ゼロから始める異世界生活', nickname: '高橋三郎' },
-        { id: 16, title: '幼女戦記', nickname: '伊藤四郎' },
-        { id: 17, title: 'ログ・ホライズン', nickname: '渡辺五郎' },
-        { id: 18, title: 'ソードアート・オンライン', nickname: '中村六郎' },
-        { id: 19, title: '魔法科高校の劣等生', nickname: '小林七郎' },
-    ];
+export default function AllMessageSendModal({
+  isOpen,
+  onClose,
+  selectedReviews,
+}: AllMessageSendModalProps) {
+  const [messageBody, setMessageBody] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
-    return (
-        <div className="fixed inset-0 status-edit-modal bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-            <div className="modal-content bg-white rounded-lg w-9/12 max-w-8xl max-h-[90vh] flex flex-col p-6"  onClick={(e) => e.stopPropagation()}>
-                <h2 className="modal-head text-center">一括メッセージ送信</h2>
-                <h3 className="modal-sub-head mt-3">メッセージを送信する書評</h3>
+  if (!isOpen) return null;
 
-                <div className="border p-3 overflow-auto h-64 mb-5">
-                    <table className="w-full status-table">
-                        <thead className="table-head">
-                            <tr>
-                                <th>ID</th>
-                                <th>書籍タイトル</th>
-                                <th>ニックネーム</th>
-                            </tr>
-                        </thead>
-                        <tbody className="border status-book-section">
-                            {statusRecords.map((record) => (
-                                <tr key={record.id} className="status-record text-center">
-                                    <td>{record.id}</td>
-                                    <td>{record.title}</td>
-                                    <td>{record.nickname}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!messageBody.trim()) {
+      alert("メッセージを入力してください。");
+      return;
+    }
 
-                <form action="" method='post' className='flex flex-col gap-4 items-center'>
-                    <textarea className='all-message-area w-4/5' placeholder='送信するメッセージを入力'></textarea>
-                    <div className="m-auto w-1/4">
-                        <AdminButton
-                            label='送信'
-                            type='submit'
-                        />
-                    </div>
-                </form>
-            </div>
+    setIsSending(true);
+    try {
+      // APIへの送信処理
+      const res = await fetch("/api/admin/messages/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reviewIds: selectedReviews.map((r) => r.id),
+          message: messageBody,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("送信に失敗しました");
+      }
+
+      alert("メッセージを送信しました。");
+      setMessageBody("");
+      onClose();
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      alert("エラーが発生しました。もう一度お試しください。");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 status-edit-modal bg-opacity-50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="modal-content bg-white rounded-lg w-9/12 max-w-8xl max-h-[90vh] flex flex-col p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="modal-head text-center">一括メッセージ送信</h2>
+        <h3 className="modal-sub-head mt-3">メッセージを送信する書評</h3>
+
+        <div className="border p-3 overflow-auto h-64 mb-5">
+          <table className="w-full status-table">
+            <thead className="table-head">
+              <tr>
+                <th>ID</th>
+                <th>書籍タイトル</th>
+                <th>ニックネーム</th>
+              </tr>
+            </thead>
+            <tbody className="border status-book-section">
+              {selectedReviews.map((review) => (
+                <tr key={review.id} className="status-record text-center">
+                  <td>{review.id}</td>
+                  <td>{review.title}</td>
+                  <td>{review.nickname}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-    )
+
+        <form
+          onSubmit={handleSendMessage}
+          className="flex flex-col gap-4 items-center"
+        >
+          <textarea
+            className="all-message-area w-4/5"
+            placeholder="送信するメッセージを入力"
+            value={messageBody}
+            onChange={(e) => setMessageBody(e.target.value)}
+          />
+          <div className="m-auto w-1/4">
+            <AdminButton
+              label={isSending ? "送信中..." : "送信"}
+              type="submit"
+              disabled={isSending}
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

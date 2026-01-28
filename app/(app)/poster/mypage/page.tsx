@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
@@ -12,9 +13,8 @@ import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
 import Styles from "@/styles/app/poster.module.css";
 
-type ReviewFilterTab = "all" | "draft" | "reviewing" | "finished";
-
 interface ProfileData {
+  userId: number;
   nickName: string;
   address: string;
   addressDetail: string;
@@ -23,9 +23,21 @@ interface ProfileData {
   introduction: string;
 }
 
+type ReviewFilterTab = "all" | 1 | 2 | 3 | 4;
+type ReviewStatusCode = 1 | 2 | 3 | 4;
+
+interface BookReviewData {
+  id: number;
+  book_title: string;
+  evaluations_status: number;
+  review: string;
+}
+
 export default function MyPage() {
+  const router = useRouter();
+
   // 初期表示時にモーダルを表示
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   // プロフィール編集、退会確認、DM（運営からのお知らせ）モーダルの表示
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showDMModal, setShowDMModal] = useState(false);
@@ -33,6 +45,18 @@ export default function MyPage() {
 
   // ユーザーデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
+  // ユーザの書評データ
+  const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
+  // 未読メッセージデータ
+  interface UnreadMessage {
+    id: number;
+    message: {
+      message: string;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  }
+  const [unreadMessage, setUnreadMessage] = useState<UnreadMessage | null>(null);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -46,8 +70,63 @@ export default function MyPage() {
     }
   }, []);
 
+  const fetchBookReviewData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/book-reviews/mypage", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBookReviewData(data);
+      }
+    } catch (error) {
+      console.error("Failed to Fetch book review data", error);
+    }
+  }, []);
+
+  // 未読メッセージ取得
+  const fetchUnreadMessage = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/messages/unread");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.unreadMessage) {
+          setUnreadMessage(data.unreadMessage);
+          setShowModal(true); // 未読がある場合のみモーダルを開く
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+    }
+  }, []);
+
+  // メッセージ既読化処理
+  const handleConfirmRead = async () => {
+    if (!unreadMessage) {
+      setShowModal(false);
+      return;
+    }
+    try {
+      await fetch(`/api/user/messages/${unreadMessage.id}/read`, {
+        method: "PATCH",
+      });
+      setShowModal(false);
+      setUnreadMessage(null);
+    } catch (error) {
+      console.error("Failed to mark as read:", error);
+      // エラーでもとりあえず閉じる（UX優先）
+      setShowModal(false);
+    }
+  };
+
+  // 初回レンダリング時にデータを取得
   useEffect(() => {
     fetchUserData();
+    fetchBookReviewData();
+    fetchUnreadMessage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -68,50 +147,73 @@ export default function MyPage() {
     },
   ];
 
-  const sampleReviews = [
-    {
-      title: "色彩を持たない多崎つくると、彼の巡礼の年",
-      status: "1次審査前",
-      badgeType: "red",
-      excerpt:
-        "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "投稿済み・編集する",
-      buttonDisabled: false,
-      href: "/poster/edit",
-    },
-    {
-      title: "色彩を持たない多崎つくると、彼の巡礼の年",
-      status: "1次審査中",
-      badgeType: "blue",
-      excerpt:
-        "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "投稿済み・編集不可",
-      buttonDisabled: true,
-      href: undefined,
-    },
-    {
-      title: "色彩を持たない多崎つくると、彼の巡礼の年",
-      status: "下書き",
-      badgeType: "gray",
-      excerpt:
-        "静かに心へ染み込むような物語です。派手な展開や劇的な出来事よりも、登場人物の心の...",
-      buttonText: "下書きの編集＆投稿",
-      buttonDisabled: false,
-      href: "/poster/edit",
-    },
+  const REVIEW_FILTER_TABS: {
+    key: ReviewFilterTab;
+    label: string;
+  }[] = [
+    { key: "all" as const, label: "全て" },
+    { key: 1, label: "下書き" },
+    { key: 2, label: "審査前" },
+    { key: 3, label: "審査中" },
+    { key: 4, label: "終了済み" },
   ];
 
-  const REVIEW_FILTER_TABS = [
-    { key: "all" as const, label: "全て" },
-    { key: "draft" as const, label: "下書き" },
-    { key: "reviewing" as const, label: "審査中" },
-    { key: "finished" as const, label: "終了済み" },
-  ];
+  const REVIEW_STATUS_MAP = {
+    1: {
+      label: "下書き",
+      badgeType: "gray",
+      canEdit: true,
+    },
+    2: {
+      label: "１次審査前",
+      badgeType: "red",
+      canEdit: true,
+    },
+    3: {
+      label: "審査中",
+      badgeType: "blue",
+      canEdit: false,
+    },
+    4: {
+      label: "終了",
+      badgeType: "gray",
+      canEdit: false,
+    },
+  } as const;
+
+  // DB/APIの文字列・数値をUI用コード(1..4)へ正規化
+  const normalizeStatus = (val: number): ReviewStatusCode => {
+    return val === 1 || val === 2 || val === 3 || val === 4
+      ? (val as ReviewStatusCode)
+      : 2;
+  };
+
+  // 表示用にデータを整形
+  const uiReviews = bookReviewData.map((review) => {
+    const code = normalizeStatus(review.evaluations_status);
+    const status = REVIEW_STATUS_MAP[code];
+
+    return {
+      bookReviewId: review.id,
+      title: review.book_title,
+      status: status?.label ?? "未分類",
+      evaluations_status: code,
+      badgeType: status?.badgeType ?? "gray",
+      excerpt: review.review,
+      buttonText: status?.canEdit ? "投稿済み・編集する" : "投稿済み・編集不可",
+      href: status?.canEdit ? "/poster/edit" : undefined,
+    };
+  });
 
   const [activeFilterTab, setActiveFilterTab] =
     useState<ReviewFilterTab>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const filteredReviews = uiReviews.filter((review) => {
+    if (activeFilterTab === "all") return true;
+    return review.evaluations_status === activeFilterTab;
+  });
 
   const handleDeleteAccount = async () => {
     if (isDeleting) return;
@@ -123,6 +225,7 @@ export default function MyPage() {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ reason: "ユーザーからの退会申請" }),
       });
 
       if (res.ok) {
@@ -133,7 +236,7 @@ export default function MyPage() {
       } else {
         const data = await res.json();
         alert(
-          data.message || "退会処理に失敗しました。もう一度お試しください。"
+          data.message || "退会処理に失敗しました。もう一度お試しください。",
         );
         setIsDeleting(false);
       }
@@ -146,19 +249,26 @@ export default function MyPage() {
     }
   };
 
-  const filteredReviews = sampleReviews.filter((review) => {
-    if (activeFilterTab === "all") return true;
-    if (activeFilterTab === "draft") return review.status === "下書き";
-    if (activeFilterTab === "reviewing") return review.status.includes("審査");
-    if (activeFilterTab === "finished")
-      return review.status === "終了" || review.status === "終了済み";
-    return true;
-  });
+  const handleEditButton = (bookReview_id: number) => {
+    sessionStorage.setItem(
+      "bookReviewIdDraft",
+      JSON.stringify({
+        bookReviewId: bookReview_id,
+      }),
+    );
+
+    router.push("/post/edit");
+  };
 
   return (
     <>
       {/* 1次審査通過モーダル */}
-      <ReviewPassedModal open={showModal} onClose={() => setShowModal(false)} />
+      <ReviewPassedModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleConfirmRead}
+        message={unreadMessage?.message?.message}
+      />
       {/* 退会確認モーダル */}
       <AccountDeleteModal
         open={showDeleteModal}
@@ -328,8 +438,8 @@ export default function MyPage() {
                           review.badgeType === "red"
                             ? "bg-rose-50 text-rose-600 border border-rose-100"
                             : review.badgeType === "blue"
-                            ? "bg-sky-50 text-sky-600 border border-sky-100"
-                            : "bg-slate-100 text-slate-600 border border-slate-200"
+                              ? "bg-sky-50 text-sky-600 border border-sky-100"
+                              : "bg-slate-100 text-slate-600 border border-slate-200"
                         }`}
                       >
                         {review.status}
@@ -343,11 +453,13 @@ export default function MyPage() {
                     {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
                     <div className="mt-4">
                       {review.href ? (
-                        <Link href={review.href}>
-                          <button className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold">
-                            {review.buttonText}
-                          </button>
-                        </Link>
+                        <button
+                          type="button"
+                          className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
+                          onClick={() => handleEditButton(review.bookReviewId)}
+                        >
+                          {review.buttonText}
+                        </button>
                       ) : (
                         <button
                           className="w-full text-white px-3 py-2 rounded-md font-bold cursor-not-allowed"

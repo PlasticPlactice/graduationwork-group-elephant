@@ -32,6 +32,7 @@ interface ApiResponse {
 export default function Page() {
   const [isUserExitModalOpen, setIsUserExitModalOpen] = useState(false);
   const [isUserDetailModalOpen, setIsUserDetailModalOpen] = useState(false);
+  const [exitUserId, setExitUserId] = useState<number | null>(null);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [users, setUsers] = useState<User[]>([]);
@@ -50,7 +51,7 @@ export default function Page() {
     ageTo: "",
     prefecture: "",
     city: "",
-    status: "",
+    status: "all",
   });
 
   // ステータスに応じたクラス名を取得
@@ -79,7 +80,7 @@ export default function Page() {
         if (searchForm.prefecture)
           params.append("prefecture", searchForm.prefecture);
         if (searchForm.city) params.append("city", searchForm.city);
-        if (searchForm.status) params.append("status", searchForm.status);
+        params.append("status", searchForm.status);
 
         const response = await fetch(`/api/admin/users?${params.toString()}`);
         if (!response.ok) {
@@ -130,7 +131,7 @@ export default function Page() {
       ageTo: "",
       prefecture: "",
       city: "",
-      status: "",
+      status: "all",
     });
     setCurrentPage(1);
     fetchUsers(1);
@@ -188,6 +189,12 @@ export default function Page() {
   const handleCloseUserDetail = () => {
     setIsUserDetailModalOpen(false);
     setSelectedUserId(null);
+  };
+
+  const handleWithdrawSuccess = () => {
+    setIsUserExitModalOpen(false);
+    setExitUserId(null);
+    fetchUsers(currentPage);
   };
   return (
     <main className="users-container">
@@ -353,10 +360,10 @@ export default function Page() {
                 className="account-input"
                 id="status"
               >
-                <option value="">すべて</option>
+                <option value="all">すべて</option>
                 <option value="0">利用中</option>
                 <option value="1">退会済み</option>
-                <option value="2">BAN</option>
+                <option value="2">アカウント停止</option>
               </select>
             </div>
           </div>
@@ -586,9 +593,9 @@ export default function Page() {
       <UserDetailModal
         isOpen={isUserDetailModalOpen}
         onClose={handleCloseUserDetail}
-        onOpenUserExit={() => {
+        onOpenUserExit={(userId) => {
           setIsUserDetailModalOpen(false);
-          setSelectedUserId(null);
+          setExitUserId(userId);
           setIsUserExitModalOpen(true);
         }}
         userId={selectedUserId}
@@ -596,7 +603,12 @@ export default function Page() {
 
       <UserExitModal
         isOpen={isUserExitModalOpen}
-        onClose={() => setIsUserExitModalOpen(false)}
+        userId={exitUserId}
+        onClose={() => {
+          setIsUserExitModalOpen(false);
+          setExitUserId(null);
+        }}
+        onWithdrawSuccess={handleWithdrawSuccess}
       />
     </main>
   );

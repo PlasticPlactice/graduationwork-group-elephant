@@ -1,4 +1,4 @@
-import { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions } from "@/next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          admin.password
+          admin.password,
         );
 
         if (!isPasswordValid) {
@@ -84,7 +84,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!isPasswordValid) {
@@ -102,7 +102,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     // JWTトークン作成時
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.id = user.id;
         token.role = (user as CustomUser).role;
@@ -110,7 +110,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     // セッション作成時（クライアント側で参照できる情報）
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (session.user) {
         (session.user as CustomUser).id = token.id as string;
         (session.user as CustomUser).role = token.role as "admin" | "user";

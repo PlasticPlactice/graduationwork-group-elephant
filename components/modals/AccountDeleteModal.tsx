@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AccountDeleteModalProps {
@@ -96,7 +96,7 @@ export const AccountDeleteModal: React.FC<AccountDeleteModalProps> = ({
               <button
                 className="w-full text-white font-bold py-3 rounded-md text-center border-none focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: "red" }}
-                onClick={onConfirm}
+                onClick={() => onConfirm()}
                 disabled={isLoading}
               >
                 {isLoading ? "処理中..." : "退会する"}

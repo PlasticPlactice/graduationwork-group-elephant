@@ -1,62 +1,111 @@
-"use client"
-import AdminButton from '@/components/ui/admin-button';
+"use client";
+import { useCallback } from "react";
+import AdminButton from "@/components/ui/admin-button";
 
-interface CsvOutputModalPops {
-    isOpen: boolean;
-    onClose: () => void;
+// 出力するデータの型定義
+export interface CsvRecord {
+  id: number;
+  book_title: string;
+  nickname: string;
+  // 構造的部分型により、これ以外のプロパティを持っていても許容される
 }
 
-export default function CsvOutputModal({ isOpen, onClose }: CsvOutputModalPops) {
-    if (!isOpen) return null;
+interface CsvOutputModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  data: CsvRecord[]; // 親からデータを受け取る
+  fileName?: string;
+}
 
-     // サンプルデータ10件
-    const statusRecords = [
-        { id: 10, title: '転生したらスライムだった件', nickname: '象花たろう' },
-        { id: 11, title: '本好きの下剋上', nickname: '山田太郎' },
-        { id: 12, title: '無職転生', nickname: '佐藤花子' },
-        { id: 13, title: 'オーバーロード', nickname: '田中一郎' },
-        { id: 14, title: 'この素晴らしい世界に祝福を!', nickname: '鈴木次郎' },
-        { id: 15, title: 'Re:ゼロから始める異世界生活', nickname: '高橋三郎' },
-        { id: 16, title: '幼女戦記', nickname: '伊藤四郎' },
-        { id: 17, title: 'ログ・ホライズン', nickname: '渡辺五郎' },
-        { id: 18, title: 'ソードアート・オンライン', nickname: '中村六郎' },
-        { id: 19, title: '魔法科高校の劣等生', nickname: '小林七郎' },
-    ];
+export default function CsvOutputModal({
+  isOpen,
+  onClose,
+  data,
+  fileName = "book_reviews",
+}: CsvOutputModalProps) {
+  // useCallbackで関数をメモ化
+  const handleDownloadCsv = useCallback(() => {
+    const CSV_HEADER = "ID,書籍タイトル,ニックネーム\n";
 
-    
-    return (
-        <div className="fixed inset-0 status-edit-modal bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-            <div className="modal-content bg-white rounded-lg w-9/12 max-w-8xl max-h-[90vh] flex flex-col p-6"  onClick={(e) => e.stopPropagation()}>
-                <h2 className="modal-head text-center">CSV出力</h2>
-                <h3 className="modal-sub-head mt-3">CSV出力書評</h3>
+    const csvBody = data
+      .map((record) => {
+        const escapedTitle = record.book_title.replace(/"/g, '""');
+        const escapedNickname = record.nickname.replace(/"/g, '""');
+        return `${record.id},"${escapedTitle}","${escapedNickname}"`;
+      })
+      .join("\n");
 
-                <div className="border p-3 overflow-auto h-64 mb-5">
-                    <table className="w-full status-table">
-                        <thead className="table-head">
-                            <tr>
-                                <th>ID</th>
-                                <th>書籍タイトル</th>
-                                <th>ニックネーム</th>
-                            </tr>
-                        </thead>
-                        <tbody className="border status-book-section">
-                            {statusRecords.map((record) => (
-                                <tr key={record.id} className="status-record text-center">
-                                    <td>{record.id}</td>
-                                    <td>{record.title}</td>
-                                    <td>{record.nickname}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                <div className="m-auto w-1/4">
-                    <AdminButton
-                        label="CSV出力"
-                        type="submit"
-                    />
-                </div>
-            </div>
+    const csvContent = CSV_HEADER + csvBody;
+
+    // BOM (Byte Order Mark) を付与して文字化けを防止
+    const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+    const blob = new Blob([bom, csvContent], { type: "text/csv" });
+    const downloadUrl = URL.createObjectURL(blob);
+
+    // 現在日時を取得してファイル名を生成 (例: book_reviews_20240101_120000.csv)
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const hh = String(now.getHours()).padStart(2, "0");
+    const min = String(now.getMinutes()).padStart(2, "0");
+    const ss = String(now.getSeconds()).padStart(2, "0");
+    const timestamp = `${yyyy}${mm}${dd}_${hh}${min}${ss}`;
+
+    // ダウンロード用の一時的なリンクを作成
+    const downloadLink = document.createElement("a");
+    downloadLink.href = downloadUrl;
+    downloadLink.download = `${fileName.replace(/\.csv$/, "")}_${timestamp}.csv`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    // クリーンアップ
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(downloadUrl);
+  }, [data, fileName]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 status-edit-modal bg-opacity-50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="modal-content bg-white rounded-lg w-9/12 max-w-8xl max-h-[90vh] flex flex-col p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="modal-head text-center">CSV出力</h2>
+        <h3 className="modal-sub-head mt-3">CSV出力書評</h3>
+
+        <div className="border p-3 overflow-auto h-64 mb-5">
+          <table className="w-full status-table">
+            <thead className="table-head">
+              <tr>
+                <th>ID</th>
+                <th>書籍タイトル</th>
+                <th>ニックネーム</th>
+              </tr>
+            </thead>
+            <tbody className="border status-book-section">
+              {data.map((record) => (
+                <tr key={record.id} className="status-record text-center">
+                  <td>{record.id}</td>
+                  <td>{record.book_title}</td>
+                  <td>{record.nickname}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-    )
+        <div className="m-auto w-1/4">
+          <AdminButton
+            label="CSV出力"
+            type="button"
+            onClick={handleDownloadCsv}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
