@@ -512,10 +512,12 @@ function EditNoticeContent() {
         title: title,
         detail: detailHtml,
         public_flag: shouldPublish,
-        public_date: parseISO(publicDateStart).toISOString(),
+        public_date: saveAsDraft
+          ? new Date().toISOString()
+          : parseISO(publicDateStart).toISOString(),
         public_end_date: publicDateEnd
           ? parseISO(publicDateEnd).toISOString()
-          : null,
+          : parseISO("9999-12-31T23:59").toISOString(),
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
         fileIds: finalFileIds,

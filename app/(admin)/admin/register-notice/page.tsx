@@ -331,7 +331,7 @@ export default function Page() {
           : parseISO(publicDateStart).toISOString(), // 下書きの場合は現在時刻
         public_end_date: publicDateEnd
           ? parseISO(publicDateEnd).toISOString()
-          : null, // 公開終了日時
+          : parseISO("9999-12-31T23:59").toISOString(), // 公開終了日時
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
         fileIds: uploadedFileIds,
