@@ -1,6 +1,7 @@
-﻿import type { CSSProperties, Ref } from "react";
+﻿"use client";
+
+import type { CSSProperties, Ref } from "react";
 import type { Book } from "@/components/bookshelf/bookData";
-import { BOOKS } from "@/components/bookshelf/bookData";
 import { ScatterBook } from "@/components/bookshelf/ScatterBook";
 
 const SCATTER_AREA_HEIGHT = "90vh";
@@ -57,6 +58,7 @@ const getScatterSlot = (
   total: number,
   preset: "desktop" | "mobile"
 ): ScatterSlot => {
+  const round = (v: number, digits = 4) => Number(v.toFixed(digits));
   const normalized = Math.sqrt((index + 0.5) / Math.max(total, 1));
   const radius =
     preset === "desktop"
@@ -64,14 +66,16 @@ const getScatterSlot = (
       : 6 + normalized * 44;
   const angle = index * GOLDEN_ANGLE_DEG;
   const radians = (angle * Math.PI) / 180;
-  const left =
-    preset === "desktop"
-      ? clamp(46 + Math.cos(radians) * radius, 8, 86)
-      : clampRight(44 + Math.cos(radians) * radius, 6, 84);
-  const top =
+  const left = round(
+  preset === "desktop"
+    ? clamp(46 + Math.cos(radians) * radius, 8, 86)
+    : clampRight(44 + Math.cos(radians) * radius, 6, 84)
+  );
+  const top = round(
     preset === "desktop"
       ? clamp(40 + Math.sin(radians) * (radius * 0.85), 6, 80)
-      : clamp(38 + Math.sin(radians) * (radius * 1.1), 6, 84);
+      : clamp(38 + Math.sin(radians) * (radius * 1.1), 6, 84)
+  );
   const rotation = ((angle % 30) - 15) * 1.2;
 
   return {
@@ -82,7 +86,7 @@ const getScatterSlot = (
 };
 
 export function ScatterArea({
-  books = BOOKS,
+  books,
   bookSlots,
   className = "",
   onBookSelect,
@@ -91,8 +95,8 @@ export function ScatterArea({
   containerRef,
 }: ScatterAreaProps) {
   const scatterEntries =
-    bookSlots ?? books.map((book, idx) => ({ book, slotIndex: idx }));
-  const totalSlots = bookSlots ? BOOKS.length : books.length;
+    bookSlots ?? books?.map((book, idx) => ({ book, slotIndex: idx }));
+  const totalSlots = books?.length ?? 0;
   const preset = isDesktop ? "desktop" : "mobile";
 
   return (
@@ -123,7 +127,7 @@ export function ScatterArea({
       </div>
       <div className="relative w-full" style={{ height: SCATTER_AREA_HEIGHT }}>
         <div className="absolute inset-0 rounded-4xl border border-white/40 bg-white/50 shadow-[0_20px_45px_rgba(15,23,42,0.12)] backdrop-blur" />
-        {scatterEntries.map(({ book, slotIndex }, entryIdx) => {
+        {scatterEntries?.map(({ book, slotIndex }, entryIdx) => {
           const slot =
             SPECIAL_SLOTS_BY_BOOK_ID[book.id] ??
             (book.patternColor

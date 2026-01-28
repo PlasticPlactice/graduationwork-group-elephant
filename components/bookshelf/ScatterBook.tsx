@@ -1,3 +1,5 @@
+"use client";
+
 import type { CSSProperties } from "react";
 import type { Book } from "@/components/bookshelf/bookData";
 import { BookPattern } from "@/components/bookshelf/BookPattern";

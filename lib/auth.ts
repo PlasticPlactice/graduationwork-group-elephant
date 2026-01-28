@@ -1,7 +1,10 @@
-import type { NextAuthOptions } from "@/next-auth";
+import type { NextAuthOptions } from "@/types/next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { JWT } from "next-auth/jwt";
+import { User } from "next-auth";
+import { Session } from "next-auth";
 
 interface CustomUser {
   id: string;
@@ -102,7 +105,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     // JWTトークン作成時
-    async jwt({ token, user }: { token: any; user: any }) {
+    async jwt({ token, user }: { token: JWT; user: User }) {
       if (user) {
         token.id = user.id;
         token.role = (user as CustomUser).role;
@@ -110,7 +113,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     // セッション作成時（クライアント側で参照できる情報）
-    async session({ session, token }: { session: any; token: any }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         (session.user as CustomUser).id = token.id as string;
         (session.user as CustomUser).role = token.role as "admin" | "user";

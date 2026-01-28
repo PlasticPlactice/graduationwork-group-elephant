@@ -137,15 +137,11 @@ export function BookReviewModal({
         onClick={(event) => event.stopPropagation()}
         tabIndex={-1}
       >
-        <div className={styles.bookOpen} style={coverStyle}>
-          <div className={styles.bookOpenCover} aria-hidden="true" />
-          <div className={styles.bookOpenEdge} aria-hidden="true" />
-          <div className={styles.bookOpenContent}>
-            <div className="relative z-10 flex h-full flex-col px-4 py-8 sm:px-6">
-              <div className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
-                {book.review ?? "書評がまだ登録されていません。"}
-              </div>
-
+        <div className="relative z-10 flex h-full flex-col">
+          <div 
+            dangerouslySetInnerHTML={{ __html: book.review ?? "書評が登録されていません"}}
+            className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
+          </div>
               <div className="mt-6 flex flex-col gap-4">
                 <div className="flex items-center gap-3">
                   <button
@@ -213,7 +209,5 @@ export function BookReviewModal({
             </div>
           </div>
         </div>
-      </div>
-    </div>
   );
 }

@@ -1,25 +1,29 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 // mypage向け - 指定したユーザIDの書評をすべて取得
 export async function GET() {
   try {
-    const session = (await getServerSession(authOptions)) as {
-      user?: { id?: string };
-    } | null;
+    const session = await getServerSession(authOptions);
 
-    const userId = Number((session as any)?.user?.id);
+    const userId = Number(session?.user?.id);
 
     console.log("Fetching reviews for user ID:", userId);
 
     if (!userId || Number.isNaN(userId)) {
-      return NextResponse.json({ message: "Invalid user id" }, { status: 400 });
+      return NextResponse.json(
+        { message: "Invalid user id" },
+        { status: 400 }
+      );
     }
 
     if (!session || !session.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const reviews = await prisma.bookReview.findMany({
@@ -36,7 +40,7 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to fetch reviews" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -53,12 +57,12 @@ export async function POST(req: Request) {
       data: {
         user: {
           connect: {
-            id: body.user_id,
+            id: body.user_id
           },
         },
         book: {
           connect: {
-            isbn: body.isbn,
+            isbn: body.isbn
           },
         },
         event_id: body.event_id,
@@ -90,7 +94,7 @@ export async function POST(req: Request) {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to create review" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -104,7 +108,10 @@ export async function DELETE(req: Request) {
     const body = await req.json();
 
     if (!body.id) {
-      return NextResponse.json({ message: "id is required" }, { status: 400 });
+      return NextResponse.json(
+        { message: "id is required" },
+        { status: 400 }
+      );
     }
 
     await prisma.bookReview.update({
@@ -118,7 +125,7 @@ export async function DELETE(req: Request) {
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to delete review" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
