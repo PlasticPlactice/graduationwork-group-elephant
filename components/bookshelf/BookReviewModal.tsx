@@ -132,8 +132,9 @@ export function BookReviewModal({
         tabIndex={-1}
       >
         <div className="relative z-10 flex h-full flex-col">
-          <div className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
-            {book.review ?? "書評がまだ登録されていません。"}
+          <div 
+            dangerouslySetInnerHTML={{ __html: book.review ?? "書評が登録されていません"}}
+            className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
           </div>
 
           <div className="mt-6 flex flex-col gap-4">

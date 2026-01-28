@@ -2,7 +2,6 @@
 
 import type { CSSProperties, Ref } from "react";
 import type { Book } from "@/components/bookshelf/bookData";
-import { BOOKS } from "@/components/bookshelf/bookData";
 import { ScatterBook } from "@/components/bookshelf/ScatterBook";
 
 const SCATTER_AREA_HEIGHT = "90vh";
@@ -87,7 +86,7 @@ const getScatterSlot = (
 };
 
 export function ScatterArea({
-  books = BOOKS,
+  books,
   bookSlots,
   className = "",
   onBookSelect,
@@ -96,8 +95,8 @@ export function ScatterArea({
   containerRef,
 }: ScatterAreaProps) {
   const scatterEntries =
-    bookSlots ?? books.map((book, idx) => ({ book, slotIndex: idx }));
-  const totalSlots = bookSlots ? BOOKS.length : books.length;
+    bookSlots ?? books?.map((book, idx) => ({ book, slotIndex: idx }));
+  const totalSlots = books?.length ?? 0;
   const preset = isDesktop ? "desktop" : "mobile";
 
   return (
@@ -128,7 +127,7 @@ export function ScatterArea({
       </div>
       <div className="relative w-full" style={{ height: SCATTER_AREA_HEIGHT }}>
         <div className="absolute inset-0 rounded-4xl border border-white/40 bg-white/50 shadow-[0_20px_45px_rgba(15,23,42,0.12)] backdrop-blur" />
-        {scatterEntries.map(({ book, slotIndex }, entryIdx) => {
+        {scatterEntries?.map(({ book, slotIndex }, entryIdx) => {
           const slot =
             SPECIAL_SLOTS_BY_BOOK_ID[book.id] ??
             (book.patternColor

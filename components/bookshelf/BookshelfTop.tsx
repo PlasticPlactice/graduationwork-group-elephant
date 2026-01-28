@@ -7,11 +7,12 @@ import {
   useEffect,
   useRef,
   useState,
+  useMemo, // ★追加
   type RefObject,
 } from "react";
 
 import { BookshelfLayout } from "@/components/bookshelf/BookshelfLayout";
-import { BOOKS, type Book } from "@/components/bookshelf/bookData";
+import { type Book } from "@/components/bookshelf/bookData";
 import { BookReviewModal } from "@/components/bookshelf/BookReviewModal";
 import { ShelfBook } from "@/components/bookshelf/ShelfBook";
 import {
@@ -25,13 +26,15 @@ const DESKTOP_MAX_BOOKS_PER_SHELF = 15;
 const MAX_SHELVES = 3;
 const TUTORIAL_STORAGE_KEY = "bookshelf_tutorial_done_v2";
 const EVENT_INFO_STORAGE_KEY = "bookshelf_event_info_seen_v1";
-const BOOK_INDEX_BY_ID = new Map(BOOKS.map((book, index) => [book.id, index]));
+
+// ★削除: ここにあった const BOOK_INDEX_BY_ID = ... は削除します。
+// reviewsが来るまでIDが分からないため、コンポーネント内部で計算します。
 
 const createEmptyShelves = () =>
   Array.from({ length: MAX_SHELVES }, () => [] as Book[]);
 
-const createInitialScatterEntries = (): ScatterEntry[] =>
-  BOOKS.map((book, idx) => ({ book, slotIndex: idx }));
+const createInitialScatterEntries = (reviews: Book[]): ScatterEntry[] =>
+  reviews.map((book, idx) => ({ book, slotIndex: idx }));
 
 type BooksState = {
   shelves: Book[][];
@@ -43,13 +46,17 @@ type ModalState = {
   mode: "scatter" | "shelf";
 };
 
+type Props = {
+  reviews: Book[];
+};
+
 function renderShelfRow(
-  books: typeof BOOKS,
+  books: Book[], // ★修正: typeof BOOKS から Book[] に変更
   rowKey: string,
   maxBooksPerShelf: number,
   onBookSelect?: (book: Book) => void,
   favorites?: string[],
-  votedBookId?: string | null,
+  votedBookId?: string | null
 ) {
   if (books.length === 0) return null;
   return (
@@ -79,6 +86,7 @@ function renderShelfRow(
   );
 }
 
+// ... (TutorialOverlay コンポーネントは変更なしなので省略可。そのまま残してください) ...
 type TutorialOverlayProps = {
   targetRef: RefObject<HTMLElement>;
   message: string;
@@ -96,136 +104,139 @@ function TutorialOverlay({
   preferPlacement,
   onNext,
 }: TutorialOverlayProps) {
-  const [rect, setRect] = useState<DOMRect | null>(null);
+    // ... (TutorialOverlayの中身は変更なし) ...
+    // 元のコードのままでOKです
+    const [rect, setRect] = useState<DOMRect | null>(null);
 
-  const updateRect = useCallback(() => {
-    const target = targetRef.current;
-    if (!target) {
-      setRect(null);
-      return;
-    }
-    setRect(target.getBoundingClientRect());
-  }, [targetRef]);
+    const updateRect = useCallback(() => {
+        const target = targetRef.current;
+        if (!target) {
+        setRect(null);
+        return;
+        }
+        setRect(target.getBoundingClientRect());
+    }, [targetRef]);
 
-  useEffect(() => {
-    updateRect();
-    window.addEventListener("resize", updateRect);
-    window.addEventListener("scroll", updateRect, true);
-    return () => {
-      window.removeEventListener("resize", updateRect);
-      window.removeEventListener("scroll", updateRect, true);
-    };
-  }, [updateRect]);
+    useEffect(() => {
+        updateRect();
+        window.addEventListener("resize", updateRect);
+        window.addEventListener("scroll", updateRect, true);
+        return () => {
+        window.removeEventListener("resize", updateRect);
+        window.removeEventListener("scroll", updateRect, true);
+        };
+    }, [updateRect]);
 
-  useEffect(() => {
-    if (rect) return;
-    let frameId: number;
-    const tick = () => {
-      updateRect();
-      frameId = window.requestAnimationFrame(tick);
-    };
-    frameId = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frameId);
-  }, [rect, updateRect]);
+    useEffect(() => {
+        if (rect) return;
+        let frameId: number;
+        const tick = () => {
+        updateRect();
+        frameId = window.requestAnimationFrame(tick);
+        };
+        frameId = window.requestAnimationFrame(tick);
+        return () => window.cancelAnimationFrame(frameId);
+    }, [rect, updateRect]);
 
-  if (!rect) return null;
+    if (!rect) return null;
 
-  const padding = 10;
-  const highlightTop = Math.max(rect.top - padding, 0);
-  const highlightLeft = Math.max(rect.left - padding, 0);
-  const highlightWidth = rect.width + padding * 2;
-  const highlightHeight = rect.height + padding * 2;
-  const highlightRight = highlightLeft + highlightWidth;
-  const highlightBottom = highlightTop + highlightHeight;
+    const padding = 10;
+    const highlightTop = Math.max(rect.top - padding, 0);
+    const highlightLeft = Math.max(rect.left - padding, 0);
+    const highlightWidth = rect.width + padding * 2;
+    const highlightHeight = rect.height + padding * 2;
+    const highlightRight = highlightLeft + highlightWidth;
+    const highlightBottom = highlightTop + highlightHeight;
 
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-  const tooltipWidth = 280;
-  const tooltipGap = 12;
-  const canPlaceBelow = highlightBottom + 140 < viewportHeight;
-  const placeBelow =
-    preferPlacement === "bottom"
-      ? true
-      : preferPlacement === "top"
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const tooltipWidth = 280;
+    const tooltipGap = 12;
+    const canPlaceBelow = highlightBottom + 140 < viewportHeight;
+    const placeBelow =
+        preferPlacement === "bottom"
+        ? true
+        : preferPlacement === "top"
         ? false
         : canPlaceBelow;
-  const tooltipLeft = Math.min(
-    Math.max(rect.left + rect.width / 2, 12 + tooltipWidth / 2),
-    viewportWidth - 12 - tooltipWidth / 2,
-  );
-  const rawTooltipTop = placeBelow
-    ? highlightBottom + tooltipGap
-    : highlightTop - tooltipGap;
-  const tooltipTop = Math.min(Math.max(rawTooltipTop, 12), viewportHeight - 12);
-  const tooltipTransform = placeBelow
-    ? "translateX(-50%)"
-    : "translate(-50%, -100%)";
+    const tooltipLeft = Math.min(
+        Math.max(rect.left + rect.width / 2, 12 + tooltipWidth / 2),
+        viewportWidth - 12 - tooltipWidth / 2,
+    );
+    const rawTooltipTop = placeBelow
+        ? highlightBottom + tooltipGap
+        : highlightTop - tooltipGap;
+    const tooltipTop = Math.min(Math.max(rawTooltipTop, 12), viewportHeight - 12);
+    const tooltipTransform = placeBelow
+        ? "translateX(-50%)"
+        : "translate(-50%, -100%)";
 
-  return (
-    <div className="fixed inset-0 z-[70] pointer-events-none">
-      <div
-        className="fixed bg-black/60 pointer-events-auto"
-        style={{ top: 0, left: 0, right: 0, height: highlightTop }}
-      />
-      <div
-        className="fixed bg-black/60 pointer-events-auto"
-        style={{
-          top: highlightTop,
-          left: 0,
-          width: highlightLeft,
-          height: highlightHeight,
-        }}
-      />
-      <div
-        className="fixed bg-black/60 pointer-events-auto"
-        style={{
-          top: highlightTop,
-          left: highlightRight,
-          right: 0,
-          height: highlightHeight,
-        }}
-      />
-      <div
-        className="fixed bg-black/60 pointer-events-auto"
-        style={{ top: highlightBottom, left: 0, right: 0, bottom: 0 }}
-      />
+    return (
+        <div className="fixed inset-0 z-[70] pointer-events-none">
+        <div
+            className="fixed bg-black/60 pointer-events-auto"
+            style={{ top: 0, left: 0, right: 0, height: highlightTop }}
+        />
+        <div
+            className="fixed bg-black/60 pointer-events-auto"
+            style={{
+            top: highlightTop,
+            left: 0,
+            width: highlightLeft,
+            height: highlightHeight,
+            }}
+        />
+        <div
+            className="fixed bg-black/60 pointer-events-auto"
+            style={{
+            top: highlightTop,
+            left: highlightRight,
+            right: 0,
+            height: highlightHeight,
+            }}
+        />
+        <div
+            className="fixed bg-black/60 pointer-events-auto"
+            style={{ top: highlightBottom, left: 0, right: 0, bottom: 0 }}
+        />
 
-      <div
-        className="fixed pointer-events-none rounded-3xl border-2 border-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.2)]"
-        style={{
-          top: highlightTop,
-          left: highlightLeft,
-          width: highlightWidth,
-          height: highlightHeight,
-        }}
-      />
+        <div
+            className="fixed pointer-events-none rounded-3xl border-2 border-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.2)]"
+            style={{
+            top: highlightTop,
+            left: highlightLeft,
+            width: highlightWidth,
+            height: highlightHeight,
+            }}
+        />
 
-      <div
-        className="fixed pointer-events-auto w-[280px] rounded-2xl bg-white px-4 py-3 text-base text-slate-800 shadow-lg"
-        style={{
-          top: tooltipTop,
-          left: tooltipLeft,
-          transform: tooltipTransform,
-        }}
-      >
-        <p className="leading-relaxed">{message}</p>
-        {showNext ? (
-          <div className="mt-3 flex justify-end">
-            <button
-              type="button"
-              onClick={onNext}
-              className="rounded-full bg-slate-900 px-4 py-1.5 text-xs font-semibold text-white"
-            >
-              {nextLabel}
-            </button>
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
+        <div
+            className="fixed pointer-events-auto w-[280px] rounded-2xl bg-white px-4 py-3 text-base text-slate-800 shadow-lg"
+            style={{
+            top: tooltipTop,
+            left: tooltipLeft,
+            transform: tooltipTransform,
+            }}
+        >
+            <p className="leading-relaxed">{message}</p>
+            {showNext ? (
+            <div className="mt-3 flex justify-end">
+                <button
+                type="button"
+                onClick={onNext}
+                className="rounded-full bg-slate-900 px-4 py-1.5 text-xs font-semibold text-white"
+                >
+                {nextLabel}
+                </button>
+            </div>
+            ) : null}
+        </div>
+        </div>
+    );
 }
+// ... TutorialOverlayここまで ...
 
-export function BookshelfTop() {
+export function BookshelfTop({ reviews }: Props) {
   const shelfTopRef = useRef<HTMLDivElement | null>(null);
   const scatterTopRef = useRef<HTMLDivElement | null>(null);
   const shelfAreaRef = useRef<HTMLDivElement | null>(null);
@@ -237,9 +248,15 @@ export function BookshelfTop() {
   const [maxBooksPerShelf, setMaxBooksPerShelf] = useState(
     MOBILE_MAX_BOOKS_PER_SHELF
   );
+
+  // ★追加: reviewsからIDマップを動的に生成
+  const bookIndexById = useMemo(() => {
+    return new Map(reviews.map((book, index) => [book.id, index]));
+  }, [reviews]);
+
   const [booksState, setBooksState] = useState<BooksState>(() => ({
     shelves: createEmptyShelves(),
-    scatter: createInitialScatterEntries(),
+    scatter: createInitialScatterEntries(reviews),
   }));
   const { shelves, scatter } = booksState;
   const [modalState, setModalState] = useState<ModalState | null>(null);
@@ -288,7 +305,9 @@ export function BookshelfTop() {
       const nextIsDesktop = window.innerWidth >= 1024;
       setIsDesktop(nextIsDesktop);
       setMaxBooksPerShelf(
-        nextIsDesktop ? DESKTOP_MAX_BOOKS_PER_SHELF : MOBILE_MAX_BOOKS_PER_SHELF
+        nextIsDesktop
+          ? DESKTOP_MAX_BOOKS_PER_SHELF
+          : MOBILE_MAX_BOOKS_PER_SHELF
       );
     };
     updateMax();
@@ -296,6 +315,7 @@ export function BookshelfTop() {
     return () => window.removeEventListener("resize", updateMax);
   }, []);
 
+  // ★修正: shelvesとscatterの割り振りを計算するEffect
   useEffect(() => {
     setBooksState((prevState) => {
       const shelfBooks = prevState.shelves.flat();
@@ -328,7 +348,10 @@ export function BookshelfTop() {
 
       for (const book of shelfBooks) {
         if (shelfBookIds.has(book.id)) continue;
-        const slotIndex = BOOK_INDEX_BY_ID.get(book.id);
+        
+        // ★修正: グローバルの BOOK_INDEX_BY_ID ではなく、ローカルの bookIndexById を使用
+        const slotIndex = bookIndexById.get(book.id);
+        
         if (slotIndex === undefined) continue;
         if (!scatterById.has(book.id)) {
           nextScatter.push({ book, slotIndex });
@@ -340,16 +363,21 @@ export function BookshelfTop() {
         scatter: nextScatter,
       };
     });
-  }, [maxBooksPerShelf]);
+  }, [maxBooksPerShelf, bookIndexById]); // ★依存配列に bookIndexById を追加
 
   useEffect(() => {
     if (tutorialStep !== 4) return;
     if (modalState || !tutorialBookId) return;
-    const targetBook = BOOKS.find((book) => book.id === tutorialBookId);
+    
+    // ★修正: BOOKS.find ではなく reviews.find を使用
+    const targetBook = reviews.find((book) => book.id === tutorialBookId);
+    
     if (targetBook) {
       setModalState({ book: targetBook, mode: "shelf" });
     }
-  }, [modalState, tutorialBookId, tutorialStep]);
+  }, [modalState, tutorialBookId, tutorialStep, reviews]); // ★依存配列に reviews を追加
+
+  // ... (以下変更なし) ...
 
   useEffect(() => {
     if (tutorialStep !== 1) return;
@@ -371,37 +399,39 @@ export function BookshelfTop() {
     };
   }, [tutorialStep]);
 
-  const moveScatterBookToShelf = useCallback((bookId: string) => {
-    setBooksState((prevState) => {
-      const entryIndex = prevState.scatter.findIndex(
-        (entry) => entry.book.id === bookId,
-      );
-      if (entryIndex === -1) {
-        return prevState;
-      }
+  const moveScatterBookToShelf = useCallback(
+    (bookId: string) => {
+      setBooksState((prevState) => {
+        const entryIndex = prevState.scatter.findIndex(
+          (entry) => entry.book.id === bookId
+        );
+        if (entryIndex === -1) {
+          return prevState;
+        }
 
-      const targetShelfIndex = prevState.shelves.findIndex(
-        (shelf) => shelf.length < maxBooksPerShelf
+        const targetShelfIndex = prevState.shelves.findIndex(
+          (shelf) => shelf.length < maxBooksPerShelf
+        );
+        if (targetShelfIndex === -1) {
+          return prevState;
+        }
 
-      );
-      if (targetShelfIndex === -1) {
-        return prevState;
-      }
+        const entry = prevState.scatter[entryIndex];
+        const updatedShelves = prevState.shelves.map((shelf, idx) =>
+          idx === targetShelfIndex ? [...shelf, entry.book] : shelf
+        );
+        const updatedScatter = prevState.scatter.filter(
+          (_, idx) => idx !== entryIndex
+        );
 
-      const entry = prevState.scatter[entryIndex];
-      const updatedShelves = prevState.shelves.map((shelf, idx) =>
-        idx === targetShelfIndex ? [...shelf, entry.book] : shelf,
-      );
-      const updatedScatter = prevState.scatter.filter(
-        (_, idx) => idx !== entryIndex,
-      );
-
-      return {
-        shelves: updatedShelves,
-        scatter: updatedScatter,
-      };
-    });
-  }, [maxBooksPerShelf]);
+        return {
+          shelves: updatedShelves,
+          scatter: updatedScatter,
+        };
+      });
+    },
+    [maxBooksPerShelf]
+  );
 
   const handleScatterBookSelect = useCallback(
     (entry: ScatterEntry) => {
@@ -411,7 +441,7 @@ export function BookshelfTop() {
       }
       setModalState({ book: entry.book, mode: "scatter" });
     },
-    [tutorialStep],
+    [tutorialStep]
   );
 
   const handleShelfBookSelect = useCallback((book: Book) => {
@@ -422,7 +452,7 @@ export function BookshelfTop() {
     setFavorites((prev) =>
       prev.includes(bookId)
         ? prev.filter((id) => id !== bookId)
-        : [...prev, bookId],
+        : [...prev, bookId]
     );
   }, []);
 
@@ -435,7 +465,7 @@ export function BookshelfTop() {
       setVotedBookId(bookId);
       return true;
     },
-    [votedBookId],
+    [votedBookId]
   );
 
   const handleCloseReview = useCallback(() => {
@@ -459,7 +489,6 @@ export function BookshelfTop() {
     }
     const hasSpace = booksState.shelves.some(
       (shelf) => shelf.length < maxBooksPerShelf
-
     );
     if (!hasSpace) {
       window.alert("本棚に空きがありません。");
@@ -496,10 +525,10 @@ export function BookshelfTop() {
     setModalState(null);
     setBooksState({
       shelves: createEmptyShelves(),
-      scatter: createInitialScatterEntries(),
+      scatter: createInitialScatterEntries(reviews), // ★ここは既にreviewsになっているのでOK
     });
     scrollToScatter();
-  }, [scrollToScatter]);
+  }, [scrollToScatter, reviews]); // ★依存配列にreviews追加
 
   useEffect(() => {
     if (tutorialStep === 1) {
@@ -551,8 +580,8 @@ export function BookshelfTop() {
                 maxBooksPerShelf,
                 handleShelfBookSelect,
                 favorites,
-                votedBookId,
-              ),
+                votedBookId
+              )
             )}
           />
         </div>
@@ -601,14 +630,16 @@ export function BookshelfTop() {
         )}
       </div>
       <div ref={scatterTopRef} />
-      <ScatterArea
+       <ScatterArea
         className="mt-0"
-        bookSlots={scatter}
+        books={scatter.map((entry) => entry.book)} // scatter状態にある本だけを渡す
         onBookSelect={handleScatterBookSelect}
         onBackToShelf={scrollToShelf}
         isDesktop={isDesktop}
         containerRef={scatterAreaRef}
       />
+
+
       <BookReviewModal
         book={modalState?.book}
         open={Boolean(modalState)}
@@ -632,6 +663,8 @@ export function BookshelfTop() {
           }
         }}
       />
+      
+      {/* チュートリアルやModal部分は変更なしのため省略 */}
       {!isEventInfoOpen && tutorialStep === 0 ? (
         <div
           className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 px-4"
@@ -639,7 +672,8 @@ export function BookshelfTop() {
           aria-modal="true"
           aria-label="チュートリアル開始"
         >
-          <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 text-center text-slate-900 shadow-xl">
+            {/* ... 中略 ... */}
+            <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 text-center text-slate-900 shadow-xl">
             <p className="text-base font-bold text-pink-500">
               チュートリアルを開始します
             </p>
@@ -666,6 +700,8 @@ export function BookshelfTop() {
           </div>
         </div>
       ) : null}
+      
+      {/* ... 以降のTutorialOverlayやModalはそのまま ... */}
       {!isEventInfoOpen && tutorialStep === 1 ? (
         <TutorialOverlay
           targetRef={scatterBookRef as RefObject<HTMLElement>}
@@ -697,7 +733,8 @@ export function BookshelfTop() {
         />
       ) : null}
       <Modal open={isEventInfoOpen} onClose={handleCloseEventInfo}>
-        <div className="relative overflow-hidden rounded-2xl border-2 border-pink-200 bg-gradient-to-br from-amber-50 via-pink-50 to-sky-50 p-6 text-left text-slate-900 shadow-xl">
+        {/* ... イベント説明の中身 ... */}
+         <div className="relative overflow-hidden rounded-2xl border-2 border-pink-200 bg-gradient-to-br from-amber-50 via-pink-50 to-sky-50 p-6 text-left text-slate-900 shadow-xl">
           <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-amber-200/60" />
           <div className="absolute -bottom-12 -left-12 h-28 w-28 rounded-full bg-sky-200/60" />
           <div className="relative">
