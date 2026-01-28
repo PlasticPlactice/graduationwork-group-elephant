@@ -10,27 +10,14 @@ interface ItemProps {
   date: string;
   title: string;
   image: string;
+  content?: string;
+  pdfUrl?: string;
 }
 
 interface ItemModalProps {
   item: ItemProps;
   onClose: () => void;
 }
-
-// モーダル用のダミーデータ
-const modalContent = {
-  text: "このたび、当館では「第一回 文庫X」を開催いたします。\n文庫Xとは、中身のわからない本をテーマにした読書イベントです。\nタイトルや著者名を伏せた状態で本を選び、読んでからのお楽しみ！\n普段出会えない一冊との出会いを、ぜひお楽しみください。",
-  eventDate: "開催期間：10月1日～11月30日",
-  eventPlace: "開催場所：図書コーナー 特設棚",
-  attachments: [
-    { type: "image", src: "/top/image1.png" },
-    { type: "image", src: "/top/image.png" },
-    { type: "image", src: "/top/image1.png" },
-    { type: "image", src: "/top/image.png" },
-    { type: "image", src: "/top/image.png" },
-    { type: "image", src: "/top/image1.png" },
-  ],
-};
 
 export const ItemModal = ({ item, onClose }: ItemModalProps) => {
   useEffect(() => {
@@ -84,23 +71,37 @@ export const ItemModal = ({ item, onClose }: ItemModalProps) => {
           <h2 className="modal-title" id="modal-title">
             {item.title}
           </h2>
-          <p className="modal-text">{modalContent.text}</p>
-          <p className="modal-text">{modalContent.eventDate}</p>
-          <p className="modal-text">{modalContent.eventPlace}</p>
+          <p className="modal-text" style={{ whiteSpace: "pre-wrap" }}>
+            {item.content}
+          </p>
 
-          <h3 className="attachments-title">添付資料</h3>
-          <div className="attachments-grid">
-            {modalContent.attachments.map((att, index) => (
-              <div key={index} className="attachment-item">
-                <Image
-                  src={att.src}
-                  alt={`添付資料 ${index + 1}`}
-                  fill
-                  style={{ objectFit: "contain" }}
-                />
+          {item.pdfUrl && (
+            <>
+              <h3 className="attachments-title">添付資料</h3>
+              <div className="attachments-grid">
+                <a
+                  href={item.pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="attachment-item"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#f3f4f6",
+                    borderRadius: "8px",
+                    textDecoration: "none",
+                    color: "var(--color-main)",
+                    border: "1px solid #e5e7eb",
+                    minHeight: "100px",
+                  }}
+                >
+                  <span className="text-xs font-bold">PDF資料を表示</span>
+                </a>
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </div>
         <div className="modal-footer">
           <Button

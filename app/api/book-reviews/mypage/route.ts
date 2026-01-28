@@ -10,7 +10,7 @@ export async function GET() {
       user?: { id?: string };
     } | null;
 
-    const userId = Number(session?.user?.id);
+    const userId = Number((session as any)?.user?.id);
 
     console.log("Fetching reviews for user ID:", userId);
 

@@ -12,6 +12,8 @@ interface ItemProps {
   date: string;
   title: string;
   image: string;
+  content?: string;
+  pdfUrl?: string;
 }
 
 interface ListPageLayoutProps {

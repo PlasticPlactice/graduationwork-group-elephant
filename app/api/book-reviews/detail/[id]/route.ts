@@ -38,7 +38,7 @@ export async function GET(
     const review = await prisma.bookReview.findFirst({
       where: {
         id: bookReviewId,
-        user_id: Number(session.user.id), // 他人のレビュー防止
+        user_id: Number((session as any).user.id), // 他人のレビュー防止
       },
     });
 
