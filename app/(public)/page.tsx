@@ -30,30 +30,27 @@ export default function Home() {
     <div>
       <main>
         <div className="hero">
-          {/* Desktop image */}
-          <div className="heroImage heroImage--desktop">
-            <Image
-              src="/top/top.jpg"
-              alt="Top Image Desktop"
-              fill
-              priority
-              sizes="(min-width: 768px) 100vw, 100vw"
-              style={{ objectFit: "contain" }}
-            />
-          </div>
-          {/* Mobile image */}
-          <div className="heroImage heroImage--mobile">
-            <Image
-              src="/top/top.jpg"
-              alt="Top Image Mobile"
-              fill
-              priority
-              sizes="100vw"
-              style={{ objectFit: "contain" }}
-            />
+          <div className="heroContent">
+            <div className="heroPoster" role="img" aria-label="トップ画像">
+              <div className="posterStack">
+                <Image
+                  src="/top/retop.png"
+                  alt=""
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="posterLayer posterLayer--1"
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+            </div>
+            <h1 className="heroTitle">象と花プロジェクト</h1>
+            <a className="heroBunkoBadge" href="#bunko-x">
+              文庫<span>X</span>はこちら
+            </a>
           </div>
         </div>
-        <section className="about">
+        <section id="about" className="about">
           <div className="about__inner">
             <h2 className="about__title">
               <span className="about__title-line"></span>
@@ -84,7 +81,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bunko-x">
+        <section id="bunko-x" className="bunko-x">
           <div className="bunko-x__inner">
             {/* 投票可能なイベント */}
             <div className="bunko-x__events">
@@ -101,8 +98,8 @@ export default function Home() {
                   daysLeft={10}
                   description="投票期間中です！投票してみましょう！"
                   buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="var(--color-main)"
-                  buttonTextColor="var(--color-main)"
+                  buttonBorderColor="var(--bunko-x-accent)"
+                  buttonTextColor="var(--bunko-x-accent)"
                 />
 
                 {/* Card 2 */}
@@ -111,8 +108,8 @@ export default function Home() {
                   daysLeft={10}
                   description="投票期間中です！投票してみましょう！"
                   buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="var(--color-main)"
-                  buttonTextColor="var(--color-main)"
+                  buttonBorderColor="var(--bunko-x-accent)"
+                  buttonTextColor="var(--bunko-x-accent)"
                 />
               </div>
 
@@ -121,7 +118,7 @@ export default function Home() {
                   className="w-full mb-24"
                   href="/event"
                   style={{
-                    backgroundColor: "var(--color-main)",
+                    backgroundColor: "var(--bunko-x-accent)",
                     color: "var(--color-white)",
                     width: "100%",
                     maxWidth: "400px",
@@ -159,7 +156,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="news">
+        <section id="news" className="news">
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
@@ -322,6 +319,7 @@ export default function Home() {
         </section>
 
         <section
+          id="donation"
           className="news"
           style={{
             backgroundColor: "#F1F0E8",

@@ -33,7 +33,7 @@ export const EventCard = ({
 
   return (
     <div
-      className="event-card bg-white rounded-lg p-6 shadow-sm"
+      className="event-card bg-white rounded-none p-6 shadow-sm"
       style={{
         border: isFinished
           ? "1px solid rgb(203, 213, 225)"
