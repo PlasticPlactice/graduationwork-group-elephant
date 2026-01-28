@@ -65,7 +65,11 @@ export async function GET(req: NextRequest) {
     // Notificationデータを取得
     const notifications = await prisma.notification.findMany({
       where: whereCondition,
-      include: {
+      select: {
+        id: true,
+        title: true,
+        detail: true,
+        public_date: true,
         notificationFiles: {
           where: {
             deleted_flag: false,
@@ -86,15 +90,23 @@ export async function GET(req: NextRequest) {
     });
 
     // NotificationItem 形式に変換
-    const items: NotificationItem[] = notifications.map((notification) => ({
-      id: notification.id,
-      date: notification.public_date.toISOString().split("T")[0],
-      title: notification.title,
-      image:
-        notification.notificationFiles.length > 0
-          ? notification.notificationFiles[0].file.data_path
-          : "/top/image.png",
-    }));
+    const items: NotificationItem[] = notifications.map((notification) => {
+      const pdfFile = notification.notificationFiles.find((nf) =>
+        nf.file.data_path.toLowerCase().endsWith(".pdf"),
+      );
+
+      return {
+        id: notification.id,
+        date: notification.public_date.toISOString().split("T")[0],
+        title: notification.title,
+        content: notification.detail,
+        image:
+          notification.notificationFiles.length > 0
+            ? notification.notificationFiles[0].file.data_path
+            : "/top/image.png",
+        pdfUrl: pdfFile ? pdfFile.file.data_path : undefined,
+      };
+    });
 
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
