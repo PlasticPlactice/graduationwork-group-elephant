@@ -1,7 +1,10 @@
 import { BookshelfTop } from "@/components/bookshelf/BookshelfTop";
 import { getPublicBookReviews } from "@/lib/bookData";
 
+export const dynamic = "force-dynamic";
+
 export default async function BookshelfDetailPage() {
+
 
   const bookReviews = await getPublicBookReviews(1);
 
