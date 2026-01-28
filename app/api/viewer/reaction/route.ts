@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     const { user_id, book_review_id, reaction_id } = body;
 
     // 1. バリデーション: IDがない場合は弾く
-    if (!book_review_id || !reaction_id) {
+    if (!user_id || !book_review_id || !reaction_id) {
       return NextResponse.json(
         { message: "BookReview ID and Reaction ID are required" },
         { status: 400 }
