@@ -22,6 +22,11 @@
   align-items: stretch;
   justify-content: center;
 }
+.heroText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .heroImage {
   position: absolute;
   inset: 0;
@@ -59,6 +64,9 @@
   transform: translateY(10px);
   animation: heroTitleReveal 1400ms ease-out 220ms forwards;
 }
+.heroTitle br {
+  display: none;
+}
 .heroBunkoBadge {
   position: absolute;
   right: 20px;
@@ -91,6 +99,50 @@
   transform: translateY(-2px);
   box-shadow: 0 18px 30px rgba(15, 23, 42, 0.25);
   outline: none;
+}
+
+@media (min-width: 1024px) {
+  .heroContent {
+    display: grid;
+    grid-template-columns: minmax(280px, 420px) minmax(360px, 1fr);
+    grid-template-areas: "text poster";
+    column-gap: 48px;
+    align-items: center;
+  }
+  .heroText {
+    grid-area: text;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 16px;
+  }
+  .heroPoster {
+    grid-area: poster;
+    padding: 0;
+    justify-content: flex-end;
+  }
+  .posterStack {
+    width: min(520px, 44vw);
+  }
+  .heroTitle {
+    text-align: left;
+    margin: 0;
+    line-height: 1.2;
+  }
+  .heroTitle br {
+    display: block;
+  }
+  .heroBunkoBadge {
+    display: none;
+  }
+  .about {
+    clip-path: none;
+    padding-bottom: 100px;
+  }
+  .bunko-x {
+    clip-path: none;
+    margin-top: 0;
+    padding-top: 80px;
+  }
 }
 
 @media (max-height: 830px) {
@@ -466,6 +518,17 @@
   gap: 40px;
   margin-bottom: 40px;
 }
+
+@media (min-width: 1024px) {
+  .news__inner {
+    max-width: 900px;
+  }
+  .news__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 32px;
+  }
+}
 .news-item__image {
   position: relative;
   width: 100%;
@@ -566,13 +629,15 @@
     padding: 13px 16px;
   }
   .about {
-    --section-slant: 128px;
-    --section-gap: 24px;
+    --section-slant: 0px;
+    --section-gap: 0px;
+    clip-path: none;
     padding-bottom: calc(120px + var(--section-slant));
   }
   .bunko-x {
-    margin-top: calc(-1 * var(--section-slant) + var(--section-gap, 16px));
-    padding-top: calc(110px + var(--section-slant));
+    clip-path: none;
+    margin-top: calc(-1 * var(--section-slant));
+    padding-top: 100px;
   }
   .heroImage--desktop {
     display: block;

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import "@/styles/public/top.css";
 import Image from "next/image";
@@ -44,10 +44,12 @@ export default function Home() {
                 />
               </div>
             </div>
-            <h1 className="heroTitle">象と花プロジェクト</h1>
-            <a className="heroBunkoBadge" href="#bunko-x">
-              文庫<span>X</span>はこちら
-            </a>
+            <div className="heroText">
+              <h1 className="heroTitle">象と花<br />プロジェクト</h1>
+              <a className="heroBunkoBadge" href="#bunko-x">
+                文庫<span>X</span>はこちら
+              </a>
+            </div>
           </div>
         </div>
         <section id="about" className="about">
@@ -380,3 +382,4 @@ export default function Home() {
     </div>
   );
 }
+
