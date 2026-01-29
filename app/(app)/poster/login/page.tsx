@@ -92,6 +92,7 @@ export default function LoginPage() {
                 value={accountId}
                 onChange={(e) => setAccountId(e.target.value)}
                 className={`w-full ${loginModule.loginForm}`}
+                autoComplete="username"
                 disabled={isLoading}
               />
             </div>
@@ -119,6 +120,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full ${loginModule.loginForm}`}
+                autoComplete="current-password"
                 disabled={isLoading}
               />
             </div>
