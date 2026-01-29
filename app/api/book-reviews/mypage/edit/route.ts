@@ -20,9 +20,10 @@ export async function PUT(req: Request) {
       where: { id: body.id },
       data: {
         review: body.review,
-        caption: body.caption,
+        color: body.color,
+        pattern: body.pattern,
+        pattern_color: body.patternColor,
         evaluations_status: body.evaluations_status,
-        evaluations_count: body.evaluations_count,
       },
     });
 

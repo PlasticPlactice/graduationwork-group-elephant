@@ -200,7 +200,7 @@ export default function MyPage() {
       evaluations_status: code,
       badgeType: status?.badgeType ?? "gray",
       excerpt: review.review,
-      buttonText: status?.canEdit ? "投稿済み・編集する" : "投稿済み・編集不可",
+      buttonText: status?.canEdit ? "編集する" : "編集不可",
       href: status?.canEdit ? "/poster/edit" : undefined,
     };
   });
