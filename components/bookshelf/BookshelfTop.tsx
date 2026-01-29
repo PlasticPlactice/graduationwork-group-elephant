@@ -263,7 +263,7 @@ export function BookshelfTop({ reviews }: Props) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [votedBookId, setVotedBookId] = useState<string | null>(null);
   const [tutorialStep, setTutorialStep] = useState<0 | 1 | 2 | 3 | 4 | null>(
-    null
+    0
   );
   const [tutorialBookId, setTutorialBookId] = useState<string | null>(null);
   const [isEventInfoOpen, setIsEventInfoOpen] = useState(false);
@@ -371,23 +371,35 @@ export function BookshelfTop({ reviews }: Props) {
     
     // ★修正: BOOKS.find ではなく reviews.find を使用
     const targetBook = reviews.find((book) => book.id === tutorialBookId);
-    
+
     if (targetBook) {
       setModalState({ book: targetBook, mode: "shelf" });
     }
   }, [modalState, tutorialBookId, tutorialStep, reviews]); // ★依存配列に reviews を追加
 
   // ... (以下変更なし) ...
-
   useEffect(() => {
     if (tutorialStep !== 1) return;
+
+    if (tutorialStep === 1 && !tutorialBookId && reviews.length > 0) {
+      setTutorialBookId(reviews[0].id);
+    }
+
     let active = true;
     const findTarget = () => {
       if (!active) return;
+
+      if(!tutorialBookId) {
+        window.requestAnimationFrame(findTarget);
+        return;
+      }
+
       const container = scatterAreaRef.current;
-      const target =
-        container?.querySelector<HTMLElement>("[data-book-id]") ?? null;
+      const selector = `[data-book-id="${tutorialBookId}"]`;
+      const target = container?.querySelector<HTMLElement>(selector) ?? null;
+
       if (target) {
+        console.log("正しいターゲットを見つけました: ", target);
         scatterBookRef.current = target;
         return;
       }
@@ -397,7 +409,7 @@ export function BookshelfTop({ reviews }: Props) {
     return () => {
       active = false;
     };
-  }, [tutorialStep]);
+  }, [tutorialStep, tutorialBookId, reviews]);
 
   const moveScatterBookToShelf = useCallback(
     (bookId: string) => {
