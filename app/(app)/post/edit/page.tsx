@@ -35,6 +35,7 @@ export default function PostPage() {
 
   const [state, formAction] = useActionState(preparePostConfirm, null);
   const [bookReviewData, setBookReviewData] = useState<any>(null);
+  const [isDraft, setIsDraft] = useState(false)
 
   const [form, setForm] = useState<{
     bookReview_id: number | null;
@@ -64,7 +65,7 @@ export default function PostPage() {
     color: "#FFFFFF",
     pattern: "dot",
     pattern_color: "#FFFFFF",
-    evaluations_status: 2,
+    evaluations_status: 1,
   });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -119,6 +120,10 @@ export default function PostPage() {
     if(!bookReviewData) return;
 
     console.log("bookReviewData" + JSON.stringify(bookReviewData))
+
+    if(bookReviewData.evaluations_status == 1) {
+      setIsDraft(true)
+    }
 
     setDraftForm(prev => ({
       ...prev,
@@ -521,19 +526,23 @@ export default function PostPage() {
             >
               確認画面へ
             </button>
-            <button
-              onClick={handleDraftConfirm}
-              className={`w-full mt-7 font-bold ${Styles.barcodeScan__backButton}`}
-            >
-              下書きとして保存
-            </button>
-            <p className={`mt-1 mb-3 ${Styles.mainColor} ${Styles.text12px}`}>
-              下書きはマイページから確認することができます。
-            </p>
+            {isDraft == true && (
+              <div>
+                <button
+                  onClick={handleDraftConfirm}
+                  className={`w-full mt-7 font-bold ${Styles.barcodeScan__backButton}`}
+                >
+                  下書きとして保存
+                </button>
+                <p className={`mt-1 ${Styles.mainColor} ${Styles.text12px}`}>
+                  下書きはマイページから確認することができます。
+                </p>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setShowDeleteModal(true)}
-              className={`w-full ${Styles.barcodeScan__backButton}`}
+              className={`w-full mt-3 ${Styles.barcodeScan__backButton}`}
             >
               削除する
             </button>

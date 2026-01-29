@@ -45,6 +45,9 @@ export default function PostConfirmPage({
   // PUT処理関数
   const updateBookReview = async () => {
     try {
+      const isDraftStatus = data.evaluations_status === 1 ? true : false
+      console.log(isDraftStatus)
+
       const res = await fetch(`http://localhost:3000/api/book-reviews/mypage/edit`, {
         method: "PUT",
         headers: {
@@ -59,7 +62,11 @@ export default function PostConfirmPage({
       }
 
       sessionStorage.removeItem("bookReviewDraft");
-      router.push("/poster/mypage");
+      if(!isDraftStatus) {
+        router.push("/poster/mypage");
+      } else {
+        router.push("/post/post-complete");
+      }
 
     } catch (error) {
       console.error("Error editing book review:", error);
