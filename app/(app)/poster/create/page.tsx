@@ -265,6 +265,7 @@ export default function CreateViewerPage() {
               required
               minLength={8}
             />
+            <p>8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください</p>
           </div>
 
           {/* パスワード（確認用）の入力 */}
