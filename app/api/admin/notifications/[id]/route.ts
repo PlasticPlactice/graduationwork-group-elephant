@@ -111,6 +111,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       detail,
       public_flag,
       public_date,
+      public_end_date,
       notification_type,
       draft_flag,
       fileIds, // 追加: 添付ファイルのID配列
@@ -203,6 +204,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
           detail,
           public_flag: public_flag ?? false,
           public_date: publicDateObj,
+          public_end_date: public_end_date ? new Date(public_end_date) : null,
           notification_type: notificationTypeInt,
           draft_flag: draft_flag ?? true,
           updated_at: new Date(),

@@ -63,8 +63,7 @@ function EditNoticeContent() {
   >("notice");
   const [isPublic, setIsPublic] = useState<boolean>(true);
   const [publicDateStart, setPublicDateStart] = useState<string>("");
-  const [publicDateEnd, setPublicDateEnd] =
-    useState<string>("9999-12-31T23:59"); // デフォルトは最大値(永続表示)
+  const [publicDateEnd, setPublicDateEnd] = useState<string>("");
 
   // Tiptapエディタ
   const editor = useEditor({
@@ -131,9 +130,13 @@ function EditNoticeContent() {
         }
 
         if (data.public_end_date) {
-          setPublicDateEnd(
-            format(parseISO(data.public_end_date), "yyyy-MM-dd'T'HH:mm"),
+          const formattedDate = format(
+            parseISO(data.public_end_date),
+            "yyyy-MM-dd'T'HH:mm",
           );
+          if (formattedDate !== "9999-12-31T23:59") {
+            setPublicDateEnd(formattedDate);
+          }
         }
 
         if (data.detail) {
@@ -414,19 +417,6 @@ function EditNoticeContent() {
       return;
     }
 
-    // 公開日時が当日以降かチェック (下書きでなければ)
-    if (!saveAsDraft && publicDateStart) {
-      const selectedDate = parseISO(publicDateStart);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // 時刻を00:00:00にリセット
-
-      if (selectedDate < today) {
-        setErrorMessage("公開開始日時は本日以降の日付を選択してください。");
-        setIsLoading(false);
-        return;
-      }
-    }
-
     // 終了日時のバリデーション
     if (!saveAsDraft && publicDateEnd && publicDateStart) {
       const startDate = parseISO(publicDateStart);
@@ -512,7 +502,9 @@ function EditNoticeContent() {
         title: title,
         detail: detailHtml,
         public_flag: shouldPublish,
-        public_date: parseISO(publicDateStart).toISOString(),
+        public_date: saveAsDraft
+          ? new Date().toISOString()
+          : parseISO(publicDateStart).toISOString(),
         public_end_date: publicDateEnd
           ? parseISO(publicDateEnd).toISOString()
           : null,

@@ -145,6 +145,7 @@ export async function POST(req: NextRequest) {
       detail,
       public_flag,
       public_date,
+      public_end_date,
       notification_type,
       draft_flag,
       fileIds, // 追加: 添付ファイルのID配列
@@ -165,6 +166,7 @@ export async function POST(req: NextRequest) {
         detail,
         public_flag: public_flag ?? false,
         public_date: new Date(public_date),
+        public_end_date: public_end_date ? new Date(public_end_date) : null,
         notification_type: parseInt(notification_type),
         draft_flag: draft_flag ?? true,
         notificationFiles: {
