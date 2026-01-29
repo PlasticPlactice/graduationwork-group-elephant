@@ -49,6 +49,7 @@ export default function PostPage() {
     isbn: "",
     title: "",
     author: "",
+    publishers: ""
   });
   // ユーザーデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
@@ -95,12 +96,17 @@ export default function PostPage() {
 
     const bookData = JSON.parse(draft);
 
+    console.log(bookData)
+
     fetchUserData();
+
+    console.log("bookData" + bookData)
 
     setBookData({
       isbn: bookData.isbn,
       title: bookData.title,
       author: bookData.author,
+      publishers: bookData.publishers
     });
   }, []);
 
@@ -118,6 +124,8 @@ export default function PostPage() {
     age: number;
     gender: number;
     self_introduction: string;
+    author: string;
+    publishers: string;
   }>({
     user_id: null,
     review: "",
@@ -132,6 +140,8 @@ export default function PostPage() {
     age: 1,
     gender: 1,
     self_introduction: "",
+    author: "",
+    publishers: ""
   });
 
   const handleConfirm = () => {
@@ -208,6 +218,21 @@ export default function PostPage() {
     if (!editor) return;
     setHtml(editor.getHTML());
   };
+
+  useEffect(() => {
+    if (bookData.publishers) {
+      setForm((prev) => ({
+        ...prev,
+        publishers: bookData.publishers
+      }))
+    }
+    if (bookData.author) {
+      setForm((prev) => ({
+        ...prev,
+        author: bookData.author
+      }))
+    }
+  }, [bookData.publishers, bookData.author])
 
   useEffect(() => {
     if (!userId || !userData) return;
