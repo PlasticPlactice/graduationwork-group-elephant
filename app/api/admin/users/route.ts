@@ -28,9 +28,9 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     // ページ番号バリデーション（最小値のみ。最大値は総件数取得後に検証可能）
     const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
-    const sortBy = searchParams.get("sortBy") || "id";
+    const sortBy = searchParams.get("sortBy") || "account_id";
     const sortOrder = searchParams.get("sortOrder") || "asc";
-    const id = searchParams.get("id")?.trim() || "";
+    const accountId = searchParams.get("account_id")?.trim() || "";
     const nickname = searchParams.get("nickname")?.trim() || "";
     const ageFrom = searchParams.get("ageFrom")
       ? parseInt(searchParams.get("ageFrom")!)
@@ -45,22 +45,12 @@ export async function GET(req: NextRequest) {
     // where句の条件を動的に構築
     const where: Prisma.UserWhereInput = {};
 
-    // ID検索（数値バリデーション）
-    if (id) {
-      if (!/^\d+$/.test(id)) {
-        return NextResponse.json(
-          { message: "Invalid id parameter" },
-          { status: 400 },
-        );
-      }
-      const parsedId = Number(id);
-      if (!Number.isSafeInteger(parsedId)) {
-        return NextResponse.json(
-          { message: "Invalid id parameter" },
-          { status: 400 },
-        );
-      }
-      where.id = parsedId;
+    // アカウントID検索
+    if (accountId) {
+      where.account_id = {
+        contains: accountId,
+        mode: "insensitive",
+      };
     }
 
     // ニックネーム検索
@@ -143,13 +133,15 @@ export async function GET(req: NextRequest) {
 
     // ソート対象の有効なカラムを指定
     const validSortColumns = [
-      "id",
+      "account_id",
       "nickname",
       "age",
       "address",
       "user_status",
     ];
-    const finalSortBy = validSortColumns.includes(sortBy) ? sortBy : "id";
+    const finalSortBy = validSortColumns.includes(sortBy)
+      ? sortBy
+      : "account_id";
     const finalSortOrder = sortOrder === "desc" ? "desc" : "asc";
 
     // ページネーション
@@ -161,6 +153,7 @@ export async function GET(req: NextRequest) {
       where,
       select: {
         id: true,
+        account_id: true,
         nickname: true,
         age: true,
         address: true,
@@ -185,6 +178,7 @@ export async function GET(req: NextRequest) {
     // レスポンスデータの整形
     const usersResponse = users.map((user) => ({
       id: user.id,
+      account_id: user.account_id,
       nickname: user.nickname,
       age: user.age,
       address: user.address,
