@@ -153,7 +153,7 @@ export default function MyPage() {
   }[] = [
     { key: "all" as const, label: "全て" },
     { key: 1, label: "下書き" },
-    { key: 2, label: "審査前" },
+    { key: 2, label: "１次審査前" },
     { key: 3, label: "審査中" },
     { key: 4, label: "終了済み" },
   ];
