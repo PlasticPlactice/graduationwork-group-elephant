@@ -153,7 +153,7 @@ export default function MyPage() {
   }[] = [
     { key: "all" as const, label: "全て" },
     { key: 1, label: "下書き" },
-    { key: 2, label: "審査前" },
+    { key: 2, label: "１次審査前" },
     { key: 3, label: "審査中" },
     { key: 4, label: "終了済み" },
   ];
@@ -200,7 +200,7 @@ export default function MyPage() {
       evaluations_status: code,
       badgeType: status?.badgeType ?? "gray",
       excerpt: review.review,
-      buttonText: status?.canEdit ? "投稿済み・編集する" : "投稿済み・編集不可",
+      buttonText: status?.canEdit ? "編集する" : "編集不可",
       href: status?.canEdit ? "/poster/edit" : undefined,
     };
   });

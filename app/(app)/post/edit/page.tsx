@@ -35,37 +35,37 @@ export default function PostPage() {
 
   const [state, formAction] = useActionState(preparePostConfirm, null);
   const [bookReviewData, setBookReviewData] = useState<any>(null);
+  const [isDraft, setIsDraft] = useState(false)
 
   const [form, setForm] = useState<{
     bookReview_id: number | null;
-    user_id: number | null;
     review: string;
     color: string;
     pattern: string;
     pattern_color: string;
-    isbn: string;
-    book_title: string;
     evaluations_status: number;
-    nickname: string;
-    address: string;
-    age: number;
-    gender: number;
-    self_introduction: string;
   }>({
     bookReview_id: null,
-    user_id: null,
     review: "",
     color: "#FFFFFF",
     pattern: "dot",
     pattern_color: "#FFFFFF",
-    isbn: "",
-    book_title: "",
+    evaluations_status: 2,
+  });
+  const [draftForm, setDraftForm] = useState<{
+    id: number | null;
+    review: string;
+    color: string;
+    pattern: string;
+    pattern_color: string;
+    evaluations_status: number;
+  }>({
+    id: null,
+    review: "",
+    color: "#FFFFFF",
+    pattern: "dot",
+    pattern_color: "#FFFFFF",
     evaluations_status: 1,
-    nickname: "",
-    address: "",
-    age: 1,
-    gender: 1,
-    self_introduction: "",
   });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -116,6 +116,25 @@ export default function PostPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if(!bookReviewData) return;
+
+    console.log("bookReviewData" + JSON.stringify(bookReviewData))
+
+    if(bookReviewData.evaluations_status == 1) {
+      setIsDraft(true)
+    }
+
+    setDraftForm(prev => ({
+      ...prev,
+      id: bookReviewData.id,
+      review: bookReviewData.review,
+      color: bookReviewData.color,
+      pattern: bookReviewData.pattern,
+      pattern_color: bookReviewData.pattern_color,
+    }))
+  }, [bookReviewData])
+
   // データ取得の実行
   useEffect(() => {
     const draft = sessionStorage.getItem("bookReviewIdDraft");
@@ -129,6 +148,43 @@ export default function PostPage() {
 
     fetchBookReviewDataById(bookReviewId);
   }, [fetchBookReviewDataById]);
+
+  // 下書き登録用
+  const registerBookReviewDraft = async (payload: typeof draftForm) => {
+    try {
+      const res = await fetch("http://localhost:3000/api/book-reviews/mypage/edit", {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload),
+      });
+
+      if(!res.ok) {
+        alert("下書きの登録に失敗しました。");
+        return;
+      }
+
+      router.push("/poster/mypage");
+    } catch(e) {
+      alert("通信に失敗しました。")
+    }
+  }
+
+  // 下書きボタン押したときの処理
+  const handleDraftConfirm = () => {
+    const nextForm = {
+      ...draftForm,
+      evaluations_status: 1
+    };
+
+    console.log("nextForm" + JSON.stringify(nextForm))
+
+    setDraftForm(nextForm);
+
+    registerBookReviewDraft({
+      ...nextForm,
+    })
+    // router.push("/poster/mypage");
+  };
 
   // tiptapに関する関数
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -155,17 +211,10 @@ export default function PostPage() {
     onUpdate({ editor }) {
       setForm({
         ...form,
-        bookReview_id: bookReviewData?.id,
+        review: editor.getHTML(),
         color: bookColor,
         pattern: pattern,
         pattern_color: patternColor,
-        review: editor.getHTML(),
-        isbn: "",
-        book_title: "",
-        nickname: "",
-        address: "",
-        age: 1,
-        self_introduction: "",
       });
     },
   });
@@ -298,7 +347,7 @@ export default function PostPage() {
         <div className={`mt-6`}>
           <p className={`font-bold text-center`}>書評本文</p>
 
-          <div className={`flex justify-between items-end my-2`}>
+          <div className={`my-2`}>
             <p className={``}>
               残り
               <span className="text-red-400 font-bold text-xl">
@@ -306,7 +355,6 @@ export default function PostPage() {
               </span>
               文字
             </p>
-            <button className={`${Styles.oneTimeKeepButton}`}>一時保存</button>
           </div>
 
           <form action={formAction} onSubmit={handleSubmit}>
@@ -478,13 +526,23 @@ export default function PostPage() {
             >
               確認画面へ
             </button>
-            <p className={`mt-2 mb-2 ${Styles.mainColor} ${Styles.text12px}`}>
-              下書きはマイページから確認することができます。
-            </p>
+            {isDraft == true && (
+              <div>
+                <button
+                  onClick={handleDraftConfirm}
+                  className={`w-full mt-7 font-bold ${Styles.barcodeScan__backButton}`}
+                >
+                  下書きとして保存
+                </button>
+                <p className={`mt-1 ${Styles.mainColor} ${Styles.text12px}`}>
+                  下書きはマイページから確認することができます。
+                </p>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setShowDeleteModal(true)}
-              className={`w-full ${Styles.barcodeScan__backButton}`}
+              className={`w-full mt-3 ${Styles.barcodeScan__backButton}`}
             >
               削除する
             </button>
