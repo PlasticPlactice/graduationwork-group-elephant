@@ -5,6 +5,9 @@ import { AfterLoginHeader } from "@/components/layout/after-login-header";
 export const metadata: Metadata = {
   title: "象と花プロジェクト",
   description: "象と花プロジェクトのログインサイトです。",
+  icons: {
+    icon: "/favicon.ico",
+  }
 };
 export default function RootLayout({
   children,

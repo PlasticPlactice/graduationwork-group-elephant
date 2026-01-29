@@ -5,6 +5,9 @@ import "@/styles/globals.css";
 export const metadata: Metadata = {
   title: "象と花プロジェクト",
   description: "象と花プロジェクトのファンサイトです。",
+  icons: {
+    icon: "/favicon.ico",
+  }
 };
 export default function RootLayout({
   children,
