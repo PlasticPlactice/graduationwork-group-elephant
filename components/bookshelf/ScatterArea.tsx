@@ -148,17 +148,19 @@ export function ScatterArea({
           };
 
           return (
-            <ScatterBook
-              key={`${book.id}-scatter-${slotIndex}`}
-              book={book}
-              className="absolute"
-              style={style}
-              onClick={
-                onBookSelect
-                  ? () => onBookSelect({ book, slotIndex })
-                  : undefined
-              }
-            />
+            <div key={`${book.id}-scatter-${slotIndex}`}>
+              <ScatterBook
+                data-book-id={book.id}
+                book={book}
+                className="absolute"
+                style={style}
+                onClick={
+                  onBookSelect
+                    ? () => onBookSelect({ book, slotIndex })
+                    : undefined
+                }
+              />
+            </div>
           );
         })}
       </div>
