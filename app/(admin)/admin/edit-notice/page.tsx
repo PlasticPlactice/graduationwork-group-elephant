@@ -649,9 +649,10 @@ function EditNoticeContent() {
           </div>
         </section>
 
+        <label htmlFor="title" className="block mt-5 mb-1">タイトル<span className="required">*</span></label>
         <Textbox
           type="text"
-          className="title w-full my-5"
+          className="title w-full mb-5"
           placeholder="タイトル"
           required
           value={title}
@@ -721,6 +722,7 @@ function EditNoticeContent() {
           </div>
 
           <div className="flex items-center gap-4">
+            <label className="w-38">公開期間<span className="required">*</span></label>
             <Textbox
               type="datetime-local"
               placeholder="公開開始"
@@ -742,6 +744,7 @@ function EditNoticeContent() {
           </div>
         </div>
         {/* ツールバー */}
+        <label htmlFor="title" className="block mt-5 mb-1">本文<span className="required">*</span></label>
         <div className="flex items-center gap-2 design-container py-2 pl-3">
           {/* 太字 */}
           <button

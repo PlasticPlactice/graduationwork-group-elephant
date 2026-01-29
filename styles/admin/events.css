@@ -1,3 +1,6 @@
+.required{
+  color: #ff0000;
+}
 .register-btn {
   width: 15rem;
   font-size: var(--page-padding-lg);
