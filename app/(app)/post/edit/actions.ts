@@ -7,5 +7,5 @@ export async function preparePostConfirm(
   _prevState: unknown,
   _formData: FormData,
 ) {
-  redirect("/poster/post-confirm");
+  redirect("/post/post-confirm");
 }
