@@ -34,7 +34,27 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError(result.error);
+        let errorMessage = "ログインに失敗しました。"; // デフォルトのエラーメッセージ
+
+        // バックエンドからの特定のエラーメッセージをユーザーフレンドリーなメッセージに変換
+        switch (result.error) {
+          case "DeletedUser":
+            errorMessage = "このアカウントは存在しません。";
+            break;
+          case "WithdrawnUser":
+            errorMessage = "このアカウントは退会済みです。";
+            break;
+          case "BannedUser":
+            errorMessage = "このアカウントは利用停止されています。";
+            break;
+          case "CredentialsSignin": // 認証情報が正しくない場合の一般的なエラー
+            errorMessage = "アカウントIDまたはパスワードが正しくありません。";
+            break;
+          default:
+            errorMessage = `ログインに失敗しました: ${result.error}`; // 未知のエラーに対するフォールバック
+            break;
+        }
+        setError(errorMessage);
         setIsLoading(false);
       } else if (result?.ok) {
         router.push("/poster/mypage");
