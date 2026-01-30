@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { JWT } from "next-auth/jwt";
 import { User } from "next-auth";
 import { Session } from "next-auth";
+import { USER_STATUS } from "@/lib/constants/userStatus";
 
 interface CustomUser {
   id: string;
@@ -25,29 +26,26 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("メールとパスワードの入力が必要です");
+          return null;
         }
 
         const admin = await prisma.admin.findUnique({
           where: { email: credentials.email },
         });
 
-        if (!admin) {
-          throw new Error("管理者が見つかりません");
+        // ユーザーが見つからない、またはパスワードが一致しない場合はnullを返す
+        // これにより、ユーザーが存在するかどうかの情報を漏らさない（ユーザー列挙対策）
+        if (
+          !admin ||
+          !(await bcrypt.compare(credentials.password, admin.password))
+        ) {
+          return null;
         }
 
-        // 削除済み管理者のチェック
+        // 認証成功後、アカウントの状態をチェック
         if (admin.deleted_flag) {
-          throw new Error("このアカウントは削除済みです。ログインできません。");
-        }
-
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          admin.password,
-        );
-
-        if (!isPasswordValid) {
-          throw new Error("パスワードが正しくありません");
+          // フロントエンドで処理するためのカスタムエラーコードを投げる
+          throw new Error("DeletedAdmin");
         }
 
         return {
@@ -69,35 +67,44 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.account_id || !credentials?.password) {
-          throw new Error("アカウントIDとパスワードの入力が必要です");
+          return null;
         }
 
         const user = await prisma.user.findUnique({
           where: { account_id: credentials.account_id },
         });
 
-        if (!user) {
-          throw new Error("ユーザーが見つかりません");
+        // ユーザーが見つからない、またはパスワードが一致しない場合はnullを返す
+        // これにより、"IDが違う"のか"パスワードが違う"のかを区別させず、セキュリティを向上させる
+        if (
+          !user ||
+          !(await bcrypt.compare(credentials.password, user.password))
+        ) {
+          return null; // next-authはこれを"CredentialsSignin"エラーとしてフロントに返す
         }
 
-        // 退会済みユーザーのチェック
+        // --- ここから下は、IDとパスワードが正しいことが確認された後の処理 ---
+
+        // 物理削除済みユーザー(deleted_flag)のチェック
+        // この場合、アカウントが存在しないものとして扱う
         if (user.deleted_flag) {
-          throw new Error("このアカウントは退会済みです。ログインできません。");
+          throw new Error("DeletedUser");
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password,
-        );
-
-        if (!isPasswordValid) {
-          throw new Error("パスワードが正しくありません");
+        // 1: 退会済みユーザー
+        if (user.user_status === USER_STATUS.WITHDRAWN) {
+          throw new Error("WithdrawnUser");
         }
 
+        // 2: 利用停止(BAN)ユーザー
+        if (user.user_status === USER_STATUS.BAN) {
+          throw new Error("BannedUser");
+        }
+
+        // 全てのチェックを通過した場合、ユーザーオブジェクトを返す
         return {
           id: user.id.toString(),
           name: user.nickname,
-          email: null, // Userにはemailが無い場合がある
           role: "user", // 役割識別用
         };
       },
