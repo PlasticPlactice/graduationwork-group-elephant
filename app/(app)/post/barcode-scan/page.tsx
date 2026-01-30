@@ -259,9 +259,6 @@ export default function BarcodeScanPage() {
         </div>
       </div>
 
-      <Link href="/" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
-        <span>&lt;</span> ファンサイトはこちら
-      </Link>
       <div className={`${Styles.posterContainer}`}>
         <div className="mt-7 mb-10">
           <h1 className="font-bold text-center">本のバーコードをスキャン</h1>

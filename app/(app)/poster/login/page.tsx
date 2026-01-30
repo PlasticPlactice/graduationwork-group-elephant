@@ -48,9 +48,6 @@ export default function LoginPage() {
 
   return (
     <div>
-      <Link href="/" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
-        <span>&lt;</span> ファンサイトはこちら
-      </Link>
       <div className={`mb-2 ${Styles.posterContainer}`}>
         <div className="my-8">
           <Image
