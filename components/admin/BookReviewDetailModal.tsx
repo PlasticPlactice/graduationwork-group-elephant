@@ -2,7 +2,6 @@
 import { Icon } from "@iconify/react";
 import "@/styles/admin/events.css"
 import { EditorContent, useEditor } from "@tiptap/react";
-import { useState,useEffect } from "react";
 import StarterKit from "@tiptap/starter-kit";
 import Color from "@tiptap/extension-color";
 import { TextStyle } from "@tiptap/extension-text-style";
@@ -30,18 +29,6 @@ export default function BookReviewDetailModal({ isOpen, onClose }: BookReviewDet
     autofocus: false,
     immediatelyRender: false,
   });
- const [detailHtml, setDetailHtml] = useState<string>("");
-// エディタのHTMLを同期
-useEffect(() => {
-    if (!editor) return;
-    const update = () => setDetailHtml(editor.getHTML());
-    update();
-    editor.on("update", update);
-    return () => {
-    editor.off("update", update);
-    editor?.destroy();
-    };
-}, [editor]);
 
 // ツールバー操作
 const toggleBold = () => editor?.chain().focus().toggleBold().run();
@@ -52,7 +39,8 @@ const applyColor = (color: string) =>
 
     if (!isOpen) return null;
     return (
-        <div className="fixed inset-0 review-modal flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 review-modal flex items-center justify-center bg-black bg-opacity-50 z-50"
+            onClick={onClose}>
             <div
                 className="bg-white rounded-lg shadow-lg p-6 max-w-5xl w-full mx-4"
                 onClick={(e) => e.stopPropagation()}
@@ -64,7 +52,7 @@ const applyColor = (color: string) =>
                     </button>
                 </div>
                 <div className="flex">
-                    <section className="w-5/7">
+                    <section className="w-[71.4286%]">
                         {/* ツールバー */}
                     <div className="flex items-center gap-2 design-container py-2 pl-3">
                             {/* 太字 */}
@@ -134,7 +122,7 @@ const applyColor = (color: string) =>
                             <EditorContent editor={editor} className="p-3 min-h-[200px]" />
                         </div>
                     </section>
-                    <section className="w-2/7 pl-5">
+                    <section className="w-[28.5714%] pl-5">
                         {/* 書籍名 */}
                         <p className="font-bold text-center">「コンビニ人間」</p>
                         <div className="text-xs">

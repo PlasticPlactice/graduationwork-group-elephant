@@ -321,7 +321,7 @@ textarea#remarks {
 }
 .message-btn,
 .save-btn{
-  height: 2.5rem
+  height: 2.5rem;
 }
 .good-btn{
   color: var(--color-warning);

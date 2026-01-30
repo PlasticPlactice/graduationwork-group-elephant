@@ -107,7 +107,7 @@ export default function Page() {
   };
   const handleBookReviewDetail = () => {
     setIsBookReviewDetailModalOpen(true);
-  }
+  };
   const closeModal = () => {
     setIsStatusEditModalOpen(false);
     setIsCsvOutputModalOpen(false);
@@ -115,7 +115,7 @@ export default function Page() {
     setIsBookReviewDetailModalOpen(false);
   };
 
-  const handlepreview = () => {
+  const handlePreview = () => {
     router.push("/admin/print-preview");
   };
 
@@ -369,7 +369,7 @@ export default function Page() {
                               icon="material-symbols:print"
                               iconPosition="left"
                               className="print-preview-btn w-auto"
-                              onClick={handlepreview}
+                              onClick={handlePreview}
                             />
                           </div>
                         </section>

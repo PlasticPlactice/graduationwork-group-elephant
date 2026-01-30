@@ -84,6 +84,7 @@ details[open] .icon {
 .title-text{
   color: var(--color-main);
   border-bottom: 1px solid var(--color-main);
+  cursor: pointer
 }
 .status-text{
   color: #1E40AF;
