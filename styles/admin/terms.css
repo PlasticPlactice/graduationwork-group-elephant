@@ -1,0 +1,63 @@
+/* メインコンテナ */
+.users-container {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* テーブル */
+.terms-table {
+  border-collapse: collapse;
+}
+.table-head {
+  background-color: var(--color-main);
+  font-size: var(--font-size-base);
+  color: var(--color-bg);
+  border: 1px solid var(--color-main);
+}
+.terms-table th,
+.terms-table td {
+  border-bottom: 1px solid var(--color-input-bg);
+}
+
+.terms-table th button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
+.terms-table th button:focus {
+  outline: none;
+}
+
+.status-badge {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.apply {
+  color: #48885a;
+  background-color: var(--color-admin-active-background);
+  border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.beforeapply {
+  color: #828848;
+  background-color: var(--color-admin-disable-background);
+  border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.applyend {
+  color: #c9c9c9;
+  background-color: var(--color-admin-applyend-background);
+  border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1.9rem;
+  padding-right: 1.9rem;
+}
