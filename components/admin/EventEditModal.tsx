@@ -128,7 +128,7 @@ export default function EventEditModal({ isOpen, onClose,event }: EventRegisterM
                 <div className="modal-scroll-area overflow-y-auto p-3">
                     <form onSubmit={handleSubmit} className='p-3'>
                         <div className='my-4'>
-                            <label htmlFor="title-form" className='title-label text-xl block'>タイトル</label>
+                            <label htmlFor="title-form" className='title-label text-xl block'>タイトル<span className="required">*</span></label>
                             <Textbox
                                 id='title-form'
                                 name='title'
@@ -141,7 +141,7 @@ export default function EventEditModal({ isOpen, onClose,event }: EventRegisterM
                         </div>
 
                         <div className='my-4'>
-                            <label htmlFor="event-start-datetime" className='text-xl block'>イベント開催期間</label>
+                            <label htmlFor="event-start-datetime" className='text-xl block'>イベント開催期間<span className="required">*</span></label>
                             <p className='event-detail-text text-sm'>イベントの開催期間を決定します</p>
                             <div className='flex justify-between items-center'>
                                 <Textbox
@@ -167,7 +167,7 @@ export default function EventEditModal({ isOpen, onClose,event }: EventRegisterM
                         </div>
 
                         <div className='my-4'>
-                            <label htmlFor="book-post-datetime" className='text-xl block'>書評投稿期間</label>
+                            <label htmlFor="book-post-datetime" className='text-xl block'>書評投稿期間<span className="required">*</span></label>
                             <p className='event-detail-text text-sm'>ユーザーが書評を投稿できる期間を決定します</p>
                             <div className='flex justify-between items-center'>
                                 <Textbox
@@ -193,7 +193,7 @@ export default function EventEditModal({ isOpen, onClose,event }: EventRegisterM
                         </div>
 
                         <div className='my-4'>
-                            <label htmlFor="book-vote-datetime" className='text-xl block'>書評投票期間</label>
+                            <label htmlFor="book-vote-datetime" className='text-xl block'>書評投票期間<span className="required">*</span></label>
                             <p className='event-detail-text text-sm'>ユーザーが書評に対して投票できる期間を決定します</p>
                             <div className='flex justify-between items-center'>
                                 <Textbox

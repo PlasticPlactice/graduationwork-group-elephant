@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
+import Image from "next/image";
 import { signOut } from "next-auth/react";
 
 import { ReviewPassedModal } from "@/components/modals/ReviewPassedModal";
@@ -323,7 +324,7 @@ export default function MyPage() {
         </div>
 
         <div className="mb-1">
-          <Link
+          {/* <Link
             href="/"
             className="inline-block mt-6 ml-1 font-bold text-sky-500"
             aria-label="ファンサイトのトップページへ移動"
@@ -332,6 +333,17 @@ export default function MyPage() {
               &lt;
             </span>{" "}
             ファンサイトはこちら
+          </Link> */}
+          <Link href="/"
+          >
+            <div
+              className="flex items-center px-2 rounded shadow-md my-10"
+              style={{backgroundColor:"var(--color-main)"}}>
+              <Image src="/layout/logo_another.png" alt="logo" width={100} height={40} className="ml-3"/>
+              <span
+                className="font-bold ml-auto"
+                style={{ color: "var(--color-bg)" }}>象と花ファンサイトへ<span className="ml-4" aria-hidden="true">&gt;</span></span>
+            </div>
           </Link>
         </div>
 
