@@ -13,6 +13,7 @@ import {
 
 interface User {
   id: number;
+  account_id: string;
   nickname: string;
   age: number;
   address: string;
@@ -38,7 +39,7 @@ export default function Page() {
   const [users, setUsers] = useState<User[]>([]);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [sortBy, setSortBy] = useState<string>("id");
+  const [sortBy, setSortBy] = useState<string>("account_id");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -73,7 +74,7 @@ export default function Page() {
         params.append("page", page.toString());
         params.append("sortBy", sortBy);
         params.append("sortOrder", sortOrder);
-        if (searchForm.id) params.append("id", searchForm.id);
+        if (searchForm.id) params.append("account_id", searchForm.id);
         if (searchForm.nickname) params.append("nickname", searchForm.nickname);
         if (searchForm.ageFrom) params.append("ageFrom", searchForm.ageFrom);
         if (searchForm.ageTo) params.append("ageTo", searchForm.ageTo);
@@ -421,8 +422,8 @@ export default function Page() {
                 <button
                   type="button"
                   className="flex items-center cursor-pointer"
-                  onClick={() => handleSort("id")}
-                  aria-label={`IDで${sortBy === "id" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  onClick={() => handleSort("account_id")}
+                  aria-label={`IDで${sortBy === "account_id" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
                 >
                   ID<Icon icon="uil:arrow" rotate={1}></Icon>
                 </button>
@@ -491,7 +492,7 @@ export default function Page() {
                       {getStatusLabel(user.status)}
                     </span>
                   </td>
-                  <td className="">{user.id}</td>
+                  <td className="">{user.account_id}</td>
                   <td className="">{user.nickname}</td>
                   <td className="">{user.age}</td>
                   <td className="">{user.address}</td>
