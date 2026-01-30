@@ -1,8 +1,12 @@
+"use client";
+
 import { TERM_STATUS_LABELS, TERM_STATUS_CLASS } from "@/lib/constants/termStatus";
 import "@/styles/admin/terms.css";
 import AdminButton from "@/components/ui/admin-button";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+    const router = useRouter();
     const terms = [
     // 最新順に表示
         {
@@ -43,7 +47,11 @@ export default function Page() {
       // ステータス値を表示テキストに変換
       const getStatusLabel = (status: number) => {
         return TERM_STATUS_LABELS[status] || "";
-      };
+    };
+    
+    const handleRegister = () => {
+        router.push("/admin/register-term");
+    };
 
     return (
         <main>
@@ -52,7 +60,7 @@ export default function Page() {
                 label="利用規約登録"
                 type="button"
                 className="register-btn mb-6"
-                // onClick={handleRegister}
+                onClick={handleRegister}
                 />
                 <table className="w-full terms-table">
                     {/*
