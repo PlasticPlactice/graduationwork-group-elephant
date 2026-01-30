@@ -7,6 +7,17 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Modal from "@/app/(app)/Modal";
 
+const CriteriaItem = ({ met, text }: { met: boolean; text: string }) => (
+  <li
+    className={`flex items-center text-sm transition-colors ${
+      met ? "text-green-600" : "text-gray-500"
+    }`}
+  >
+    <span className="mr-2 text-lg">{met ? "✓" : "◦"}</span>
+    {text}
+  </li>
+);
+
 export default function CreateViewerPage() {
   const [selectedColor, setSelectedColor] = useState("#D1D5DB");
   const [selectedAddress, setSelectedAddress] = useState("");
@@ -19,6 +30,13 @@ export default function CreateViewerPage() {
   const [introduction, setIntroduction] = useState("よろしくお願いします。");
   const [helpOpen, setHelpOpen] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [passwordCriteria, setPasswordCriteria] = useState({
+    minLength: false,
+    hasLetter: false,
+    hasNumber: false,
+    hasSymbol: false,
+  });
   const router = useRouter();
 
   const handleAddressChange = useCallback(
@@ -29,38 +47,64 @@ export default function CreateViewerPage() {
         setSelectedSubAddress("");
       }
     },
-    []
+    [],
   );
 
   const isIwateSelected = useMemo(() => {
     return selectedAddress === "岩手県";
   }, [selectedAddress]);
 
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    // パスワードの要件をリアルタイムでチェック
+    setPasswordCriteria({
+      minLength: newPassword.length >= 8,
+      hasLetter: /[a-zA-Z]/.test(newPassword),
+      hasNumber: /\d/.test(newPassword),
+      hasSymbol: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword),
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: { [key: string]: string } = {};
 
     // 簡易バリデーション
-    if (
-      !nickname ||
-      !password ||
-      !confirmPassword ||
-      !selectedAddress ||
-      !age ||
-      !gender
+    if (!nickname) newErrors.nickname = "ニックネームは必須です。";
+    if (!password) {
+      newErrors.password = "パスワードは必須です。";
+    } else if (
+      !passwordCriteria.minLength ||
+      !passwordCriteria.hasLetter ||
+      !passwordCriteria.hasNumber ||
+      !passwordCriteria.hasSymbol
     ) {
-      alert("必須項目を入力してください");
-      return;
+      newErrors.password = "パスワードがすべての要件を満たしていません。";
     }
+    if (!confirmPassword)
+      newErrors.confirmPassword = "確認用パスワードは必須です。";
+    if (!selectedAddress || selectedAddress === "選択してください")
+      newErrors.address = "居住地は必須です。";
+    if (!age) newErrors.age = "年齢は必須です。";
+    if (!gender) newErrors.gender = "性別は必須です。";
 
     if (password !== confirmPassword) {
-      alert("パスワードが一致しません");
-      return;
+      newErrors.confirmPassword = "パスワードが一致しません。";
     }
 
     if (isIwateSelected && !selectedSubAddress) {
-      alert("岩手県を選択した場合は、市区町村も選択してください");
+      newErrors.sub_address =
+        "岩手県を選択した場合は、市区町村も選択してください。";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+    // バリデーション成功時にエラーをクリア
+    setErrors({});
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -89,11 +133,13 @@ export default function CreateViewerPage() {
         });
         router.push(`/poster/create-complete?${params.toString()}`);
       } else {
-        alert(data.message || "登録に失敗しました");
+        setErrors({ form: data.message || "登録に失敗しました" });
       }
     } catch (error) {
       console.error("Registration failed:", error);
-      alert("エラーが発生しました");
+      setErrors({
+        form: "エラーが発生しました。しばらくしてから再度お試しください。",
+      });
     }
   };
 
@@ -218,6 +264,13 @@ export default function CreateViewerPage() {
         </Link>
 
         <form onSubmit={handleSubmit}>
+          {/* フォーム全体のエラー表示 */}
+          {errors.form && (
+            <div className="my-4 p-3 bg-rose-100 border border-rose-500 text-rose-700 rounded">
+              {errors.form}
+            </div>
+          )}
+
           {/* ニックネームの入力 */}
           <div className={`${styles.create__formContainer}`}>
             <div className={styles.labelContainer}>
@@ -227,19 +280,24 @@ export default function CreateViewerPage() {
                 width={24}
                 height={24}
               ></Image>
-              <label htmlFor="username" className="block font-bold">
+              <label htmlFor="nickname" className="block font-bold">
                 ニックネーム<span className="text-red-500">*</span>
               </label>
             </div>
             <input
               type="text"
-              name="username"
+              id="nickname"
+              name="nickname"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder=""
               className="w-full block "
               required
+              autoComplete="nickname"
             />
+            {errors.nickname && (
+              <p className="text-red-500 text-sm mt-1">{errors.nickname}</p>
+            )}
           </div>
 
           {/* パスワードの入力 */}
@@ -257,15 +315,34 @@ export default function CreateViewerPage() {
             </div>
             <input
               type="password"
+              id="password"
               name="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="8文字以上"
+              onChange={handlePasswordChange}
+              placeholder="8文字以上、英数記号を含む"
               className="w-full block "
               required
-              minLength={8}
+              autoComplete="new-password"
             />
             <p>8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください</p>
+            <ul className="mt-2 space-y-1">
+              <CriteriaItem met={passwordCriteria.minLength} text="8文字以上" />
+              <CriteriaItem
+                met={passwordCriteria.hasLetter}
+                text="英字を1文字以上含む"
+              />
+              <CriteriaItem
+                met={passwordCriteria.hasNumber}
+                text="数字を1文字以上含む"
+              />
+              <CriteriaItem
+                met={passwordCriteria.hasSymbol}
+                text="記号を1文字以上含む"
+              />
+            </ul>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
           </div>
 
           {/* パスワード（確認用）の入力 */}
@@ -283,13 +360,20 @@ export default function CreateViewerPage() {
             </div>
             <input
               type="password"
+              id="confirmPassword"
               name="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="もう一度入力してください"
               className="w-full block "
               required
+              autoComplete="new-password"
             />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
           </div>
 
           {/* 居住地の選択 */}
@@ -320,6 +404,9 @@ export default function CreateViewerPage() {
                 </option>
               ))}
             </select>
+            {errors.address && (
+              <p className="text-red-500 text-sm mt-1">{errors.address}</p>
+            )}
           </div>
 
           {/* 詳細の居住地の選択 */}
@@ -362,6 +449,9 @@ export default function CreateViewerPage() {
             <p className="text-red-500 font-bold text-small">
               ※居住地で岩手県を選択した人のみ
             </p>
+            {errors.sub_address && (
+              <p className="text-red-500 text-sm mt-1">{errors.sub_address}</p>
+            )}
           </div>
 
           {/* 年齢の選択 */}
@@ -395,66 +485,73 @@ export default function CreateViewerPage() {
               <option value="80">80代</option>
               <option value="90">90代</option>
             </select>
+            {errors.age && (
+              <p className="text-red-500 text-sm mt-1">{errors.age}</p>
+            )}
           </div>
 
           {/* 性別選択*/}
-          <div
-            className={`${styles.labelContainer} ${styles.create__formContainer}`}
-          >
-            <Image
-              src="/app/gender-male.png"
-              alt="性別"
-              width={24}
-              height={24}
-            ></Image>
-            <label htmlFor="" className="font-bold">
-              性別<span className="text-red-500"> *</span>
-            </label>
-          </div>
-          <div className={`ml-2 mb-6 flex gap-8`}>
-            <div className="flex gap-3">
-              <input
-                type="radio"
-                id="male"
-                name="gender"
-                value="male"
-                checked={gender === "male"}
-                onChange={(e) => setGender(e.target.value)}
-                className={`${styles.genderRadio}`}
-              />
-              <label htmlFor="male" className="block">
-                男性
-              </label>
+          <fieldset className={`${styles.create__formContainer}`}>
+            <legend className={`${styles.labelContainer}`}>
+              <Image
+                src="/app/gender-male.png"
+                alt="性別"
+                width={24}
+                height={24}
+              ></Image>
+              <span className="font-bold">
+                性別<span className="text-red-500"> *</span>
+              </span>
+            </legend>
+            <div className={`ml-2 mt-2 mb-1 flex gap-8`}>
+              <div className="flex items-center gap-3">
+                <input
+                  type="radio"
+                  id="male"
+                  name="gender"
+                  value="male"
+                  checked={gender === "male"}
+                  onChange={(e) => setGender(e.target.value)}
+                  className={`${styles.genderRadio}`}
+                  required
+                />
+                <label htmlFor="male" className="block cursor-pointer">
+                  男性
+                </label>
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="radio"
+                  id="female"
+                  name="gender"
+                  value="female"
+                  checked={gender === "female"}
+                  onChange={(e) => setGender(e.target.value)}
+                  className={`${styles.genderRadio}`}
+                />
+                <label htmlFor="female" className="block cursor-pointer">
+                  女性
+                </label>
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="radio"
+                  id="other"
+                  name="gender"
+                  value="other"
+                  checked={gender === "other"}
+                  onChange={(e) => setGender(e.target.value)}
+                  className={`${styles.genderRadio}`}
+                />
+                <label htmlFor="other" className="block cursor-pointer">
+                  その他
+                </label>
+              </div>
             </div>
-            <div className="flex gap-3">
-              <input
-                type="radio"
-                id="female"
-                name="gender"
-                value="female"
-                checked={gender === "female"}
-                onChange={(e) => setGender(e.target.value)}
-                className={`${styles.genderRadio}`}
-              />
-              <label htmlFor="female" className="block">
-                女性
-              </label>
-            </div>
-            <div className="flex gap-3">
-              <input
-                type="radio"
-                id="other"
-                name="gender"
-                value="other"
-                checked={gender === "other"}
-                onChange={(e) => setGender(e.target.value)}
-                className={`${styles.genderRadio}`}
-              />
-              <label htmlFor="other" className="block">
-                その他
-              </label>
-            </div>
-          </div>
+            {errors.gender && (
+              <p className="text-red-500 text-sm mt-1">{errors.gender}</p>
+            )}
+          </fieldset>
 
           {/* 自己紹介*/}
           <div className={`${styles.create__formContainer}`}>
@@ -470,6 +567,7 @@ export default function CreateViewerPage() {
               </label>
             </div>
             <textarea
+              id="introduction"
               name="introduction"
               value={introduction}
               onChange={(e) => setIntroduction(e.target.value)}

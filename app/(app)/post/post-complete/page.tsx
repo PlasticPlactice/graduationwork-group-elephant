@@ -76,7 +76,7 @@ export default function PostCompletePage() {
           もう１冊登録する
         </button>
       </Link>
-      <Link href="mypage" className="w-full block">
+      <Link href="/poster/mypage" className="w-full block">
         <button type="button" className={`w-full`}>
           書評を確認する（マイページ）
         </button>

@@ -178,11 +178,6 @@ function DetailNoticeContent() {
   const publicStart = notification?.public_date
     ? format(new Date(notification.public_date), "yyyy-MM-dd", { locale: ja })
     : "";
-  const publicEnd = notification?.public_end_date
-    ? format(new Date(notification.public_end_date), "yyyy-MM-dd", {
-        locale: ja,
-      })
-    : "";
 
   return (
     <main className="p-6">
@@ -209,8 +204,6 @@ function DetailNoticeContent() {
       <div className="flex items-center">
         <div className="date-range flex mr-3">
           <p>{publicStart}</p>
-          <p>&minus;</p>
-          <p>{publicEnd}</p>
         </div>
         <p
           className={

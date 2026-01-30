@@ -325,7 +325,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                 {/* 詳細の居住地の選択 */}
                 <div className={`mb-1 ${Styles.create__formContainer}`}>
                   <label htmlFor="addressDetail" className="block font-bold">
-                    詳細居住地（市区町村）
+                    居住地（市区町村）
                   </label>
 
                   <select
