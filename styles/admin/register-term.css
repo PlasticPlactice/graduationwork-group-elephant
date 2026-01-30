@@ -5,3 +5,11 @@
   font-size:0.8rem;
   color: var(--color-admin-sub);
 }
+#remarks{
+    height: 6rem;
+}
+.back-btn,
+.register-btn {
+  font-size: var(--font-size-h1);
+  box-shadow: none;
+}
