@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
 import {
   USER_STATUS_CLASS,
+  USER_STATUS,
   USER_STATUS_LABELS,
 } from "@/lib/constants/userStatus";
 
@@ -246,11 +247,19 @@ export default function UserDetailModal({
             )}
           </div>
         </div>
-        <div className="py-5 mx-8 flex justify-end">
+        <div className="py-5 mx-8 flex items-center justify-end gap-4">
+          {userDetail && userDetail.user_status === USER_STATUS.BAN && (
+            <p className="text-sm text-red-500">
+              このユーザーは既にアカウントが停止されています。
+            </p>
+          )}
           <AdminButton
-            label="退会"
+            label="アカウント停止"
             className="exit-btn"
             onClick={handleUserExit}
+            disabled={
+              !userDetail || userDetail.user_status !== USER_STATUS.ACTIVE
+            }
           />
         </div>
       </div>
