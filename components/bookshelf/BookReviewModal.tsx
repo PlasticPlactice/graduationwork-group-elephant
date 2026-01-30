@@ -170,7 +170,10 @@ export function BookReviewModal({
 
                   <button
                     type="button"
-                    onClick={() => onToggleFavorite?.()}
+                    onClick={() => {
+                      onToggleFavorite?.();
+                      
+                    }}
                     className={favoriteButtonClass}
                     aria-pressed={isFavorited}
                     aria-label={

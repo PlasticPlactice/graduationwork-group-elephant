@@ -11,6 +11,7 @@ import {
   type RefObject,
 } from "react";
 
+import { setCookie, parseCookies } from "nookies";
 import { BookshelfLayout } from "@/components/bookshelf/BookshelfLayout";
 import { type Book } from "@/components/bookshelf/bookData";
 import { BookReviewModal } from "@/components/bookshelf/BookReviewModal";
@@ -26,6 +27,8 @@ const DESKTOP_MAX_BOOKS_PER_SHELF = 15;
 const MAX_SHELVES = 3;
 const TUTORIAL_STORAGE_KEY = "bookshelf_tutorial_done_v2";
 const EVENT_INFO_STORAGE_KEY = "bookshelf_event_info_seen_v1";
+// Cookieに保存するキー
+const FAVORITES_COOKIE_KEY = "bookshelf_favorites_v1";
 
 // ★削除: ここにあった const BOOK_INDEX_BY_ID = ... は削除します。
 // reviewsが来るまでIDが分からないため、コンポーネント内部で計算します。
@@ -281,6 +284,22 @@ export function BookshelfTop({ reviews }: Props) {
     if (!done) {
       setTutorialStep(0);
     }
+
+    // Cookieからデータを取得する
+    const cookies = parseCookies();
+    const storedFavorites = cookies[FAVORITES_COOKIE_KEY];
+
+    if (storedFavorites) {
+      try {
+        // Cookieには文字列で入っているので、配列に戻す
+        const parsed = JSON.parse(storedFavorites);
+        if (Array.isArray(parsed)) {
+          setFavorites(parsed);
+        }
+      } catch (e) {
+        console.error("Cookieの読み込みに失敗しました", e);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -461,11 +480,21 @@ export function BookshelfTop({ reviews }: Props) {
   }, []);
 
   const toggleFavorite = useCallback((bookId: string) => {
-    setFavorites((prev) =>
-      prev.includes(bookId)
+    setFavorites((prev) => {
+      // (1) 今までのロジックで新しい配列を作る
+      const nextFavorites = prev.includes(bookId)
         ? prev.filter((id) => id !== bookId)
-        : [...prev, bookId]
-    );
+        : [...prev, bookId];
+
+      // (2) 作った新しい配列をJSON文字列にしてCookieに保存
+      setCookie(null, FAVORITES_COOKIE_KEY, JSON.stringify(nextFavorites), {
+        maxAge: 30 * 24 * 60 * 60,
+        path: "/",
+      });
+
+      // (3) Stateも更新して画面に反映させる
+      return nextFavorites;
+    });
   }, []);
 
   const toggleVote = useCallback(
