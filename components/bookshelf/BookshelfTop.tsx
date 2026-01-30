@@ -13,7 +13,7 @@ import {
 
 import { setCookie, parseCookies } from "nookies";
 import { BookshelfLayout } from "@/components/bookshelf/BookshelfLayout";
-import { type Book } from "@/components/bookshelf/bookData";
+import { type Book , type Reactions} from "@/components/bookshelf/bookData";
 import { BookReviewModal } from "@/components/bookshelf/BookReviewModal";
 import { ShelfBook } from "@/components/bookshelf/ShelfBook";
 import {
@@ -272,6 +272,7 @@ export function BookshelfTop({ reviews }: Props) {
   const [isEventInfoOpen, setIsEventInfoOpen] = useState(false);
   const [isScatterView, setIsScatterView] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [reactions, setReactions] = useState<Reactions[]>([]);
 
   useEffect(() => {
     const seenEventInfo = window.localStorage.getItem(EVENT_INFO_STORAGE_KEY);
@@ -284,7 +285,33 @@ export function BookshelfTop({ reviews }: Props) {
     if (!done) {
       setTutorialStep(0);
     }
+  }, []);
 
+  // Reactionテーブルからデータ取得の関数
+  const fetchBookReviewData = useCallback(async () => {
+      try {
+        const res = await fetch("/api/viewer/reaction", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log(data)
+          setReactions(data);
+        }
+      } catch (error) {
+        console.error("Failed to Fetch book review data", error);
+      }
+    }, []);
+
+  useEffect(() => {
+    // データ取得の実行
+    fetchBookReviewData();
+  }, [])
+
+  useEffect(() => {
     // Cookieからデータを取得する
     const cookies = parseCookies();
     const storedFavorites = cookies[FAVORITES_COOKIE_KEY];
@@ -300,7 +327,7 @@ export function BookshelfTop({ reviews }: Props) {
         console.error("Cookieの読み込みに失敗しました", e);
       }
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     const updateButtonState = () => {
@@ -687,6 +714,7 @@ export function BookshelfTop({ reviews }: Props) {
         onClose={handleCloseReview}
         onComplete={handleCompleteBook}
         actionLabel={actionLabel}
+        reactions={reactions}
         isFavorited={
           modalState ? favorites.includes(modalState.book.id) : false
         }

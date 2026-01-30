@@ -1,11 +1,14 @@
 ﻿"use client";
 
 import { useEffect, useRef, type CSSProperties, type Ref } from "react";
-import type { Book } from "@/components/bookshelf/bookData";
+import Image from "next/image";
+import type { Book, Reactions } from "@/components/bookshelf/bookData";
 import styles from "@/components/bookshelf/BookReviewModal.module.css";
+import { Item } from "../features/item";
 
 type BookReviewModalProps = {
   book?: Book | null;
+  reactions?: Reactions[];
   open: boolean;
   onClose: () => void;
   onComplete: () => void;
@@ -20,6 +23,7 @@ type BookReviewModalProps = {
 
 export function BookReviewModal({
   book,
+  reactions,
   open,
   onClose,
   onComplete,
@@ -37,6 +41,8 @@ export function BookReviewModal({
 
   useEffect(() => {
     if (!open) return;
+
+    console.log(reactions)
 
     previousActiveElementRef.current =
       document.activeElement as HTMLElement | null;
@@ -140,9 +146,18 @@ export function BookReviewModal({
         <div className="relative z-10 flex h-full flex-col">
           <div 
             dangerouslySetInnerHTML={{ __html: book.review ?? "書評が登録されていません"}}
-            className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
+            className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6"
+          >
           </div>
               <div className="mt-6 flex flex-col gap-4">
+                <div className="flex justify-center gap-5">
+                  {reactions?.slice(0, 4).map((item) => (
+                    <button key={item.id} className="w-full flex">
+                      <img src={item.icon_path} alt="" width={20} height={20} />
+                      <p className={`font-bold `}>{item._count?.bookReviewReactions}</p>
+                    </button>
+                  ))}
+                </div>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
@@ -172,7 +187,7 @@ export function BookReviewModal({
                     type="button"
                     onClick={() => {
                       onToggleFavorite?.();
-                      
+
                     }}
                     className={favoriteButtonClass}
                     aria-pressed={isFavorited}
