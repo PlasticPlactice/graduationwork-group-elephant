@@ -56,7 +56,9 @@ export default function MyPage() {
     };
     [key: string]: unknown;
   }
-  const [unreadMessage, setUnreadMessage] = useState<UnreadMessage | null>(null);
+  const [unreadMessage, setUnreadMessage] = useState<UnreadMessage | null>(
+    null,
+  );
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -508,6 +510,20 @@ export default function MyPage() {
                     aria-label="パスワードの変更へ"
                   >
                     パスワードの変更
+                  </a>
+                </li>
+                <li style={{ borderColor: "var(--color-sub)" }}>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      signOut({ callbackUrl: "/poster/login" });
+                    }}
+                    className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                    aria-label="ログアウト"
+                    style={{ color: "red" }}
+                  >
+                    ログアウト
                   </a>
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>

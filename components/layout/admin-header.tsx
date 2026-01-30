@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import "@/styles/admin/header.css"
+import { signOut } from "next-auth/react";
+import "@/styles/admin/header.css";
 
 export function AdminHeader() {
   const [openMenu, setOpenMenu] = useState(false);
-  const router = useRouter();
 
   const handleMenuToggle = (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -15,19 +14,7 @@ export function AdminHeader() {
   };
 
   const handleLogout = async () => {
-    try {
-      const res = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-
-      if (res.ok) {
-        setOpenMenu(false);
-        router.push("/");
-        router.refresh();
-      }
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    await signOut({ callbackUrl: "/admin/login" });
   };
 
   return (
@@ -155,11 +142,10 @@ export function AdminHeader() {
               </li>
 
               <li>
-                <button
-                  onClick={handleLogout}
-                  className="logout-btn"
-                >
-                  <span className="text-lg font-bold logout-text">ログアウト</span>
+                <button onClick={handleLogout} className="logout-btn">
+                  <span className="text-lg font-bold logout-text">
+                    ログアウト
+                  </span>
                 </button>
               </li>
             </ul>
