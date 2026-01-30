@@ -1,5 +1,6 @@
 import { TERM_STATUS_LABELS, TERM_STATUS_CLASS } from "@/lib/constants/termStatus";
 import "@/styles/admin/terms.css";
+import AdminButton from "@/components/ui/admin-button";
 
 export default function Page() {
     const terms = [
@@ -47,6 +48,12 @@ export default function Page() {
     return (
         <main>
             <div className="mx-8 mt-8">
+                <AdminButton
+                label="利用規約登録"
+                type="button"
+                className="register-btn mb-6"
+                // onClick={handleRegister}
+                />
                 <table className="w-full terms-table">
                     {/*
                     ステータス、ファイルの表示名、適用日時、登録日時、ファイルの表示名
@@ -61,7 +68,7 @@ export default function Page() {
                     </thead>
                     <tbody className="border">
                         {terms.map((term) => (
-                            <tr key={term.id} className="table-row">
+                            <tr key={term.id} className="table-row cursor-pointer">
                                 <td className="py-2 pl-10">
                                     <span
                                     className={`status-badge ${getStatusClass(term.status)}`}
