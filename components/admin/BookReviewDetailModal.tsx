@@ -7,6 +7,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Color from "@tiptap/extension-color";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
+import AdminButton from "@/components/ui/admin-button";
 
 interface BookReviewDetailModalProps {
     isOpen: boolean;
@@ -53,7 +54,7 @@ const applyColor = (color: string) =>
     return (
         <div className="fixed inset-0 review-modal flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div
-                className="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full mx-4"
+                className="bg-white rounded-lg shadow-lg p-6 max-w-5xl w-full mx-4"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center pb-6">
@@ -65,7 +66,7 @@ const applyColor = (color: string) =>
                 <div className="flex">
                     <section className="w-5/7">
                         {/* ツールバー */}
-                        <div className="flex items-center gap-2 design-container py-2 pl-3">
+                    <div className="flex items-center gap-2 design-container py-2 pl-3">
                             {/* 太字 */}
                             <button
                             type="button"
@@ -133,9 +134,57 @@ const applyColor = (color: string) =>
                             <EditorContent editor={editor} className="p-3 min-h-[200px]" />
                         </div>
                     </section>
-                    <section className="w-2/7">
+                    <section className="w-2/7 pl-5">
                         {/* 書籍名 */}
-                        <p>「コンビニ人間」</p>
+                        <p className="font-bold text-center">「コンビニ人間」</p>
+                        <div className="text-xs">
+                            <div className="my-2 grid grid-cols-2">
+                                <p>名前</p>
+                                <p>丸丸太郎</p>
+                            </div>
+                            <div className="my-2 grid grid-cols-2">
+                                <p>年齢</p>
+                                <p>30代</p>
+                            </div>
+                            <div className="my-2 grid grid-cols-2">
+                                <p>所在地</p>
+                                <p>東京都</p>
+                            </div>
+                            <div className="my-2 grid grid-cols-2">
+                                <p>ステータス</p>
+                                <p>1次審査通過</p>
+                            </div>
+                        </div>
+                        <textarea
+                            id="message-area"
+                            className="w-full"
+                            placeholder="投稿者へのメッセージを入力"
+                        ></textarea>
+                        <AdminButton
+                            type="submit"
+                            className="w-full message-btn"
+                            label="メッセージ送信"
+                        />
+                        <div className="flex justify-between items-center my-5">
+                            {/* いいね */}
+                            <div className="flex items-center gap-1">
+                                <Icon icon={"mdi:heart-outline"} width={40} className="good-btn" />
+                                {/* ↓いいね数 */}
+                                <p className="good-num text-2xl">100</p>
+                            </div>
+                            <div>
+                                <button className="preview-btn">
+                                    <span className="font-lg">
+                                        印刷プレビュー
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        <AdminButton
+                            type="submit"
+                            className="w-full save-btn"
+                            label="確定して保存"
+                        />
                     </section>
                 </div>
             </div>
