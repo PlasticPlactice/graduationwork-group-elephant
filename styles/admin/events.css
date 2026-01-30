@@ -193,7 +193,8 @@ details[open] .icon {
   overflow-y: auto;
   flex: 1;
 }
-.reg-modal{
+.reg-modal,
+.review-modal{
   background-color: rgba(0, 0, 0, 0.4);
 }
 .close-btn{
