@@ -1,6 +1,29 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// reactionをすべて取得
+export async function GET() {
+  try {
+    const reviews = await prisma.reaction.findMany({
+      orderBy: {
+        created_at: "asc",
+      },
+      include: {
+        _count: {
+          select: {bookReviewReactions: true},
+        }
+      }
+    });
+
+    return NextResponse.json(reviews);
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Failed to fetch reviews" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
