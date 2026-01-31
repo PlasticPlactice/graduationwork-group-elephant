@@ -288,27 +288,26 @@ export function BookshelfTop({ reviews }: Props) {
   }, []);
 
   // Reactionテーブルからデータ取得の関数
-  const fetchBookReviewData = useCallback(async () => {
-      try {
-        const res = await fetch("/api/viewer/reaction", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          console.log(data)
-          setReactions(data);
-        }
-      } catch (error) {
-        console.error("Failed to Fetch book review data", error);
+  const fetchReactionData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/viewer/reaction", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setReactions(data);
       }
-    }, []);
+    } catch (error) {
+      console.error("Failed to Fetch reactions data", error);
+    }
+  }, []);
 
   useEffect(() => {
     // データ取得の実行
-    fetchBookReviewData();
+    fetchReactionData();
   }, [])
 
   useEffect(() => {

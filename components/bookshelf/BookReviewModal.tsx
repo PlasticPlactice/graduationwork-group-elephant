@@ -1,10 +1,11 @@
 ﻿"use client";
 
+import { useState } from "react";
 import { useEffect, useRef, type CSSProperties, type Ref } from "react";
-import Image from "next/image";
-import type { Book, Reactions } from "@/components/bookshelf/bookData";
+import type { Book, Reactions, BookReviewReactions } from "@/components/bookshelf/bookData";
 import styles from "@/components/bookshelf/BookReviewModal.module.css";
-import { Item } from "../features/item";
+import posterStyle from "@/styles/app/poster.module.css";
+import UserDetailModal from "../admin/UserDetailModal";
 
 type BookReviewModalProps = {
   book?: Book | null;
@@ -38,6 +39,7 @@ export function BookReviewModal({
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
+  const [bookReviewReactions, setBookReviewReactions] = useState<BookReviewReactions | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -112,16 +114,55 @@ export function BookReviewModal({
     isFavorited ? "!text-yellow-400" : "!text-gray-400"
   }`;
 
-  if (!open || !book) {
-    return null;
-  }
-
   const handleVoteClick = () => {
     if (!onToggleVote) return;
     const confirmed = window.confirm("1日1票ですが投票しますか？");
     if (confirmed) {
       onToggleVote();
     }
+  };
+
+  useEffect(() => {
+    if (!book?.user_id || !book?.id) return;
+
+    setBookReviewReactions({
+      user_id: book.user_id,
+      book_review_id: book.id,
+      reaction_id: "",
+    });
+  }, [book]);
+
+  if (!open || !book) {
+    return null;
+  }
+
+  const createReaction = async (reaction_id: string) => {
+    // 下書き登録用
+    const newReactionsData = {
+      ...bookReviewReactions,
+      reaction_id: reaction_id
+    };
+    console.log("newReactionsData" + JSON.stringify(newReactionsData))
+
+    setBookReviewReactions(newReactionsData);
+
+    try {
+      const res = await fetch("http://localhost:3000/api/viewer/reaction", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(newReactionsData),
+      });
+
+      if(!res.ok) {
+        alert("登録に失敗しました。");
+        return;
+      }
+
+    } catch(e) {
+      alert("通信に失敗しました。")
+    }
+
+    
   };
 
   const coverStyle = {
@@ -152,7 +193,7 @@ export function BookReviewModal({
               <div className="mt-6 flex flex-col gap-4">
                 <div className="flex justify-center gap-5">
                   {reactions?.slice(0, 4).map((item) => (
-                    <button key={item.id} className="w-full flex">
+                    <button type="button" key={item.id} onClick={() => {createReaction(item.id)}} className={`w-full flex items-center gap-2 ${posterStyle.barcodeScan__backButton}`}>
                       <img src={item.icon_path} alt="" width={20} height={20} />
                       <p className={`font-bold `}>{item._count?.bookReviewReactions}</p>
                     </button>
