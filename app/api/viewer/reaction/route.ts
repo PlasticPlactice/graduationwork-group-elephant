@@ -1,18 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// reactionをすべて取得
+// reactionをすべて取得 + 何個あるか確認してる
 export async function GET() {
   try {
     const reviews = await prisma.reaction.findMany({
       orderBy: {
         created_at: "asc",
       },
-      include: {
-        _count: {
-          select: {bookReviewReactions: true},
-        }
-      }
     });
 
     return NextResponse.json(reviews);
