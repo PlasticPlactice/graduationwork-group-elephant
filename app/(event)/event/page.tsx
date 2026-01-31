@@ -69,7 +69,7 @@ export default function EventPage() {
               key={idx}
               title={event.title}
               daysLeft={event.daysLeft}
-              description={event.description}
+              detail={event.description}
               buttonText={event.buttonText}
               href={event.href}
               isFinished={event.isFinished}
@@ -88,7 +88,7 @@ export default function EventPage() {
               key={idx}
               title={event.title}
               daysLeft={event.daysLeft}
-              description={event.description}
+              detail={event.description}
               buttonText={event.buttonText}
               href={event.href}
               isFinished={event.isFinished}

@@ -334,15 +334,27 @@ export default function MyPage() {
             </span>{" "}
             ファンサイトはこちら
           </Link> */}
-          <Link href="/"
-          >
+          <Link href="/">
             <div
               className="flex items-center px-2 rounded shadow-md my-10"
-              style={{backgroundColor:"var(--color-main)"}}>
-              <Image src="/layout/logo_another.png" alt="logo" width={100} height={40} className="ml-3"/>
+              style={{ backgroundColor: "var(--color-main)" }}
+            >
+              <Image
+                src="/layout/logo_another.png"
+                alt="logo"
+                width={100}
+                height={40}
+                className="ml-3"
+              />
               <span
                 className="font-bold ml-auto"
-                style={{ color: "var(--color-bg)" }}>象と花ファンサイトへ<span className="ml-4" aria-hidden="true">&gt;</span></span>
+                style={{ color: "var(--color-bg)" }}
+              >
+                象と花ファンサイトへ
+                <span className="ml-4" aria-hidden="true">
+                  &gt;
+                </span>
+              </span>
             </div>
           </Link>
         </div>
@@ -360,7 +372,7 @@ export default function MyPage() {
                 <EventCard
                   title={event.title}
                   daysLeft={event.daysLeft}
-                  description={event.description}
+                  detail={event.description}
                   buttonText={event.buttonText}
                   href={event.href}
                 />
