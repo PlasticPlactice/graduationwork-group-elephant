@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
 import {
   REVIEW_STATUS,
@@ -29,7 +28,6 @@ export default function StatusEditModal({
   selectedReviews,
   onStatusUpdated,
 }: StatusEditModalProps) {
-  const [newStatus, setNewStatus] = useState<number>(REVIEW_STATUS.BEFORE);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
@@ -43,7 +41,7 @@ export default function StatusEditModal({
       ? getStatusLabel(selectedReviews[0].status)
       : "-";
 
-  const handleUpdate = async (e: React.FormEvent) => {
+  const handleIncrement = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -54,7 +52,7 @@ export default function StatusEditModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reviewIds: selectedReviews.map((r) => r.id),
-          status: newStatus,
+          action: "increment",
         }),
       });
 
@@ -62,7 +60,7 @@ export default function StatusEditModal({
         throw new Error("ステータス更新に失敗しました");
       }
 
-      alert("ステータスを変更しました。（対象ユーザーへ通知が送信されます）");
+      alert("選択した書評を1段階上に更新しました。（対象ユーザーへ通知が送信されます）");
       if (onStatusUpdated) onStatusUpdated();
       onClose();
     } catch (error) {
@@ -85,13 +83,14 @@ export default function StatusEditModal({
         <h2 className="modal-head text-center">ステータス変更</h2>
         <h3 className="modal-sub-head mt-3">ステータス変更する書評</h3>
 
-        <div className="border p-3 overflow-auto h-64">
+        <div className="border p-3 overflow-auto h-64 mb-3">
           <table className="w-full status-table">
             <thead className="table-head">
               <tr>
                 <th>ID</th>
                 <th>書籍タイトル</th>
                 <th>ニックネーム</th>
+                <th>現在のステータス</th>
               </tr>
             </thead>
             <tbody className="border status-book-section">
@@ -100,44 +99,20 @@ export default function StatusEditModal({
                   <td>{record.id}</td>
                   <td>{record.title}</td>
                   <td>{record.nickname}</td>
+                  <td>{getStatusLabel(record.status)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <div className="grid grid-cols-3 items-center my-3 m-auto">
-          <p className="now-status-head ">変更前ステータス</p>
-          <p className="now-status-text font-bold py-1.5 px-7 rounded-2xl">
-            {currentStatusDisplay}
-          </p>
-          <div>{/* レイアウト調整用 */}</div>
-        </div>
-        <Icon
-          icon="ri:arrow-up-line"
-          rotate={2}
-          className="mx-auto status-arrow"
-          width={30}
-        ></Icon>
-        <form onSubmit={handleUpdate} className="m-auto w-1/4">
-          <select
-            className="w-full"
-            aria-label="変更後のステータス"
-            value={newStatus}
-            onChange={(e) => setNewStatus(Number(e.target.value))}
-          >
-            {Object.entries(REVIEW_STATUS_LABELS).map(([value, label]) => (
-              <option key={value} value={Number(value)}>
-                {label}
-              </option>
-            ))}
-          </select>
+        <form onSubmit={handleIncrement} className="m-auto w-1/4">
 
           <AdminButton
-            label={isSubmitting ? "変更中..." : "変更"}
+            label={isSubmitting ? "変更中..." : "ステータスを更新する"}
             type="submit"
             className="w-full mt-5"
-            disabled={isSubmitting}
+            disabled={isSubmitting || selectedReviews.length === 0}
           />
         </form>
       </div>
