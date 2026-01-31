@@ -79,7 +79,7 @@ export default function TermApplyModal({
                         <AdminButton
                             label="予約を確定する"
                             type="submit"
-                            className="apply-btn mt-6 mx-auto"
+                            className="reservation-btn mt-6 mx-auto"
                             onClick={onClose}
                         />
                     </div>
