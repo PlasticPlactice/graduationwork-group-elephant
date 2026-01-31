@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import StatusEditModal from "@/components/admin/StatusEditModal";
 import CsvOutputModal from "@/components/admin/CsvOutputModal";
 import AllMessageSendModal from "@/components/admin/AllMessageSendModal";
+import BookReviewDetailModal from "@/components/admin/BookReviewDetailModal";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { REVIEW_STATUS_LABELS } from "@/lib/constants/reviewStatus";
@@ -33,8 +34,8 @@ export default function Page() {
 
   const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
   const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
-  const [isAllMessageSendModalOpen, setIsAllMessageSendModalOpen] =
-    useState(false);
+  const [isAllMessageSendModalOpen, setIsAllMessageSendModalOpen] = useState(false);
+  const [isBookReviewDetailModalOpen, setIsBookReviewDetailModalOpen] = useState(false);
 
   const router = useRouter();
 
@@ -104,13 +105,17 @@ export default function Page() {
     if (selectedRowIds.length === 0) return alert("データが選択されていません");
     setIsAllMessageSendModalOpen(true);
   };
+  const handleBookReviewDetail = () => {
+    setIsBookReviewDetailModalOpen(true);
+  };
   const closeModal = () => {
     setIsStatusEditModalOpen(false);
     setIsCsvOutputModalOpen(false);
     setIsAllMessageSendModalOpen(false);
+    setIsBookReviewDetailModalOpen(false);
   };
 
-  const handlepreview = () => {
+  const handlePreview = () => {
     router.push("/admin/print-preview");
   };
 
@@ -302,7 +307,7 @@ export default function Page() {
                   <td className="text-left">
                     <span>{row.id}</span>
                   </td>
-                  <td>
+                  <td onClick={handleBookReviewDetail}>
                     <span className="title-text">{row.book_title}</span>
                   </td>
                   <td>
@@ -364,7 +369,7 @@ export default function Page() {
                               icon="material-symbols:print"
                               iconPosition="left"
                               className="print-preview-btn w-auto"
-                              onClick={handlepreview}
+                              onClick={handlePreview}
                             />
                           </div>
                         </section>
@@ -453,6 +458,10 @@ export default function Page() {
         isOpen={isAllMessageSendModalOpen}
         onClose={closeModal}
         selectedReviews={messageTargetReviews}
+      />
+      <BookReviewDetailModal
+        isOpen={isBookReviewDetailModalOpen}
+        onClose={closeModal}
       />
     </main>
   );
