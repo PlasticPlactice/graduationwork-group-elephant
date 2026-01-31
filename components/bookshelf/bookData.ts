@@ -6,6 +6,8 @@ export type Book = {
   baseColor: string;
   patternColor?: string;
   review?: string;
+  user_id?: string;
+  book_review_id?: string;
 };
 
 export type Reactions = {
@@ -16,4 +18,11 @@ export type Reactions = {
   _count?: {
     bookReviewReactions: number;
   }
+}
+
+export type BookReviewReactions = {
+  id?: string;
+  user_id?: string;
+  book_review_id?: string;
+  reaction_id?: string;
 }
