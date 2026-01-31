@@ -1,148 +1,116 @@
 "use client";
 
-import { TERM_STATUS_LABELS, TERM_STATUS_CLASS } from "@/lib/constants/termStatus";
 import { useState } from "react";
 import "@/styles/admin/detail-term.css";
-import TermApplyConfirmModal from "@/components/admin/TermApplyConfirmModal";
-import TermDeleteConfirmModal from "@/components/admin/TermDeleteCofirm";
+import AdminButton from "@/components/ui/admin-button";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
-    const [isTermApplyConfirmModalOpen, setIsTermApplyConfirmModalOpen] = useState(false);
-    const [isTermDeleteConfirmModalOpen, setIsTermDeleteConfirmModalOpen] = useState(false);
-    const terms = [
+    const router = useRouter();
+    type Term = {
+        id: number;
+        displayName: string;
+        uploadFileName?: string;
+        appliedAt?: string | null;
+    };
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTerm, setSelectedTerm] = useState<Term | null>(null);
+    const terms: Term[] = [
         {
             id: 1,
-            status: 0,
             displayName: '利用規約_2024年6月版.pdf',
             uploadFileName: '/uploads/1769407922017-ekx6gf05ok.pdf',
             appliedAt: '2024-06-01 00:00:00',
-            createdAt: '2024-05-15 12:34:56',
-            remarks: '●●を××に変更しました。',
         },
     ];
-
-    const getStatusClass = (status: number) => {
-        return TERM_STATUS_CLASS[status] || "";
-    };
-
-    const getStatusLabel = (status: number) => {
-        return TERM_STATUS_LABELS[status] || "";
-    };
-
-    const handleApplyConfirm = () => {
-        setIsTermApplyConfirmModalOpen(true);
-    }
-    const handleDeleteConfirm = () => {
-        setIsTermDeleteConfirmModalOpen(true);
-    }
     const handleCloseModal = () => {
-        setIsTermApplyConfirmModalOpen(false);
-        setIsTermDeleteConfirmModalOpen(false);
+        setIsModalOpen(false);
+        setSelectedTerm(null);
+    };
+
+    const handleRegister = () => {
+        router.push("/admin/register-term");
     }
 
     return (
         <main className="p-6">
-            <h1 className="text-2xl font-bold mb-6">利用規約詳細</h1>
+            <AdminButton
+                label="利用規約登録"
+                className="resiter-btn"
+                onClick={handleRegister}
+            />
             <div className="my-4 flex justify-center">
                 {terms.map((term) => (
                     <div key={term.id} className="w-full max-w-5xl flex">
                         <div className="w-1/2 pl-10 pr-5 border-r-2">
-                            <p className="text-xl font-bold">利用規約情報</p>
+                            <p className="text-xl font-bold">現在適用中の利用規約情報</p>
                             <p className="ml-10 mt-5 mb-1 text-lg">{term.displayName}</p>
-                            <span className={`status-badge ml-10 text-lg ${getStatusClass(term.status)}`}>
-                                {getStatusLabel(term.status)}
-                            </span>
                             <div className="ml-10 mt-5">
-                                <div className="grid grid-cols-2">
-                                    <p>登録日時</p>
-                                    <p>{term.createdAt}</p>
-                                </div>
                                 <div className="grid grid-cols-2">
                                     <p>適用日時</p>
                                     <p>{term.appliedAt}</p>
                                 </div>
-                                <div>
-                                    <p>備考</p>
-                                    <p>{term.remarks}</p>
-                                </div>
-                                <div className="mt-4">
-                                    <a
-                                        href={term.uploadFileName}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-600 underline"
-                                    >
-                                        別タブで開く / ダウンロード
-                                    </a>
-                                </div>
                             </div>
                         </div>
-
-                        <div className="w-1/2 ml-5 pb-6 px-6 bg-gray-50">
-                            <p className="text-xl font-bold mb-4">PDFプレビュー</p>
-                            <div className="h-[600px] bg-white border">
-                                <object
-                                    data={term.uploadFileName}
-                                    type="application/pdf"
-                                    width="100%"
-                                    height="100%"
-                                >
-                                    <div className="p-6">
-                                        <p>このブラウザではPDFを表示できません。</p>
-                                        <a
-                                            href={term.uploadFileName}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 underline"
-                                        >
-                                            PDFを開く / ダウンロード
-                                        </a>
+                            <div className="ml-10 w-28 h-28 flex-shrink-0">
+                                <div className="relative w-28 h-28">
+                                    <div
+                                        className="upload-preview w-28 h-28 flex items-center justify-center text-xs text-gray-400 border-2 border-dashed rounded overflow-hidden"
+                                        role="button"
+                                        aria-label={term.uploadFileName ? "プレビューを開く" : "ファイル未選択"}
+                                        onClick={() => {
+                                            if (term.uploadFileName) {
+                                                setSelectedTerm(term);
+                                                setIsModalOpen(true);
+                                            }
+                                        }}
+                                    >
+                                        <span>{term.displayName}</span>
                                     </div>
-                                </object>
                             </div>
                         </div>
                     </div>
                 ))}
-            </div>
-
-            <div className="flex items-center">
-                {/* 「適用する」ボタン、「戻る」ボタン、「削除」ボタン */}
-                <div>
-                    <button
-                        type="button"
-                        className="remove-btn"
-                        onClick={handleDeleteConfirm}
-                    >削除する
-                    </button>
-                </div>
-                <div className="ml-auto flex">
-                    <button
-                        type="button"
-                        className="back-btn"
-                        onClick={() => window.history.back()}
-                    >戻る
-                    </button>
-                    <button
-                        type="button"
-                        // ステータスが「適用中」ならclassをapply-btn
-                        // それ以外ならapplyend-btn
-                        className="apply-btn ml-4"
-                        onClick={handleApplyConfirm}
+                {/* PDFモーダル */}
+                {isModalOpen && selectedTerm && (
+                    <div
+                        className="upload-modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+                        onClick={handleCloseModal}
                     >
-                        {/*ステータスが「適用中」ならボタンのテキストを"適用を終了する"
-                        // それ以外なら"適用する" */}
-                        適用する
-                    </button>
-                </div>
+                        <div
+                            className="bg-white rounded p-4 overflow-auto"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-start gap-4">
+                                <h3 className="text-lg font-medium">プレビュー</h3>
+                                <button
+                                    type="button"
+                                    onClick={handleCloseModal}
+                                    className="close-btn text-2xl px-2 hover:bg-gray-100 rounded"
+                                    aria-label="閉じる"
+                                >
+                                &times;
+                                </button>
+                            </div>
+                            <div className="p-4">
+                                <object
+                                    data={selectedTerm.uploadFileName}
+                                    type="application/pdf"
+                                    // className="w-full"
+                                    style={{ maxHeight:"70vh", minHeight:"60vh" }}
+                                >
+                                    <p className="text-sm text-gray-600">
+                                        PDFプレビューを表示できません。ダウンロードしてください。
+                                    </p>
+                                </object>
+
+                                <p className="font-medium mt-4">ファイル名</p>
+                                <p className="mt-2 break-words">{selectedTerm.displayName}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
-            <TermApplyConfirmModal
-                isOpen={isTermApplyConfirmModalOpen}
-                onClose={handleCloseModal}
-            />
-            <TermDeleteConfirmModal
-                isOpen={isTermDeleteConfirmModalOpen}
-                onClose={handleCloseModal}
-            />
         </main>
     );
 }

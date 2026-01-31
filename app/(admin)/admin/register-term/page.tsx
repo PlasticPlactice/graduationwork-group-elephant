@@ -193,7 +193,8 @@ export default function Page() {
                                     <p className="mt-2 break-words">{selectedFileName}</p>
                                 </div>
                             </div>
-                        </div>                    )}
+                        </div>                    
+                    )}
                 </div>
                 <div className="mt-6 flex gap-5 justify-end">
                     <AdminButton

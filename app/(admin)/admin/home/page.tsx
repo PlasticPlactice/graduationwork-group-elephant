@@ -201,7 +201,7 @@ export default function Page() {
 
         {/* 利用規約管理 */}
         <Link
-          href="/admin/terms"
+          href="/admin/detail-term"
           className="flex py-2 pl-2 pr-5 shadow-md admin-card"
         >
           <div className="flex items-center justify-center w-auto mx-1">
