@@ -5,7 +5,7 @@ import "@/styles/components/event-card.css";
 type EventCardProps = {
   title: string;
   daysLeft: number | string;
-  description: string;
+  detail?: string | null;
   buttonText?: string;
   onButtonClick?: () => void;
   href?: string;
@@ -18,7 +18,7 @@ type EventCardProps = {
 export const EventCard = ({
   title,
   daysLeft,
-  description,
+  detail,
   buttonText = "投票へ",
   onButtonClick,
   isFinished = false,
@@ -43,9 +43,9 @@ export const EventCard = ({
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1 pr-4">
           <h4 className="text-xl font-bold text-slate-800 mb-2">{title}</h4>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            {description}
-          </p>
+          {detail && (
+            <p className="text-slate-600 text-sm leading-relaxed">{detail}</p>
+          )}
         </div>
 
         {/* タイマー部分のデザイン */}
