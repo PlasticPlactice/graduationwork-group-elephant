@@ -53,6 +53,10 @@ export default function Page() {
         router.push("/admin/register-term");
     };
 
+    const handleDetail = () => {
+        router.push("/admin/detail-term");
+    }
+
     return (
         <main>
             <div className="mx-8 mt-8">
@@ -76,7 +80,7 @@ export default function Page() {
                     </thead>
                     <tbody className="border">
                         {terms.map((term) => (
-                            <tr key={term.id} className="table-row cursor-pointer">
+                            <tr key={term.id} className="table-row cursor-pointer" onClick={handleDetail}>
                                 <td className="py-2 pl-10">
                                     <span
                                     className={`status-badge ${getStatusClass(term.status)}`}

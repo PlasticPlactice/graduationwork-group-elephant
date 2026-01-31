@@ -12,6 +12,7 @@ export default function Page() {
             uploadFileName: '/uploads/1769407922017-ekx6gf05ok.pdf',
             appliedAt: '2024-06-01 00:00:00',
             createdAt: '2024-05-15 12:34:56',
+            remarks: '●●を××に変更しました。',
         },
     ];
 
@@ -43,6 +44,10 @@ export default function Page() {
                                 <div className="grid grid-cols-2">
                                     <p>適用日時</p>
                                     <p>{term.appliedAt}</p>
+                                </div>
+                                <div>
+                                    <p>備考</p>
+                                    <p>{term.remarks}</p>
                                 </div>
                                 <div className="mt-4">
                                     <a
