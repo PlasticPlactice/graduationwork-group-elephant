@@ -32,7 +32,7 @@ export default function Page() {
         },
         {
             id: 4,
-            status: 2,
+            status: 1,
             displayName: '利用規約_2024年7月版.pdf',
             appliedAt: '2024-07-01 00:00:00',
             createdAt: '2024-06-15 12:34:56',

@@ -12,21 +12,13 @@
   padding-left: 1.5rem;
   padding-right: 1.5rem;
 }
-.beforeapply {
+.not-apply {
   color: #828848;
   background-color: var(--color-admin-disable-background);
   border-radius: var(--control-radius);
   font-weight: bold;
   padding-left: 1rem;
   padding-right: 1rem;
-}
-.applyend {
-  color: #c9c9c9;
-  background-color: var(--color-admin-applyend-background);
-  border-radius: var(--control-radius);
-  font-weight: bold;
-  padding-left: 1.9rem;
-  padding-right: 1.9rem;
 }
 .remove-btn,
 .back-btn,
