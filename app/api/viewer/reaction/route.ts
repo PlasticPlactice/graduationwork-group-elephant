@@ -29,6 +29,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { user_id, book_review_id, reaction_id } = body;
 
+    const bookReviewId = Number(body.book_review_id);
+    const reactionId = Number(body.reaction_id);
+    const userId = Number(body.user_id);
+
+    if (Number.isNaN(bookReviewId) || Number.isNaN(userId)) {
+      return NextResponse.json(
+        { error: "Invalid parameters" },
+        { status: 400 }
+      );
+    }
+
     // 1. バリデーション: IDがない場合は弾く
     if (!book_review_id || !reaction_id) {
       return NextResponse.json(
@@ -41,10 +52,10 @@ export async function POST(req: Request) {
     // ※ ここで userId がある場合は where に userId も加えます
     const existingReaction = await prisma.bookReviewReaction.findFirst({
       where: {
-        book_review_id: book_review_id,
-        reaction_id: reaction_id,
+        book_review_id: bookReviewId,
+        reaction_id: reactionId,
         user: {
-          id: user_id,
+          id: userId,
         },
       },
     });
@@ -67,13 +78,13 @@ export async function POST(req: Request) {
       const newReaction = await prisma.bookReviewReaction.create({
         data: {
           bookReview: {
-            connect: { id: book_review_id },
+            connect: { id: bookReviewId },
           },
           reaction: {
-            connect: { id: reaction_id },
+            connect: { id: reactionId },
           },
           user: {
-            connect: { id: user_id },
+            connect: { id: userId },
           },
         },
       });
