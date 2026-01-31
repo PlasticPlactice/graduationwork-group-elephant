@@ -67,3 +67,42 @@
     background-color: var(--color-bg);
     color: var(--color-accent);
 }
+/* モーダル */
+.term-apply-confirm-modal{
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-btn-common {
+  box-shadow: none;
+  width: 10rem;
+  font-size: 1rem;
+}
+.backmodal-btn {
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-text);
+}
+.backmodal-btn:hover {
+    border: 1px solid var(--color-text);
+    background-color: var(--color-text);
+    color: var(--color-bg);
+}
+.apply-conf-btn{
+    color: var(--color-bg);
+    background-color: var(--color-main);
+    border: 1px solid var(--color-main);
+}
+.apply-conf-btn:hover{
+    border: 1px solid var(--color-main);
+    background-color: var(--color-bg);
+    color: var(--color-main);
+}
+.delete-conf-btn{
+    color: var(--color-bg);
+    background-color: var(--color-warning);
+    border: 1px solid var(--color-warning);
+}
+.delete-conf-btn:hover{
+    border: 1px solid var(--color-warning);
+    background-color: var(--color-bg);
+    color: var(--color-warning);
+}

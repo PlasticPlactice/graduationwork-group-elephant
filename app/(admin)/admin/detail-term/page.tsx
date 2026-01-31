@@ -1,9 +1,14 @@
 "use client";
 
 import { TERM_STATUS_LABELS, TERM_STATUS_CLASS } from "@/lib/constants/termStatus";
+import { useState } from "react";
 import "@/styles/admin/detail-term.css";
+import TermApplyConfirmModal from "@/components/admin/TermApplyConfirmModal";
+import TermDeleteConfirmModal from "@/components/admin/TermDeleteCofirm";
 
 export default function Page() {
+    const [isTermApplyConfirmModalOpen, setIsTermApplyConfirmModalOpen] = useState(false);
+    const [isTermDeleteConfirmModalOpen, setIsTermDeleteConfirmModalOpen] = useState(false);
     const terms = [
         {
             id: 1,
@@ -23,6 +28,17 @@ export default function Page() {
     const getStatusLabel = (status: number) => {
         return TERM_STATUS_LABELS[status] || "";
     };
+
+    const handleApplyConfirm = () => {
+        setIsTermApplyConfirmModalOpen(true);
+    }
+    const handleDeleteConfirm = () => {
+        setIsTermDeleteConfirmModalOpen(true);
+    }
+    const handleCloseModal = () => {
+        setIsTermApplyConfirmModalOpen(false);
+        setIsTermDeleteConfirmModalOpen(false);
+    }
 
     return (
         <main className="p-6">
@@ -95,6 +111,7 @@ export default function Page() {
                     <button
                         type="button"
                         className="remove-btn"
+                        onClick={handleDeleteConfirm}
                     >削除する
                     </button>
                 </div>
@@ -110,6 +127,7 @@ export default function Page() {
                         // ステータスが「適用中」ならclassをapply-btn
                         // それ以外ならapplyend-btn
                         className="apply-btn ml-4"
+                        onClick={handleApplyConfirm}
                     >
                         {/*ステータスが「適用中」ならボタンのテキストを"適用を終了する"
                         // それ以外なら"適用する" */}
@@ -117,6 +135,14 @@ export default function Page() {
                     </button>
                 </div>
             </div>
+            <TermApplyConfirmModal
+                isOpen={isTermApplyConfirmModalOpen}
+                onClose={handleCloseModal}
+            />
+            <TermDeleteConfirmModal
+                isOpen={isTermDeleteConfirmModalOpen}
+                onClose={handleCloseModal}
+            />
         </main>
     );
 }
