@@ -56,18 +56,6 @@ export default function Page() {
                     />
                 </div>
                 <div className='my-4'>
-                    <label htmlFor="term-start-datetime" className='text-xl block'>規約の適用日時</label>
-                    <p className='detail-text text-sm'>登録する利用規約をいつから適用するかを入力してください。</p>
-                    <Textbox
-                        type='datetime-local'
-                        id='term-start-datetime'
-                        name='term-start-datetime'
-                        className='w-full custom-input'
-                        style={{backgroundColor:'#F9FAFB'}}
-        
-                    />
-                </div>
-                <div className='my-4'>
                     <label htmlFor="pdf-upload" className='text-xl block'>PDFアップロード</label>
                     <p className='detail-text text-sm'>利用規約のPDFファイルをアップロードしてください。</p>
                     <div className="flex items-start gap-4">
