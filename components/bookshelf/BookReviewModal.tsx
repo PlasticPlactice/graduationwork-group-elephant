@@ -7,6 +7,13 @@ import styles from "@/components/bookshelf/BookReviewModal.module.css";
 import posterStyle from "@/styles/app/poster.module.css";
 import UserDetailModal from "../admin/UserDetailModal";
 
+const REACTION_TYPES = [
+  { id: "1", label: "いいね" },
+  { id: "2", label: "感動" },
+  { id: "3", label: "学び" },
+  { id: "4", label: "共感" },
+]
+
 type BookReviewModalProps = {
   book?: Book | null;
   reactions?: Reactions[];
@@ -21,6 +28,12 @@ type BookReviewModalProps = {
   actionButtonRef?: Ref<HTMLButtonElement>;
   voteButtonRef?: Ref<HTMLButtonElement>;
 };
+
+type afterCheckedData = {
+  reaction_id: number;
+  count: number;
+  is_reacted: boolean;
+}
 
 export function BookReviewModal({
   book,
@@ -40,11 +53,10 @@ export function BookReviewModal({
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const [bookReviewReactions, setBookReviewReactions] = useState<BookReviewReactions | null>(null);
+  const [afterCheckedData, setAfterCheckedData] = useState<afterCheckedData[]>([]);
 
   useEffect(() => {
     if (!open) return;
-
-    console.log(reactions)
 
     previousActiveElementRef.current =
       document.activeElement as HTMLElement | null;
@@ -132,17 +144,41 @@ export function BookReviewModal({
     });
   }, [book]);
 
-  if (!open || !book) {
-    return null;
+  // リアクションがすでにあるか確認する + 数をもらう
+  const checkReactionStatus = async () => {
+    const newReactionsData = {
+      ...bookReviewReactions,
+    };
+
+    try {
+      const res = await fetch("http://localhost:3000/api/viewer/reaction/status", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(newReactionsData)
+      });
+
+      const apiResponse = await res.json();
+
+      setAfterCheckedData(apiResponse)
+    } catch(e) {
+      console.error("通信に失敗しました。");
+    }
   }
 
+  // bookReviewReactionsにデータが入ったのを確認したらリアクションの数を取得してもらう
+  useEffect(() => {
+    if(!bookReviewReactions?.user_id || !bookReviewReactions?.book_review_id ) return;
+
+    checkReactionStatus();
+  }, [bookReviewReactions?.book_review_id, bookReviewReactions?.user_id]);
+
+
+  // リアクション関数
   const createReaction = async (reaction_id: string) => {
-    // 下書き登録用
     const newReactionsData = {
       ...bookReviewReactions,
       reaction_id: reaction_id
     };
-    console.log("newReactionsData" + JSON.stringify(newReactionsData))
 
     setBookReviewReactions(newReactionsData);
 
@@ -162,8 +198,71 @@ export function BookReviewModal({
       alert("通信に失敗しました。")
     }
 
-    
+    // カウント＋データが入っているか確認する関数を実行し、情報を更新する
+    try {
+      const res = await fetch("http://localhost:3000/api/viewer/reaction/status", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(newReactionsData)
+      });
+
+      const afterCheckedData = await res.json();
+    } catch(e) {
+      console.error("通信に失敗しました。");
+    }
+
   };
+
+  const handleReactionClick = async (clickedReactionId: string) => { // IDを受け取る
+  
+    // ★重要: ここでAPIを待たずに、見た目だけ先に更新しちゃう！(Optimistic Update)
+    setAfterCheckedData((prevData) => {
+      // データの中に、今回押したIDがあるか探す
+      const exists = prevData.find(d => String(d.reaction_id) === String(clickedReactionId));
+
+      if (exists) {
+        // ■ パターンA: すでにデータがある場合 (カウントを増減させる)
+        return prevData.map((d) => {
+          if (String(d.reaction_id) === String(clickedReactionId)) {
+            const nextIsReacted = !d.is_reacted; // trueならfalseへ、falseならtrueへ反転
+            return {
+              ...d,
+              is_reacted: nextIsReacted,
+              // 押したら +1, 取り消したら -1
+              count: nextIsReacted ? d.count + 1 : d.count - 1, 
+            };
+          }
+          return d; // 他のIDはそのまま
+        });
+      } else {
+        // ■ パターンB: まだデータがない場合 (0件から1件になる時)
+        return [
+          ...prevData,
+          {
+            reaction_id: Number(clickedReactionId), // 文字か数字か型に合わせてね
+            count: 1,
+            is_reacted: true
+          }
+        ];
+      }
+    });
+
+    // --- 見た目の更新はここまで ---
+
+    // 裏側でAPIを叩く（DB更新）
+    try {
+      await createReaction(clickedReactionId); 
+      // ※もしここでエラーが出たら、Stateを元に戻す処理を入れるとさらに完璧
+    } catch (error) {
+      console.error("保存に失敗しました");
+      // エラーが出たらリロードさせるなどの対処
+    }
+  };
+
+  // これより下でuseEffect使うの禁止
+  if (!open || !book) {
+    return null;
+  }
 
   const coverStyle = {
     "--book-cover-color": book.baseColor,
@@ -192,12 +291,26 @@ export function BookReviewModal({
           </div>
               <div className="mt-6 flex flex-col gap-4">
                 <div className="flex justify-center gap-5">
-                  {reactions?.slice(0, 4).map((item) => (
-                    <button type="button" key={item.id} onClick={() => {createReaction(item.id)}} className={`w-full flex items-center gap-2 ${posterStyle.barcodeScan__backButton}`}>
-                      <img src={item.icon_path} alt="" width={20} height={20} />
-                      <p className={`font-bold `}>{item._count?.bookReviewReactions}</p>
-                    </button>
-                  ))}
+                  {REACTION_TYPES.map((type) => {
+                    
+                    const targetData = afterCheckedData?.find((r) => String(r.reaction_id) === String(type.id));
+
+                    const count = targetData ? targetData.count : 0;
+                    const isReacted = targetData ? targetData.is_reacted : false;
+
+                    return (
+                      <button
+                        key={type.id}
+                        className={`${styles.reactionButton} ${isReacted ? styles.active : ""}`}
+                        onClick={() => {
+                          handleReactionClick(type.id)
+                        }}
+                      >
+                        <span className={`${styles.icon}`}>{type.label}:</span>
+                        <span className={`${styles.count}`}>{count}</span>
+                      </button>
+                    )
+                  })}
                 </div>
                 <div className="flex items-center gap-3">
                   <button

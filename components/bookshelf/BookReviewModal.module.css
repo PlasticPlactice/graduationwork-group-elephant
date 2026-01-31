@@ -71,6 +71,43 @@
   z-index: 1;
 }
 
+/* ベースのボタンスタイル */
+.reactionButton {
+  display: flex;
+  align-items: center;
+  /* gap: 6px; アイコンと数字の間隔 */
+  padding: 8px 16px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px; /* 丸っこい形 (Pill shape) */
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* なめらかな動き */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* ホバー時の動き（ちょっと浮く） */
+.reactionButton:hover {
+  background-color: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* クリックした瞬間（凹む） */
+.reactionButton:active {
+  transform: translateY(0);
+}
+
+/* ★ リアクション済み（ONの状態） */
+.active {
+  background-color: #fff1f2; /* 薄いピンク背景 */
+  border-color: #fda4af;     /* ピンクの枠線 */
+  color: #e11d48;            /* 濃いピンク文字 */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06); /* 内側に影（押された感） */
+}
+
 @keyframes bookCoverOpen {
   0% {
     transform: rotateY(0deg) translateZ(1px);
