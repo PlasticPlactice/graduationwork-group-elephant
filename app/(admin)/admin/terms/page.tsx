@@ -1,12 +1,16 @@
 "use client";
 
 import { TERM_STATUS_LABELS, TERM_STATUS_CLASS } from "@/lib/constants/termStatus";
+import { useState } from "react";
 import "@/styles/admin/terms.css";
 import AdminButton from "@/components/ui/admin-button";
+import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
+import TermApplyModal from "@/components/admin/TermApplyModal";
 
 export default function Page() {
     const router = useRouter();
+    const [isTermApplyModalOpen, setIsTermApplyModalOpen] = useState(false);
     const terms = [
     // 最新順に表示
         {
@@ -57,30 +61,50 @@ export default function Page() {
         router.push("/admin/detail-term");
     }
 
+    const openTermApplyModal = () => {
+        setIsTermApplyModalOpen(true);
+    };
+    const closeTermApplyModal = () => {
+        setIsTermApplyModalOpen(false);
+    };
+
     return (
         <main>
             <div className="mx-8 mt-8">
+                <div className="flex gap-4 justify-start">
                 <AdminButton
-                label="利用規約登録"
-                type="button"
-                className="register-btn mb-6"
-                onClick={handleRegister}
+                    label="利用規約登録"
+                    type="button"
+                    className="register-btn mb-6"
+                    onClick={handleRegister}
                 />
+                <AdminButton
+                    label="利用規約適用予約"
+                    type="button"
+                    className="register-btn mb-6"
+                    onClick={openTermApplyModal}
+                />
+                </div>
                 <table className="w-full terms-table">
                     {/*
                     ステータス、ファイルの表示名、適用日時、登録日時、ファイルの表示名
                      */}
                     <thead className="table-head">
                         <tr>
+                            <th>予約</th>
                             <th className="py-2 pl-10 text-left">ステータス</th>
                             <th className="text-left">ファイルの表示名</th>
                             <th className="text-left">適用日時</th>
                             <th className="text-left">登録日時</th>
+                            <th className="text-left">詳細</th>
                         </tr>
                     </thead>
                     <tbody className="border">
                         {terms.map((term) => (
-                            <tr key={term.id} className="table-row cursor-pointer" onClick={handleDetail}>
+                            <tr key={term.id} className="table-row cursor-pointer">
+                                <td className="py-2 flex justify-center items-center">
+                                    <input type="radio" name="term-select" />
+                                </td>
                                 <td className="py-2 pl-10">
                                     <span
                                     className={`status-badge ${getStatusClass(term.status)}`}
@@ -91,12 +115,20 @@ export default function Page() {
                                 <td>{term.displayName}</td>
                                 <td>{term.appliedAt}</td>
                                 <td>{term.createdAt}</td>
+                                <td onClick={handleDetail}>
+                                    <Icon
+                                        icon="weui:arrow-filled"
+                                        width={15}
+                                    ></Icon>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
             {/* この下にページネーション追加(バックエンド書く際に追記してもらえると助かります) */}
+
+            <TermApplyModal isOpen={isTermApplyModalOpen} onClose={closeTermApplyModal} />
         </main>
     )
 }

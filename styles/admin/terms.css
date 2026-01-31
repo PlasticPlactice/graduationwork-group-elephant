@@ -63,3 +63,22 @@
   padding-left: 1rem;
   padding-right: 1rem;
 }
+
+/* モーダル */
+.term-apply-modal{
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+  display: flex;
+  flex-direction: column;
+}
+.modal-head{
+  font-size: var(--font-size-h1);
+}
+.modal-scroll-area {
+  overflow-y: auto;
+  flex: 1;
+}
+.apply-btn{
+  width: 40%;
+}
