@@ -1,3 +1,4 @@
+// 使わない予定だが一応残しておく
 "use client";
 
 import { TERM_STATUS_LABELS, TERM_STATUS_CLASS } from "@/lib/constants/termStatus";

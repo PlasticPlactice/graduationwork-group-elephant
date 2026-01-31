@@ -1,3 +1,4 @@
+// 使わない予定だが一応残しておく
 "use client";
 import "@/styles/admin/detail-term.css";
 

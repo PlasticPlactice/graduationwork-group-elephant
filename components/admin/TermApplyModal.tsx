@@ -1,4 +1,5 @@
-import React, { useState} from "react";
+// 使わない予定だが一応残しておく
+import React, { useState } from "react";
 import "@/styles/admin/terms.css";
 import AdminButton from "@/components/ui/admin-button";
 
