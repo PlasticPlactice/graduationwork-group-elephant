@@ -198,6 +198,25 @@ export default function Page() {
             <p className="mb-1 ml-6 card-description">パスワードを変更</p>
           </div>
         </Link>
+
+        {/* 利用規約管理 */}
+        <Link
+          href="/admin/detail-term"
+          className="flex py-2 pl-2 pr-5 shadow-md admin-card"
+        >
+          <div className="flex items-center justify-center w-auto mx-1">
+            <Icon
+              icon="mingcute:paper-fill"
+              width="50"
+              height="50"
+              className="p-1 rounded-full admin-icon"
+            />
+          </div>
+          <div>
+            <h2 className="mb-1 ml-6 text-left card-title">利用規約管理</h2>
+            <p className="mb-1 ml-6 card-description">利用規約を管理</p>
+          </div>
+        </Link>
       </div>
     </main>
   );
