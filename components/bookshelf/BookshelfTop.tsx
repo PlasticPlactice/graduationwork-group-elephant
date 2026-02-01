@@ -547,6 +547,13 @@ export function BookshelfTop({ reviews }: Props) {
     }
   }, [tutorialStep]);
 
+  // 投票したという通知を受け取る
+  const handleVoteChange = (isVoted: boolean) => {
+    console.log("TOPで検知しました: 投票状態 =", isVoted);
+    // ボタンのDOMにもアクセス可能
+    console.log("ボタンの幅:", voteButtonRef.current?.offsetWidth);
+  };
+
   const handleCompleteBook = useCallback(() => {
     if (!modalState) return;
     const completedBookId = modalState.book.id;
@@ -720,6 +727,7 @@ export function BookshelfTop({ reviews }: Props) {
         isVoted={modalState ? votedBookId === modalState.book.id : false}
         actionButtonRef={actionButtonRef}
         voteButtonRef={voteButtonRef}
+        onVoteChange={handleVoteChange}
         onToggleFavorite={() =>
           modalState && toggleFavorite(modalState.book.id)
         }

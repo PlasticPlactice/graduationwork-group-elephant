@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { useEffect, useRef, type CSSProperties, type Ref } from "react";
 import type { Book, Reactions, BookReviewReactions } from "@/components/bookshelf/bookData";
+import BookReviewVoteButton from "./BookReviewVoteButton";
 import styles from "@/components/bookshelf/BookReviewModal.module.css";
-import posterStyle from "@/styles/app/poster.module.css";
-import UserDetailModal from "../admin/UserDetailModal";
 
 const REACTION_TYPES = [
   { id: "1", label: "いいね" },
@@ -27,6 +26,7 @@ type BookReviewModalProps = {
   onToggleVote?: () => void;
   actionButtonRef?: Ref<HTMLButtonElement>;
   voteButtonRef?: Ref<HTMLButtonElement>;
+  onVoteChange?: (isVoted: boolean) => void;
 };
 
 type afterCheckedData = {
@@ -48,6 +48,7 @@ export function BookReviewModal({
   onToggleVote,
   actionButtonRef,
   voteButtonRef,
+  onVoteChange
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -116,23 +117,9 @@ export function BookReviewModal({
     };
   }, [open, onClose]);
 
-  const voteButtonClass = `flex h-14 min-h-[3.5rem] flex-1 items-center justify-center gap-3 rounded-full border border-solid text-base font-bold tracking-wide transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-200 appearance-none shadow-none ${
-    isVoted
-      ? "!bg-red-500 !text-white !border-red-500 ![box-shadow:0_10px_24px_rgba(239,68,68,0.3)]"
-      : "!bg-red-50 !text-red-600 !border-red-400 ![box-shadow:0_10px_20px_rgba(239,68,68,0.18)]"
-  }`;
-
   const favoriteButtonClass = `flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
     isFavorited ? "!text-yellow-400" : "!text-gray-400"
   }`;
-
-  const handleVoteClick = () => {
-    if (!onToggleVote) return;
-    const confirmed = window.confirm("1日1票ですが投票しますか？");
-    if (confirmed) {
-      onToggleVote();
-    }
-  };
 
   useEffect(() => {
     if (!book?.user_id || !book?.id) return;
@@ -313,35 +300,15 @@ export function BookReviewModal({
                   })}
                 </div>
                 <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={handleVoteClick}
-                    aria-pressed={isVoted}
-                    ref={voteButtonRef}
-                    className={voteButtonClass}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 14l2 2 4-4m6 2a9 9 0 1 1 -18 0 9 9 0 0 1 18 0z"
-                      />
-                    </svg>
-                    <span>{isVoted ? "投票済み" : "投票する"}</span>
-                  </button>
-
+                  <BookReviewVoteButton
+                      reviewId={`${book.id}`}
+                      ref={voteButtonRef}
+                      onVoteChange={onVoteChange}
+                  />
                   <button
                     type="button"
                     onClick={() => {
                       onToggleFavorite?.();
-
                     }}
                     className={favoriteButtonClass}
                     aria-pressed={isFavorited}
