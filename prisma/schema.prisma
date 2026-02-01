@@ -203,7 +203,10 @@ model Notification {
   @@index([admin_id])
   @@index([deleted_flag])
   @@index([public_flag])
+  @@index([public_end_date])
   @@index([draft_flag])
+  @@index([notification_type, public_flag, public_date])
+  @@index([notification_type, public_flag])
 }
 
 model NotificationFile {
