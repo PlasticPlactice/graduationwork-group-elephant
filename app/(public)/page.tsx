@@ -5,49 +5,72 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { ItemModal } from "@/components/features/ItemModal";
+import { NotificationItem } from "@/lib/types/notification";
 import { useEffect, useState } from "react";
 
-export default function Home() {
-  const [showNewsModal, setShowNewsModal] = useState(false);
-  const [selectedNews, setSelectedNews] = useState<{
-    id: number;
-    date: string;
-    title: string;
-    image: string;
-  } | null>(null);
-  const [events, setEvents] = useState<
-    {
-      id: number;
-      title: string;
-      detail?: string | null;
-      first_voting_end_period: string;
-    }[]
-  >([]);
+type PublicEvent = {
+  id: number;
+  title: string;
+  detail?: string | null;
+  first_voting_end_period: string;
+};
 
-  const handleNewsClick = (
-    id: number,
-    title: string,
-    date: string,
-    image: string
-  ) => {
-    setSelectedNews({ id, date, title, image });
+export default function Home() {
+  const [news, setNews] = useState<NotificationItem[]>([]);
+  const [donations, setDonations] = useState<NotificationItem[]>([]);
+  const [events, setEvents] = useState<PublicEvent[]>([]);
+  const [showNewsModal, setShowNewsModal] = useState(false);
+  const [selectedNews, setSelectedNews] = useState<NotificationItem | null>(
+    null
+  );
+
+  const handleNewsClick = (item: NotificationItem) => {
+    setSelectedNews(item);
     setShowNewsModal(true);
   };
 
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const res = await fetch("/api/events?status=now");
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setEvents(data);
-        }
-      } catch {
-        // Keep fallback cards if fetch fails.
-      }
-    };
-    loadEvents();
+    fetch("/api/notifications?type=0&page=1")
+      .then((res) => res.json())
+      .then((data) => setNews(data.data || []));
+    fetch("/api/notifications?type=1&page=1")
+      .then((res) => res.json())
+      .then((data) => setDonations(data.data || []));
+    fetch("/api/events?status=now")
+      .then((res) => res.json())
+      .then((data) => setEvents(Array.isArray(data) ? data : []))
+      .catch(() => setEvents([]));
   }, []);
+
+  const fallbackNews: NotificationItem[] = [
+    {
+      id: 1,
+      title: "第１回文庫Xが開催されました！",
+      date: "2025-10-01",
+      image: "/top/image1.png",
+    },
+    {
+      id: 2,
+      title: "第１回文庫Xが開催されました！",
+      date: "2025-10-01",
+      image: "/top/image1.png",
+    },
+  ];
+
+  const fallbackDonations: NotificationItem[] = [
+    {
+      id: 3,
+      title: "○○様より「ハリーポッター」を寄贈していただきました！",
+      date: "2025-10-01",
+      image: "/top/image1.png",
+    },
+    {
+      id: 4,
+      title: "○○様より「ハリーポッター」を寄贈していただきました！",
+      date: "2025-10-01",
+      image: "/top/image1.png",
+    },
+  ];
 
   return (
     <div>
@@ -215,59 +238,29 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
-              {/* News Item 1 */}
-              <div
-                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() =>
-                  handleNewsClick(
-                    1,
-                    "第１回文庫Xが開催されました！",
-                    "2025-10-01",
-                    "/top/image1.png"
-                  )
-                }
-              >
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">第１回文庫Xが開催されました！</p>
-              </div>
-
-              {/* News Item 2 */}
-              <div
-                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() =>
-                  handleNewsClick(
-                    2,
-                    "第１回文庫Xが開催されました！",
-                    "2025-10-01",
-                    "/top/image1.png"
-                  )
-                }
-              >
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">第１回文庫Xが開催されました！</p>
-              </div>
+              {(news.length > 0 ? news : fallbackNews)
+                .slice(0, 2)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => handleNewsClick(item)}
+                  >
+                    <div className="news-item__image">
+                      <Image
+                        src={item.image || "/top/image1.png"}
+                        alt={item.title}
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
+                    <div className="news-item__meta">
+                      <span className="news-item__date">{item.date}</span>
+                      <span className="news-item__badge">NEW</span>
+                    </div>
+                    <p className="news-item__text">{item.title}</p>
+                  </div>
+                ))}
             </div>
             <div className="news__button">
               <Button
@@ -294,63 +287,29 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
-              {/* News Item 1 */}
-              <div
-                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() =>
-                  handleNewsClick(
-                    3,
-                    "○○様より「ハリーポッター」を寄贈していただきました！",
-                    "2025-10-01",
-                    "/top/image1.png"
-                  )
-                }
-              >
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">
-                  ○○様より「ハリーポッター」を寄贈していただきました！
-                </p>
-              </div>
-
-              {/* News Item 2 */}
-              <div
-                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() =>
-                  handleNewsClick(
-                    4,
-                    "○○様より「ハリーポッター」を寄贈していただきました！",
-                    "2025-10-01",
-                    "/top/image1.png"
-                  )
-                }
-              >
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">
-                  ○○様より「ハリーポッター」を寄贈していただきました！
-                </p>
-              </div>
+              {(donations.length > 0 ? donations : fallbackDonations)
+                .slice(0, 2)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => handleNewsClick(item)}
+                  >
+                    <div className="news-item__image">
+                      <Image
+                        src={item.image || "/top/image1.png"}
+                        alt={item.title}
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
+                    <div className="news-item__meta">
+                      <span className="news-item__date">{item.date}</span>
+                      <span className="news-item__badge">NEW</span>
+                    </div>
+                    <p className="news-item__text">{item.title}</p>
+                  </div>
+                ))}
             </div>
             <div className="donation-button">
               <Button
