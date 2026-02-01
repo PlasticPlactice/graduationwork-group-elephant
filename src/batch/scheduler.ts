@@ -1,4 +1,5 @@
 import { updateExpiredNotifications } from "./updateNotificationStatus";
+import { updateTermsSchedule } from "./updateTermsSchedule";
 import { logBatchInfo, logBatchSuccess, logBatchError } from "./logger";
 
 let cronTaskStarted = false;
@@ -17,6 +18,7 @@ export async function startNotificationScheduler() {
     // アプリ起動時に即座に実行
     logBatchInfo("アプリケーション起動時のバッチ処理を実行します");
     await updateExpiredNotifications();
+    await updateTermsSchedule();
 
     // その後、定期的に実行（毎時間0分）
     // 形式: '0 * * * *' = 毎時間0分、'*/15 * * * *' = 15分ごと
@@ -26,6 +28,7 @@ export async function startNotificationScheduler() {
         logBatchInfo("スケジュール実行されたバッチ処理を実行します");
         try {
           await updateExpiredNotifications();
+          await updateTermsSchedule();
         } catch (error) {
           logBatchError(
             `スケジュール実行中にエラーが発生しました: ${error instanceof Error ? error.message : String(error)}`,
@@ -40,7 +43,7 @@ export async function startNotificationScheduler() {
     }
 
     cronTaskStarted = true;
-    logBatchSuccess("お知らせスケジューラーを開始しました（毎時間0分に実行）");
+    logBatchSuccess("バッチスケジューラーを開始しました（毎時間0分に実行）");
   } catch (error) {
     logBatchError(
       `スケジューラー初期化でエラーが発生しました: ${error instanceof Error ? error.message : String(error)}`,

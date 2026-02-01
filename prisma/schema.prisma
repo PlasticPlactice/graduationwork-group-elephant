@@ -49,6 +49,7 @@ model Admin {
   notifications            Notification[]
   messages                 Message[]
   passwordResets           PasswordReset[]
+  terms                    Terms[]
 
   @@index([deleted_flag])
 }
@@ -294,4 +295,28 @@ model File {
   notificationFiles        NotificationFile[]
 
   @@index([deleted_flag])
+}
+
+// ========================
+// 利用規約管理
+// ========================
+
+model Terms {
+  id                       Int      @id @default(autoincrement())
+  file_name                String   @db.VarChar(255)
+  data_path                String
+  public_flag              Boolean  @default(false)
+  admin_id                 Int
+  applied_at               DateTime? @db.Timestamptz(3)
+  scheduled_applied_at     DateTime? @db.Timestamptz(3)
+  created_at               DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at               DateTime  @updatedAt @db.Timestamptz(3)
+  deleted_flag             Boolean  @default(false)
+
+  admin                    Admin    @relation(fields: [admin_id], references: [id])
+
+  @@index([admin_id])
+  @@index([deleted_flag])
+  @@index([public_flag])
+  @@index([scheduled_applied_at])
 }
