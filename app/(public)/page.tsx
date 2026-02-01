@@ -1,15 +1,12 @@
 ﻿"use client";
 
 import "@/styles/public/top.css";
-
 import React, { useEffect, useState } from "react";
-
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { ItemModal } from "@/components/features/ItemModal";
 import { NotificationItem } from "@/lib/types/notification";
-
 
 type PublicEvent = {
   id: number;
@@ -18,30 +15,15 @@ type PublicEvent = {
   first_voting_end_period: string;
 };
 
-
 export default function Home() {
   const [news, setNews] = useState<NotificationItem[]>([]);
   const [donations, setDonations] = useState<NotificationItem[]>([]);
-
   const [events, setEvents] = useState<PublicEvent[]>([]);
   const [showNewsModal, setShowNewsModal] = useState(false);
   const [selectedNews, setSelectedNews] = useState<NotificationItem | null>(
     null
   );
-
-  useEffect(() => {
-    fetch("/api/notifications?type=0&page=1")
-      .then((res) => res.json())
-      .then((data) => setNews(data.data || []));
-    fetch("/api/notifications?type=1&page=1")
-      .then((res) => res.json())
-      .then((data) => setDonations(data.data || []));
-    fetch("/api/events?status=now")
-      .then((res) => res.json())
-      .then((data) => setEvents(data || []))
-      .catch(() => setEvents([]));
-  }, []);
-
+  const [isAtTop, setIsAtTop] = useState(true);
 
   const handleNewsClick = (item: NotificationItem) => {
     setSelectedNews(item);
@@ -59,6 +41,15 @@ export default function Home() {
       .then((res) => res.json())
       .then((data) => setEvents(Array.isArray(data) ? data : []))
       .catch(() => setEvents([]));
+
+    const updateIsAtTop = () => {
+      setIsAtTop(window.scrollY <= 8);
+    };
+    updateIsAtTop();
+    window.addEventListener("scroll", updateIsAtTop, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", updateIsAtTop);
+    };
   }, []);
 
   const fallbackNews: NotificationItem[] = [
@@ -92,7 +83,7 @@ export default function Home() {
   ];
 
   return (
-    <div>
+    <div className="public-page">
       <main>
         <div className="hero">
           <div className="heroContent">
@@ -154,6 +145,31 @@ export default function Home() {
 
         <section id="bunko-x" className="bunko-x">
           <div className="bunko-x__inner">
+            {/* 文庫Xについて */}
+            <div className="bunko-x__intro">
+              <h2 className="bunko-x__title">
+                文庫<span className="text-red">X</span>について
+              </h2>
+              <div className="bunko-x__text">
+                <p>
+                  この取り組みは、岩手県盛岡市の書店「さわや書店フェザン店」の書店員が2016年に始めました。SNSを通して話題が広まり全国の書店でも同様の取り組みが行われるようになりました。
+                </p>
+                <br></br>
+                <p>文庫Xの目的は、</p>
+                <ul className="bunko-x__list">
+                  <li>
+                    既に有名な作品だけでなく、本来埋もれてしまうかもしれない本の魅力を伝えること、
+                  </li>
+                  <li>
+                    読者が固定観念や先入観にとらわれず、純粋に本と出会う楽しさを感じることにあります。
+                  </li>
+                </ul>
+                <p>
+                  読者は、メッセージカードに書かれた「おすすめしたい想い」や「読むべき理由」を頼りに本を手に取ります。それにより、通常とは違う、少しミステリアスでワクワクする読書体験が生まれます。
+                </p>
+              </div>
+            </div>
+
             {/* 投票可能なイベント */}
             <div className="bunko-x__events">
               <h3 className="bunko-x__subtitle">
@@ -225,31 +241,6 @@ export default function Home() {
                 >
                   すべてのイベント
                 </Button>
-              </div>
-            </div>
-
-            {/* 文庫Xについて */}
-            <div className="bunko-x__intro">
-              <h2 className="bunko-x__title">
-                文庫<span className="text-red">X</span>について
-              </h2>
-              <div className="bunko-x__text">
-                <p>
-                  この取り組みは、岩手県盛岡市の書店「さわや書店フェザン店」の書店員が2016年に始めました。SNSを通して話題が広まり全国の書店でも同様の取り組みが行われるようになりました。
-                </p>
-                <br></br>
-                <p>文庫Xの目的は、</p>
-                <ul className="bunko-x__list">
-                  <li>
-                    既に有名な作品だけでなく、本来埋もれてしまうかもしれない本の魅力を伝えること、
-                  </li>
-                  <li>
-                    読者が固定観念や先入観にとらわれず、純粋に本と出会う楽しさを感じることにあります。
-                  </li>
-                </ul>
-                <p>
-                  読者は、メッセージカードに書かれた「おすすめしたい想い」や「読むべき理由」を頼りに本を手に取ります。それにより、通常とは違う、少しミステリアスでワクワクする読書体験が生まれます。
-                </p>
               </div>
             </div>
           </div>
@@ -399,6 +390,15 @@ export default function Home() {
             </a>
           </div>
         </section>
+
+        <button
+          type="button"
+          className={`back-to-top${isAtTop ? " back-to-top--hidden" : ""}`}
+          aria-label="ページ上部へ戻る"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          ▲
+        </button>
       </main>
 
       {/* ニュースモーダル */}
@@ -411,4 +411,3 @@ export default function Home() {
     </div>
   );
 }
-
