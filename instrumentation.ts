@@ -9,8 +9,9 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     try {
       // お知らせスケジューラーを起動（起動時即実行＋定期実行）
+      // 動的importでNode-only モジュールが Edge ランタイムに混入するのを防ぐ
       const { startNotificationScheduler } =
-        await import("./src/batch/scheduler");
+        await import("@/src/batch/scheduler");
       await startNotificationScheduler();
     } catch (error) {
       console.error("Failed to start notification scheduler:", error);
