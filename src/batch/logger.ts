@@ -1,12 +1,37 @@
-import * as fs from "fs";
-import * as path from "path";
+type FileAppender = (message: string) => void;
 
-const LOG_DIR = path.join(process.cwd(), "logs");
-const LOG_FILE = path.join(LOG_DIR, "batch.log");
+let fileAppender: FileAppender | null = null;
 
-// ログディレクトリが存在しなければ作成
-if (!fs.existsSync(LOG_DIR)) {
-  fs.mkdirSync(LOG_DIR, { recursive: true });
+function getFileAppender(): FileAppender | null {
+  if (fileAppender) return fileAppender;
+
+  try {
+    // Edge Runtime でもビルドエラーにならないように遅延ロード
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    const req = eval("require") as NodeRequire;
+    const fs = req("fs") as typeof import("fs");
+    const path = req("path") as typeof import("path");
+
+    const logDir = path.join(process.cwd(), "logs");
+    const logFile = path.join(logDir, "batch.log");
+
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
+
+    fileAppender = (message: string) => {
+      try {
+        fs.appendFileSync(logFile, message + "\n", "utf-8");
+      } catch (error) {
+        console.error("ログファイルへの書き込みに失敗しました:", error);
+      }
+    };
+
+    return fileAppender;
+  } catch {
+    fileAppender = null;
+    return null;
+  }
 }
 
 /**
@@ -35,11 +60,10 @@ export function logBatch(
       console.log(`ℹ ${message}`);
   }
 
-  // ファイル出力
-  try {
-    fs.appendFileSync(LOG_FILE, logMessage + "\n", "utf-8");
-  } catch (error) {
-    console.error("ログファイルへの書き込みに失敗しました:", error);
+  // ファイル出力（Node Runtime のみ）
+  const append = getFileAppender();
+  if (append) {
+    append(logMessage);
   }
 }
 
