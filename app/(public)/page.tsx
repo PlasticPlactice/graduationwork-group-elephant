@@ -1,12 +1,12 @@
-﻿"use client";
+"use client";
 
 import "@/styles/public/top.css";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { ItemModal } from "@/components/features/ItemModal";
 import { NotificationItem } from "@/lib/types/notification";
-import { useEffect, useState } from "react";
 
 type PublicEvent = {
   id: number;
@@ -45,13 +45,13 @@ export default function Home() {
   const fallbackNews: NotificationItem[] = [
     {
       id: 1,
-      title: "第１回文庫Xが開催されました！",
+      title: "��P�񕶌�X���J�Â���܂����I",
       date: "2025-10-01",
       image: "/top/image1.png",
     },
     {
       id: 2,
-      title: "第１回文庫Xが開催されました！",
+      title: "��P�񕶌�X���J�Â���܂����I",
       date: "2025-10-01",
       image: "/top/image1.png",
     },
@@ -60,13 +60,13 @@ export default function Home() {
   const fallbackDonations: NotificationItem[] = [
     {
       id: 3,
-      title: "○○様より「ハリーポッター」を寄贈していただきました！",
+      title: "�����l���u�n���[�|�b�^�[�v���񑡂��Ă��������܂����I",
       date: "2025-10-01",
       image: "/top/image1.png",
     },
     {
       id: 4,
-      title: "○○様より「ハリーポッター」を寄贈していただきました！",
+      title: "�����l���u�n���[�|�b�^�[�v���񑡂��Ă��������܂����I",
       date: "2025-10-01",
       image: "/top/image1.png",
     },
@@ -77,7 +77,7 @@ export default function Home() {
       <main>
         <div className="hero">
           <div className="heroContent">
-            <div className="heroPoster" role="img" aria-label="トップ画像">
+            <div className="heroPoster" role="img" aria-label="�g�b�v�摜">
               <div className="posterStack">
                 <Image
                   src="/top/retop.png"
@@ -91,9 +91,13 @@ export default function Home() {
               </div>
             </div>
             <div className="heroText">
-              <h1 className="heroTitle">象と花<br />プロジェクト</h1>
+              <h1 className="heroTitle">
+                �ۂƉ�
+                <br />
+                �v���W�F�N�g
+              </h1>
               <a className="heroBunkoBadge" href="#bunko-x">
-                文庫<span>X</span>はこちら
+                ����<span>X</span>�͂�����
               </a>
             </div>
           </div>
@@ -102,20 +106,20 @@ export default function Home() {
           <div className="about__inner">
             <h2 className="about__title">
               <span className="about__title-line"></span>
-              象と花プロジェクトとは？
+              �ۂƉԃv���W�F�N�g�Ƃ́H
               <span className="about__title-line"></span>
             </h2>
             <div className="about__text">
               <p>
-                象と花は古本販売の盛岡書房と、新刊書店のさわや書店が共同で行うプロジェクトです。
+                �ۂƉԂ͌Ö{�̔��̐������[�ƁA�V�����X�̂���⏑�X�������ōs���v���W�F�N�g�ł��B
               </p>
               <br className="br-sp-only" />
               <p>
-                あなたに知識や情報、感動を与えてくれた本を循環させ、病気と戦う子供たちのための本に替えて贈ります。
+                ���Ȃ��ɒm������A������^���Ă��ꂽ�{���z�����A�a�C�Ɛ키�q�������̂��߂̖{�ɑւ��đ���܂��B
               </p>
               <br className="br-sp-only" />
               <p>
-                身近な人に贈り物を手渡すような気持ちで、子供たちと読書のよろこびを分かち合える取り組みです。
+                �g�߂Ȑl�ɑ��蕨����n���悤�ȋC�����ŁA�q�������ƓǏ��̂�낱�т𕪂�����������g�݂ł��B
               </p>
             </div>
             <div className="about__button">
@@ -123,7 +127,7 @@ export default function Home() {
                 href="https://zoutohana.com/about.html"
                 style={{ backgroundColor: "#36A8B1", color: "#ffffff" }}
               >
-                くわしくはこちら
+                ���킵���͂�����
               </Button>
             </div>
           </div>
@@ -131,11 +135,11 @@ export default function Home() {
 
         <section id="bunko-x" className="bunko-x">
           <div className="bunko-x__inner">
-            {/* 投票可能なイベント */}
+            {/* ���[�\�ȃC�x���g */}
             <div className="bunko-x__events">
               <h3 className="bunko-x__subtitle">
                 <span className="bunko-x__subtitle-line"></span>
-                投票可能なイベント
+                ���[�\�ȃC�x���g
                 <span className="bunko-x__subtitle-line"></span>
               </h3>
 
@@ -157,7 +161,7 @@ export default function Home() {
                         title={event.title}
                         daysLeft={daysLeft}
                         description={
-                          event.detail || "投票期間中です！投票してみましょう！"
+                          event.detail || "���[���Ԓ��ł��I���[���Ă݂܂��傤�I"
                         }
                         buttonBackgroundColor="var(--color-bg)"
                         buttonBorderColor="#36A8B1"
@@ -168,17 +172,17 @@ export default function Home() {
                 ) : (
                   <>
                     <EventCard
-                      title="第2回 文庫Xイベント"
+                      title="��2�� ����X�C�x���g"
                       daysLeft={10}
-                      description="投票期間中です！投票してみましょう！"
+                      description="���[���Ԓ��ł��I���[���Ă݂܂��傤�I"
                       buttonBackgroundColor="var(--color-bg)"
                       buttonBorderColor="#36A8B1"
                       buttonTextColor="#36A8B1"
                     />
                     <EventCard
-                      title="第1回 文庫Xイベント"
+                      title="��1�� ����X�C�x���g"
                       daysLeft={10}
-                      description="投票期間中です！投票してみましょう！"
+                      description="���[���Ԓ��ł��I���[���Ă݂܂��傤�I"
                       buttonBackgroundColor="var(--color-bg)"
                       buttonBorderColor="#36A8B1"
                       buttonTextColor="#36A8B1"
@@ -198,32 +202,32 @@ export default function Home() {
                     maxWidth: "400px",
                   }}
                 >
-                  すべてのイベント
+                  ���ׂẴC�x���g
                 </Button>
               </div>
             </div>
 
-            {/* 文庫Xについて */}
+            {/* ����X�ɂ��� */}
             <div className="bunko-x__intro">
               <h2 className="bunko-x__title">
-                文庫<span className="text-red">X</span>について
+                ����<span className="text-red">X</span>�ɂ���
               </h2>
               <div className="bunko-x__text">
                 <p>
-                  この取り組みは、岩手県盛岡市の書店「さわや書店フェザン店」の書店員が2016年に始めました。SNSを通して話題が広まり全国の書店でも同様の取り組みが行われるようになりました。
+                  ���̎��g�݂́A��茧�����s�̏��X�u����⏑�X�t�F�U���X�v�̏��X����2016�N�Ɏn�߂܂����BSNS��ʂ��Ęb�肪�L�܂�S���̏��X�ł����l�̎��g�݂��s����悤�ɂȂ�܂����B
                 </p>
                 <br></br>
-                <p>文庫Xの目的は、</p>
+                <p>����X�̖ړI�́A</p>
                 <ul className="bunko-x__list">
                   <li>
-                    既に有名な作品だけでなく、本来埋もれてしまうかもしれない本の魅力を伝えること、
+                    ���ɗL���ȍ�i�����łȂ��A�{��������Ă��܂���������Ȃ��{�̖��͂�`���邱�ƁA
                   </li>
                   <li>
-                    読者が固定観念や先入観にとらわれず、純粋に本と出会う楽しさを感じることにあります。
+                    �ǎ҂��Œ�ϔO�����ςɂƂ��ꂸ�A�����ɖ{�Əo��y�����������邱�Ƃɂ���܂��B
                   </li>
                 </ul>
                 <p>
-                  読者は、メッセージカードに書かれた「おすすめしたい想い」や「読むべき理由」を頼りに本を手に取ります。それにより、通常とは違う、少しミステリアスでワクワクする読書体験が生まれます。
+                  �ǎ҂́A���b�Z�[�W�J�[�h�ɏ����ꂽ�u�������߂������z���v��u�ǂނׂ����R�v�𗊂�ɖ{����Ɏ��܂��B����ɂ��A�ʏ�Ƃ͈Ⴄ�A�����~�X�e���A�X�Ń��N���N����Ǐ��̌������܂�܂��B
                 </p>
               </div>
             </div>
@@ -234,7 +238,7 @@ export default function Home() {
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
-              おしらせ
+              �����点
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
@@ -273,7 +277,7 @@ export default function Home() {
                   maxWidth: "400px",
                 }}
               >
-                すべてのおしらせ
+                ���ׂĂ̂����点
               </Button>
             </div>
           </div>
@@ -283,7 +287,7 @@ export default function Home() {
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
-              寄贈情報
+              �񑡏��
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
@@ -322,7 +326,7 @@ export default function Home() {
                   maxWidth: "400px",
                 }}
               >
-                すべての寄贈情報
+                ���ׂĂ̊񑡏��
               </Button>
             </div>
           </div>
@@ -332,21 +336,21 @@ export default function Home() {
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
-              寄贈について
+              �񑡂ɂ���
               <span className="news__title-line"></span>
             </h2>
             <div className="donation-text">
               <p>
-                岩手医科大学附属病院の小児病棟をはじめ、子供食堂や自動養護施設などへ本の寄贈を行っています。
+                ����ȑ�w�����a�@�̏����a�����͂��߁A�q���H���⎩���{��{�݂Ȃǂ֖{�̊񑡂��s���Ă��܂��B
               </p>
               <p>
-                届けられた本は病院や施設の本棚に並び、その一冊が、子供たちの一歩を踏み出す勇気となっています。
+                �͂���ꂽ�{�͕a�@��{�݂̖{�I�ɕ��сA���̈�����A�q�������̈���𓥂ݏo���E�C�ƂȂ��Ă��܂��B
               </p>
               <p>
-                この活動は、地元企業や地域の皆さまの温かいご協力によって支えられています。
+                ���̊����́A�n����Ƃ�n��̊F���܂̉����������͂ɂ���Ďx�����Ă��܂��B
               </p>
               <p>
-                本を通して生まれる「つながり」が、子どもたちの未来にそっと寄り添う力になると信じています。
+                �{��ʂ��Đ��܂��u�Ȃ���v���A�q�ǂ������̖����ɂ����Ɗ��Y���͂ɂȂ�ƐM���Ă��܂��B
               </p>
             </div>
             <a
@@ -364,7 +368,7 @@ export default function Home() {
                 />
               </div>
               <div className="donation-banner__content">
-                <span className="donation-banner__text">私たちの取り組み</span>
+                <span className="donation-banner__text">�������̎��g��</span>
                 <span className="donation-banner__arrow">&gt;</span>
               </div>
             </a>
@@ -372,7 +376,7 @@ export default function Home() {
         </section>
       </main>
 
-      {/* ニュースモーダル */}
+      {/* �j���[�X���[�_�� */}
       {selectedNews && showNewsModal && (
         <ItemModal
           item={selectedNews}
@@ -382,4 +386,3 @@ export default function Home() {
     </div>
   );
 }
-
