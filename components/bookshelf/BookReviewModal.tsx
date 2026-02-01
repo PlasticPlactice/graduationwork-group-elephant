@@ -1,11 +1,22 @@
 ﻿"use client";
 
+import { useState } from "react";
 import { useEffect, useRef, type CSSProperties, type Ref } from "react";
-import type { Book } from "@/components/bookshelf/bookData";
+import type { Book, Reactions, BookReviewReactions } from "@/components/bookshelf/bookData";
 import styles from "@/components/bookshelf/BookReviewModal.module.css";
+import posterStyle from "@/styles/app/poster.module.css";
+import UserDetailModal from "../admin/UserDetailModal";
+
+const REACTION_TYPES = [
+  { id: "1", label: "いいね" },
+  { id: "2", label: "感動" },
+  { id: "3", label: "学び" },
+  { id: "4", label: "共感" },
+]
 
 type BookReviewModalProps = {
   book?: Book | null;
+  reactions?: Reactions[];
   open: boolean;
   onClose: () => void;
   onComplete: () => void;
@@ -18,8 +29,15 @@ type BookReviewModalProps = {
   voteButtonRef?: Ref<HTMLButtonElement>;
 };
 
+type afterCheckedData = {
+  reaction_id: number;
+  count: number;
+  is_reacted: boolean;
+}
+
 export function BookReviewModal({
   book,
+  reactions,
   open,
   onClose,
   onComplete,
@@ -34,6 +52,8 @@ export function BookReviewModal({
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
+  const [bookReviewReactions, setBookReviewReactions] = useState<BookReviewReactions | null>(null);
+  const [afterCheckedData, setAfterCheckedData] = useState<afterCheckedData[]>([]);
 
   useEffect(() => {
     if (!open) return;
@@ -106,10 +126,6 @@ export function BookReviewModal({
     isFavorited ? "!text-yellow-400" : "!text-gray-400"
   }`;
 
-  if (!open || !book) {
-    return null;
-  }
-
   const handleVoteClick = () => {
     if (!onToggleVote) return;
     const confirmed = window.confirm("1日1票ですが投票しますか？");
@@ -117,6 +133,136 @@ export function BookReviewModal({
       onToggleVote();
     }
   };
+
+  useEffect(() => {
+    if (!book?.user_id || !book?.id) return;
+
+    setBookReviewReactions({
+      user_id: book.user_id,
+      book_review_id: book.id,
+      reaction_id: "",
+    });
+  }, [book]);
+
+  // リアクションがすでにあるか確認する + 数をもらう
+  const checkReactionStatus = async () => {
+    const newReactionsData = {
+      ...bookReviewReactions,
+    };
+
+    try {
+      const res = await fetch("http://localhost:3000/api/viewer/reaction/status", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(newReactionsData)
+      });
+
+      const apiResponse = await res.json();
+
+      setAfterCheckedData(apiResponse)
+    } catch(e) {
+      console.error("通信に失敗しました。");
+    }
+  }
+
+  // bookReviewReactionsにデータが入ったのを確認したらリアクションの数を取得してもらう
+  useEffect(() => {
+    if(!bookReviewReactions?.user_id || !bookReviewReactions?.book_review_id ) return;
+
+    checkReactionStatus();
+  }, [bookReviewReactions?.book_review_id, bookReviewReactions?.user_id]);
+
+
+  // リアクション関数
+  const createReaction = async (reaction_id: string) => {
+    const newReactionsData = {
+      ...bookReviewReactions,
+      reaction_id: reaction_id
+    };
+
+    setBookReviewReactions(newReactionsData);
+
+    try {
+      const res = await fetch("http://localhost:3000/api/viewer/reaction", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(newReactionsData),
+      });
+
+      if(!res.ok) {
+        alert("登録に失敗しました。");
+        return;
+      }
+
+    } catch(e) {
+      alert("通信に失敗しました。")
+    }
+
+    // カウント＋データが入っているか確認する関数を実行し、情報を更新する
+    try {
+      const res = await fetch("http://localhost:3000/api/viewer/reaction/status", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(newReactionsData)
+      });
+
+      const afterCheckedData = await res.json();
+    } catch(e) {
+      console.error("通信に失敗しました。");
+    }
+
+  };
+
+  const handleReactionClick = async (clickedReactionId: string) => { // IDを受け取る
+  
+    // ★重要: ここでAPIを待たずに、見た目だけ先に更新しちゃう！(Optimistic Update)
+    setAfterCheckedData((prevData) => {
+      // データの中に、今回押したIDがあるか探す
+      const exists = prevData.find(d => String(d.reaction_id) === String(clickedReactionId));
+
+      if (exists) {
+        // ■ パターンA: すでにデータがある場合 (カウントを増減させる)
+        return prevData.map((d) => {
+          if (String(d.reaction_id) === String(clickedReactionId)) {
+            const nextIsReacted = !d.is_reacted; // trueならfalseへ、falseならtrueへ反転
+            return {
+              ...d,
+              is_reacted: nextIsReacted,
+              // 押したら +1, 取り消したら -1
+              count: nextIsReacted ? d.count + 1 : d.count - 1, 
+            };
+          }
+          return d; // 他のIDはそのまま
+        });
+      } else {
+        // ■ パターンB: まだデータがない場合 (0件から1件になる時)
+        return [
+          ...prevData,
+          {
+            reaction_id: Number(clickedReactionId), // 文字か数字か型に合わせてね
+            count: 1,
+            is_reacted: true
+          }
+        ];
+      }
+    });
+
+    // --- 見た目の更新はここまで ---
+
+    // 裏側でAPIを叩く（DB更新）
+    try {
+      await createReaction(clickedReactionId); 
+      // ※もしここでエラーが出たら、Stateを元に戻す処理を入れるとさらに完璧
+    } catch (error) {
+      console.error("保存に失敗しました");
+      // エラーが出たらリロードさせるなどの対処
+    }
+  };
+
+  // これより下でuseEffect使うの禁止
+  if (!open || !book) {
+    return null;
+  }
 
   const coverStyle = {
     "--book-cover-color": book.baseColor,
@@ -140,9 +286,32 @@ export function BookReviewModal({
         <div className="relative z-10 flex h-full flex-col">
           <div 
             dangerouslySetInnerHTML={{ __html: book.review ?? "書評が登録されていません"}}
-            className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6">
+            className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6"
+          >
           </div>
               <div className="mt-6 flex flex-col gap-4">
+                <div className="flex justify-center gap-5">
+                  {REACTION_TYPES.map((type) => {
+                    
+                    const targetData = afterCheckedData?.find((r) => String(r.reaction_id) === String(type.id));
+
+                    const count = targetData ? targetData.count : 0;
+                    const isReacted = targetData ? targetData.is_reacted : false;
+
+                    return (
+                      <button
+                        key={type.id}
+                        className={`${styles.reactionButton} ${isReacted ? styles.active : ""}`}
+                        onClick={() => {
+                          handleReactionClick(type.id)
+                        }}
+                      >
+                        <span className={`${styles.icon}`}>{type.label}:</span>
+                        <span className={`${styles.count}`}>{count}</span>
+                      </button>
+                    )
+                  })}
+                </div>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
@@ -170,7 +339,10 @@ export function BookReviewModal({
 
                   <button
                     type="button"
-                    onClick={() => onToggleFavorite?.()}
+                    onClick={() => {
+                      onToggleFavorite?.();
+
+                    }}
                     className={favoriteButtonClass}
                     aria-pressed={isFavorited}
                     aria-label={
