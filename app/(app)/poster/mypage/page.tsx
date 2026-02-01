@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
+import Image from "next/image";
 import { signOut } from "next-auth/react";
 
 import { ReviewPassedModal } from "@/components/modals/ReviewPassedModal";
@@ -56,7 +57,9 @@ export default function MyPage() {
     };
     [key: string]: unknown;
   }
-  const [unreadMessage, setUnreadMessage] = useState<UnreadMessage | null>(null);
+  const [unreadMessage, setUnreadMessage] = useState<UnreadMessage | null>(
+    null,
+  );
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -153,7 +156,7 @@ export default function MyPage() {
   }[] = [
     { key: "all" as const, label: "全て" },
     { key: 1, label: "下書き" },
-    { key: 2, label: "審査前" },
+    { key: 2, label: "１次審査前" },
     { key: 3, label: "審査中" },
     { key: 4, label: "終了済み" },
   ];
@@ -200,7 +203,7 @@ export default function MyPage() {
       evaluations_status: code,
       badgeType: status?.badgeType ?? "gray",
       excerpt: review.review,
-      buttonText: status?.canEdit ? "投稿済み・編集する" : "投稿済み・編集不可",
+      buttonText: status?.canEdit ? "編集する" : "編集不可",
       href: status?.canEdit ? "/poster/edit" : undefined,
     };
   });
@@ -321,7 +324,7 @@ export default function MyPage() {
         </div>
 
         <div className="mb-1">
-          <Link
+          {/* <Link
             href="/"
             className="inline-block mt-6 ml-1 font-bold text-sky-500"
             aria-label="ファンサイトのトップページへ移動"
@@ -330,6 +333,29 @@ export default function MyPage() {
               &lt;
             </span>{" "}
             ファンサイトはこちら
+          </Link> */}
+          <Link href="/">
+            <div
+              className="flex items-center px-2 rounded shadow-md my-10"
+              style={{ backgroundColor: "var(--color-main)" }}
+            >
+              <Image
+                src="/layout/logo_another.png"
+                alt="logo"
+                width={100}
+                height={40}
+                className="ml-3"
+              />
+              <span
+                className="font-bold ml-auto"
+                style={{ color: "var(--color-bg)" }}
+              >
+                象と花ファンサイトへ
+                <span className="ml-4" aria-hidden="true">
+                  &gt;
+                </span>
+              </span>
+            </div>
           </Link>
         </div>
 
@@ -346,7 +372,7 @@ export default function MyPage() {
                 <EventCard
                   title={event.title}
                   daysLeft={event.daysLeft}
-                  description={event.description}
+                  detail={event.description}
                   buttonText={event.buttonText}
                   href={event.href}
                 />
@@ -508,6 +534,20 @@ export default function MyPage() {
                     aria-label="パスワードの変更へ"
                   >
                     パスワードの変更
+                  </a>
+                </li>
+                <li style={{ borderColor: "var(--color-sub)" }}>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      signOut({ callbackUrl: "/poster/login" });
+                    }}
+                    className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                    aria-label="ログアウト"
+                    style={{ color: "red" }}
+                  >
+                    ログアウト
                   </a>
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>

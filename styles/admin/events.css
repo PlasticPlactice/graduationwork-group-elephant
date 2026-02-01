@@ -1,3 +1,6 @@
+.required{
+  color: #ff0000;
+}
 .register-btn {
   width: 15rem;
   font-size: var(--page-padding-lg);
@@ -193,7 +196,8 @@ details[open] .icon {
   overflow-y: auto;
   flex: 1;
 }
-.reg-modal{
+.reg-modal,
+.review-modal{
   background-color: rgba(0, 0, 0, 0.4);
 }
 .close-btn{
@@ -293,4 +297,46 @@ textarea#remarks {
 }
 .next-status{
   border: 1px solid var(--color-admin-sub);
+}
+
+/* 書評詳細・編集モーダル */
+.design-container {
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius) var(--control-radius) 0px 0px;
+}
+.editor-container {
+  border: 1px solid var(--color-main);
+  border-radius: 0px 0px var(--control-radius) var(--control-radius);
+  height: 65vh;
+}
+.design-btn,
+.color-btn {
+  box-shadow: none;
+  padding: 0.5rem 0;
+  height: fit-content;
+  width: 2.5rem;
+}
+#message-area{
+  height: 7rem;
+}
+#message-area::placeholder {
+  font-size: 0.8rem; /* または希望の文字サイズ */
+}
+.message-btn,
+.save-btn{
+  height: 2.5rem;
+}
+.good-btn{
+  color: var(--color-warning);
+}
+.good-num{
+  color: var(--color-warning);
+}
+.preview-btn{
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-text);
+  box-shadow: none;
+  height: 2.5rem;
+  padding: 0.5rem;
 }

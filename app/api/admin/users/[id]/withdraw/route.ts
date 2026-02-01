@@ -52,6 +52,13 @@ export async function POST(req: NextRequest, context: RouteContext) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
+    if (user.user_status === USER_STATUS.BAN) {
+      return NextResponse.json(
+        { message: "このユーザーは既にアカウント停止されています。" },
+        { status: 400 },
+      );
+    }
+
     await prisma.user.update({
       where: { id: userId },
       data: {

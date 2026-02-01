@@ -1,0 +1,116 @@
+"use client";
+
+import { forwardRef, useState } from "react";
+import { parseCookies, setCookie, destroyCookie } from "nookies";
+
+const VOTE_COOKIE_KEY = "voted_book_review_id";
+
+type Props = {
+  reviewId: string;
+  onVoteChange?: (isVoted: boolean) => void;
+};
+
+const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
+    ({ reviewId, onVoteChange }, ref) => {
+        // Cookieを見て「投票済み」かどうかの判定
+        const cookies = parseCookies();
+        const [isVoted, setIsVoted] = useState(cookies[VOTE_COOKIE_KEY] === reviewId);
+
+        const handleVote = async () => {
+            const currentCookies = parseCookies();
+            const cookieValue = currentCookies[VOTE_COOKIE_KEY];
+
+            // パターン1: 浮気防止
+            if (cookieValue && cookieValue !== reviewId) {
+            alert("本日は既に他の書評に投票済みです...");
+            return;
+            }
+
+            // パターン2: 取り消し (Decrement APIを呼ぶ)
+            if (cookieValue === reviewId) {
+            setIsVoted(false); // ボタンの色だけ戻す
+            destroyCookie(null, VOTE_COOKIE_KEY, { path: "/" });
+
+            try {
+                await updateVoteCount(reviewId, "decrement");
+            } catch (error) {
+                setIsVoted(true); // エラーなら元に戻す
+                alert("通信エラー: 取り消しに失敗しました");
+            }
+
+            return;
+            }
+
+            // パターン3: 新規投票 (Increment APIを呼ぶ)
+            if (!cookieValue) {
+            setIsVoted(true); // ボタンの色を変える
+            setCookie(null, VOTE_COOKIE_KEY, reviewId, {
+                maxAge: 24 * 60 * 60,
+                path: "/",
+            });
+
+            try {
+                await updateVoteCount(reviewId, "increment");
+            } catch (error) {
+                setIsVoted(false); // エラーなら元に戻す
+                destroyCookie(null, VOTE_COOKIE_KEY, { path: "/" });
+                alert("通信エラー: 投票に失敗しました");
+            }
+            }
+
+            // 処理が終わって isVoted が変わったら通知する
+            const nextState = !isVoted;
+            setIsVoted(nextState);
+
+            if (onVoteChange) {
+                onVoteChange(nextState); // ここで通知発火
+            }
+        };
+
+        const updateVoteCount = async (id: string, type: "increment" | "decrement") => {
+            console.log(id, type)
+            const res = await fetch(`/api/viewer/vote/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type }),
+            });
+            if (!res.ok) throw new Error("API Error");
+        };
+
+        // ボタンのスタイル定義
+        const voteButtonClass = `flex h-14 min-h-[3.5rem] flex-1 items-center justify-center gap-3 rounded-full border border-solid text-base font-bold tracking-wide transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-200 appearance-none shadow-none ${
+        isVoted
+            ? "!bg-red-500 !text-white !border-red-500 ![box-shadow:0_10px_24px_rgba(239,68,68,0.3)]"
+            : "!bg-red-50 !text-red-600 !border-red-400 ![box-shadow:0_10px_20px_rgba(239,68,68,0.18)]"
+        }`;
+
+        return (
+            <button
+                type="button"
+                onClick={handleVote}
+                ref={ref}
+                className={voteButtonClass}
+                >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    // アイコンのサイズ調整（少し大きく見える場合は w-5 h-5 にしてもOK）
+                    className="h-5 w-5" 
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 14l2 2 4-4m6 2a9 9 0 1 1 -18 0 9 9 0 0 1 18 0z"
+                    />
+                </svg>
+                <span>{isVoted ? "投票済み" : "投票する"}</span>
+            </button>
+        );
+    }
+);
+
+BookReviewVoteButton.displayName = "BookReviewVoteButton";
+export default BookReviewVoteButton;

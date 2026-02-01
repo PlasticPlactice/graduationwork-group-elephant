@@ -15,6 +15,7 @@ const QR_REGION_ID = "barcode-scan-reader";
 type RakutenBookItem = {
   title: string;
   author: string;
+  publishers: string;
   mediumImageUrl?: string;
 };
 
@@ -86,6 +87,8 @@ export default function BarcodeScanPage() {
 
         const data = await res.json();
         const firstItem = data?.Items?.[0]?.Item;
+
+        console.log("firstItem" + JSON.stringify(firstItem))
         if (!firstItem) {
           setBookError("本情報が見つかりませんでした。");
           return;
@@ -94,13 +97,15 @@ export default function BarcodeScanPage() {
         setBookItem({
           title: firstItem.title ?? "",
           author: firstItem.author ?? "",
+          publishers: firstItem.publisher ?? "",
           mediumImageUrl: firstItem.mediumImageUrl,
         });
 
         const bookItemDraft = {
           isbn: isbn,
           title: firstItem.title ?? "",
-          author: firstItem.author ?? ""
+          author: firstItem.author ?? "",
+          publishers: firstItem.publisher ?? ""
         }
 
         sessionStorage.setItem(
@@ -259,9 +264,6 @@ export default function BarcodeScanPage() {
         </div>
       </div>
 
-      <Link href="/" className={`block mt-7 ml-3 font-bold ${Styles.subColor}`}>
-        <span>&lt;</span> ファンサイトはこちら
-      </Link>
       <div className={`${Styles.posterContainer}`}>
         <div className="mt-7 mb-10">
           <h1 className="font-bold text-center">本のバーコードをスキャン</h1>

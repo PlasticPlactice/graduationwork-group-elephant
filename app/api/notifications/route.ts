@@ -50,11 +50,14 @@ export async function GET(req: NextRequest) {
     }
 
     // 共通のWHERE条件を定義
+    const now = new Date();
     const whereCondition = {
       notification_type: type,
       public_flag: true,
       deleted_flag: false,
       draft_flag: false,
+      // 公開終了日時の確認：public_end_dateが設定されていない、または現在時刻以降の場合のみ表示
+      OR: [{ public_end_date: null }, { public_end_date: { gt: now } }],
     };
 
     // 総件数を取得
@@ -95,6 +98,11 @@ export async function GET(req: NextRequest) {
         nf.file.data_path.toLowerCase().endsWith(".pdf"),
       );
 
+      const attachments = notification.notificationFiles.map((nf) => ({
+        name: nf.file.name,
+        url: nf.file.data_path,
+      }));
+
       return {
         id: notification.id,
         date: notification.public_date.toISOString().split("T")[0],
@@ -105,6 +113,7 @@ export async function GET(req: NextRequest) {
             ? notification.notificationFiles[0].file.data_path
             : "/top/image.png",
         pdfUrl: pdfFile ? pdfFile.file.data_path : undefined,
+        attachments,
       };
     });
 

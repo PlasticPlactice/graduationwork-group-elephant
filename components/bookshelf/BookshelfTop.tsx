@@ -11,8 +11,9 @@ import {
   type RefObject,
 } from "react";
 
+import { setCookie, parseCookies } from "nookies";
 import { BookshelfLayout } from "@/components/bookshelf/BookshelfLayout";
-import { type Book } from "@/components/bookshelf/bookData";
+import { type Book , type Reactions} from "@/components/bookshelf/bookData";
 import { BookReviewModal } from "@/components/bookshelf/BookReviewModal";
 import { ShelfBook } from "@/components/bookshelf/ShelfBook";
 import {
@@ -26,6 +27,8 @@ const DESKTOP_MAX_BOOKS_PER_SHELF = 15;
 const MAX_SHELVES = 3;
 const TUTORIAL_STORAGE_KEY = "bookshelf_tutorial_done_v2";
 const EVENT_INFO_STORAGE_KEY = "bookshelf_event_info_seen_v1";
+// Cookieに保存するキー
+const FAVORITES_COOKIE_KEY = "bookshelf_favorites_v1";
 
 // ★削除: ここにあった const BOOK_INDEX_BY_ID = ... は削除します。
 // reviewsが来るまでIDが分からないため、コンポーネント内部で計算します。
@@ -263,12 +266,13 @@ export function BookshelfTop({ reviews }: Props) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [votedBookId, setVotedBookId] = useState<string | null>(null);
   const [tutorialStep, setTutorialStep] = useState<0 | 1 | 2 | 3 | 4 | null>(
-    null
+    0
   );
   const [tutorialBookId, setTutorialBookId] = useState<string | null>(null);
   const [isEventInfoOpen, setIsEventInfoOpen] = useState(false);
   const [isScatterView, setIsScatterView] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [reactions, setReactions] = useState<Reactions[]>([]);
 
   useEffect(() => {
     const seenEventInfo = window.localStorage.getItem(EVENT_INFO_STORAGE_KEY);
@@ -282,6 +286,47 @@ export function BookshelfTop({ reviews }: Props) {
       setTutorialStep(0);
     }
   }, []);
+
+  // Reactionテーブルからデータ取得の関数
+  const fetchReactionData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/viewer/reaction", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setReactions(data);
+      }
+    } catch (error) {
+      console.error("Failed to Fetch reactions data", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    // データ取得の実行
+    fetchReactionData();
+  }, [])
+
+  useEffect(() => {
+    // Cookieからデータを取得する
+    const cookies = parseCookies();
+    const storedFavorites = cookies[FAVORITES_COOKIE_KEY];
+
+    if (storedFavorites) {
+      try {
+        // Cookieには文字列で入っているので、配列に戻す
+        const parsed = JSON.parse(storedFavorites);
+        if (Array.isArray(parsed)) {
+          setFavorites(parsed);
+        }
+      } catch (e) {
+        console.error("Cookieの読み込みに失敗しました", e);
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const updateButtonState = () => {
@@ -371,23 +416,35 @@ export function BookshelfTop({ reviews }: Props) {
     
     // ★修正: BOOKS.find ではなく reviews.find を使用
     const targetBook = reviews.find((book) => book.id === tutorialBookId);
-    
+
     if (targetBook) {
       setModalState({ book: targetBook, mode: "shelf" });
     }
   }, [modalState, tutorialBookId, tutorialStep, reviews]); // ★依存配列に reviews を追加
 
   // ... (以下変更なし) ...
-
   useEffect(() => {
     if (tutorialStep !== 1) return;
+
+    if (tutorialStep === 1 && !tutorialBookId && reviews.length > 0) {
+      setTutorialBookId(reviews[0].id);
+    }
+
     let active = true;
     const findTarget = () => {
       if (!active) return;
+
+      if(!tutorialBookId) {
+        window.requestAnimationFrame(findTarget);
+        return;
+      }
+
       const container = scatterAreaRef.current;
-      const target =
-        container?.querySelector<HTMLElement>("[data-book-id]") ?? null;
+      const selector = `[data-book-id="${tutorialBookId}"]`;
+      const target = container?.querySelector<HTMLElement>(selector) ?? null;
+
       if (target) {
+        console.log("正しいターゲットを見つけました: ", target);
         scatterBookRef.current = target;
         return;
       }
@@ -397,7 +454,7 @@ export function BookshelfTop({ reviews }: Props) {
     return () => {
       active = false;
     };
-  }, [tutorialStep]);
+  }, [tutorialStep, tutorialBookId, reviews]);
 
   const moveScatterBookToShelf = useCallback(
     (bookId: string) => {
@@ -449,11 +506,21 @@ export function BookshelfTop({ reviews }: Props) {
   }, []);
 
   const toggleFavorite = useCallback((bookId: string) => {
-    setFavorites((prev) =>
-      prev.includes(bookId)
+    setFavorites((prev) => {
+      // (1) 今までのロジックで新しい配列を作る
+      const nextFavorites = prev.includes(bookId)
         ? prev.filter((id) => id !== bookId)
-        : [...prev, bookId]
-    );
+        : [...prev, bookId];
+
+      // (2) 作った新しい配列をJSON文字列にしてCookieに保存
+      setCookie(null, FAVORITES_COOKIE_KEY, JSON.stringify(nextFavorites), {
+        maxAge: 30 * 24 * 60 * 60,
+        path: "/",
+      });
+
+      // (3) Stateも更新して画面に反映させる
+      return nextFavorites;
+    });
   }, []);
 
   const toggleVote = useCallback(
@@ -479,6 +546,13 @@ export function BookshelfTop({ reviews }: Props) {
       setTutorialStep(0);
     }
   }, [tutorialStep]);
+
+  // 投票したという通知を受け取る
+  const handleVoteChange = (isVoted: boolean) => {
+    console.log("TOPで検知しました: 投票状態 =", isVoted);
+    // ボタンのDOMにもアクセス可能
+    console.log("ボタンの幅:", voteButtonRef.current?.offsetWidth);
+  };
 
   const handleCompleteBook = useCallback(() => {
     if (!modalState) return;
@@ -646,12 +720,14 @@ export function BookshelfTop({ reviews }: Props) {
         onClose={handleCloseReview}
         onComplete={handleCompleteBook}
         actionLabel={actionLabel}
+        reactions={reactions}
         isFavorited={
           modalState ? favorites.includes(modalState.book.id) : false
         }
         isVoted={modalState ? votedBookId === modalState.book.id : false}
         actionButtonRef={actionButtonRef}
         voteButtonRef={voteButtonRef}
+        onVoteChange={handleVoteChange}
         onToggleFavorite={() =>
           modalState && toggleFavorite(modalState.book.id)
         }

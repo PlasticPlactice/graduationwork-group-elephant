@@ -21,8 +21,8 @@ export function AfterLoginHeader() {
         </Link>
 
         <Link
-          href="/poster/login"
-          className="btn text-base font-bold text-[#FF5555] hover:text-[#ff3333] transition-colors"
+          href="/poster/mypage"
+          className="font-bold mr-3"
         >
           マイページ
         </Link>

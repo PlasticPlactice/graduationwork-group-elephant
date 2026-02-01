@@ -49,9 +49,11 @@ export default function PostPage() {
     isbn: "",
     title: "",
     author: "",
+    publishers: ""
   });
   // ユーザーデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
+  const [data, setData] = useState<any>(null);
 
   // 色選択用の配列
   const colors = [
@@ -95,12 +97,17 @@ export default function PostPage() {
 
     const bookData = JSON.parse(draft);
 
+    console.log(bookData)
+
     fetchUserData();
+
+    console.log("bookData" + bookData)
 
     setBookData({
       isbn: bookData.isbn,
       title: bookData.title,
       author: bookData.author,
+      publishers: bookData.publishers
     });
   }, []);
 
@@ -112,12 +119,14 @@ export default function PostPage() {
     pattern_color: string;
     isbn: string;
     book_title: string;
-    evaluations_status: number;
+    evaluations_status: number | null;
     nickname: string;
     address: string;
     age: number;
     gender: number;
     self_introduction: string;
+    author: string;
+    publishers: string;
   }>({
     user_id: null,
     review: "",
@@ -126,15 +135,22 @@ export default function PostPage() {
     pattern_color: "#FFFFFF",
     isbn: "",
     book_title: "",
-    evaluations_status: 1,
+    evaluations_status: 2,
     nickname: "",
     address: "",
     age: 1,
     gender: 1,
     self_introduction: "",
+    author: "",
+    publishers: ""
   });
 
   const handleConfirm = () => {
+    setForm({
+      ...form,
+      evaluations_status: 2,
+    })
+
     sessionStorage.setItem(
       "bookReviewDraft",
       JSON.stringify({
@@ -143,6 +159,41 @@ export default function PostPage() {
       }),
     );
     router.push("/post/post-confirm");
+  };
+
+  // 下書き登録用
+  const registerBookReviewDraft = async (payload: typeof form) => {
+    try {
+      const res = await fetch("http://localhost:3000/api/book-reviews", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload),
+      });
+
+      if(!res.ok) {
+        alert("登録に失敗しました。");
+        return;
+      }
+
+      router.push("/poster/mypage");
+    } catch(e) {
+      alert("通信に失敗しました。")
+    }
+  }
+
+  // 下書きボタン押したときの処理
+  const handleDraftConfirm = () => {
+    const nextForm = {
+      ...form,
+      evaluations_status: 1
+    };
+
+    setForm(nextForm);
+
+    registerBookReviewDraft({
+      ...nextForm,
+    })
+    router.push("/poster/mypage");
   };
 
   // tiptapに関する関数
@@ -208,6 +259,21 @@ export default function PostPage() {
     if (!editor) return;
     setHtml(editor.getHTML());
   };
+
+  useEffect(() => {
+    if (bookData.publishers) {
+      setForm((prev) => ({
+        ...prev,
+        publishers: bookData.publishers
+      }))
+    }
+    if (bookData.author) {
+      setForm((prev) => ({
+        ...prev,
+        author: bookData.author
+      }))
+    }
+  }, [bookData.publishers, bookData.author])
 
   useEffect(() => {
     if (!userId || !userData) return;
@@ -465,15 +531,22 @@ export default function PostPage() {
             </div>
           </div>
           <button
+            className={`w-full mt-10 font-bold ${Styles.barcodeScan__backButton}`}
+            onClick={handleDraftConfirm}
+          >
+            下書きとして保存
+          </button>
+          
+          <p className={`mt-1 mb-3 ${Styles.mainColor} ${Styles.text12px}`}>
+            下書きはマイページから確認することができます。
+          </p>
+          <button
             type="submit"
             onClick={handleConfirm}
-            className="w-full mt-7 font-bold"
+            className="w-full mt-1 font-bold"
           >
             確認画面へ
           </button>
-          <p className={`mt-2 mb-3 ${Styles.mainColor} ${Styles.text12px}`}>
-            下書きはマイページから確認することができます。
-          </p>
         </form>
       </div>
     </div>

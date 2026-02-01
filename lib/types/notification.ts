@@ -8,6 +8,7 @@ export interface NotificationItem {
   image: string;
   content?: string;
   pdfUrl?: string;
+  attachments?: { name: string; url: string }[];
 }
 
 /**

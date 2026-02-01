@@ -105,7 +105,7 @@ export const WithdrawConfirmModal: React.FC<WithdrawConfirmModalProps> = ({
 
             {/* 送信ボタン */}
             <div className="">
-              <Link href="/poster/create-complete">
+              <Link href="/post/create-complete">
                 <button disabled={!isTermsAccepted} type="button" className={`w-full ${isTermsAccepted ? "font-bold" : `${Styles.disabledButton}`}`}>退会する</button>
               </Link>
             </div>

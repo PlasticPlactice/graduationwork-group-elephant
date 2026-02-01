@@ -164,7 +164,7 @@ export default function UserExitModal({
           )}
         </div>
 
-        <div className="mt-8 mx-10">
+        <div className="mt-2 mx-10">
           <div className="flex items-center justify-between mb-2">
             <h1 className="font-bold">アカウント停止理由</h1>
             <span className="text-sm text-gray-500">※必須</span>
@@ -179,7 +179,7 @@ export default function UserExitModal({
           {error && <p className="text-red-600 mt-2 text-sm">{error}</p>}
         </div>
 
-        <div className="flex gap-6 justify-center mx-10 my-8">
+        <div className="flex gap-6 justify-center mx-10 mb-8">
           <button
             className="back-btn exit-modal-common"
             type="button"

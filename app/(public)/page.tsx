@@ -1,12 +1,15 @@
 ﻿"use client";
 
 import "@/styles/public/top.css";
+
 import React, { useEffect, useState } from "react";
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { ItemModal } from "@/components/features/ItemModal";
 import { NotificationItem } from "@/lib/types/notification";
+
 
 type PublicEvent = {
   id: number;
@@ -15,14 +18,30 @@ type PublicEvent = {
   first_voting_end_period: string;
 };
 
+
 export default function Home() {
   const [news, setNews] = useState<NotificationItem[]>([]);
   const [donations, setDonations] = useState<NotificationItem[]>([]);
+
   const [events, setEvents] = useState<PublicEvent[]>([]);
   const [showNewsModal, setShowNewsModal] = useState(false);
   const [selectedNews, setSelectedNews] = useState<NotificationItem | null>(
     null
   );
+
+  useEffect(() => {
+    fetch("/api/notifications?type=0&page=1")
+      .then((res) => res.json())
+      .then((data) => setNews(data.data || []));
+    fetch("/api/notifications?type=1&page=1")
+      .then((res) => res.json())
+      .then((data) => setDonations(data.data || []));
+    fetch("/api/events?status=now")
+      .then((res) => res.json())
+      .then((data) => setEvents(data || []))
+      .catch(() => setEvents([]));
+  }, []);
+
 
   const handleNewsClick = (item: NotificationItem) => {
     setSelectedNews(item);
@@ -144,6 +163,7 @@ export default function Home() {
               </h3>
 
               <div className="event-cards">
+
                 {events.length > 0 ? (
                   events.slice(0, 2).map((event) => {
                     const now = new Date();
@@ -189,6 +209,7 @@ export default function Home() {
                     />
                   </>
                 )}
+
               </div>
 
               <div className="bunko-x__all-events">
@@ -242,6 +263,7 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
+
               {(news.length > 0 ? news : fallbackNews)
                 .slice(0, 2)
                 .map((item) => (
@@ -265,6 +287,7 @@ export default function Home() {
                     <p className="news-item__text">{item.title}</p>
                   </div>
                 ))}
+
             </div>
             <div className="news__button">
               <Button
@@ -291,6 +314,7 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
+
               {(donations.length > 0 ? donations : fallbackDonations)
                 .slice(0, 2)
                 .map((item) => (
@@ -314,6 +338,7 @@ export default function Home() {
                     <p className="news-item__text">{item.title}</p>
                   </div>
                 ))}
+
             </div>
             <div className="donation-button">
               <Button
@@ -386,3 +411,4 @@ export default function Home() {
     </div>
   );
 }
+

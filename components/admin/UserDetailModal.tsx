@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
 import {
   USER_STATUS_CLASS,
+  USER_STATUS,
   USER_STATUS_LABELS,
 } from "@/lib/constants/userStatus";
 
@@ -17,9 +18,10 @@ interface UserDetailModalProps {
 
 interface BookReview {
   id: number;
-  bookTitle: string;
+  book_title: string;
   event_name: string;
   status: string;
+  review: string;
 }
 
 interface UserDetail {
@@ -83,6 +85,8 @@ export default function UserDetailModal({
     displayCount === "all"
       ? userDetail?.bookReviews || []
       : (userDetail?.bookReviews || []).slice(0, displayCount);
+
+    console.log(displayedData)
 
   const handleUserExit = () => {
     if (!userId) return;
@@ -195,7 +199,7 @@ export default function UserDetailModal({
                         <span>{row.id}</span>
                       </td>
                       <td>
-                        <span className="title-text">{row.bookTitle}</span>
+                        <span className="title-text">{row.book_title}</span>
                       </td>
                       <td>
                         <span>{row.event_name}</span>
@@ -221,7 +225,7 @@ export default function UserDetailModal({
                             <section className="w-[57.142%]">
                               <h3 className="font-bold mb-2 ml-4">書評本文</h3>
                               <div className="book-review-section w-auto h-84 ml-4 p-2">
-                                <p>書評本文の詳細はこちらに表示されます。</p>
+                                <p dangerouslySetInnerHTML={{ __html: row.review }}></p>
                               </div>
                             </section>
                           </div>
@@ -246,11 +250,19 @@ export default function UserDetailModal({
             )}
           </div>
         </div>
-        <div className="py-5 mx-8 flex justify-end">
+        <div className="py-5 mx-8 flex items-center justify-end gap-4">
+          {userDetail && userDetail.user_status === USER_STATUS.BAN && (
+            <p className="text-sm text-red-500">
+              このユーザーは既にアカウントが停止されています。
+            </p>
+          )}
           <AdminButton
-            label="退会"
+            label="アカウント停止"
             className="exit-btn"
             onClick={handleUserExit}
+            disabled={
+              !userDetail || userDetail.user_status !== USER_STATUS.ACTIVE
+            }
           />
         </div>
       </div>
