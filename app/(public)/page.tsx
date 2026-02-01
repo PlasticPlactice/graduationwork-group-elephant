@@ -75,7 +75,7 @@ export default function Home() {
             <div className="about__button">
               <Button
                 href="https://zoutohana.com/about.html"
-                style={{ color: "#ffffff" }}
+                style={{ backgroundColor: "#36A8B1", color: "#ffffff" }}
               >
                 くわしくはこちら
               </Button>
@@ -100,8 +100,8 @@ export default function Home() {
                   daysLeft={10}
                   description="投票期間中です！投票してみましょう！"
                   buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="var(--bunko-x-accent)"
-                  buttonTextColor="var(--bunko-x-accent)"
+                  buttonBorderColor="#36A8B1"
+                  buttonTextColor="#36A8B1"
                 />
 
                 {/* Card 2 */}
@@ -110,8 +110,8 @@ export default function Home() {
                   daysLeft={10}
                   description="投票期間中です！投票してみましょう！"
                   buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="var(--bunko-x-accent)"
-                  buttonTextColor="var(--bunko-x-accent)"
+                  buttonBorderColor="#36A8B1"
+                  buttonTextColor="#36A8B1"
                 />
               </div>
 
@@ -120,7 +120,7 @@ export default function Home() {
                   className="w-full mb-24"
                   href="/event"
                   style={{
-                    backgroundColor: "var(--bunko-x-accent)",
+                    backgroundColor: "#36A8B1",
                     color: "var(--color-white)",
                     width: "100%",
                     maxWidth: "400px",
@@ -158,7 +158,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="news" className="news">
+        <section id="news" className="news news--about-bg">
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
@@ -225,7 +225,7 @@ export default function Home() {
                 className="w-full"
                 href="/news"
                 style={{
-                  backgroundColor: "#ff4d6d",
+                  backgroundColor: "#36A8B1",
                   color: "#ffffff",
                   width: "100%",
                   maxWidth: "400px",
@@ -237,7 +237,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="news">
+        <section className="news news--about-bg">
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
@@ -308,7 +308,7 @@ export default function Home() {
                 className="w-full"
                 href="/donation"
                 style={{
-                  backgroundColor: "#ff4d6d",
+                  backgroundColor: "#36A8B1",
                   color: "#ffffff",
                   width: "100%",
                   maxWidth: "400px",
@@ -320,15 +320,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section
-          id="donation"
-          className="news"
-          style={{
-            backgroundColor: "#F1F0E8",
-            paddingTop: "80px",
-            paddingBottom: "80px",
-          }}
-        >
+        <section id="donation" className="news">
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
