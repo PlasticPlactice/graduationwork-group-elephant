@@ -1,28 +1,38 @@
 ﻿"use client";
 
 import "@/styles/public/top.css";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { ItemModal } from "@/components/features/ItemModal";
-import { useState } from "react";
+import { NotificationItem } from "@/lib/types/notification";
+import { Event } from "@/lib/types/event";
 
 export default function Home() {
+  const [news, setNews] = useState<NotificationItem[]>([]);
+  const [donations, setDonations] = useState<NotificationItem[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [showNewsModal, setShowNewsModal] = useState(false);
-  const [selectedNews, setSelectedNews] = useState<{
-    id: number;
-    date: string;
-    title: string;
-    image: string;
-  } | null>(null);
+  const [selectedNews, setSelectedNews] = useState<NotificationItem | null>(
+    null,
+  );
 
-  const handleNewsClick = (
-    id: number,
-    title: string,
-    date: string,
-    image: string
-  ) => {
-    setSelectedNews({ id, date, title, image });
+  useEffect(() => {
+    fetch("/api/notifications?type=0&page=1")
+      .then((res) => res.json())
+      .then((data) => setNews(data.data || []));
+    fetch("/api/notifications?type=1&page=1")
+      .then((res) => res.json())
+      .then((data) => setDonations(data.data || []));
+    fetch("/api/events?status=now")
+      .then((res) => res.json())
+      .then((data) => setEvents(data || []))
+      .catch(() => setEvents([]));
+  }, []);
+
+  const handleNewsClick = (item: NotificationItem) => {
+    setSelectedNews(item);
     setShowNewsModal(true);
   };
 
@@ -45,7 +55,11 @@ export default function Home() {
               </div>
             </div>
             <div className="heroText">
-              <h1 className="heroTitle">象と花<br />プロジェクト</h1>
+              <h1 className="heroTitle">
+                象と花
+                <br />
+                プロジェクト
+              </h1>
               <a className="heroBunkoBadge" href="#bunko-x">
                 文庫<span>X</span>はこちら
               </a>
@@ -94,25 +108,28 @@ export default function Home() {
               </h3>
 
               <div className="event-cards">
-                {/* Card 1 */}
-                <EventCard
-                  title="第2回 文庫Xイベント"
-                  daysLeft={10}
-                  description="投票期間中です！投票してみましょう！"
-                  buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="var(--bunko-x-accent)"
-                  buttonTextColor="var(--bunko-x-accent)"
-                />
-
-                {/* Card 2 */}
-                <EventCard
-                  title="第1回 文庫Xイベント"
-                  daysLeft={10}
-                  description="投票期間中です！投票してみましょう！"
-                  buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="var(--bunko-x-accent)"
-                  buttonTextColor="var(--bunko-x-accent)"
-                />
+                {events.slice(0, 2).map((event) => {
+                  const now = new Date();
+                  const votingEnd = new Date(event.first_voting_end_period);
+                  const daysLeft = Math.max(
+                    0,
+                    Math.ceil(
+                      (votingEnd.getTime() - now.getTime()) /
+                        (1000 * 60 * 60 * 24),
+                    ),
+                  );
+                  return (
+                    <EventCard
+                      key={event.id}
+                      title={event.title}
+                      daysLeft={daysLeft}
+                      detail={event.detail || undefined}
+                      buttonBackgroundColor="var(--color-bg)"
+                      buttonBorderColor="var(--bunko-x-accent)"
+                      buttonTextColor="var(--bunko-x-accent)"
+                    />
+                  );
+                })}
               </div>
 
               <div className="bunko-x__all-events">
@@ -166,59 +183,27 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
-              {/* News Item 1 */}
-              <div
-                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() =>
-                  handleNewsClick(
-                    1,
-                    "第１回文庫Xが開催されました！",
-                    "2025-10-01",
-                    "/top/image1.png"
-                  )
-                }
-              >
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
+              {news.slice(0, 2).map((item) => (
+                <div
+                  key={item.id}
+                  className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => handleNewsClick(item)}
+                >
+                  <div className="news-item__image">
+                    <Image
+                      src={item.image || "/top/image1.png"}
+                      alt="News Image"
+                      fill
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                  <div className="news-item__meta">
+                    <span className="news-item__date">{item.date}</span>
+                    <span className="news-item__badge">NEW</span>
+                  </div>
+                  <p className="news-item__text">{item.title}</p>
                 </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">第１回文庫Xが開催されました！</p>
-              </div>
-
-              {/* News Item 2 */}
-              <div
-                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() =>
-                  handleNewsClick(
-                    2,
-                    "第１回文庫Xが開催されました！",
-                    "2025-10-01",
-                    "/top/image1.png"
-                  )
-                }
-              >
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">第１回文庫Xが開催されました！</p>
-              </div>
+              ))}
             </div>
             <div className="news__button">
               <Button
@@ -245,63 +230,27 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
-              {/* News Item 1 */}
-              <div
-                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() =>
-                  handleNewsClick(
-                    3,
-                    "○○様より「ハリーポッター」を寄贈していただきました！",
-                    "2025-10-01",
-                    "/top/image1.png"
-                  )
-                }
-              >
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
+              {donations.slice(0, 2).map((item) => (
+                <div
+                  key={item.id}
+                  className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => handleNewsClick(item)}
+                >
+                  <div className="news-item__image">
+                    <Image
+                      src={item.image || "/top/image1.png"}
+                      alt="News Image"
+                      fill
+                      style={{ objectFit: "cover" }}
+                    />
+                  </div>
+                  <div className="news-item__meta">
+                    <span className="news-item__date">{item.date}</span>
+                    <span className="news-item__badge">NEW</span>
+                  </div>
+                  <p className="news-item__text">{item.title}</p>
                 </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">
-                  ○○様より「ハリーポッター」を寄贈していただきました！
-                </p>
-              </div>
-
-              {/* News Item 2 */}
-              <div
-                className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() =>
-                  handleNewsClick(
-                    4,
-                    "○○様より「ハリーポッター」を寄贈していただきました！",
-                    "2025-10-01",
-                    "/top/image1.png"
-                  )
-                }
-              >
-                <div className="news-item__image">
-                  <Image
-                    src="/top/image1.png"
-                    alt="News Image"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="news-item__meta">
-                  <span className="news-item__date">2025-10-01</span>
-                  <span className="news-item__badge">NEW</span>
-                </div>
-                <p className="news-item__text">
-                  ○○様より「ハリーポッター」を寄贈していただきました！
-                </p>
-              </div>
+              ))}
             </div>
             <div className="donation-button">
               <Button
@@ -382,4 +331,3 @@ export default function Home() {
     </div>
   );
 }
-
