@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { ItemModal } from "@/components/features/ItemModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [showNewsModal, setShowNewsModal] = useState(false);
@@ -15,6 +15,14 @@ export default function Home() {
     title: string;
     image: string;
   } | null>(null);
+  const [events, setEvents] = useState<
+    {
+      id: number;
+      title: string;
+      detail?: string | null;
+      first_voting_end_period: string;
+    }[]
+  >([]);
 
   const handleNewsClick = (
     id: number,
@@ -25,6 +33,21 @@ export default function Home() {
     setSelectedNews({ id, date, title, image });
     setShowNewsModal(true);
   };
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const res = await fetch("/api/events?status=now");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setEvents(data);
+        }
+      } catch {
+        // Keep fallback cards if fetch fails.
+      }
+    };
+    loadEvents();
+  }, []);
 
   return (
     <div>
@@ -94,25 +117,51 @@ export default function Home() {
               </h3>
 
               <div className="event-cards">
-                {/* Card 1 */}
-                <EventCard
-                  title="第2回 文庫Xイベント"
-                  daysLeft={10}
-                  description="投票期間中です！投票してみましょう！"
-                  buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="#36A8B1"
-                  buttonTextColor="#36A8B1"
-                />
-
-                {/* Card 2 */}
-                <EventCard
-                  title="第1回 文庫Xイベント"
-                  daysLeft={10}
-                  description="投票期間中です！投票してみましょう！"
-                  buttonBackgroundColor="var(--color-bg)"
-                  buttonBorderColor="#36A8B1"
-                  buttonTextColor="#36A8B1"
-                />
+                {events.length > 0 ? (
+                  events.slice(0, 2).map((event) => {
+                    const now = new Date();
+                    const votingEnd = new Date(event.first_voting_end_period);
+                    const daysLeft = Math.max(
+                      0,
+                      Math.ceil(
+                        (votingEnd.getTime() - now.getTime()) /
+                          (1000 * 60 * 60 * 24)
+                      )
+                    );
+                    return (
+                      <EventCard
+                        key={event.id}
+                        title={event.title}
+                        daysLeft={daysLeft}
+                        description={
+                          event.detail || "投票期間中です！投票してみましょう！"
+                        }
+                        buttonBackgroundColor="var(--color-bg)"
+                        buttonBorderColor="#36A8B1"
+                        buttonTextColor="#36A8B1"
+                      />
+                    );
+                  })
+                ) : (
+                  <>
+                    <EventCard
+                      title="第2回 文庫Xイベント"
+                      daysLeft={10}
+                      description="投票期間中です！投票してみましょう！"
+                      buttonBackgroundColor="var(--color-bg)"
+                      buttonBorderColor="#36A8B1"
+                      buttonTextColor="#36A8B1"
+                    />
+                    <EventCard
+                      title="第1回 文庫Xイベント"
+                      daysLeft={10}
+                      description="投票期間中です！投票してみましょう！"
+                      buttonBackgroundColor="var(--color-bg)"
+                      buttonBorderColor="#36A8B1"
+                      buttonTextColor="#36A8B1"
+                    />
+                  </>
+                )}
               </div>
 
               <div className="bunko-x__all-events">
