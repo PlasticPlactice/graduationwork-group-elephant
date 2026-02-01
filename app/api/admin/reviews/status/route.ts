@@ -19,10 +19,11 @@ export async function PATCH(req: Request) {
     }
     const adminId = Number(user.id);
 
-    const { reviewIds, status } = await req.json();
+    const body = await req.json();
+    const { reviewIds, status, action } = body;
 
     // バリデーション
-    if (!reviewIds || !Array.isArray(reviewIds) || typeof status !== "number") {
+    if (!reviewIds || !Array.isArray(reviewIds)) {
       return NextResponse.json(
         { error: "Invalid parameters" },
         { status: 400 },
@@ -32,42 +33,84 @@ export async function PATCH(req: Request) {
     // 対象の書評からユーザーIDを取得（重複排除）
     const reviews = await prisma.bookReview.findMany({
       where: { id: { in: reviewIds } },
-      select: { user_id: true },
+      select: { id: true, user_id: true, evaluations_status: true },
     });
 
-    const userIds = Array.from(new Set(reviews.map((r) => r.user_id)));
+    const userIdsAll = Array.from(new Set(reviews.map((r) => r.user_id)));
 
     await prisma.$transaction(async (tx) => {
-      // 1. ステータス更新
-      await tx.bookReview.updateMany({
-        where: { id: { in: reviewIds } },
-        data: { evaluations_status: status },
-      });
+      if (action === "increment") {
+        const maxStatus = Math.max(...Object.values(REVIEW_STATUS) as unknown as number[]);
+        const statusToUsers = new Map<number, Set<number>>();
 
-      // 2. 通知メッセージの作成（評価前以外の場合）
-      if (status !== REVIEW_STATUS.BEFORE && userIds.length > 0) {
-        const statusLabel = REVIEW_STATUS_LABELS[status];
-        const messageContent = `あなたの書評のステータスが「${statusLabel}」に変更されました。`;
+        for (const r of reviews) {
+          const newStatus = Math.min((r.evaluations_status ?? 0) + 1, maxStatus);
+          await tx.bookReview.update({
+            where: { id: r.id },
+            data: { evaluations_status: newStatus },
+          });
 
-        // ステータスに応じてメッセージタイプを決定
-        const messageType = 1;
+          if (!statusToUsers.has(newStatus)) statusToUsers.set(newStatus, new Set());
+          statusToUsers.get(newStatus)!.add(r.user_id);
+        }
 
-        const newMessage = await tx.message.create({
-          data: {
-            admin_id: adminId,
-            message: messageContent,
-            type: messageType,
-            draft_flag: false,
-          },
+        // ステータスが評価前でないものについて、それぞれのステータスごとに通知を作成
+        for (const [s, usersSet] of statusToUsers.entries()) {
+          if (s === REVIEW_STATUS.BEFORE) continue;
+          const statusLabel = REVIEW_STATUS_LABELS[s];
+          const messageContent = `あなたの書評のステータスが「${statusLabel}」に変更されました。`;
+
+          const newMessage = await tx.message.create({
+            data: {
+              admin_id: adminId,
+              message: messageContent,
+              type: 1,
+              draft_flag: false,
+            },
+          });
+
+          await tx.userMessage.createMany({
+            data: Array.from(usersSet).map((userId) => ({
+              user_id: userId,
+              message_id: newMessage.id,
+              is_read: false,
+            })),
+          });
+        }
+      } else {
+        // 既存API互換: 全件を同一ステータスに更新
+        if (typeof status !== "number") {
+          throw new Error("Invalid status");
+        }
+
+        await tx.bookReview.updateMany({
+          where: { id: { in: reviewIds } },
+          data: { evaluations_status: status },
         });
 
-        await tx.userMessage.createMany({
-          data: userIds.map((userId) => ({
-            user_id: userId,
-            message_id: newMessage.id,
-            is_read: false,
-          })),
-        });
+        if (status !== REVIEW_STATUS.BEFORE && userIdsAll.length > 0) {
+          const statusLabel = REVIEW_STATUS_LABELS[status];
+          const messageContent = `あなたの書評のステータスが「${statusLabel}」に変更されました。`;
+
+          const messageType = 1;
+
+          const newMessage = await tx.message.create({
+            data: {
+              admin_id: adminId,
+              message: messageContent,
+              type: messageType,
+              draft_flag: false,
+            },
+          });
+
+          await tx.userMessage.createMany({
+            data: userIdsAll.map((userId) => ({
+              user_id: userId,
+              message_id: newMessage.id,
+              is_read: false,
+            })),
+          });
+        }
       }
     });
 
