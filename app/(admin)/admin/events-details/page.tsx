@@ -31,11 +31,14 @@ export default function Page() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [displayCount, setDisplayCount] = useState<number | "all">(10);
   const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]); // 選択された行IDを管理
+  const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
 
   const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
   const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
-  const [isAllMessageSendModalOpen, setIsAllMessageSendModalOpen] = useState(false);
-  const [isBookReviewDetailModalOpen, setIsBookReviewDetailModalOpen] = useState(false);
+  const [isAllMessageSendModalOpen, setIsAllMessageSendModalOpen] =
+    useState(false);
+  const [isBookReviewDetailModalOpen, setIsBookReviewDetailModalOpen] =
+    useState(false);
 
   const router = useRouter();
 
@@ -105,7 +108,8 @@ export default function Page() {
     if (selectedRowIds.length === 0) return alert("データが選択されていません");
     setIsAllMessageSendModalOpen(true);
   };
-  const handleBookReviewDetail = () => {
+  const handleBookReviewDetail = (reviewId: number) => {
+    setSelectedReviewId(reviewId);
     setIsBookReviewDetailModalOpen(true);
   };
   const closeModal = () => {
@@ -113,6 +117,7 @@ export default function Page() {
     setIsCsvOutputModalOpen(false);
     setIsAllMessageSendModalOpen(false);
     setIsBookReviewDetailModalOpen(false);
+    setSelectedReviewId(null);
   };
 
   const handlePreview = () => {
@@ -307,7 +312,7 @@ export default function Page() {
                   <td className="text-left">
                     <span>{row.id}</span>
                   </td>
-                  <td onClick={handleBookReviewDetail}>
+                  <td onClick={() => handleBookReviewDetail(row.id)}>
                     <span className="title-text">{row.book_title}</span>
                   </td>
                   <td>
@@ -462,6 +467,7 @@ export default function Page() {
       <BookReviewDetailModal
         isOpen={isBookReviewDetailModalOpen}
         onClose={closeModal}
+        reviewId={selectedReviewId}
       />
     </main>
   );
