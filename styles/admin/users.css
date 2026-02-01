@@ -1,0 +1,264 @@
+/* メインコンテナ */
+.users-container {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+details {
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
+}
+summary {
+  list-style-type: none;
+  font-size: 20px;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .icon {
+  transform: rotate(180deg);
+}
+
+/* 検索ボックスエリア */
+.custom-input {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 40rem;
+  min-width: 12rem;
+  height: 2.8rem;
+}
+.search-field {
+  flex: 1 1;
+  max-width: 40rem;
+}
+.age-input {
+  width: 6rem;
+}
+.city-input {
+  width: 7rem;
+}
+.account-input {
+  width: 15rem;
+}
+.search-btn {
+  width: 15rem;
+  height: 2.5rem;
+}
+
+.user-table {
+  border-collapse: collapse;
+}
+.table-head {
+  background-color: var(--color-main);
+  font-size: var(--font-size-base);
+  color: var(--color-bg);
+  border: 1px solid var(--color-main);
+}
+.user-table th,
+.user-table td {
+  border-bottom: 1px solid var(--color-input-bg);
+}
+
+.user-table th button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
+.user-table th button:focus {
+  outline: none;
+}
+
+.status-badge {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.active {
+  color: #48885a;
+  background-color: var(--color-admin-active-background);
+  border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.disable {
+  color: #828848;
+  background-color: var(--color-admin-disable-background);
+  border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.ban {
+  color: #884849;
+  background-color: var(--color-admin-ban-background);
+  border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1.9rem;
+  padding-right: 1.9rem;
+}
+.users-record:hover {
+  background-color: var(--color-input-text);
+}
+
+.page-section {
+  gap: 1rem;
+}
+.page-section .page-number {
+  font-size: var(--font-size-h1);
+  background-color: var(--color-bg);
+  border-radius: var(--control-radius);
+  color: var(--color-admin-sub);
+}
+.page-section .page-number:hover {
+  font-size: var(--font-size-h1);
+  background-color: var(--color-main);
+  border-radius: var(--control-radius);
+  color: var(--color-bg);
+}
+.page-section .page-number.active {
+  background-color: var(--color-main);
+  color: var(--color-bg);
+}
+.page-arrow {
+  color: var(--color-admin-sub);
+}
+
+/* モーダル */
+.user-detail-modal {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+  display: flex;
+  flex-direction: column;
+}
+.modal-scroll-area {
+  overflow-y: auto;
+  flex: 1;
+}
+.close-btn {
+  background-color: var(--color-bg);
+  box-shadow: none;
+}
+.user-data-title {
+  color: var(--color-sub);
+}
+.status {
+  color: #48885a;
+  background-color: var(--color-admin-active-background);
+  border-radius: var(--control-radius);
+  font-weight: bold;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.table-head {
+  background-color: var(--color-main);
+  font-size: var(--font-size-base);
+  color: var(--color-bg);
+  border: 1px solid var(--color-main);
+}
+.event-table {
+  table-layout: fixed;
+  width: 100%;
+}
+.event-table th,
+.event-table td {
+  border-bottom: 1px solid var(--color-input-bg);
+  word-break: break-word;
+  box-sizing: border-box;
+}
+.head-check {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid #6a8ca4;
+  border-radius: 2px;
+}
+summary {
+  list-style-type: none;
+}
+details[open] .icon {
+  transform: rotate(180deg);
+}
+.title-text {
+  color: var(--color-main);
+  border-bottom: 1px solid var(--color-main);
+}
+.status-text {
+  color: #1e40af;
+  background-color: #dbeafe;
+  border-radius: var(--control-radius);
+}
+.accordion-toggle {
+  background-color: var(--color-bg);
+  box-shadow: none;
+  color: var(--color-text);
+  font-size: var(--font-size-h1);
+}
+.details-content > div {
+  width: 100%;
+  box-sizing: border-box;
+}
+/* アコーディオン */
+/* アコーディオンの中 */
+.details-content h3 {
+  font-size: var(--font-size-h1);
+}
+.book-review-section {
+  overflow-y: auto;
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
+  max-width: 100%;
+  max-height: 21rem; /* 必要に応じて調整 */
+}
+.book-review-section p {
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.book-data {
+  border-bottom: 1px solid #a0b7c7;
+  margin: 0 0 0.5rem 0;
+}
+.book-head {
+  color: #a0b7c7;
+}
+.book-content {
+  font-size: 20px;
+  margin: 0 0 0.6rem 0;
+}
+.data-row-link {
+  background-color: var(--color-bg);
+  color: var(--color-main);
+  box-shadow: none;
+}
+.exit-btn {
+  width: 10rem;
+  height: 2.5rem;
+  font-size: 1.5rem;
+  box-shadow: none;
+  padding: 1.5rem 0;
+}
+
+/* 退会モーダル */
+.user-exit-modal {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.exit-area {
+  height: 10rem;
+}
+.exit-modal-common {
+  width: 13rem;
+  height: 2.5rem;
+  font-size: 1.5rem;
+  box-shadow: none;
+  margin: 1rem 0;
+  padding: 1.5rem 0;
+}
+.back-btn {
+  background-color: var(--color-bg);
+  color: var(--color-admin-sub);
+  border: 1px solid var(--color-admin-sub);
+}

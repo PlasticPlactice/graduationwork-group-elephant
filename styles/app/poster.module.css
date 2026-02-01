@@ -1,0 +1,332 @@
+:root {
+  /* fonts */
+  --font-main: "Yu Gothic", "游ゴシック体";
+  --font-sab: "Yu Mincho", "游明朝";
+
+  /* colors */
+  --color-text: #000000;
+  --color-bg: #ffffff;
+  --color-input-bg: #6a8ca4;
+  --color-input-text: rgba(106, 140, 164, 0.5);
+  --color-main: #ff4463;
+  --color-sub: #6a8ca4;
+  --color-warning: #ff0000;
+  --color-warning-bg: #ffecef;
+  --color-accent: #faf443;
+
+  /* spacing / sizes */
+  --page-padding-sm: 16px;
+  --page-padding-lg: 24px;
+  --font-size-base: 16px;
+  --font-size-h1: 24px;
+  --font-size-small: 14px;
+  --control-height: 48px;
+  --control-radius: 5px;
+}
+
+.mainColor {
+  color: var(--color-main);
+}
+
+.subColor {
+  color: var(--color-sub);
+}
+
+.warningColor {
+  color: var(--color-warning);
+}
+
+.text12px {
+  font-size: var(--font-size-small);
+}
+
+.text16px {
+  font-size: var(--font-size-base);
+}
+
+.text24px {
+  font-size: var(--font-size-h1);
+}
+
+.linkText {
+  color: blue !important;
+}
+
+.posterContainer {
+  padding-left: var(--page-padding-lg);
+  padding-right: var(--page-padding-lg);
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5rem;
+}
+
+.colorButton {
+  border-radius: 100%;
+  border: 1px solid var(--color-sub);
+}
+
+.termsForm {
+  border-radius: var(--control-radius);
+  height: 20rem;
+}
+
+.colsIntroduction {
+  height: 10rem;
+  padding: 0.3rem 0.5rem;
+}
+
+.genderRadio {
+  transform: scale(2);
+  height: auto;
+  outline: none;
+}
+
+.acceptCheckbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 1s ease, background-color 0.2s ease;
+}
+
+.acceptCheckbox:checked {
+  background-color: #ff4463; /* メインカラー */
+  border-color: #ff4463;
+}
+
+.acceptCheckbox::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px;
+  transform: scale(0);
+  transition: transform 0.15s ease-out;
+}
+
+.acceptCheckbox:checked::after {
+  transform: scale(1);
+}
+
+.inputSelectForm {
+  width: 100% !important;
+}
+
+.userId {
+  border: none;
+  font-size: var(--font-size-h1);
+  width: 10rem;
+  text-align: center;
+}
+
+.userIdContainer {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-sub);
+  border-radius: var(--control-radius);
+}
+
+.alertImage {
+  border: 1px solid var(--color-sub);
+  border-radius: var(--control-radius);
+  width: 48px;
+  height: 48px;
+}
+
+.copyButton {
+  background-color: white;
+  box-shadow: none;
+  padding: 0;
+  height: 30px;
+}
+
+.tooltip {
+  animation: fadeInOut 1.5s ease forwards;
+  background-color: var(--color-sub);
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+
+.helpButton {
+  background-color: #ffffff;
+  padding: 0;
+  box-shadow: none;
+  height: 30px;
+}
+
+.barcodeScan__alertContainer {
+  background-color: var(--color-warning-bg);
+}
+
+.barcodeScan__readerWrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.barcodeScan__reader {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--color-sub);
+  border-radius: var(--control-radius);
+  background-color: #f7f9fb;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.barcodeScan__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.barcodeScan__status {
+  margin-top: 8px;
+  color: var(--color-sub);
+}
+
+.barcodeScan__backButton {
+  height: var(--control-height);
+  border: 1px solid var(--color-main) !important;
+  border-radius: var(--control-radius);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.editorButton {
+  height: 2.5rem;
+  border: 1px solid var(--color-sub) !important;
+  border-radius: var(--control-radius);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  padding: 0;
+  width: 2.5rem;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.toolBar {
+  border: 1px solid var(--color-sub);
+  border-radius: var(--control-radius);
+}
+
+.oneTimeKeepButton {
+  height: 2rem;
+}
+
+.patternButton {
+  border: 1px solid var(--color-main);
+}
+
+.activeButton {
+  background-color: var(--color-main);
+  color: var(--color-bg);
+  box-shadow: none;
+  transition: background-color 0.3s ease;
+}
+
+.inactiveButton {
+  background-color: #fff;
+  color: #444;
+  transition: background-color 0.3s ease;
+}
+
+.activeColorButton {
+  outline: 3px solid white;
+  box-shadow: 0 0 0 3px #ffffff; /* 外側に赤リング */
+  transform: scale(1.15);
+  transition: transform 0.2s ease;
+}
+
+.editorColorButton {
+  border: 1px solid var(--color-sub);
+  border-radius: 100%;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.blackButton {
+  background-color: #000000;
+  color: #ffffff;
+}
+.redButton {
+  background-color: #ff0000;
+  color: #ffffff;
+}
+.blueButton {
+  background-color: #0000ff;
+  color: #ffffff;
+}
+
+.create__formContainer {
+  margin-top: 20px;
+}
+
+.disabledButton {
+  height: var(--control-height);
+  border: 1px solid #D9D9D9 !important;
+  border-radius: var(--control-radius);
+  background-color: #D9D9D9;
+  color: #FFFFFF;
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.labelContainer {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.mypage__linkButton {
+  width: 100%;
+  height: var(--control-height);
+  border: none !important;
+  border-radius: var(--control-radius);
+  background-color: white !important;
+  color: #000000;
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  box-shadow: none;
+}

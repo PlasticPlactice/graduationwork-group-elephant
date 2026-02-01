@@ -1,0 +1,208 @@
+/* メインコンテナ */
+.notice-container {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+details{
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
+}
+summary {
+  list-style-type: none;
+  font-size: 20px;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* 検索ボックスエリア */
+.search-area {
+  border: 1px solid #8B8B8B;
+  border-radius: var(--control-radius);
+}
+
+/* 入力エリアの幅調整 (タイトル・公開期間) */
+.input-group {
+  width: 40%;
+}
+
+/* テキストボックスの高さ・幅強制上書き */
+.custom-input {
+  height: 2.5rem;
+}
+
+.custom-input-full {
+  height: 2.5rem ;
+  width: 100%;
+}
+
+/* 検索ボタン */
+.search-btn {
+  width: 15rem;
+  height: 2.5rem;
+}
+
+.all-select{
+    background-color: #F9FAFB;
+}
+.choice-btn{
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    box-shadow: none;
+    border: 1px solid var(--color-admin-sub);
+}
+
+.table-head {
+  background-color: var(--color-main);
+  font-size: var(--font-size-base);
+  color: var(--color-bg);
+  border: 1px solid var(--color-main);
+}
+.event-table {
+  table-layout: fixed;
+  width: 100%;
+}
+.event-table th,
+.event-table td{
+  border-bottom: 1px solid var(--color-input-bg);
+  word-break: break-word;
+  box-sizing: border-box;
+}
+.head-check{
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid #6A8CA4;
+  border-radius: 2px;
+}
+summary {
+  list-style-type: none;
+}
+details[open] .icon {
+  transform: rotate(180deg);
+}
+.title-text{
+  color: var(--color-main);
+  border-bottom: 1px solid var(--color-main);
+  cursor: pointer
+}
+.status-text{
+  color: #1E40AF;
+  background-color: #DBEAFE;
+  border-radius: var(--control-radius);
+}
+.accordion-toggle{
+  background-color: var(--color-bg);
+  box-shadow: none;
+  color: var(--color-text);
+  font-size: var(--font-size-h1);
+}
+.details-content > div {
+  width: 100%;
+  box-sizing: border-box;
+}
+/* アコーディオンの中 */
+.details-content h3{
+  font-size: var(--font-size-h1);
+}
+.book-review-section{
+  overflow-y: auto;
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
+  max-width: 100%;
+  max-height: 21rem; /* 必要に応じて調整 */
+}
+.book-review-section p {
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.book-data{
+  border-bottom: 1px solid #A0B7C7;
+  margin: 0 0 0.5rem 0;
+}
+.book-head{
+  color: #A0B7C7;
+}
+.book-content{
+  font-size: 20px;
+  margin: 0 0 0.6rem 0;
+}
+.print-preview-btn{
+  box-shadow: none;
+}
+
+.page-section{
+  gap: 1rem;
+
+}
+.page-section .page-number{
+  font-size: var(--font-size-h1);
+  background-color: var(--color-bg);
+  border-radius: var(--control-radius);
+  color: var(--color-admin-sub);
+}
+.page-section .page-number:hover{
+  font-size: var(--font-size-h1);
+  background-color: var(--color-main);
+  border-radius: var(--control-radius);
+  color: var(--color-bg);
+}
+.page-section .page-number.active{
+  background-color: var(--color-main);
+  color: var(--color-bg);
+}
+.page-arrow{
+  color: var(--color-admin-sub);
+}
+
+/* モーダル */
+.status-edit-modal{
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-head{
+  font-size: var(--font-size-h1);
+}
+.status-table{
+  overflow-y: auto;
+
+}
+.status-table th,
+.status-table td{
+  border-bottom: 1px solid var(--color-input-bg);
+}
+.modal-sub-head{
+  font-size: var(--font-size-h1);
+}
+.status-table th{
+  font-size: var(--font-size-h1);
+}
+.status-record td{
+  font-size: var(--font-size-h1);
+}
+.status-book-section{
+  overflow-y: auto;
+}
+
+.now-status-head{
+  font-size: var(--font-size-base);
+}
+.now-status-text{
+  font-size: 20px;
+  color: #1E40AF;
+  background-color: #DBEAFE;
+}
+#dummy_text{
+  color: var(--color-bg);
+}
+.status-arrow{
+  color: var(--color-admin-sub);
+}
+
+.all-message-area{
+  border: 1px solid var(--color-admin-sub);
+  height: 10rem;
+}
+.all-message-area::placeholder{
+  color: var(--color-admin-sub);
+}

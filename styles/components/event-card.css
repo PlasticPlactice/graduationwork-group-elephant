@@ -1,0 +1,55 @@
+.event-card {
+  background-color: #ffffff;
+  border-radius: 0;
+  padding: 20px;
+  color: #333;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.event-card__title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.event-card__timer {
+  border: 1px solid #ccc;
+  border-radius: 0;
+  padding: 5px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+  background-color: #fff;
+}
+
+.timer-label {
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.timer-days {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ff4d6d;
+}
+
+.event-card__desc {
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.event-card__button {
+  color: #FF4463;
+  border: 1px solid #FF4463;
+  background-color: #FFFFFF;
+  width: 100%;
+}
