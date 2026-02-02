@@ -51,7 +51,7 @@ export default function PostPage() {
     title: "",
     author: "",
     publishers: "",
-    event_id: ""
+    event_id: "",
   });
   // ユーザーデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
@@ -99,7 +99,7 @@ export default function PostPage() {
 
     const bookDataDraft = JSON.parse(draft);
 
-    console.log(JSON.stringify(bookDataDraft, null, 2))
+    console.log(JSON.stringify(bookDataDraft, null, 2));
 
     fetchUserData();
 
@@ -108,7 +108,7 @@ export default function PostPage() {
       title: bookDataDraft.title,
       author: bookDataDraft.author,
       publishers: bookDataDraft.publishers,
-      event_id: bookDataDraft.eventId
+      event_id: bookDataDraft.eventId,
     });
   }, []);
 
@@ -145,14 +145,14 @@ export default function PostPage() {
     self_introduction: "",
     author: "",
     publishers: "",
-    event_id: ""
+    event_id: "",
   });
 
   const handleConfirm = () => {
     setForm({
       ...form,
       evaluations_status: 2,
-    })
+    });
 
     sessionStorage.setItem(
       "bookReviewDraft",
@@ -169,33 +169,33 @@ export default function PostPage() {
     try {
       const res = await fetch("http://localhost:3000/api/book-reviews", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if(!res.ok) {
+      if (!res.ok) {
         alert("登録に失敗しました。");
         return;
       }
 
       router.push("/poster/mypage");
-    } catch(e) {
-      alert("通信に失敗しました。")
+    } catch (e) {
+      alert("通信に失敗しました。");
     }
-  }
+  };
 
   // 下書きボタン押したときの処理
   const handleDraftConfirm = () => {
     const nextForm = {
       ...form,
-      evaluations_status: 1
+      evaluations_status: 1,
     };
 
     setForm(nextForm);
 
     registerBookReviewDraft({
       ...nextForm,
-    })
+    });
     router.push("/poster/mypage");
   };
 
@@ -228,7 +228,7 @@ export default function PostPage() {
       setHtml(html);
       setRemaining(maxLength - used);
 
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
         color: bookColor,
         pattern: pattern,
@@ -273,16 +273,16 @@ export default function PostPage() {
     if (bookData.publishers) {
       setForm((prev) => ({
         ...prev,
-        publishers: bookData.publishers
-      }))
+        publishers: bookData.publishers,
+      }));
     }
     if (bookData.author) {
       setForm((prev) => ({
         ...prev,
-        author: bookData.author
-      }))
+        author: bookData.author,
+      }));
     }
-  }, [bookData.publishers, bookData.author])
+  }, [bookData.publishers, bookData.author]);
 
   useEffect(() => {
     if (!userId || !userData) return;
@@ -522,7 +522,7 @@ export default function PostPage() {
           >
             下書きとして保存
           </button>
-          
+
           <p className={`mt-1 mb-3 ${Styles.mainColor} ${Styles.text12px}`}>
             下書きはマイページから確認することができます。
           </p>
