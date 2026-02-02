@@ -106,7 +106,7 @@ export default function Home() {
                 <br />
                 プロジェクト
               </h1>
-              <a className="heroBunkoBadge" href="#bunko-x">
+              <a className="heroBunkoBadge" href="#bunko-x-title">
                 文庫<span>X</span>はこちら
               </a>
             </div>
@@ -147,7 +147,7 @@ export default function Home() {
           <div className="bunko-x__inner">
             {/* 文庫Xについて */}
             <div className="bunko-x__intro">
-              <h2 className="bunko-x__title">
+              <h2 id="bunko-x-title" className="bunko-x__title">
                 文庫<span className="text-red">X</span>について
               </h2>
               <div className="bunko-x__text">
