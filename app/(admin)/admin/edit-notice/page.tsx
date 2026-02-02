@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense,useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
@@ -45,6 +45,7 @@ type RemoteNotificationFile = {
 
 function EditNoticeContent() {
   const router = useRouter();
+  const mainRef = useRef<HTMLElement | null>(null);
   const searchParams = useSearchParams();
   const notificationIdParam = searchParams.get("id");
   const notificationIdRaw =
@@ -219,6 +220,12 @@ function EditNoticeContent() {
       editor?.destroy();
     };
   }, [editor]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      mainRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [errorMessage]);
 
   // ツールバー操作
   const toggleBold = () => editor?.chain().focus().toggleBold().run();
@@ -563,7 +570,7 @@ function EditNoticeContent() {
   }, [modalIndex]);
 
   return (
-    <main className="p-6">
+    <main className="p-6" ref={mainRef}>
       <h1 className="text-2xl font-bold mb-6">お知らせ編集</h1>
       {errorMessage && (
         <div

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
 import "@/styles/admin/register-notice.css";
@@ -32,6 +32,7 @@ type UploadPreview =
 
 export default function Page() {
   const router = useRouter();
+  const mainRef = useRef<HTMLElement | null>(null);
 
   // フォームフィールドのstate
   const [title, setTitle] = useState<string>("");
@@ -80,6 +81,12 @@ export default function Page() {
       editor?.destroy();
     };
   }, [editor]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      mainRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [errorMessage]);
 
   // ツールバー操作
   const toggleBold = () => editor?.chain().focus().toggleBold().run();
@@ -388,7 +395,7 @@ export default function Page() {
   }, [modalIndex]);
 
   return (
-    <main className="p-6">
+    <main className="p-6" ref={mainRef}>
       <h1 className="text-2xl font-bold mb-6">お知らせ登録</h1>
       {errorMessage && (
         <div
