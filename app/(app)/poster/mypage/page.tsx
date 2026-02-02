@@ -26,7 +26,7 @@ interface ProfileData {
 }
 
 interface EventData {
-  eventId: number;
+  id: number;
   title: string;
   detail: string;
   status: number;
@@ -85,7 +85,7 @@ export default function MyPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        console.log(data)
+        console.log("data" + JSON.stringify(data, null, 2))
         setEventData(data);
       }
     } catch (error) {
@@ -423,12 +423,12 @@ export default function MyPage() {
             {eventData.map((event, eventIndex) => (
               <div key={eventIndex} className="max-w-2xl">
                 <EventCard
+                  eventId={String(event.id)}
                   title={event.title}
-                  eventId={String(event.eventId)}
+                  href="/post/barcode-scan"
                   daysLeft={daysFromToday(String(event.first_voting_start_period))}
                   detail={event.detail}
                   buttonText="このイベントに投稿する"
-                  
                 />
               </div>
             ))}

@@ -3,7 +3,7 @@
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Html5Qrcode } from "html5-qrcode";
 
@@ -21,6 +21,7 @@ type RakutenBookItem = {
 
 export default function BarcodeScanPage() {
   const router = useRouter();
+  const params = useParams<{ id: string }>();
 
   const [helpOpen, setHelpOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -103,6 +104,7 @@ export default function BarcodeScanPage() {
 
         const bookItemDraft = {
           isbn: isbn,
+          eventId: params.id,
           title: firstItem.title ?? "",
           author: firstItem.author ?? "",
           publishers: firstItem.publisher ?? ""

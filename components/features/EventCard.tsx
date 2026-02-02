@@ -24,7 +24,7 @@ export const EventCard = ({
   buttonText = "投票へ",
   onButtonClick,
   isFinished = false,
-  href = "/posts/bookshelf",
+  href,
   buttonBackgroundColor,
   buttonBorderColor,
   buttonTextColor,

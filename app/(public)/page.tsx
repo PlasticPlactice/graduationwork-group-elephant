@@ -165,6 +165,7 @@ export default function Home() {
                       <EventCard
                         key={event.id}
                         eventId={String(event.id)}
+                        href="/posts/bookshelf"
                         title={event.title}
                         daysLeft={daysLeft}
                         detail={
