@@ -311,22 +311,6 @@ export default function PostPage() {
     }
   }, [editor]);
 
-  // useEffect(() => {
-  //   if (!editor) return;
-  //   const updateCount = () => {
-  //     const used = editor.storage.characterCount.characters();
-  //     setRemaining(maxLength - used);
-  //   };
-  //   // 初期化
-  //   updateCount();
-  //   // エディタ更新イベント
-  //   editor.on("update", updateCount);
-  //   // cleanup(メモリリーク防止)
-  //   return () => {
-  //     editor.off("update", updateCount);
-  //   };
-  // }, [editor]);
-
   return (
     <div className={`${Styles.posterContainer}`}>
       <p className={`font-bold text-center my-5 ${Styles.text24px}`}>
