@@ -1,13 +1,13 @@
 export type PatternType = "none" | "stripe" | "dot" | "check";
 
 export type Book = {
-  id: string;
+  id: string; 
   pattern: PatternType;
   baseColor: string;
   patternColor?: string;
   review?: string;
   user_id?: string;
-  book_review_id?: string;
+  event_id?: string;
 };
 
 export type Reactions = {

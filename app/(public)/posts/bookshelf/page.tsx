@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function BookshelfDetailPage() {
 
 
-  const bookReviews = await getPublicBookReviews(1);
+  const bookReviews = await getPublicBookReviews(12);
 
   return (
     <div className="min-h-screen bg-slate-50">
