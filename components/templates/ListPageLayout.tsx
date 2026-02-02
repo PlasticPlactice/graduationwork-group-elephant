@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { Item } from "@/components/features/item";
@@ -21,6 +21,7 @@ interface ListPageLayoutProps {
   items: ItemProps[];
   currentPage: number;
   totalPages: number;
+  backHref?: string;
 }
 
 export const ListPageLayout = ({
@@ -28,8 +29,13 @@ export const ListPageLayout = ({
   items,
   currentPage,
   totalPages,
+  backHref = "/",
 }: ListPageLayoutProps) => {
   const [selectedItem, setSelectedItem] = useState<ItemProps | null>(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
 
   const handleItemClick = (item: ItemProps) => {
     setSelectedItem(item);
@@ -45,7 +51,7 @@ export const ListPageLayout = ({
         <div className="mb-8">
           <Button
             variant="outline"
-            href="/"
+            href={backHref}
             className="h-5 shadow-md rounded-lg hover:bg-gray-50 text-xs"
             style={{
               width: "fit-content",
