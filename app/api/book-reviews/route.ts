@@ -65,7 +65,11 @@ export async function POST(req: Request) {
             isbn: body.isbn
           },
         },
-        event_id: body.event_id,
+        event: {
+          connect: {
+            id: Number(body.event_id)
+          },
+        },
         review: body.review,
         book_title: body.book_title,
         book_title_ruby: body.book_title_ruby,
