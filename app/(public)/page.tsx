@@ -52,36 +52,6 @@ export default function Home() {
     };
   }, []);
 
-  const fallbackNews: NotificationItem[] = [
-    {
-      id: 1,
-      title: "第１回文庫Xが開催されました！",
-      date: "2025-10-01",
-      image: "/top/image1.png",
-    },
-    {
-      id: 2,
-      title: "第１回文庫Xが開催されました！",
-      date: "2025-10-01",
-      image: "/top/image1.png",
-    },
-  ];
-
-  const fallbackDonations: NotificationItem[] = [
-    {
-      id: 3,
-      title: "○○様より「ハリーポッター」を寄贈していただきました！",
-      date: "2025-10-01",
-      image: "/top/image1.png",
-    },
-    {
-      id: 4,
-      title: "○○様より「ハリーポッター」を寄贈していただきました！",
-      date: "2025-10-01",
-      image: "/top/image1.png",
-    },
-  ];
-
   return (
     <div className="public-page">
       <main>
@@ -255,9 +225,12 @@ export default function Home() {
             </h2>
             <div className="news__list">
 
-              {(news.length > 0 ? news : fallbackNews)
-                .slice(0, 2)
-                .map((item) => (
+              {news.length === 0 ? (
+                <p className="text-center text-sm text-slate-600">
+                  現在お知らせはありません。
+                </p>
+              ) : (
+                news.slice(0, 2).map((item) => (
                   <div
                     key={item.id}
                     className="news-item cursor-pointer hover:opacity-80 transition-opacity"
@@ -277,7 +250,8 @@ export default function Home() {
                     </div>
                     <p className="news-item__text">{item.title}</p>
                   </div>
-                ))}
+                ))
+              )}
 
             </div>
             <div className="news__button">
@@ -306,9 +280,12 @@ export default function Home() {
             </h2>
             <div className="news__list">
 
-              {(donations.length > 0 ? donations : fallbackDonations)
-                .slice(0, 2)
-                .map((item) => (
+              {donations.length === 0 ? (
+                <p className="text-center text-sm text-slate-600">
+                  現在寄贈情報はありません。
+                </p>
+              ) : (
+                donations.slice(0, 2).map((item) => (
                   <div
                     key={item.id}
                     className="news-item cursor-pointer hover:opacity-80 transition-opacity"
@@ -328,7 +305,8 @@ export default function Home() {
                     </div>
                     <p className="news-item__text">{item.title}</p>
                   </div>
-                ))}
+                ))
+              )}
 
             </div>
             <div className="donation-button">
