@@ -7,7 +7,7 @@ import {
 } from "@/lib/types/notification";
 
 // 1ページあたりの表示件数
-const ITEMS_PER_PAGE = 4;
+const ITEMS_PER_PAGE = 8;
 
 // 許可される通知タイプの値
 const VALID_NOTIFICATION_TYPES: readonly NotificationTypeValue[] = [

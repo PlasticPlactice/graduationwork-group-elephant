@@ -48,7 +48,7 @@ export const ListPageLayout = ({
   return (
     <div style={{ "--color-main": "#36A8B1" } as React.CSSProperties}>
       <div className="container mx-auto pt-8 px-4">
-        <div className="mb-8">
+        <div className="mb-6">
           <Button
             variant="outline"
             href={backHref}
@@ -63,10 +63,13 @@ export const ListPageLayout = ({
             &lt; トップへ
           </Button>
         </div>
-        <h1 className="text-2xl font-bold text-center tracking-widest mb-8">
+        <h1
+          className="text-2xl font-bold text-center tracking-widest mb-12"
+          style={{ marginBottom: "56px" }}
+        >
           {title}
         </h1>
-        <div className="max-w-2xl mx-auto">
+        <div className="item-list max-w-6xl mx-auto">
           {items.map((item) => (
             <Item
               key={item.id}
@@ -76,7 +79,8 @@ export const ListPageLayout = ({
               onClick={() => handleItemClick(item)}
             />
           ))}
-
+        </div>
+        <div className="item-pagination max-w-6xl mx-auto">
           <Suspense>
             <Pagination currentPage={currentPage} totalPages={totalPages} />
           </Suspense>
