@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { useEffect, useMemo, useState, Suspense } from "react";
 import NoticeDisableModal from "@/components/admin/NoticeDisableModal";
+import NoticeDeleteModal from "@/components/admin/NoticeDeleteModal";
 
 type ApiFile = {
   id?: number;
@@ -61,6 +62,8 @@ function DetailNoticeContent() {
   const [modalIndex, setModalIndex] = useState<number | null>(null);
   const [isNoticeDisableModalOpen, setIsNoticeDisableModalOpen] =
     useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const closeModal = () => setModalIndex(null);
   const openPreview = (index: number) => setModalIndex(index);
@@ -124,6 +127,38 @@ function DetailNoticeContent() {
   };
   const closeNoticeDisableModal = () => {
     setIsNoticeDisableModalOpen(false);
+  };
+
+  const handleDelete = () => {
+    setIsDeleteModalOpen(true);
+  };
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const confirmDelete = async () => {
+    if (!notification) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/notifications/${notification.id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        alert(error.message || "削除に失敗しました");
+        return;
+      }
+
+      alert("お知らせを削除しました");
+      router.push("/admin/notice");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("削除に失敗しました");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+    }
   };
 
   const confirmToggle = async () => {
@@ -275,6 +310,9 @@ function DetailNoticeContent() {
           <button onClick={handleEdit} className="edit-btn">
             編集する
           </button>
+          <button onClick={handleDelete} className="delete-conf-btn">
+            削除する
+          </button>
         </div>
       </div>
 
@@ -317,6 +355,12 @@ function DetailNoticeContent() {
         onClose={closeNoticeDisableModal}
         onConfirm={confirmToggle}
         isPublic={notification?.public_flag ?? false}
+      />
+      <NoticeDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        isDeleting={isDeleting}
       />
     </main>
   );

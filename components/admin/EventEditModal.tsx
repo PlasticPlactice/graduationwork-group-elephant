@@ -19,7 +19,7 @@ type EventItem = {
   first_voting_end_period?: string;
   second_voting_start_period?: string;
   second_voting_end_period?: string;
-  public_flag?: boolean;
+  public_flag?: boolean | string;
 };
 
 interface EventRegisterModalProps {
