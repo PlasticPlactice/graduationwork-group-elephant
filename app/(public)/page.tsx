@@ -196,7 +196,7 @@ export default function Home() {
                         key={event.id}
                         title={event.title}
                         daysLeft={daysLeft}
-                        description={
+                        detail={
                           event.detail || "投票期間中です！投票してみましょう！"
                         }
                         buttonBackgroundColor="var(--color-bg)"
@@ -210,7 +210,7 @@ export default function Home() {
                     <EventCard
                       title="第2回 文庫Xイベント"
                       daysLeft={10}
-                      description="投票期間中です！投票してみましょう！"
+                      detail="投票期間中です！投票してみましょう！"
                       buttonBackgroundColor="var(--color-bg)"
                       buttonBorderColor="#36A8B1"
                       buttonTextColor="#36A8B1"
@@ -218,7 +218,7 @@ export default function Home() {
                     <EventCard
                       title="第1回 文庫Xイベント"
                       daysLeft={10}
-                      description="投票期間中です！投票してみましょう！"
+                      detail="投票期間中です！投票してみましょう！"
                       buttonBackgroundColor="var(--color-bg)"
                       buttonBorderColor="#36A8B1"
                       buttonTextColor="#36A8B1"
