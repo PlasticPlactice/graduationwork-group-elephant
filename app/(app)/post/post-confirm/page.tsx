@@ -125,7 +125,8 @@ export default function PostConfirmPage({
         <button className={`w-full mt-10`} onClick={handleSubmit}>
           登録
         </button>
-        <Link href="post" className="w-full mt-4 block">
+        <Link href={data.mode === "create" ? "/post/post" : "edit"}
+              className="w-full mt-4 block">
           <button className={`w-full ${Styles.barcodeScan__backButton}`}>
             戻る
           </button>

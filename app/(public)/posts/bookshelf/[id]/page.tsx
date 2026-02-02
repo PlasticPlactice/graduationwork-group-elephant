@@ -3,10 +3,18 @@ import { getPublicBookReviews } from "@/lib/bookData";
 
 export const dynamic = "force-dynamic";
 
-export default async function BookshelfDetailPage() {
+type Props = {
+  params: {
+    id: string;
+  };
+};
 
+export default async function BookshelfDetailPage({ params }: Props) {
+  const resolvedParams = await params;
 
-  const bookReviews = await getPublicBookReviews(12);
+  const bookReviews = await getPublicBookReviews(Number(resolvedParams.id));
+
+  console.log(bookReviews)
 
   return (
     <div className="min-h-screen bg-slate-50">
