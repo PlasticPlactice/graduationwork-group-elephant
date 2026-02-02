@@ -164,6 +164,7 @@ export default function Home() {
                     return (
                       <EventCard
                         key={event.id}
+                        eventId={String(event.id)}
                         title={event.title}
                         daysLeft={daysLeft}
                         detail={
@@ -176,24 +177,26 @@ export default function Home() {
                     );
                   })
                 ) : (
-                  <>
-                    <EventCard
-                      title="第2回 文庫Xイベント"
-                      daysLeft={10}
-                      detail="投票期間中です！投票してみましょう！"
-                      buttonBackgroundColor="var(--color-bg)"
-                      buttonBorderColor="#36A8B1"
-                      buttonTextColor="#36A8B1"
-                    />
-                    <EventCard
-                      title="第1回 文庫Xイベント"
-                      daysLeft={10}
-                      detail="投票期間中です！投票してみましょう！"
-                      buttonBackgroundColor="var(--color-bg)"
-                      buttonBorderColor="#36A8B1"
-                      buttonTextColor="#36A8B1"
-                    />
-                  </>
+                  // <>
+                  //   <EventCard
+                  //     title="第2回 文庫Xイベント"
+                  //     eventId={String(event?.id)}
+                  //     daysLeft={10}
+                  //     detail="投票期間中です！投票してみましょう！"
+                  //     buttonBackgroundColor="var(--color-bg)"
+                  //     buttonBorderColor="#36A8B1"
+                  //     buttonTextColor="#36A8B1"
+                  //   />
+                  //   <EventCard
+                  //     title="第1回 文庫Xイベント"
+                  //     daysLeft={10}
+                  //     detail="投票期間中です！投票してみましょう！"
+                  //     buttonBackgroundColor="var(--color-bg)"
+                  //     buttonBorderColor="#36A8B1"
+                  //     buttonTextColor="#36A8B1"
+                  //   />
+                  // </>
+                  <p>イベントが開催していないようです</p>
                 )}
 
               </div>

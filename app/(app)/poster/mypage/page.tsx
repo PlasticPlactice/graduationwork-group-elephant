@@ -424,6 +424,7 @@ export default function MyPage() {
               <div key={eventIndex} className="max-w-2xl">
                 <EventCard
                   title={event.title}
+                  eventId={String(event.eventId)}
                   daysLeft={daysFromToday(String(event.first_voting_start_period))}
                   detail={event.detail}
                   buttonText="このイベントに投稿する"
