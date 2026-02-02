@@ -13,6 +13,7 @@ import { MassageModal } from "@/components/modals/MassageModal";
 import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
 import Styles from "@/styles/app/poster.module.css";
+import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
 
 interface ProfileData {
   userId: number;
@@ -22,6 +23,14 @@ interface ProfileData {
   age: number;
   gender: number;
   introduction: string;
+}
+
+interface EventData {
+  eventId: number;
+  title: string;
+  detail: string;
+  status: number;
+  first_voting_start_period: Timestamp;
 }
 
 type ReviewFilterTab = "all" | 1 | 2 | 3 | 4;
@@ -48,6 +57,8 @@ export default function MyPage() {
   const [userData, setUserData] = useState<ProfileData | null>(null);
   // ユーザの書評データ
   const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
+  // イベントデータ
+  const [eventData, setEventData] = useState<EventData[]>([])
   // 未読メッセージデータ
   interface UnreadMessage {
     id: number;
@@ -60,6 +71,27 @@ export default function MyPage() {
   const [unreadMessage, setUnreadMessage] = useState<UnreadMessage | null>(
     null,
   );
+
+  // イベント取得関数
+  // ステータス１のイベントのみ
+  // １が投稿可能なイベントの想定。
+  const fetchEventList = useCallback(async () => {
+    try {
+      const res = await fetch("/api/events?status=1", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data)
+        setEventData(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch event data", error);
+    }
+  }, [])
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -130,6 +162,7 @@ export default function MyPage() {
     fetchUserData();
     fetchBookReviewData();
     fetchUnreadMessage();
+    fetchEventList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -263,6 +296,26 @@ export default function MyPage() {
     router.push("/post/edit");
   };
 
+  // 投稿締め切りまでの日数を計算する関数
+  function daysFromToday(dateString: string): number {
+  const today = new Date();
+  const target = new Date(dateString);
+
+  const todayStart = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+  const targetStart = new Date(
+    target.getFullYear(),
+    target.getMonth(),
+    target.getDate()
+  );
+
+    const diffMs = targetStart.getTime() - todayStart.getTime();
+    return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  }
+
   return (
     <>
       {/* 1次審査通過モーダル */}
@@ -367,14 +420,14 @@ export default function MyPage() {
           </div>
 
           <div className="flex flex-col gap-4">
-            {sampleEvents.map((event, eventIndex) => (
+            {eventData.map((event, eventIndex) => (
               <div key={eventIndex} className="max-w-2xl">
                 <EventCard
                   title={event.title}
-                  daysLeft={event.daysLeft}
-                  detail={event.description}
-                  buttonText={event.buttonText}
-                  href={event.href}
+                  daysLeft={daysFromToday(String(event.first_voting_start_period))}
+                  detail={event.detail}
+                  buttonText="このイベントに投稿する"
+                  
                 />
               </div>
             ))}

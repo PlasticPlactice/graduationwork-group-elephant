@@ -3,10 +3,15 @@ import { getPublicBookReviews } from "@/lib/bookData";
 
 export const dynamic = "force-dynamic";
 
-export default async function BookshelfDetailPage() {
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
 
+export default async function BookshelfDetailPage({ searchParams }: Props) {
+  const resolvedSearchParams = await searchParams;
+  const eventId = resolvedSearchParams.event_id as string | undefined;
 
-  const bookReviews = await getPublicBookReviews(12);
+  const bookReviews = await getPublicBookReviews(Number(eventId));
 
   return (
     <div className="min-h-screen bg-slate-50">

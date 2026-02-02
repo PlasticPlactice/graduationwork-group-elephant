@@ -58,7 +58,7 @@ export const EventCard = ({
           }}
         >
           <span className="block text-xs font-bold text-slate-600 mb-1">
-            投票終了まで
+            投稿締切まで
             <br />
             あと
           </span>
