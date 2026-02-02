@@ -156,8 +156,8 @@ export const ItemModal = ({ item, onClose }: ItemModalProps) => {
             onClick={onClose}
             className="modal-footer-close-btn"
             style={{
-              backgroundColor: "var(--color-main)",
-              color: "var(--color-bg)",
+              backgroundColor: "#36A8B1",
+              color: "#ffffff",
             }}
           >
             閉じる
