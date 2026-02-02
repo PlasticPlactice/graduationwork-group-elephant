@@ -6,6 +6,7 @@ import "@/styles/admin/events.css";
 import { Icon } from "@iconify/react";
 import EventRegisterModal from "@/components/admin/EventRegisterModal";
 import EventEditModal from "@/components/admin/EventEditModal";
+import EventDeleteModal from "@/components/admin/EventDeleteModal";
 import { formatDateTime } from "@/lib/dateUtils";
 
 type EventItem = {
@@ -19,7 +20,7 @@ type EventItem = {
   first_voting_end_period?: string;
   second_voting_start_period?: string;
   second_voting_end_period?: string;
-  public_flag?: boolean;
+  public_flag?: boolean | string;
 };
 
 export default function Page() {
@@ -29,8 +30,12 @@ export default function Page() {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [eventNowData, setEventNowData] = useState<EventItem[]>([]);
   const [eventEndData, setEventEndData] = useState<EventItem[]>([]);
-  const [loadingEvents, setLoadingEvents] = useState(true);
   const [isUpdatingPublicFlag, setIsUpdatingPublicFlag] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState("");
+  const [canDelete, setCanDelete] = useState(true);
 
   // fetchEvents: イベントデータを取得する関数
   const fetchEvents = async () => {
@@ -39,6 +44,13 @@ export default function Page() {
         fetch("/api/events?status=0,1,2"),
         fetch("/api/events?status=3"),
       ]);
+
+      if (!resNow.ok) {
+        console.error("events fetch failed (now)", await resNow.text());
+      }
+      if (!resEnd.ok) {
+        console.error("events fetch failed (end)", await resEnd.text());
+      }
 
       const [nowData, endData] = await Promise.all([
         resNow.ok ? resNow.json() : [],
@@ -54,21 +66,15 @@ export default function Page() {
 
   // 初期ロード
   useEffect(() => {
-    let mounted = true;
-
     const initializeFetch = async () => {
-      setLoadingEvents(true);
       try {
         await fetchEvents();
       } finally {
-        if (mounted) setLoadingEvents(false);
+        // cleanup
       }
     };
 
     initializeFetch();
-    return () => {
-      mounted = false;
-    };
   }, []);
 
   const getProgressValue = (status: string) => {
@@ -105,7 +111,9 @@ export default function Page() {
   const handleToggleNowEvent = (id: number) => {
     const current = eventNowData.find((e) => e.id === id);
     if (!current) return;
-    const newFlag = !(current.public_flag === true);
+    const newFlag = !(
+      current.public_flag === true || current.public_flag === "true"
+    );
     updatePublicFlag(id, newFlag);
   };
 
@@ -113,7 +121,9 @@ export default function Page() {
   const handleToggleEndEvent = (id: number) => {
     const current = eventEndData.find((e) => e.id === id);
     if (!current) return;
-    const newFlag = !(current.public_flag === true);
+    const newFlag = !(
+      current.public_flag === true || current.public_flag === "true"
+    );
     updatePublicFlag(id, newFlag);
   };
 
@@ -173,6 +183,7 @@ export default function Page() {
   const handleRegister = () => {
     setIsRegisterModalOpen(true);
   };
+
   const handleEdit = (event: EventItem) => {
     setSelectedEvent(event);
     setIsEditModalOpen(true);
@@ -193,6 +204,56 @@ export default function Page() {
     await fetchEvents();
   };
 
+  const handleDelete = (id: number) => {
+    setDeleteTargetId(id);
+    setCanDelete(true);
+    setDeleteErrorMessage("");
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeleteTargetId(null);
+    setCanDelete(true);
+    setDeleteErrorMessage("");
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/events/${deleteTargetId}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // APIが開催中のチェックでエラーを返した場合
+        if (data.canDelete === false) {
+          setCanDelete(false);
+          setDeleteErrorMessage(data.message || "イベントが開催中です。");
+          setIsDeleting(false);
+          return;
+        }
+        alert(data.message || "削除に失敗しました");
+        setIsDeleting(false);
+        closeDeleteModal();
+        return;
+      }
+
+      alert("イベントを削除しました");
+      // イベント一覧を再取得
+      await fetchEvents();
+      closeDeleteModal();
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("削除に失敗しました");
+      closeDeleteModal();
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   return (
     <main>
       <AdminButton
@@ -223,7 +284,9 @@ export default function Page() {
                 <input
                   type="checkbox"
                   id={`myToggle-${now.id}`}
-                  checked={now.public_flag === true}
+                  checked={
+                    now.public_flag === true || now.public_flag === "true"
+                  }
                   onChange={() => handleToggleNowEvent(now.id)}
                   aria-label="イベントの公開トグル"
                 />
@@ -282,12 +345,20 @@ export default function Page() {
 
           <div className="flex items-center justify-between">
             <h2 className="font-bold event-data-headline">イベント情報</h2>
-            <AdminButton
-              label="編集"
-              type="button"
-              className="edit_btn"
-              onClick={() => handleEdit(now)}
-            />
+            <div className="flex gap-2">
+              <AdminButton
+                label="編集"
+                type="button"
+                className="edit_btn"
+                onClick={() => handleEdit(now)}
+              />
+              <AdminButton
+                label="削除"
+                type="button"
+                className="delete-conf-btn"
+                onClick={() => handleDelete(now.id)}
+              />
+            </div>
           </div>
 
           <div className="schedule-table">
@@ -370,7 +441,9 @@ export default function Page() {
                   <input
                     type="checkbox"
                     id={`myToggle-${end.id}`}
-                    checked={end.public_flag === true}
+                    checked={
+                      end.public_flag === true || end.public_flag === "true"
+                    }
                     onChange={() => handleToggleEndEvent(end.id)}
                     aria-label="イベントの公開トグル"
                   />
@@ -429,12 +502,20 @@ export default function Page() {
 
             <div className="flex items-center justify-between">
               <h2 className="font-bold event-data-headline">イベント情報</h2>
-              <AdminButton
-                label="編集"
-                type="button"
-                className="edit_btn"
-                onClick={() => handleEdit(end)}
-              />
+              <div className="flex gap-2">
+                <AdminButton
+                  label="編集"
+                  type="button"
+                  className="edit_btn"
+                  onClick={() => handleEdit(end)}
+                />
+                <AdminButton
+                  label="削除"
+                  type="button"
+                  className="delete-conf-btn"
+                  onClick={() => handleDelete(end.id)}
+                />
+              </div>
             </div>
 
             <div className="schedule-table">
@@ -494,6 +575,14 @@ export default function Page() {
         onClose={closeModal}
         event={selectedEvent}
         onSuccess={handleModalSuccess}
+      />
+      <EventDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        isDeleting={isDeleting}
+        canDelete={canDelete}
+        errorMessage={deleteErrorMessage}
       />
     </main>
   );

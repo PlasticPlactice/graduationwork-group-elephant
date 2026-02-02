@@ -8,6 +8,7 @@ import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
+import NoticeDeleteModal from "@/components/admin/NoticeDeleteModal";
 
 // APIレスポンスの型定義
 interface Notification {
@@ -48,6 +49,10 @@ export default function Page() {
     publicDateFrom: "", // 現APIは未対応
     publicDateTo: "", // 現APIは未対応
   });
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
   // 検索ボタン押下時に確定する検索キーワード（入力中の文字では自動検索しない）
   const [searchTitle, setSearchTitle] = useState<string>("");
   // 検索ボタン押下時に確定する公開日範囲
@@ -106,6 +111,48 @@ export default function Page() {
 
   const handleRegister = () => {
     router.push("/admin/register-notice");
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation(); // 行クリックイベントの伝播を防止
+    setDeleteTargetId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeleteTargetId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/notifications/${deleteTargetId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        alert(error.message || "削除に失敗しました");
+        return;
+      }
+
+      alert("お知らせを削除しました");
+      // 一覧を再取得
+      await fetchNotifications(
+        currentPage,
+        searchTitle,
+        searchDateFrom,
+        searchDateTo,
+      );
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("削除に失敗しました");
+    } finally {
+      setIsDeleting(false);
+      closeDeleteModal();
+    }
   };
 
   // ---------------------------
@@ -440,6 +487,9 @@ export default function Page() {
                   公開期間<Icon icon="uil:arrow" rotate={1}></Icon>
                 </button>
               </th>
+              <th className="w-20">
+                <div className="flex items-center justify-center">操作</div>
+              </th>
             </tr>
           </thead>
           <tbody className="border">
@@ -459,12 +509,15 @@ export default function Page() {
                     <td className="py-4">
                       <div className="bg-gray-200 rounded w-32 h-6 mx-auto"></div>
                     </td>
+                    <td className="py-4">
+                      <div className="bg-gray-200 rounded w-8 h-6 mx-auto"></div>
+                    </td>
                   </tr>
                 ))}
               </>
             ) : notifications.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center py-4">
+                <td colSpan={5} className="text-center py-4">
                   お知らせが見つかりません
                 </td>
               </tr>
@@ -509,6 +562,18 @@ export default function Page() {
                         )}
                       </p>
                       <Icon icon="weui:arrow-filled" width={15}></Icon>
+                    </div>
+                  </td>
+                  <td onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-center">
+                      <button
+                        onClick={(e) => handleDeleteClick(e, notice.id)}
+                        className="text-red-600 hover:text-red-800 transition-colors p-2"
+                        title="削除"
+                        aria-label="削除"
+                      >
+                        <Icon icon="mdi:delete" width={20} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -595,6 +660,14 @@ export default function Page() {
           ></Icon>
         </button>
       </div>
+
+      {/* 削除モーダル */}
+      <NoticeDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        isDeleting={isDeleting}
+      />
     </main>
   );
 }
