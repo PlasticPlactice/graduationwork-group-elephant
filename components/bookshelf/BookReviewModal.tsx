@@ -26,7 +26,7 @@ type BookReviewModalProps = {
   onToggleVote?: () => void;
   actionButtonRef?: Ref<HTMLButtonElement>;
   voteButtonRef?: Ref<HTMLButtonElement>;
-  onVoteChange?: (isVoted: boolean) => void;
+  onVoteChange?: (isVoted: boolean, eventId: string) => void;
 };
 
 type afterCheckedData = {

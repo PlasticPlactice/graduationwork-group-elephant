@@ -8,7 +8,7 @@ const getVoteCookieKey = (eventId: string) => `voted_event_${eventId}`;
 type Props = {
   reviewId: string;
   eventId: string;
-  onVoteChange?: (isVoted: boolean) => void;
+  onVoteChange?: (isVoted: boolean, eventId: string) => void;
 };
 
 const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
@@ -32,13 +32,17 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
 
             // パターン2: 取り消し (Decrement APIを呼ぶ)
             if (storedReviewId === reviewId) {
+
             setIsVoted(false); // ボタンの色だけ戻す
+            if (onVoteChange) onVoteChange(false, eventId);
+
             destroyCookie(null, cookieKey, { path: "/" });
 
             try {
                 await updateVoteCount(reviewId, "decrement");
             } catch (error) {
                 setIsVoted(true); // エラーなら元に戻す
+                if (onVoteChange) onVoteChange(true, eventId);
                 alert("通信エラー: 取り消しに失敗しました");
             }
 
@@ -48,6 +52,9 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
             // パターン3: 新規投票 (Increment APIを呼ぶ)
             if (!storedReviewId) {
             setIsVoted(true); // ボタンの色を変える
+
+            if(onVoteChange) onVoteChange(true, eventId);
+
             setCookie(null, cookieKey, reviewId, {
                 maxAge: 24 * 60 * 60,
                 path: "/",
@@ -57,6 +64,7 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
                 await updateVoteCount(reviewId, "increment");
             } catch (error) {
                 setIsVoted(false); // エラーなら元に戻す
+                if(onVoteChange) onVoteChange(false, eventId);
                 destroyCookie(null, cookieKey, { path: "/" });
                 alert("通信エラー: 投票に失敗しました");
             }
@@ -67,7 +75,7 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
             setIsVoted(nextState);
 
             if (onVoteChange) {
-                onVoteChange(nextState); // ここで通知発火
+                onVoteChange(nextState, eventId); // ここで通知発火
             }
         };
 
