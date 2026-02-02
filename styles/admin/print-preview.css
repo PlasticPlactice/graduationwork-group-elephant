@@ -4,11 +4,13 @@
 }
 .print-area{
     background-image: repeating-linear-gradient(120deg, #ffb784, #ffb784 28px, transparent 28px, transparent 43px);
-    padding: 3rem;
-    width: 1048px;
-    height: 630px;
-    font-size:15px ;
+    padding: 2rem;           /* 3rem → 2rem に縮小 */
+    width: 55rem;            /* 65.5rem → 小さめの値に変更 */
+    aspect-ratio: 1048 / 630;
+    height: auto;
+    font-size: 14px;         /* 15px → 14px に縮小 */
     margin: 0 2rem 0 3rem;
+    max-width: 100%;
 }
 .card-area{
     padding-top: 0.5rem;

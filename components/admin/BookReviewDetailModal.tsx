@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 import "@/styles/admin/events.css";
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -32,6 +33,7 @@ export default function BookReviewDetailModal({
   onClose,
   reviewId,
 }: BookReviewDetailModalProps) {
+  const router = useRouter();
   const [detail, setDetail] = useState<BookReviewDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -106,6 +108,10 @@ export default function BookReviewDetailModal({
   const toggleUnderline = () => editor?.chain().focus().toggleUnderline().run();
   const applyColor = (color: string) =>
     editor?.chain().focus().setColor(color).run();
+
+  const handlePreview = () => {
+    router.push("/admin/print-preview");
+  };
 
   const handleSendMessage = async () => {
     if (!reviewId) return;
@@ -300,7 +306,10 @@ export default function BookReviewDetailModal({
                 </p>
               </div>
               <div>
-                <button className="preview-btn">
+                <button
+                  className="preview-btn"
+                  onClick={handlePreview}
+                >
                   <span className="font-lg">印刷プレビュー</span>
                 </button>
               </div>
