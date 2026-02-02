@@ -2,10 +2,12 @@
 import styles from "@/styles/app/poster.module.css";
 
 import Image from "next/image";
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Modal from "@/app/(app)/Modal";
+import TermsModal from "@/components/modals/TermsModal";
+import type { CurrentTermsResponse } from "@/lib/types/terms";
 
 const CriteriaItem = ({ met, text }: { met: boolean; text: string }) => (
   <li
@@ -31,6 +33,9 @@ export default function CreateViewerPage() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [termsPdfPath, setTermsPdfPath] = useState<string | null>(null);
+  const [termsFileName, setTermsFileName] = useState<string>("利用規約");
+  const [termsLoading, setTermsLoading] = useState(true);
   const [passwordCriteria, setPasswordCriteria] = useState({
     minLength: false,
     hasLetter: false,
@@ -38,6 +43,29 @@ export default function CreateViewerPage() {
     hasSymbol: false,
   });
   const router = useRouter();
+
+  // 利用規約を取得
+  useEffect(() => {
+    const fetchTerms = async () => {
+      try {
+        const response = await fetch("/api/terms/current");
+        const data: CurrentTermsResponse = await response.json();
+
+        if (data.success && data.terms) {
+          setTermsPdfPath(data.terms.data_path);
+          setTermsFileName(data.terms.file_name);
+        } else {
+          console.warn("利用規約が取得できませんでした:", data.message);
+        }
+      } catch (error) {
+        console.error("利用規約の取得に失敗しました:", error);
+      } finally {
+        setTermsLoading(false);
+      }
+    };
+
+    fetchTerms();
+  }, []);
 
   const handleAddressChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -324,7 +352,9 @@ export default function CreateViewerPage() {
               required
               autoComplete="new-password"
             />
-            <p>8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください</p>
+            <p>
+              8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください
+            </p>
             <ul className="mt-2 space-y-1">
               <CriteriaItem met={passwordCriteria.minLength} text="8文字以上" />
               <CriteriaItem
@@ -413,11 +443,11 @@ export default function CreateViewerPage() {
           <div className={`mb-1 ${styles.create__formContainer}`}>
             <div className={styles.labelContainer}>
               <Image
-                  src="/app/home.png"
-                  alt="居住地"
-                  width={24}
-                  height={24}
-                ></Image>
+                src="/app/home.png"
+                alt="居住地"
+                width={24}
+                height={24}
+              ></Image>
               <label htmlFor="sub_address" className="block font-bold">
                 詳細居住地（市区町村）
               </label>
@@ -621,98 +651,17 @@ export default function CreateViewerPage() {
                 type="button"
                 className={`w-full my-5 ${styles.barcodeScan__backButton}`}
                 onClick={() => setHelpOpen(true)}
+                disabled={termsLoading}
               >
-                利用規約を読む
+                {termsLoading ? "読み込み中..." : "利用規約を読む"}
               </button>
 
-              <Modal open={helpOpen} onClose={() => setHelpOpen(false)}>
-                <p
-                  className={`font-bold ${styles.text24px} ${styles.mainColor}`}
-                >
-                  利用規約
-                </p>
-                <div
-                  className={`border border-b rounded-sm ${styles.mainColor}`}
-                ></div>
-                <div className="h-96 my-5 overflow-y-scroll">
-                  <p className={styles.text14px}>
-                    利用規約
-                    <br />
-                    本利用規約（以下「本規約」といいます。）は、〇〇（以下「当社」といいます。）が提供するサービス「△△」（以下「本サービス」といいます。）の利用条件を定めるものです。ユーザーの皆さま（以下「ユーザー」といいます。）には、本規約に同意いただいた上で本サービスをご利用いただきます。
-                    第1条（適用）
-                    本規約は、ユーザーと当社との間の本サービスの利用に関わる一切の関係に適用されるものとします。
-                    当社は本サービスに関し、本規約のほか、ご利用にあたってのルール、ガイドライン、注意事項等（以下「個別規定」といいます。）を定める場合があります。これら個別規定は本規約の一部を構成するものとします。
-                    本規約と個別規定が矛盾する場合、個別規定が優先されるものとします。
-                    第2条（利用登録）
-                    本サービスにおいては、登録希望者が本規約に同意の上、当社の定める方法により利用登録を申請し、当社がこれを承認することで利用登録が完了するものとします。
-                    当社は、利用登録の申請者について、以下の事由があると判断した場合、登録を拒否することができます。
-                    利用登録の申請に際して虚偽の事項を届け出た場合
-                    本規約に違反したことがある者からの申請である場合
-                    未成年者が法定代理人の同意を得ていない場合
-                    その他、当社が利用登録を相当でないと判断した場合
-                    第3条（ユーザー情報の管理）
-                    ユーザーは、自己の責任において本サービスのログイン情報を管理するものとします。
-                    ユーザーは、いかなる場合にもログイン情報を第三者に譲渡・貸与・公開してはなりません。
-                    ログイン情報の不正使用によって生じた損害について、当社は一切の責任を負いません。
-                    第4条（禁止事項）
-                    ユーザーは、本サービスの利用にあたり、以下の行為をしてはなりません。
-                    法令または公序良俗に違反する行為 犯罪行為に関連する行為
-                    当社、本サービスの他のユーザー、または第三者の権利を侵害する行為
-                    本サービスのサーバーまたはネットワークの機能を妨害する行為
-                    本サービスによって得られた情報を商業的に利用する行為
-                    不正アクセス、またはこれを試みる行為
-                    他のユーザーになりすます行為
-                    本サービスに関連して、反社会的勢力に直接または間接に利益を供与する行為
-                    その他、当社が不適切と判断する行為
-                    第5条（本サービスの提供の停止等）
-                    当社は、以下のいずれかに該当すると判断した場合、ユーザーへの事前通知なく本サービスの全部または一部の提供を停止または中断することができます。
-                    本サービスに係るシステムの保守点検、更新を行う場合
-                    地震、落雷、火災、停電、天災、戦争など不可抗力により提供が困難となった場合
-                    システム障害等により本サービスの提供が困難となった場合
-                    その他、当社が停止・中断を必要と判断した場合
-                    本サービスの停止や中断によりユーザーまたは第三者が被った損害について当社は一切責任を負いません。
-                    第6条（著作権および知的財産権）
-                    本サービス内で提供されるコンテンツ（文章、画像、動画、プログラム等）の著作権・知的財産権はすべて当社または正当な権利者に帰属します。
-                    ユーザーは、当社の事前の許可なく、コンテンツを複製・転用・翻案等してはなりません。
-                    第7条（ユーザーによる投稿データ）
-                    ユーザーが本サービス上で投稿したデータ（文章、画像等）の著作権はユーザー本人に帰属しますが、ユーザーは当社に対し、当社が本サービスの運営、改善、広告に利用するための非独占的利用権を無償で許諾するものとします。
-                    当社は、投稿内容が法令や公序良俗に反すると判断した場合、投稿データを削除できるものとします。
-                    第8条（利用制限および登録抹消）
-                    当社は、ユーザーが以下のいずれかに該当すると判断した場合、事前通知なく利用制限、投稿削除、または利用登録の抹消を行うことができます。
-                    本規約に違反した場合 不正行為が発覚した場合
-                    30日以上本サービスの利用がない場合
-                    当社からの連絡に一定期間返答がない場合
-                    その他、当社がサービス利用の継続を不適当と判断した場合
-                    第9条（退会）
-                    ユーザーは、当社所定の手続により、本サービスから退会できるものとします。
-                    第10条（サービス内容の変更、終了）
-                    当社は、ユーザーへ事前通知することなく、本サービスの内容の全部または一部を変更または終了することができます。
-                    これによりユーザーまたは第三者に生じた損害について、当社は一切責任を負いません。
-                    第11条（免責事項）
-                    当社は、本サービスに事実上・法律上の瑕疵（安全性、正確性、完全性、最新性など）について、一切の保証をしません。
-                    当社は、ユーザーが本サービスを利用したことにより生じたいかなる損害についても責任を負いません。
-                    当社は、ユーザーと他ユーザーまたは第三者との間で生じたトラブルについて関与せず、一切責任を負いません。
-                    第12条（利用規約の変更）
-                    当社は、必要と判断した場合、本規約を変更できるものとします。
-                    変更は、本サービスまたは当社ウェブサイトに掲示した時点で効力を生じます。
-                    規約変更後に本サービスを利用した場合、ユーザーは変更された規約に同意したものとみなします。
-                    第13条（個人情報の取り扱い）
-                    当社は、ユーザーの個人情報を別途定める「プライバシーポリシー」に基づき適切に取り扱います。
-                    第14条（準拠法・裁判管轄）
-                    本規約の解釈には、日本法を適用します。
-                    本サービスに関する紛争は、当社所在地を管轄する裁判所を第一審の専属的合意管轄とします。
-                    <br />
-                    以上
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setHelpOpen(false)}
-                  className="w-full mt-6"
-                >
-                  閉じる
-                </button>
-              </Modal>
+              <TermsModal
+                open={helpOpen}
+                onClose={() => setHelpOpen(false)}
+                pdfPath={termsPdfPath}
+                fileName={termsFileName}
+              />
 
               <div className="flex items-center mt-3">
                 <input
