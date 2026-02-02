@@ -1,22 +1,34 @@
 ﻿"use client";
 
 import "@/styles/public/top.css";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { ItemModal } from "@/components/features/ItemModal";
 import { NotificationItem } from "@/lib/types/notification";
-import { Event } from "@/lib/types/event";
+
+type PublicEvent = {
+  id: number;
+  title: string;
+  detail?: string | null;
+  first_voting_end_period: string;
+};
 
 export default function Home() {
   const [news, setNews] = useState<NotificationItem[]>([]);
   const [donations, setDonations] = useState<NotificationItem[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<PublicEvent[]>([]);
   const [showNewsModal, setShowNewsModal] = useState(false);
   const [selectedNews, setSelectedNews] = useState<NotificationItem | null>(
-    null,
+    null
   );
+  const [isAtTop, setIsAtTop] = useState(true);
+
+  const handleNewsClick = (item: NotificationItem) => {
+    setSelectedNews(item);
+    setShowNewsModal(true);
+  };
 
   useEffect(() => {
     fetch("/api/notifications?type=0&page=1")
@@ -27,17 +39,51 @@ export default function Home() {
       .then((data) => setDonations(data.data || []));
     fetch("/api/events?status=now")
       .then((res) => res.json())
-      .then((data) => setEvents(data || []))
+      .then((data) => setEvents(Array.isArray(data) ? data : []))
       .catch(() => setEvents([]));
+
+    const updateIsAtTop = () => {
+      setIsAtTop(window.scrollY <= 8);
+    };
+    updateIsAtTop();
+    window.addEventListener("scroll", updateIsAtTop, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", updateIsAtTop);
+    };
   }, []);
 
-  const handleNewsClick = (item: NotificationItem) => {
-    setSelectedNews(item);
-    setShowNewsModal(true);
-  };
+  const fallbackNews: NotificationItem[] = [
+    {
+      id: 1,
+      title: "第１回文庫Xが開催されました！",
+      date: "2025-10-01",
+      image: "/top/image1.png",
+    },
+    {
+      id: 2,
+      title: "第１回文庫Xが開催されました！",
+      date: "2025-10-01",
+      image: "/top/image1.png",
+    },
+  ];
+
+  const fallbackDonations: NotificationItem[] = [
+    {
+      id: 3,
+      title: "○○様より「ハリーポッター」を寄贈していただきました！",
+      date: "2025-10-01",
+      image: "/top/image1.png",
+    },
+    {
+      id: 4,
+      title: "○○様より「ハリーポッター」を寄贈していただきました！",
+      date: "2025-10-01",
+      image: "/top/image1.png",
+    },
+  ];
 
   return (
-    <div>
+    <div className="public-page">
       <main>
         <div className="hero">
           <div className="heroContent">
@@ -89,7 +135,7 @@ export default function Home() {
             <div className="about__button">
               <Button
                 href="https://zoutohana.com/about.html"
-                style={{ color: "#ffffff" }}
+                style={{ backgroundColor: "#36A8B1", color: "#ffffff" }}
               >
                 くわしくはこちら
               </Button>
@@ -99,55 +145,6 @@ export default function Home() {
 
         <section id="bunko-x" className="bunko-x">
           <div className="bunko-x__inner">
-            {/* 投票可能なイベント */}
-            <div className="bunko-x__events">
-              <h3 className="bunko-x__subtitle">
-                <span className="bunko-x__subtitle-line"></span>
-                投票可能なイベント
-                <span className="bunko-x__subtitle-line"></span>
-              </h3>
-
-              <div className="event-cards">
-                {events.slice(0, 2).map((event) => {
-                  const now = new Date();
-                  const votingEnd = new Date(event.first_voting_end_period);
-                  const daysLeft = Math.max(
-                    0,
-                    Math.ceil(
-                      (votingEnd.getTime() - now.getTime()) /
-                        (1000 * 60 * 60 * 24),
-                    ),
-                  );
-                  return (
-                    <EventCard
-                      key={event.id}
-                      title={event.title}
-                      daysLeft={daysLeft}
-                      detail={event.detail || undefined}
-                      buttonBackgroundColor="var(--color-bg)"
-                      buttonBorderColor="var(--bunko-x-accent)"
-                      buttonTextColor="var(--bunko-x-accent)"
-                    />
-                  );
-                })}
-              </div>
-
-              <div className="bunko-x__all-events">
-                <Button
-                  className="w-full mb-24"
-                  href="/event"
-                  style={{
-                    backgroundColor: "var(--bunko-x-accent)",
-                    color: "var(--color-white)",
-                    width: "100%",
-                    maxWidth: "400px",
-                  }}
-                >
-                  すべてのイベント
-                </Button>
-              </div>
-            </div>
-
             {/* 文庫Xについて */}
             <div className="bunko-x__intro">
               <h2 className="bunko-x__title">
@@ -172,10 +169,84 @@ export default function Home() {
                 </p>
               </div>
             </div>
+
+            {/* 投票可能なイベント */}
+            <div className="bunko-x__events">
+              <h3 className="bunko-x__subtitle">
+                <span className="bunko-x__subtitle-line"></span>
+                投票可能なイベント
+                <span className="bunko-x__subtitle-line"></span>
+              </h3>
+
+              <div className="event-cards">
+
+                {events.length > 0 ? (
+                  events.slice(0, 2).map((event) => {
+                    const now = new Date();
+                    const votingEnd = new Date(event.first_voting_end_period);
+                    const daysLeft = Math.max(
+                      0,
+                      Math.ceil(
+                        (votingEnd.getTime() - now.getTime()) /
+                          (1000 * 60 * 60 * 24)
+                      )
+                    );
+                    return (
+                      <EventCard
+                        key={event.id}
+                        title={event.title}
+                        daysLeft={daysLeft}
+                        detail={
+                          event.detail || "投票期間中です！投票してみましょう！"
+                        }
+                        buttonBackgroundColor="var(--color-bg)"
+                        buttonBorderColor="#36A8B1"
+                        buttonTextColor="#36A8B1"
+                      />
+                    );
+                  })
+                ) : (
+                  <>
+                    <EventCard
+                      title="第2回 文庫Xイベント"
+                      daysLeft={10}
+                      detail="投票期間中です！投票してみましょう！"
+                      buttonBackgroundColor="var(--color-bg)"
+                      buttonBorderColor="#36A8B1"
+                      buttonTextColor="#36A8B1"
+                    />
+                    <EventCard
+                      title="第1回 文庫Xイベント"
+                      daysLeft={10}
+                      detail="投票期間中です！投票してみましょう！"
+                      buttonBackgroundColor="var(--color-bg)"
+                      buttonBorderColor="#36A8B1"
+                      buttonTextColor="#36A8B1"
+                    />
+                  </>
+                )}
+
+              </div>
+
+              <div className="bunko-x__all-events">
+                <Button
+                  className="w-full mb-24"
+                  href="/event"
+                  style={{
+                    backgroundColor: "#36A8B1",
+                    color: "var(--color-white)",
+                    width: "100%",
+                    maxWidth: "400px",
+                  }}
+                >
+                  すべてのイベント
+                </Button>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section id="news" className="news">
+        <section id="news" className="news news--about-bg">
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
@@ -183,34 +254,38 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
-              {news.slice(0, 2).map((item) => (
-                <div
-                  key={item.id}
-                  className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => handleNewsClick(item)}
-                >
-                  <div className="news-item__image">
-                    <Image
-                      src={item.image || "/top/image1.png"}
-                      alt="News Image"
-                      fill
-                      style={{ objectFit: "cover" }}
-                    />
+
+              {(news.length > 0 ? news : fallbackNews)
+                .slice(0, 2)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => handleNewsClick(item)}
+                  >
+                    <div className="news-item__image">
+                      <Image
+                        src={item.image || "/top/image1.png"}
+                        alt={item.title}
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
+                    <div className="news-item__meta">
+                      <span className="news-item__date">{item.date}</span>
+                      <span className="news-item__badge">NEW</span>
+                    </div>
+                    <p className="news-item__text">{item.title}</p>
                   </div>
-                  <div className="news-item__meta">
-                    <span className="news-item__date">{item.date}</span>
-                    <span className="news-item__badge">NEW</span>
-                  </div>
-                  <p className="news-item__text">{item.title}</p>
-                </div>
-              ))}
+                ))}
+
             </div>
             <div className="news__button">
               <Button
                 className="w-full"
                 href="/news"
                 style={{
-                  backgroundColor: "#ff4d6d",
+                  backgroundColor: "#36A8B1",
                   color: "#ffffff",
                   width: "100%",
                   maxWidth: "400px",
@@ -222,7 +297,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="news">
+        <section className="news news--about-bg">
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
@@ -230,34 +305,38 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
-              {donations.slice(0, 2).map((item) => (
-                <div
-                  key={item.id}
-                  className="news-item cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => handleNewsClick(item)}
-                >
-                  <div className="news-item__image">
-                    <Image
-                      src={item.image || "/top/image1.png"}
-                      alt="News Image"
-                      fill
-                      style={{ objectFit: "cover" }}
-                    />
+
+              {(donations.length > 0 ? donations : fallbackDonations)
+                .slice(0, 2)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className="news-item cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => handleNewsClick(item)}
+                  >
+                    <div className="news-item__image">
+                      <Image
+                        src={item.image || "/top/image1.png"}
+                        alt={item.title}
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
+                    <div className="news-item__meta">
+                      <span className="news-item__date">{item.date}</span>
+                      <span className="news-item__badge">NEW</span>
+                    </div>
+                    <p className="news-item__text">{item.title}</p>
                   </div>
-                  <div className="news-item__meta">
-                    <span className="news-item__date">{item.date}</span>
-                    <span className="news-item__badge">NEW</span>
-                  </div>
-                  <p className="news-item__text">{item.title}</p>
-                </div>
-              ))}
+                ))}
+
             </div>
             <div className="donation-button">
               <Button
                 className="w-full"
                 href="/donation"
                 style={{
-                  backgroundColor: "#ff4d6d",
+                  backgroundColor: "#36A8B1",
                   color: "#ffffff",
                   width: "100%",
                   maxWidth: "400px",
@@ -269,15 +348,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section
-          id="donation"
-          className="news"
-          style={{
-            backgroundColor: "#F1F0E8",
-            paddingTop: "80px",
-            paddingBottom: "80px",
-          }}
-        >
+        <section id="donation" className="news">
           <div className="news__inner">
             <h2 className="news__title">
               <span className="news__title-line"></span>
@@ -319,6 +390,15 @@ export default function Home() {
             </a>
           </div>
         </section>
+
+        <button
+          type="button"
+          className={`back-to-top${isAtTop ? " back-to-top--hidden" : ""}`}
+          aria-label="ページ上部へ戻る"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          ▲
+        </button>
       </main>
 
       {/* ニュースモーダル */}
