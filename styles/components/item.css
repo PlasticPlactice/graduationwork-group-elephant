@@ -32,7 +32,7 @@
 }
 
 .item-date {
-  color: var(--color-sub);
+  color: rgba(54, 168, 177, 0.85);
   font-size: 0.875rem;
   margin-bottom: 4px;
 }
