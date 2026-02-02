@@ -29,6 +29,7 @@ const TUTORIAL_STORAGE_KEY = "bookshelf_tutorial_done_v2";
 const EVENT_INFO_STORAGE_KEY = "bookshelf_event_info_seen_v1";
 // Cookieに保存するキー
 const FAVORITES_COOKIE_KEY = "bookshelf_favorites_v1";
+const VOTE_COOKIE_KEY = "voted_book_review_id";
 
 // ★削除: ここにあった const BOOK_INDEX_BY_ID = ... は削除します。
 // reviewsが来るまでIDが分からないため、コンポーネント内部で計算します。
@@ -548,10 +549,13 @@ export function BookshelfTop({ reviews }: Props) {
   }, [tutorialStep]);
 
   // 投票したという通知を受け取る
-  const handleVoteChange = (isVoted: boolean) => {
-    console.log("TOPで検知しました: 投票状態 =", isVoted);
-    // ボタンのDOMにもアクセス可能
-    console.log("ボタンの幅:", voteButtonRef.current?.offsetWidth);
+  const handleVoteChange = () => {
+    const cookies = parseCookies();
+    const VotedId = cookies[VOTE_COOKIE_KEY];
+
+    if (!VotedId || VotedId !== null) {
+      setVotedBookId(VotedId)
+    }
   };
 
   const handleCompleteBook = useCallback(() => {
