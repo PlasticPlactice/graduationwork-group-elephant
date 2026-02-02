@@ -302,6 +302,7 @@ export function BookReviewModal({
                 <div className="flex items-center gap-3">
                   <BookReviewVoteButton
                       reviewId={`${book.id}`}
+                      eventId={`${book.event_id}`}
                       ref={voteButtonRef}
                       onVoteChange={onVoteChange}
                   />
