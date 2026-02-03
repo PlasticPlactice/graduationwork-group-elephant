@@ -67,9 +67,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <div className={`mb-2 ${Styles.posterContainer}`}>
-        <div className="my-8">
+    <div className={`${loginModule.loginTheme} ${loginModule.loginPage}`}>
+      <div className={`mb-2 ${Styles.posterContainer} ${loginModule.loginCard}`}>
+        <div className="mt-4 mb-6 lg:mt-2 lg:mb-4">
           <Image
             src="/layout/logo.png"
             alt="logo"
@@ -114,7 +114,7 @@ export default function LoginPage() {
               />
             </div>
           </div>
-          <div className="mb-24">
+          <div className="mb-10 lg:mb-8">
             <label
               htmlFor="password"
               className={`font-bold ml-0.5 ${Styles.text16px}`}
