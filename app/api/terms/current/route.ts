@@ -11,11 +11,17 @@ export const revalidate = 3600;
  */
 export async function GET() {
   try {
-    // public_flag=true かつ deleted_flag=false の利用規約を取得
+    const now = new Date();
+
+    // public_flag=true かつ deleted_flag=false かつ applied_at が現在時刻以前の利用規約を取得
     const currentTerms = await prisma.terms.findFirst({
       where: {
         public_flag: true,
         deleted_flag: false,
+        applied_at: {
+          not: null,
+          lte: now,
+        },
       },
       orderBy: {
         applied_at: "desc",

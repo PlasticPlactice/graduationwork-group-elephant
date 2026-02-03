@@ -2,6 +2,7 @@
 "use client";
 import { Icon } from "@iconify/react";
 import Textbox from "@/components/ui/admin-textbox";
+import { EventProgressBar } from "@/components/ui/EventProgressBar";
 import "@/styles/admin/events.css";
 import { useEffect, useState, startTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -254,72 +255,12 @@ export default function EventEditModal({
               <label htmlFor="event-status" className="text-xl block">
                 ステータス
               </label>
-              <div className="flex justify-between w-4/5 m-auto">
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="m-auto text-white"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="bxs:up-arrow"
-                    rotate={2}
-                    className="up-arrow m-auto"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="m-auto text-white"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="m-auto text-white"
-                  ></Icon>
-                </p>
-              </div>
-              <div className="flex justify-between w-4/5 m-auto">
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="event-condition-circle-now"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="event-condition-circle-now"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="event-condition-circle-future"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="event-condition-circle-future"
-                  ></Icon>
-                </p>
-              </div>
-              <div className="flex justify-center mt-2">
-                <progress
-                  max={100}
-                  value={37}
-                  className="w-full h-0.5"
-                ></progress>
-              </div>
-              <div className="flex justify-between w-4/5 m-auto">
-                <span>開催前</span>
-                <span>一次審査</span>
-                <span>二次審査</span>
-                <span>終了済</span>
-              </div>
+              <EventProgressBar
+                status={currentStatus ?? 0}
+                variant="full"
+                width="w-4/5"
+                progressClassName="w-full h-0.5"
+              />
             </div>
 
             <div className="my-4">

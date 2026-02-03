@@ -56,6 +56,8 @@ export async function GET(req: NextRequest) {
       public_flag: true,
       deleted_flag: false,
       draft_flag: false,
+      // 公開開始日時の確認：public_dateが現在時刻以前の場合のみ表示
+      public_date: { lte: now },
       // 公開終了日時の確認：public_end_dateが設定されていない、または現在時刻以降の場合のみ表示
       OR: [{ public_end_date: null }, { public_end_date: { gt: now } }],
     };
