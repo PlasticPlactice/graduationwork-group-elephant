@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateExpiredNotifications } from "@/src/batch/updateNotificationStatus";
 import { updateTermsSchedule } from "@/src/batch/updateTermsSchedule";
-// TODO: feature/event-batch ブランチマージ後に有効化
-// import { updateEventStatus } from "@/src/batch/updateEventStatus";
-// import { updateExpiredEvents } from "@/src/batch/updateExpiredEvents";
+import { updateEventStatus } from "@/src/batch/updateEventStatus";
+import { updateExpiredEvents } from "@/src/batch/updateExpiredEvents";
 import {
   logBatchInfo,
   logBatchSuccess,
@@ -18,11 +17,9 @@ import {
  * ヘッダー必須:
  *   Authorization: Bearer {BATCH_SECRET_TOKEN}
  *
- * 現在実行されるバッチ処理:
+ * 実行されるバッチ処理:
  *   1. updateExpiredNotifications() - 期限切れ通知の更新
  *   2. updateTermsSchedule() - 利用規約スケジュール更新
- *
- * TODO: feature/event-batch マージ後に追加予定:
  *   3. updateEventStatus() - イベントステータス自動更新
  *   4. updateExpiredEvents() - 期限切れイベント処理
  *
@@ -90,17 +87,16 @@ export async function POST(request: NextRequest) {
         success: boolean;
         duration: number;
       } | null,
-      // TODO: feature/event-batch マージ後に有効化
-      // updateEventStatus: null as { success: boolean; duration: number } | null,
-      // updateExpiredEvents: null as {
-      //   success: boolean;
-      //   duration: number;
-      // } | null,
+      updateEventStatus: null as { success: boolean; duration: number } | null,
+      updateExpiredEvents: null as {
+        success: boolean;
+        duration: number;
+      } | null,
     };
 
     // 2-1. 期限切れ通知の更新
     try {
-      logBatchInfo("1/2: updateExpiredNotifications を実行中...");
+      logBatchInfo("1/4: updateExpiredNotifications を実行中...");
       const t1 = Date.now();
       await updateExpiredNotifications();
       const duration = Date.now() - t1;
@@ -114,7 +110,7 @@ export async function POST(request: NextRequest) {
 
     // 2-2. 利用規約スケジュール更新
     try {
-      logBatchInfo("2/2: updateTermsSchedule を実行中...");
+      logBatchInfo("2/4: updateTermsSchedule を実行中...");
       const t2 = Date.now();
       await updateTermsSchedule();
       const duration = Date.now() - t2;
@@ -126,35 +122,33 @@ export async function POST(request: NextRequest) {
       logBatchError(`updateTermsSchedule: 失敗 - ${errorMsg}`);
     }
 
-    // TODO: feature/event-batch マージ後に有効化
-    // // 2-3. イベントステータス自動更新
-    // try {
-    //   logBatchInfo("3/4: updateEventStatus を実行中...");
-    //   const t3 = Date.now();
-    //   await updateEventStatus();
-    //   const duration = Date.now() - t3;
-    //   results.updateEventStatus = { success: true, duration };
-    //   logBatchSuccess(`updateEventStatus: 成功 (${duration}ms)`);
-    // } catch (error) {
-    //   const errorMsg = error instanceof Error ? error.message : String(error);
-    //   results.updateEventStatus = { success: false, duration: 0 };
-    //   logBatchError(`updateEventStatus: 失敗 - ${errorMsg}`);
-    // }
+    // 2-3. イベントステータス自動更新
+    try {
+      logBatchInfo("3/4: updateEventStatus を実行中...");
+      const t3 = Date.now();
+      await updateEventStatus();
+      const duration = Date.now() - t3;
+      results.updateEventStatus = { success: true, duration };
+      logBatchSuccess(`updateEventStatus: 成功 (${duration}ms)`);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      results.updateEventStatus = { success: false, duration: 0 };
+      logBatchError(`updateEventStatus: 失敗 - ${errorMsg}`);
+    }
 
-    // TODO: feature/event-batch マージ後に有効化
-    // // 2-4. 期限切れイベント処理
-    // try {
-    //   logBatchInfo("4/4: updateExpiredEvents を実行中...");
-    //   const t4 = Date.now();
-    //   await updateExpiredEvents();
-    //   const duration = Date.now() - t4;
-    //   results.updateExpiredEvents = { success: true, duration };
-    //   logBatchSuccess(`updateExpiredEvents: 成功 (${duration}ms)`);
-    // } catch (error) {
-    //   const errorMsg = error instanceof Error ? error.message : String(error);
-    //   results.updateExpiredEvents = { success: false, duration: 0 };
-    //   logBatchError(`updateExpiredEvents: 失敗 - ${errorMsg}`);
-    // }
+    // 2-4. 期限切れイベント処理
+    try {
+      logBatchInfo("4/4: updateExpiredEvents を実行中...");
+      const t4 = Date.now();
+      await updateExpiredEvents();
+      const duration = Date.now() - t4;
+      results.updateExpiredEvents = { success: true, duration };
+      logBatchSuccess(`updateExpiredEvents: 成功 (${duration}ms)`);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      results.updateExpiredEvents = { success: false, duration: 0 };
+      logBatchError(`updateExpiredEvents: 失敗 - ${errorMsg}`);
+    }
 
     // ========================================
     // 3. 実行結果をまとめてレスポンス
@@ -163,7 +157,7 @@ export async function POST(request: NextRequest) {
     const successCount = Object.values(results).filter(
       (r) => r?.success,
     ).length;
-    const totalBatchCount = 2; // TODO: feature/event-batch マージ後は 4 に変更
+    const totalBatchCount = 4;
     const allSuccess = successCount === totalBatchCount;
 
     const response = {
