@@ -29,6 +29,8 @@ export const EventCard = ({
   buttonBorderColor,
   buttonTextColor,
 }: EventCardProps) => {
+  const accentColor = "#36A8B1";
+  const cardBorderColor = "#4B5563";
   const eventHref = `${href}/${eventId}`;
 
   // daysLeftが数値なら「日」をつける、それ以外（"終了"など）ならそのまま
@@ -41,7 +43,7 @@ export const EventCard = ({
       style={{
         border: isFinished
           ? "1px solid rgb(203, 213, 225)"
-          : "2px solid var(--color-main)",
+          : `2px solid ${cardBorderColor}`,
       }}
     >
       <div className="flex justify-between items-start mb-4">
@@ -58,7 +60,7 @@ export const EventCard = ({
           style={{
             border: isFinished
               ? "1px solid rgb(203, 213, 225)"
-              : "2px solid var(--color-main)",
+              : `2px solid ${cardBorderColor}`,
           }}
         >
           <span className="block text-xs font-bold text-slate-600 mb-1">
@@ -88,7 +90,7 @@ export const EventCard = ({
                   buttonBackgroundColor ||
                   (isFinished
                     ? "var(--color-event-button-bg)"
-                    : "var(--color-main)"),
+                    : accentColor),
                 color: buttonTextColor || "var(--color-white)",
                 border: buttonBorderColor
                   ? `2px solid ${buttonBorderColor}`
@@ -108,7 +110,7 @@ export const EventCard = ({
                   buttonBackgroundColor ||
                   (isFinished
                     ? "var(--color-event-button-bg)"
-                    : "var(--color-main)"),
+                    : accentColor),
                 color: buttonTextColor || "var(--color-white)",
                 border: buttonBorderColor
                   ? `2px solid ${buttonBorderColor}`
@@ -127,7 +129,7 @@ export const EventCard = ({
                 buttonBackgroundColor ||
                 (isFinished
                   ? "var(--color-event-button-bg)"
-                  : "var(--color-main)"),
+                  : accentColor),
               color: buttonTextColor || "var(--color-white)",
               border: buttonBorderColor
                 ? `2px solid ${buttonBorderColor}`

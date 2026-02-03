@@ -39,7 +39,7 @@
 .timer-days {
   font-size: 20px;
   font-weight: bold;
-  color: #ff4d6d;
+  color: #36A8B1;
 }
 
 .event-card__desc {
@@ -48,8 +48,8 @@
 }
 
 .event-card__button {
-  color: #FF4463;
-  border: 1px solid #FF4463;
+  color: #36A8B1;
+  border: 1px solid #36A8B1;
   background-color: #FFFFFF;
   width: 100%;
 }
