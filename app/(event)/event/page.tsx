@@ -67,6 +67,7 @@ export default function EventPage() {
           {activeEventList.map((event, idx) => (
             <EventCard
               key={idx}
+              eventId=""
               title={event.title}
               daysLeft={event.daysLeft}
               detail={event.description}
@@ -86,6 +87,7 @@ export default function EventPage() {
           {endEventList.map((event, idx) => (
             <EventCard
               key={idx}
+              eventId=""
               title={event.title}
               daysLeft={event.daysLeft}
               detail={event.description}

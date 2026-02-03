@@ -13,6 +13,7 @@ import { BubbleMenu } from "@tiptap/extension-bubble-menu";
 import Color from "@tiptap/extension-color";
 import { TextStyle } from "@tiptap/extension-text-style";
 import CharacterCount from "@tiptap/extension-character-count";
+import { parseAppSegmentConfig } from "next/dist/build/segment-config/app/app-segment-config";
 
 interface ProfileData {
   nickName: string;
@@ -49,7 +50,8 @@ export default function PostPage() {
     isbn: "",
     title: "",
     author: "",
-    publishers: ""
+    publishers: "",
+    event_id: ""
   });
   // ユーザーデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
@@ -95,19 +97,18 @@ export default function PostPage() {
 
     if (!draft) return;
 
-    const bookData = JSON.parse(draft);
+    const bookDataDraft = JSON.parse(draft);
 
-    console.log(bookData)
+    console.log(JSON.stringify(bookDataDraft, null, 2))
 
     fetchUserData();
 
-    console.log("bookData" + bookData)
-
     setBookData({
-      isbn: bookData.isbn,
-      title: bookData.title,
-      author: bookData.author,
-      publishers: bookData.publishers
+      isbn: bookDataDraft.isbn,
+      title: bookDataDraft.title,
+      author: bookDataDraft.author,
+      publishers: bookDataDraft.publishers,
+      event_id: bookDataDraft.eventId
     });
   }, []);
 
@@ -127,6 +128,7 @@ export default function PostPage() {
     self_introduction: string;
     author: string;
     publishers: string;
+    event_id: string;
   }>({
     user_id: null,
     review: "",
@@ -142,7 +144,8 @@ export default function PostPage() {
     gender: 1,
     self_introduction: "",
     author: "",
-    publishers: ""
+    publishers: "",
+    event_id: ""
   });
 
   const handleConfirm = () => {
@@ -219,13 +222,19 @@ export default function PostPage() {
     ],
     content: form.review,
     onUpdate({ editor }) {
-      setForm({
-        ...form,
+      const html = editor.getHTML();
+      const used = editor.storage.characterCount.characters();
+
+      setHtml(html);
+      setRemaining(maxLength - used);
+
+      setForm(prev => ({
+        ...prev,
         color: bookColor,
         pattern: pattern,
         pattern_color: patternColor,
         review: editor.getHTML(),
-      });
+      }));
     },
   });
 
@@ -281,6 +290,7 @@ export default function PostPage() {
     setForm((prev) => ({
       ...prev,
       user_id: Number(userId),
+      event_id: bookData.event_id,
       isbn: bookData.isbn,
       book_title: bookData.title,
       nickname: userData.nickName,
@@ -289,14 +299,6 @@ export default function PostPage() {
       self_introduction: userData.introduction,
     }));
   }, [userId, userData]);
-
-  useEffect(() => {
-    if (!editor) return;
-    const updateHtml = () => {
-      setHtml(editor.getHTML());
-    };
-    editor.on("update", updateHtml);
-  }, [editor]);
 
   // SSR対策で element を後付けする
   useEffect(() => {
@@ -307,22 +309,6 @@ export default function PostPage() {
     if (plugin) {
       plugin.options.element = bubbleRef.current;
     }
-  }, [editor]);
-
-  useEffect(() => {
-    if (!editor) return;
-    const updateCount = () => {
-      const used = editor.storage.characterCount.characters();
-      setRemaining(maxLength - used);
-    };
-    // 初期化
-    updateCount();
-    // エディタ更新イベント
-    editor.on("update", updateCount);
-    // cleanup(メモリリーク防止)
-    return () => {
-      editor.off("update", updateCount);
-    };
   }, [editor]);
 
   return (

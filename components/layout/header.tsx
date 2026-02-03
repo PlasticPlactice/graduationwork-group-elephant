@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 
 export function Header() {
@@ -9,7 +9,6 @@ export function Header() {
           href="/"
           className="flex items-center hover:opacity-80 transition-opacity"
         >
-          {/* ToDo:画面サイズに応じた画像サイズの確認と変更 */}
           <Image
             src="/layout/new_logo.png"
             alt="象と花 #ゾウトハナ"
@@ -22,7 +21,8 @@ export function Header() {
 
         <Link
           href="/poster/login"
-          className="btn text-base font-bold text-[#FF5555] hover:text-[#ff3333] transition-colors"
+          className="btn text-base font-bold text-white hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: "#36A8B1" }}
         >
           ログイン
         </Link>

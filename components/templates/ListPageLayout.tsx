@@ -40,7 +40,7 @@ export const ListPageLayout = ({
   };
 
   return (
-    <>
+    <div style={{ "--color-main": "#36A8B1" } as React.CSSProperties}>
       <div className="container mx-auto pt-8 px-4">
         <div className="mb-8">
           <Button
@@ -80,6 +80,6 @@ export const ListPageLayout = ({
       {selectedItem && (
         <ItemModal item={selectedItem} onClose={handleCloseModal} />
       )}
-    </>
+    </div>
   );
 };

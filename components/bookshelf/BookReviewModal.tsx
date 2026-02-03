@@ -26,7 +26,7 @@ type BookReviewModalProps = {
   onToggleVote?: () => void;
   actionButtonRef?: Ref<HTMLButtonElement>;
   voteButtonRef?: Ref<HTMLButtonElement>;
-  onVoteChange?: (isVoted: boolean) => void;
+  onVoteChange?: (isVoted: boolean, eventId: string) => void;
 };
 
 type afterCheckedData = {
@@ -302,6 +302,7 @@ export function BookReviewModal({
                 <div className="flex items-center gap-3">
                   <BookReviewVoteButton
                       reviewId={`${book.id}`}
+                      eventId={`${book.event_id}`}
                       ref={voteButtonRef}
                       onVoteChange={onVoteChange}
                   />

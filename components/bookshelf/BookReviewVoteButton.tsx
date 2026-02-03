@@ -3,38 +3,46 @@
 import { forwardRef, useState } from "react";
 import { parseCookies, setCookie, destroyCookie } from "nookies";
 
-const VOTE_COOKIE_KEY = "voted_book_review_id";
+const getVoteCookieKey = (eventId: string) => `voted_event_${eventId}`;
 
 type Props = {
   reviewId: string;
-  onVoteChange?: (isVoted: boolean) => void;
+  eventId: string;
+  onVoteChange?: (isVoted: boolean, eventId: string) => void;
 };
 
 const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
-    ({ reviewId, onVoteChange }, ref) => {
+    ({ reviewId, eventId, onVoteChange }, ref) => {
+        const cookieKey = getVoteCookieKey(eventId);
+
         // Cookieを見て「投票済み」かどうかの判定
         const cookies = parseCookies();
-        const [isVoted, setIsVoted] = useState(cookies[VOTE_COOKIE_KEY] === reviewId);
+        const [isVoted, setIsVoted] = useState(cookies[cookieKey] === reviewId);
 
         const handleVote = async () => {
             const currentCookies = parseCookies();
-            const cookieValue = currentCookies[VOTE_COOKIE_KEY];
+            const storedReviewId = currentCookies[cookieKey];
+
 
             // パターン1: 浮気防止
-            if (cookieValue && cookieValue !== reviewId) {
+            if (storedReviewId && storedReviewId !== reviewId) {
             alert("本日は既に他の書評に投票済みです...");
             return;
             }
 
             // パターン2: 取り消し (Decrement APIを呼ぶ)
-            if (cookieValue === reviewId) {
+            if (storedReviewId === reviewId) {
+
             setIsVoted(false); // ボタンの色だけ戻す
-            destroyCookie(null, VOTE_COOKIE_KEY, { path: "/" });
+            if (onVoteChange) onVoteChange(false, eventId);
+
+            destroyCookie(null, cookieKey, { path: "/" });
 
             try {
                 await updateVoteCount(reviewId, "decrement");
             } catch (error) {
                 setIsVoted(true); // エラーなら元に戻す
+                if (onVoteChange) onVoteChange(true, eventId);
                 alert("通信エラー: 取り消しに失敗しました");
             }
 
@@ -42,9 +50,12 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
             }
 
             // パターン3: 新規投票 (Increment APIを呼ぶ)
-            if (!cookieValue) {
+            if (!storedReviewId) {
             setIsVoted(true); // ボタンの色を変える
-            setCookie(null, VOTE_COOKIE_KEY, reviewId, {
+
+            if(onVoteChange) onVoteChange(true, eventId);
+
+            setCookie(null, cookieKey, reviewId, {
                 maxAge: 24 * 60 * 60,
                 path: "/",
             });
@@ -53,7 +64,8 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
                 await updateVoteCount(reviewId, "increment");
             } catch (error) {
                 setIsVoted(false); // エラーなら元に戻す
-                destroyCookie(null, VOTE_COOKIE_KEY, { path: "/" });
+                if(onVoteChange) onVoteChange(false, eventId);
+                destroyCookie(null, cookieKey, { path: "/" });
                 alert("通信エラー: 投票に失敗しました");
             }
             }
@@ -63,7 +75,7 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
             setIsVoted(nextState);
 
             if (onVoteChange) {
-                onVoteChange(nextState); // ここで通知発火
+                onVoteChange(nextState, eventId); // ここで通知発火
             }
         };
 
