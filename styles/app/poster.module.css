@@ -338,3 +338,33 @@
   font-weight: bold;
   box-shadow: none;
 }
+
+.mypageTheme {
+  --color-main: #ff4463;
+  --color-main-dark: #e63b57;
+  --color-main-soft: #fff1f2;
+  --color-main-border: #ffc1cf;
+}
+
+.mypageAccent {
+  color: var(--color-main);
+}
+
+.mypageAccentBorder {
+  border-color: var(--color-main) !important;
+}
+
+.mypageAccentBadge {
+  background-color: var(--color-main-soft);
+  color: var(--color-main);
+  border: 1px solid var(--color-main-border);
+}
+
+.mypageAccentButton {
+  background-color: var(--color-main);
+}
+
+.mypageAccentButton:hover,
+.mypageAccentButton:focus-visible {
+  background-color: var(--color-main-dark);
+}

@@ -106,7 +106,7 @@ export const MassageModal: React.FC<MassageModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`bg-white rounded-xl my-auto shadow-lg w-full p-6 max-h-[85vh] flex flex-col ${modalStyles.modalContent}`}
+            className={`bg-white rounded-xl my-auto shadow-lg w-full p-6 max-h-[85vh] flex flex-col ${modalStyles.modalContent} ${Styles.barcodeScanTheme}`}
             onClick={(e: React.MouseEvent<HTMLDivElement>) =>
               e.stopPropagation()
             }
@@ -117,7 +117,7 @@ export const MassageModal: React.FC<MassageModalProps> = ({
             >
               運営からのお知らせ
             </p>
-            <div className={`border-b-2 ${Styles.mainColor}`}></div>
+            <div className={`border-b-2`} style={{ borderColor: "var(--color-main)" }}></div>
             <div className={`flex-1 overflow-y-auto mt-7`}>
               {isLoading ? (
                 <p className="text-center text-gray-500">読み込み中...</p>
@@ -133,7 +133,7 @@ export const MassageModal: React.FC<MassageModalProps> = ({
                         {new Date(msg.created_at).toLocaleDateString()}
                       </p>
                       {!msg.is_read && (
-                        <span className="text-xs text-red-500 font-bold">
+                        <span className={`text-xs font-bold ${Styles.mainColor}`}>
                           New
                         </span>
                       )}
