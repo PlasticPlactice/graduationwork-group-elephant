@@ -11,7 +11,7 @@ import BookReviewVoteButton from "./BookReviewVoteButton";
 import styles from "@/components/bookshelf/BookReviewModal.module.css";
 
 const REACTION_TYPES = [
-  { id: "11", label: "いいね", icon_path: "/icons/goodReaction.png" },
+  { id: "11", label: "いいね", icon_path: "/icons/loveReaction.png" },
   { id: "12", label: "幸せ", icon_path: "/icons/happyReaction.png" },
   { id: "13", label: "悲しみ", icon_path: "/icons/sadReaction.png" },
   { id: "14", label: "怒り", icon_path: "/icons/angryReaction.png" },
@@ -303,7 +303,7 @@ export function BookReviewModal({
                       handleReactionClick(type.id);
                     }}
                   >
-                    <img src={type.icon_path} alt="リアクション画像" width={40} height={40} />
+                    <img src={type.icon_path} alt="リアクション画像" width={35} height={35} />
                     <span className={`font-bold ml-2`}>{count}</span>
                   </button>
                 );
