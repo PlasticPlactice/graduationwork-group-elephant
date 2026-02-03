@@ -22,7 +22,7 @@ export function AfterLoginHeader() {
 
         <Link
           href="/poster/mypage"
-          className="font-bold mr-3"
+          className="font-bold mr-3 headerMypageLink transition-colors"
         >
           マイページ
         </Link>

@@ -475,12 +475,28 @@
   margin-bottom: 40px;
 }
 
+@media (min-width: 1024px) {
+  .event-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 32px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .bunko-x__inner {
+    max-width: 900px;
+  }
+}
+
 .event-cards .event-card {
   font-family: sans-serif;
 }
 
 .bunko-x__all-events {
   text-align: center;
+  padding-top: 44px;
+  padding-bottom: 24px;
 }
 
 /* おしらせセクションのスタイル */
@@ -605,11 +621,13 @@
 }
 .news__button {
   text-align: center;
-  padding-bottom: 20px;
+  padding-top: 44px;
+  padding-bottom: 72px;
 }
 
 .donation-button {
-  padding-bottom: 80px;
+  padding-top: 44px;
+  padding-bottom: 112px;
   text-align: center;
 }
 
