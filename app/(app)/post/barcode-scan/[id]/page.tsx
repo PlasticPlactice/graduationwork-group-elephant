@@ -242,7 +242,7 @@ export default function BarcodeScanPage() {
   const displayIsbn = selectedIsbn ?? detectedIsbn ?? (isbnInput || "未取得");
 
   return (
-    <div>
+    <div className={Styles.barcodeScanTheme}>
       {/* Warning overlay for 191/192 barcode detection */}
       <div
         aria-hidden

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate && node scripts/fix-prisma-client.cjs",
+    "postinstall": "npm run prisma:generate",
+    "prisma:generate": "prisma generate && node scripts/fix-prisma-client.cjs",
     "db:seed": "tsx prisma/seed.ts"
   },
   "prisma": {

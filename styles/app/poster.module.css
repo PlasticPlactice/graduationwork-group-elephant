@@ -226,6 +226,14 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
 
+.barcodeScanTheme {
+  --color-main: #36A8B1;
+}
+
+.postTheme {
+  --color-main: #36A8B1;
+}
+
 .editorButton {
   height: 2.5rem;
   border: 1px solid var(--color-sub) !important;

@@ -312,7 +312,7 @@ export default function PostPage() {
   }, [editor]);
 
   return (
-    <div className={`${Styles.posterContainer}`}>
+    <div className={`${Styles.posterContainer} ${Styles.postTheme}`}>
       <p className={`font-bold text-center my-5 ${Styles.text24px}`}>
         あなただけの書評を書く
       </p>
