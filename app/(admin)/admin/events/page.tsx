@@ -7,6 +7,7 @@ import { Icon } from "@iconify/react";
 import EventRegisterModal from "@/components/admin/EventRegisterModal";
 import EventEditModal from "@/components/admin/EventEditModal";
 import EventDeleteModal from "@/components/admin/EventDeleteModal";
+import { EventProgressBar } from "@/components/ui/EventProgressBar";
 import { formatDateTime } from "@/lib/dateUtils";
 
 type EventItem = {
@@ -76,36 +77,6 @@ export default function Page() {
 
     initializeFetch();
   }, []);
-
-  const getProgressValue = (status: string) => {
-    const statusMap: { [key: string]: number } = {
-      "0": 18,
-      "1": 39,
-      "2": 61,
-      "3": 83,
-    };
-    return statusMap[status] || 0;
-  };
-
-  const getCircleClassName = (index: number, status: string) => {
-    const statusNumber = parseInt(status);
-    if (index <= statusNumber) {
-      return "event-condition-circle-now";
-    }
-    return "event-condition-circle-future";
-  };
-
-  const getArrowIcon = (index: number, status: string) => {
-    const statusNumber = parseInt(status);
-    if (statusNumber === index) {
-      return (
-        <Icon icon="bxs:up-arrow" rotate={2} className="up-arrow m-auto"></Icon>
-      );
-    }
-    return (
-      <Icon icon="material-symbols:circle" className="m-auto text-white"></Icon>
-    );
-  };
 
   // handleToggleNowEvent: 開催中イベントのトグル
   const handleToggleNowEvent = (id: number) => {
@@ -297,51 +268,12 @@ export default function Page() {
           </div>
 
           <p className="now-event-condition my-5">現在のイベント状況</p>
-          <div className="flex justify-between w-2/3 m-auto">
-            <p className="w-10">{getArrowIcon(0, now.status)}</p>
-            <p className="w-10">{getArrowIcon(1, now.status)}</p>
-            <p className="w-10">{getArrowIcon(2, now.status)}</p>
-            <p className="w-10">{getArrowIcon(3, now.status)}</p>
-          </div>
-          <div className="flex justify-between w-2/3 m-auto">
-            <p className="w-10">
-              <Icon
-                icon="material-symbols:circle"
-                className={getCircleClassName(0, now.status)}
-              ></Icon>
-            </p>
-            <p className="w-10">
-              <Icon
-                icon="material-symbols:circle"
-                className={getCircleClassName(1, now.status)}
-              ></Icon>
-            </p>
-            <p className="w-10">
-              <Icon
-                icon="material-symbols:circle"
-                className={getCircleClassName(2, now.status)}
-              ></Icon>
-            </p>
-            <p className="w-10">
-              <Icon
-                icon="material-symbols:circle"
-                className={getCircleClassName(3, now.status)}
-              ></Icon>
-            </p>
-          </div>
-          <div className="flex justify-center mt-2">
-            <progress
-              max={100}
-              value={getProgressValue(now.status)}
-              className="w-full h-0.5"
-            ></progress>
-          </div>
-          <div className="flex justify-between w-2/3 m-auto">
-            <span>開催前</span>
-            <span>一次審査</span>
-            <span>二次審査</span>
-            <span>終了済</span>
-          </div>
+          <EventProgressBar
+            status={now.status}
+            variant="full"
+            width="w-2/3"
+            progressClassName="w-full h-0.5"
+          />
 
           <div className="flex items-center justify-between">
             <h2 className="font-bold event-data-headline">イベント情報</h2>
@@ -454,51 +386,12 @@ export default function Page() {
             </div>
 
             <p className="now-event-condition my-5">現在のイベント状況</p>
-            <div className="flex justify-between w-2/3 m-auto">
-              <p className="w-10">{getArrowIcon(0, end.status)}</p>
-              <p className="w-10">{getArrowIcon(1, end.status)}</p>
-              <p className="w-10">{getArrowIcon(2, end.status)}</p>
-              <p className="w-10">{getArrowIcon(3, end.status)}</p>
-            </div>
-            <div className="flex justify-between w-2/3 m-auto">
-              <p className="w-10">
-                <Icon
-                  icon="material-symbols:circle"
-                  className={getCircleClassName(0, end.status)}
-                ></Icon>
-              </p>
-              <p className="w-10">
-                <Icon
-                  icon="material-symbols:circle"
-                  className={getCircleClassName(1, end.status)}
-                ></Icon>
-              </p>
-              <p className="w-10">
-                <Icon
-                  icon="material-symbols:circle"
-                  className={getCircleClassName(2, end.status)}
-                ></Icon>
-              </p>
-              <p className="w-10">
-                <Icon
-                  icon="material-symbols:circle"
-                  className={getCircleClassName(3, end.status)}
-                ></Icon>
-              </p>
-            </div>
-            <div className="flex justify-center mt-2">
-              <progress
-                max={100}
-                value={getProgressValue(end.status)}
-                className="w-full h-0.5"
-              ></progress>
-            </div>
-            <div className="flex justify-between w-2/3 m-auto">
-              <span>開催前</span>
-              <span>一次審査</span>
-              <span>二次審査</span>
-              <span>終了済</span>
-            </div>
+            <EventProgressBar
+              status={end.status}
+              variant="full"
+              width="w-2/3"
+              progressClassName="w-full h-0.5"
+            />
 
             <div className="flex items-center justify-between">
               <h2 className="font-bold event-data-headline">イベント情報</h2>

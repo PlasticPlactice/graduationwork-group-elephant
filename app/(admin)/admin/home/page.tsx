@@ -1,50 +1,58 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
+import { EventProgressBar } from "@/components/ui/EventProgressBar";
+import { formatDateTime } from "@/lib/dateUtils";
 import "@/styles/admin/home.css";
 import Link from "next/link";
 
+type EventItem = {
+  id: number;
+  title: string;
+  status: number;
+  first_voting_end_period?: string;
+};
+
 export default function Page() {
   const router = useRouter();
+  const [eventData, setEventData] = useState<EventItem[]>([]);
 
   const handleDetail = () => {
     router.push("/admin/events");
   };
 
-  const eventData = [
-    { id: 1, title: "第1回文庫X", date: "2025年10月30日", status: "2" },
-    { id: 2, title: "第2回文庫X", date: "2026年10月30日", status: "3" },
-  ];
+  // イベントデータを取得する関数
+  const fetchEvents = async () => {
+    try {
+      const res = await fetch("/api/events?status=0,1,2");
+      if (!res.ok) {
+        console.error("events fetch failed", await res.text());
+        return;
+      }
+      const data = await res.json();
 
-  const getProgressValue = (status: string) => {
-    const statusMap: { [key: string]: number } = {
-      "0": 11,
-      "1": 37,
-      "2": 63,
-      "3": 89,
-    };
-    return statusMap[status] || 0;
-  };
+      // 締切が近い順にソート（緊急度優先）
+      const sortedData = data.sort((a: EventItem, b: EventItem) => {
+        if (!a.first_voting_end_period) return 1;
+        if (!b.first_voting_end_period) return -1;
+        return (
+          new Date(a.first_voting_end_period).getTime() -
+          new Date(b.first_voting_end_period).getTime()
+        );
+      });
 
-  const getCircleClassName = (index: number, status: string) => {
-    const statusNumber = parseInt(status);
-    if (index <= statusNumber) {
-      return "event-condition-circle-now";
+      setEventData(sortedData);
+    } catch (err) {
+      console.error("Failed to fetch events:", err);
     }
-    return "event-condition-circle-future";
   };
 
-  const getArrowIcon = (index: number, status: string) => {
-    const statusNumber = parseInt(status);
-    if (statusNumber === index) {
-      return (
-        <Icon icon="bxs:up-arrow" rotate={2} className="up-arrow m-auto"></Icon>
-      );
-    }
-    return (
-      <Icon icon="material-symbols:circle" className="m-auto text-white"></Icon>
-    );
-  };
+  // 初期ロード
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
   return (
     <main className="home-main">
       <div className="mt-5">
@@ -58,55 +66,18 @@ export default function Page() {
               <div className="mx-auto flex items-center justify-between w-4/5">
                 <p className="font-bold event-name">{event.title}</p>
                 <p className="event-date event-date-now">
-                  一次審査の締切：{event.date}
+                  一次審査の締切：
+                  {formatDateTime(event.first_voting_end_period)}
                 </p>
               </div>
 
-              <div className="flex justify-between w-2/3 mx-auto mt-4">
-                <p className="w-10">{getArrowIcon(0, event.status)}</p>
-                <p className="w-10">{getArrowIcon(1, event.status)}</p>
-                <p className="w-10">{getArrowIcon(2, event.status)}</p>
-                <p className="w-10">{getArrowIcon(3, event.status)}</p>
-              </div>
-              <div className="flex justify-between w-2/3 m-auto event-condition-status-circle">
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className={getCircleClassName(0, event.status)}
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className={getCircleClassName(1, event.status)}
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className={getCircleClassName(2, event.status)}
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className={getCircleClassName(3, event.status)}
-                  ></Icon>
-                </p>
-              </div>
-              <div className="flex justify-center mt-2">
-                {/* 11,37,63,89 */}
-                <progress
-                  max={100}
-                  value={getProgressValue(event.status)}
-                  className="w-4/5"
-                ></progress>
-              </div>
-              <div className="flex justify-between w-2/3 m-auto">
-                <span>開催前</span>
-                <span>一次審査</span>
-                <span>二次審査</span>
-                <span>終了済</span>
+              <div className="mt-4">
+                <EventProgressBar
+                  status={event.status}
+                  variant="compact"
+                  width="w-2/3"
+                  progressClassName="w-4/5"
+                />
               </div>
               <button
                 className="event-detail-btn mb-3 mt-7 p-0"
