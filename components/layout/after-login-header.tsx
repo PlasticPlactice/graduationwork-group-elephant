@@ -11,10 +11,10 @@ export function AfterLoginHeader() {
         >
           {/* ToDo:画面サイズに応じた画像サイズの確認と変更 */}
           <Image
-            src="/layout/logo.png"
+            src="/layout/new_logo.png"
             alt="象と花 #ゾウトハナ"
-            width={90}
-            height={10}
+            width={35}
+            height={35}
             className="h-auto w-auto"
             priority
           />
