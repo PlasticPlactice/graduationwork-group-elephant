@@ -10,10 +10,10 @@ export function Header() {
           className="flex items-center hover:opacity-80 transition-opacity"
         >
           <Image
-            src="/layout/logo.png"
-            alt="象と花プロジェクト ロゴ"
-            width={120}
-            height={40}
+            src="/layout/new_logo.png"
+            alt="象と花 #ゾウトハナ"
+            width={35}
+            height={35}
             className="h-auto w-auto"
             priority
           />
