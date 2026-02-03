@@ -79,6 +79,15 @@ a {
   text-decoration: none;
 }
 
+.headerMypageLink {
+  color: #36A8B1 !important;
+}
+
+.headerMypageLink:hover,
+.headerMypageLink:focus-visible {
+  color: #2f959d !important;
+}
+
 /* Sub text */
 .text-sub {
   color: var(--color-sub);
