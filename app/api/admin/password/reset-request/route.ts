@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     if (!email) {
       return NextResponse.json(
         { message: "メールアドレスが必須です" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { message: "有効なメールアドレスを入力してください" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
           message:
             "入力いただいたメールアドレスに、パスワードリセットリンクを送信しました。メールをご確認ください。",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -64,7 +64,14 @@ export async function POST(req: NextRequest) {
     });
 
     // リセットリンクを生成
-    const resetLink = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/admin/password/reset?token=${token}`;
+    if (!process.env.NEXTAUTH_URL) {
+      return NextResponse.json(
+        { error: "Server configuration error: NEXTAUTH_URL is not set" },
+        { status: 500 },
+      );
+    }
+
+    const resetLink = `${process.env.NEXTAUTH_URL}/admin/password/reset?token=${token}`;
 
     // メール送信設定が完了している場合はメールを送信、そうでない場合はコンソールに出力
     if (isEmailConfigured()) {
@@ -94,13 +101,13 @@ export async function POST(req: NextRequest) {
         message:
           "入力いただいたメールアドレスに、パスワードリセットリンクを送信しました。メールをご確認ください。",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Password reset request error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

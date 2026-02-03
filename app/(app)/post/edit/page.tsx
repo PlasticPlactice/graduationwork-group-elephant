@@ -35,7 +35,7 @@ export default function PostPage() {
 
   const [state, formAction] = useActionState(preparePostConfirm, null);
   const [bookReviewData, setBookReviewData] = useState<any>(null);
-  const [isDraft, setIsDraft] = useState(false)
+  const [isDraft, setIsDraft] = useState(false);
 
   const [form, setForm] = useState<{
     bookReview_id: number | null;
@@ -117,23 +117,23 @@ export default function PostPage() {
   }, []);
 
   useEffect(() => {
-    if(!bookReviewData) return;
+    if (!bookReviewData) return;
 
-    console.log("bookReviewData" + JSON.stringify(bookReviewData))
+    console.log("bookReviewData" + JSON.stringify(bookReviewData));
 
-    if(bookReviewData.evaluations_status == 1) {
-      setIsDraft(true)
+    if (bookReviewData.evaluations_status == 1) {
+      setIsDraft(true);
     }
 
-    setDraftForm(prev => ({
+    setDraftForm((prev) => ({
       ...prev,
       id: bookReviewData.id,
       review: bookReviewData.review,
       color: bookReviewData.color,
       pattern: bookReviewData.pattern,
       pattern_color: bookReviewData.pattern_color,
-    }))
-  }, [bookReviewData])
+    }));
+  }, [bookReviewData]);
 
   // データ取得の実行
   useEffect(() => {
@@ -152,37 +152,37 @@ export default function PostPage() {
   // 下書き登録用
   const registerBookReviewDraft = async (payload: typeof draftForm) => {
     try {
-      const res = await fetch("http://localhost:3000/api/book-reviews/mypage/edit", {
+      const res = await fetch("/api/book-reviews/mypage/edit", {
         method: "PUT",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if(!res.ok) {
+      if (!res.ok) {
         alert("下書きの登録に失敗しました。");
         return;
       }
 
       router.push("/poster/mypage");
-    } catch(e) {
-      alert("通信に失敗しました。")
+    } catch (e) {
+      alert("通信に失敗しました。");
     }
-  }
+  };
 
   // 下書きボタン押したときの処理
   const handleDraftConfirm = () => {
     const nextForm = {
       ...draftForm,
-      evaluations_status: 1
+      evaluations_status: 1,
     };
 
-    console.log("nextForm" + JSON.stringify(nextForm))
+    console.log("nextForm" + JSON.stringify(nextForm));
 
     setDraftForm(nextForm);
 
     registerBookReviewDraft({
       ...nextForm,
-    })
+    });
     // router.push("/poster/mypage");
   };
 

@@ -7,71 +7,68 @@ import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function PostConfirmPage({
-}: {
-}) {
+export default function PostConfirmPage({}: {}) {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    console.log(sessionStorage.getItem("bookReviewDraft"))
+    console.log(sessionStorage.getItem("bookReviewDraft"));
     const raw = sessionStorage.getItem("bookReviewDraft");
 
-    if(!raw) return;
+    if (!raw) return;
 
     setData(JSON.parse(raw));
   }, []);
 
   const registerBookReview = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/book-reviews", {
+      const res = await fetch("/api/book-reviews", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
-      if(!res.ok) {
+      if (!res.ok) {
         alert("登録に失敗しました。");
         return;
       }
 
       sessionStorage.removeItem("bookReviewDraft");
       router.push("/post/post-complete");
-    } catch(e) {
-      alert("通信に失敗しました。")
+    } catch (e) {
+      alert("通信に失敗しました。");
     }
-  }
+  };
 
   // PUT処理関数
   const updateBookReview = async () => {
     try {
-      const isDraftStatus = data.evaluations_status === 1 ? true : false
-      console.log(isDraftStatus)
+      const isDraftStatus = data.evaluations_status === 1 ? true : false;
+      console.log(isDraftStatus);
 
-      const res = await fetch(`http://localhost:3000/api/book-reviews/mypage/edit`, {
+      const res = await fetch(`/api/book-reviews/mypage/edit`, {
         method: "PUT",
         headers: {
-            "Content-Type": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-      })
+      });
 
       if (!res.ok) {
-          alert("書評の編集に失敗しました。時間をおいて再度お試しください。");
-          return;
+        alert("書評の編集に失敗しました。時間をおいて再度お試しください。");
+        return;
       }
 
       sessionStorage.removeItem("bookReviewDraft");
-      if(!isDraftStatus) {
+      if (!isDraftStatus) {
         router.push("/poster/mypage");
       } else {
         router.push("/post/post-complete");
       }
-
     } catch (error) {
       console.error("Error editing book review:", error);
     }
-  }
+  };
 
   const handleSubmit = () => {
     if (data.mode === "create") {
@@ -79,9 +76,7 @@ export default function PostConfirmPage({
     } else {
       updateBookReview();
     }
-  }
-
-  
+  };
 
   if (!data) return null;
 
@@ -95,8 +90,7 @@ export default function PostConfirmPage({
         // formのデータ送信に必要？（今回はモックのため未使用）
         dangerouslySetInnerHTML={{ __html: data.review }}
         className={`w-full border rounded-sm px-0.5 py-2 ${Styles.userIdContainer}`}
-      >
-      </div>
+      ></div>
 
       <div>
         <p className={`font-bold mt-5`}>本の見た目</p>

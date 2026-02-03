@@ -11,7 +11,10 @@ export async function getNotificationData(
   page: number,
 ): Promise<NotificationApiResponse | null> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    // 開発環境では相対パスを使用
+    // 本番環境ではNEXT_PUBLIC_API_URLまたはNEXTAUTH_URLを使用
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || "";
     const response = await fetch(
       `${baseUrl}/api/notifications?type=${type}&page=${page}`,
       { cache: "no-store" },
