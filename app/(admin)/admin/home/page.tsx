@@ -55,9 +55,10 @@ export default function Page() {
 
   return (
     <main className="home-main">
-      <div className="mt-5">
+      <div className="home-sections">
+      <div className="home-events">
         <h1 className="text-center event-title">開催中のイベント</h1>
-        <div className="event-scroll-content m-auto w-3/5 py-2 px-5 shadow">
+        <div className="event-scroll-content py-2 px-5 shadow">
           {eventData.map((event) => (
             <div
               key={event.id}
@@ -90,7 +91,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 grid-rows-2 m-auto w-3/5 gap-x-14 gap-y-5 mt-10 mb-3">
+      <div className="home-actions grid gap-x-14 gap-y-5 mt-10 mb-3">
         {/* お知らせ・寄贈管理 */}
         <Link href="/admin/notice" className="flex p-2 shadow-md admin-card">
           <div className="flex items-center justify-center w-auto mx-1">
@@ -188,6 +189,7 @@ export default function Page() {
             <p className="mb-1 ml-6 card-description">利用規約を管理</p>
           </div>
         </Link>
+      </div>
       </div>
     </main>
   );
