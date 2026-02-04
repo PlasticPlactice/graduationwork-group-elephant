@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import AdminButton from "@/components/ui/admin-button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -227,13 +227,16 @@ export default function Page() {
   };
   return (
     <main>
-      <AdminButton
-        label="イベント登録"
-        type="button"
-        className="self-end ml-5 my-3 register-btn"
-        onClick={handleRegister}
-      />
-      <h1 className="events-headline text-center">開催中のイベント</h1>
+      <div className="events-header">
+        <div className="events-header-spacer" />
+        <h1 className="events-headline text-center">開催中のイベント</h1>
+        <AdminButton
+          label="イベント登録"
+          type="button"
+          className="register-btn"
+          onClick={handleRegister}
+        />
+      </div>
 
       {eventNowData.map((now) => (
         <section
