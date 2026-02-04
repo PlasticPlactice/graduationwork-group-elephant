@@ -101,7 +101,7 @@ details[open] .icon {
   padding-right: 1.9rem;
 }
 .users-record:hover {
-  background-color: var(--color-input-text);
+  background-color: rgba(54, 168, 177, 0.08);
 }
 
 .page-section {
