@@ -102,6 +102,13 @@ details[open] .icon {
 .notice-table td {
   border-bottom: 1px solid var(--color-input-bg);
 }
+.notice-table th:first-child {
+  min-width: 9rem;
+  white-space: nowrap;
+}
+.notice-table th:first-child button {
+  white-space: nowrap;
+}
 .notice-tr {
   border-bottom: 1px solid var(--color-input-bg);
 }
@@ -124,7 +131,30 @@ details[open] .icon {
   color: var(--color-text);
 }
 .notice-record:hover {
-  background-color: var(--color-input-text);
+  background-color: rgba(54, 168, 177, 0.08);
+}
+
+.notice-delete-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  color: var(--color-main);
+  background-color: var(--color-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.notice-delete-btn:hover {
+  background-color: rgba(54, 168, 177, 0.08);
+  border-color: rgba(54, 168, 177, 0.35);
+  color: var(--color-main);
+}
+
+.notice-delete-btn:active {
+  transform: scale(0.98);
 }
 
 /* 繝・・繝悶Ν繝倥ャ繝繝ｼ縺ｮ繧ｽ繝ｼ繝医・繧ｿ繝ｳ縺九ｉ蠖ｱ繧帝勁蜴ｻ */
