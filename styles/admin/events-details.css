@@ -90,6 +90,9 @@ details[open] .icon {
   color: #1E40AF;
   background-color: #DBEAFE;
   border-radius: var(--control-radius);
+  display: inline-block;
+  min-width: 8rem;
+  text-align: center;
 }
 .accordion-toggle{
   background-color: var(--color-bg);
