@@ -71,9 +71,9 @@ export default function LoginPage() {
       <div className={`mb-2 ${Styles.posterContainer} ${loginModule.loginCard}`}>
         <div className="mt-4 mb-6 lg:mt-2 lg:mb-4">
           <Image
-            src="/layout/logo.png"
+            src="/layout/new_logo.png"
             alt="logo"
-            width={177}
+            width={120}
             height={120}
             className="mx-auto"
           />
