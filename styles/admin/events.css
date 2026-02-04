@@ -132,12 +132,6 @@ progress {
   font-size: var(--font-size-h1);
 }
 
-.edit_btn {
-  width: 7.5rem;
-  font-size: var(--font-size-h1);
-  height: 2.5rem;
-}
-
 .schedule-table {
   width: 100%;
   border-collapse: collapse;
