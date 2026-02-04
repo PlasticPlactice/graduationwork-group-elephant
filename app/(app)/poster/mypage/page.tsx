@@ -390,18 +390,18 @@ export default function MyPage() {
           <Link href="/">
             <div
               className="flex items-center px-2 rounded shadow-md my-10"
-              style={{ backgroundColor: "var(--color-main)" }}
+              style={{ backgroundColor: "var(--color-bg)" ,border: "1px solid var(--color-main)"}}
             >
               <Image
-                src="/layout/logo_another.png"
+                src="/layout/new_logo.png"
                 alt="logo"
-                width={100}
-                height={40}
+                width={50}
+                height={50}
                 className="ml-3"
               />
               <span
                 className="font-bold ml-auto"
-                style={{ color: "var(--color-bg)" }}
+                style={{ color: "var(--color-main)" }}
               >
                 象と花ファンサイトへ
                 <span className="ml-4" aria-hidden="true">
