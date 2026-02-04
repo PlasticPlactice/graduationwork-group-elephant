@@ -45,6 +45,8 @@
   font-size: var(--font-size-h1);
   margin: 0;
   font-weight: bold;
+  width: 100%;
+  white-space: nowrap;
 }
 
 .event-container {
