@@ -293,19 +293,12 @@ export default function Page() {
     searchTitle,
     searchDateFrom,
     searchDateTo,
-    fetchNotifications,
   ]); // フィルター・ソート変更時
 
   // ページ変更時
   useEffect(() => {
     fetchNotifications(currentPage, searchTitle, searchDateFrom, searchDateTo);
-  }, [
-    currentPage,
-    searchTitle,
-    searchDateFrom,
-    searchDateTo,
-    fetchNotifications,
-  ]);
+  }, [currentPage]);
 
   // ---------------------------
   // UIレンダリング
