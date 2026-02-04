@@ -16,12 +16,17 @@ interface UserDetailModalProps {
   userId?: number | null;
 }
 
+interface Event {
+  id: number;
+  title: string;
+}
+
 interface BookReview {
   id: number;
   book_title: string;
-  event_name: string;
   status: string;
   review: string;
+  event: Event | null;
 }
 
 interface UserDetail {
@@ -202,7 +207,7 @@ export default function UserDetailModal({
                         <span className="title-text">{row.book_title}</span>
                       </td>
                       <td>
-                        <span>{row.event_name}</span>
+                        <span>{row.event?.title}</span>
                       </td>
                       <td className="text-right align-middle pr-3">
                         <button
