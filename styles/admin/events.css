@@ -44,6 +44,19 @@
 }
 .event-title-section{
     border-bottom: 1px solid var(--color-admin-sub);
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.event-title-section > .flex:first-child {
+  flex: 1 1 420px;
+  min-width: 0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.event-title-section > .flex:last-child {
+  flex: 0 0 auto;
 }
 
 /* 1. トグルボタン全体のコンテナ */

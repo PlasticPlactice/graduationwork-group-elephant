@@ -246,7 +246,7 @@ export default function Page() {
           <div className="flex items-center justify-between pb-3 event-title-section">
             <div className="flex items-center">
               <p className="font-bold event-title">{now.title}</p>
-              <p className="ml-3">
+              <p className="ml-14">
                 {formatDateTime(now.start_period)} ~{" "}
                 {formatDateTime(now.end_period)}
               </p>
