@@ -239,7 +239,7 @@ export default function UserDetailModal({
                         <span>{row.id}</span>
                       </td>
                       <td>
-                        <span className="title-text">{row.book_title}</span>
+                        <span className="modal-title-text">{row.book_title}</span>
                       </td>
                       <td>
                         <span>{row.event?.title}</span>

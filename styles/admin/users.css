@@ -187,9 +187,8 @@ summary {
 details[open] .icon {
   transform: rotate(180deg);
 }
-.title-text {
-  color: var(--color-main);
-  border-bottom: 1px solid var(--color-main);
+.modal-title-text {
+  color: var(--color-text);
 }
 .status-text {
   color: #1e40af;
