@@ -131,6 +131,9 @@ details[open] .icon {
   font-size: 20px;
   margin: 0 0 0.6rem 0;
 }
+.review-edit-btn{
+  box-shadow: none;
+}
 .print-preview-btn{
   box-shadow: none;
 }

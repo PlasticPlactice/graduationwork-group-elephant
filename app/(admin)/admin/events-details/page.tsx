@@ -368,7 +368,12 @@ export default function Page() {
                               <p className="book-content">{row.isbn}</p>
                             </div>
                           </div>
-                          <div className="flex justify-end ">
+                          <div className="flex justify-between gap-5">
+                            <AdminButton
+                              label="書評編集"
+                              className="review-edit-btn w-auto"
+                              onClick={() => handleBookReviewDetail(row.id)}
+                            />
                             <AdminButton
                               label="印刷プレビュー"
                               icon="material-symbols:print"
