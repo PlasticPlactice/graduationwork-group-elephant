@@ -82,8 +82,8 @@ details[open] .icon {
   transform: rotate(180deg);
 }
 .title-text{
-  color: var(--color-main);
-  border-bottom: 1px solid var(--color-main);
+  color: var(--color-admin-link);
+  border-bottom: 1px solid var(--color-admin-link);
   cursor: pointer
 }
 .status-text{
