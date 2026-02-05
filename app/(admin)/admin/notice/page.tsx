@@ -561,11 +561,11 @@ export default function Page() {
                     <div className="flex items-center justify-center">
                       <button
                         onClick={(e) => handleDeleteClick(e, notice.id)}
-                        className="text-red-600 hover:text-red-800 transition-colors p-2"
+                        className="delete-btn text-red-600 hover:text-red-800 transition-colors p-2"
                         title="削除"
                         aria-label="削除"
                       >
-                        <Icon icon="mdi:delete" width={20} />
+                        <Icon icon="mdi:delete" id="delete-icon" width={20} />
                       </button>
                     </div>
                   </td>
