@@ -24,7 +24,7 @@ interface Event {
 interface BookReview {
   id: number;
   book_title: string;
-  status: string;
+  evaluations_status: string;
   review: string;
   event: Event | null;
 }
@@ -50,6 +50,25 @@ export default function UserDetailModal({
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
+
+  const STATUS_CONFIG: Record<number, { label: string; className: string }> = {
+    0: { 
+      label: "審査前", 
+      className: "text-blue-500", 
+    },
+    1: { 
+      label: "審査中", 
+      className: "text-green-600", 
+    },
+    2: { 
+      label: "当選", 
+      className: "text-yellow-600",
+    },
+    3: { 
+      label: "終了済み", 
+      className: "text-red-400", 
+    },
+  };
 
   useEffect(() => {
     if (isOpen && userId) {
@@ -196,8 +215,24 @@ export default function UserDetailModal({
                   <React.Fragment key={row.id}>
                     <tr className="table-row">
                       <td className="text-left">
-                        <span className="status-text font-bold py-1 px-6 ml-3">
-                          {row.status}
+                        <span className="">
+                          {(() => {
+                            const statusKey = Number(row.evaluations_status);
+                            const config = STATUS_CONFIG[statusKey];
+
+                            if(!config) return null;
+
+                            return (
+                              <div
+                                key={statusKey}
+                                className={`text-center w-1/2 ml-3 py-2 rounded-full text-sm font-bold border ${config.className}`}
+                              >
+                                {/* 当選した時だけ王冠アイコンを付ける、などの遊び心 */}
+                                {statusKey === 3}
+                                {config.label}
+                              </div>
+                            );
+                          })()}
                         </span>
                       </td>
                       <td className="text-left">
