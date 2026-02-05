@@ -27,11 +27,28 @@ interface ReviewData {
 
 export default function Page() {
   const [reviews, setReviews] = useState<ReviewData[]>([]);
+  const [filteredReviews, setFilteredReviews] = useState<ReviewData[]>([]);
   const [openRows, setOpenRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [displayCount, setDisplayCount] = useState<number | "all">(10);
   const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]); // 選択された行IDを管理
   const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
+
+  // ソート条件
+  const [sortKey, setSortKey] = useState<
+    | "evaluations_status"
+    | "id"
+    | "book_title"
+    | "nickname"
+    | "evaluations_count"
+    | null
+  >(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  // 検索条件
+  const [searchTitle, setSearchTitle] = useState<string>("");
+  const [searchNickname, setSearchNickname] = useState<string>("");
+  const [searchStatus, setSearchStatus] = useState<string>("");
 
   const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
   const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
@@ -50,6 +67,7 @@ export default function Page() {
         if (res.ok) {
           const data = await res.json();
           setReviews(data);
+          setFilteredReviews(data);
         } else {
           console.error("Failed to fetch reviews");
         }
@@ -82,6 +100,18 @@ export default function Page() {
     );
   };
 
+  // 一括選択ボタンのハンドラ（トグル動作）
+  const handleBulkSelect = () => {
+    if (
+      selectedRowIds.length === displayedData.length &&
+      displayedData.length > 0
+    ) {
+      setSelectedRowIds([]);
+    } else {
+      setSelectedRowIds(displayedData.map((row) => row.id));
+    }
+  };
+
   // モーダルが開いている時に背景のスクロールを防ぐ
   useEffect(() => {
     if (isStatusEditModalOpen) {
@@ -101,7 +131,8 @@ export default function Page() {
     setIsStatusEditModalOpen(true);
   };
   const handleCsvOutput = () => {
-    // CSV出力は今回は表示中のデータを対象とする（要件に応じて選択データのみに変更も可）
+    // 選択されたデータがない場合はアラートを表示
+    if (selectedRowIds.length === 0) return alert("データが選択されていません");
     setIsCsvOutputModalOpen(true);
   };
   const handleAllMessageSend = () => {
@@ -124,12 +155,109 @@ export default function Page() {
     router.push("/admin/print-preview");
   };
 
-  // 表示するデータをスライス
+  const getReviewText = (html: string) => {
+    if (!html) return "";
+    if (typeof window === "undefined") return html.replace(/<[^>]+>/g, "");
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent ?? "";
+  };
+
+  // 検索処理
+  const handleSearch = () => {
+    let filtered = reviews;
+
+    // 書籍タイトルで絞り込み
+    if (searchTitle.trim()) {
+      filtered = filtered.filter((review) =>
+        review.book_title.toLowerCase().includes(searchTitle.toLowerCase()),
+      );
+    }
+
+    // ニックネームで絞り込み
+    if (searchNickname.trim()) {
+      filtered = filtered.filter((review) =>
+        review.nickname.toLowerCase().includes(searchNickname.toLowerCase()),
+      );
+    }
+
+    // ステータスで絞り込み
+    if (searchStatus) {
+      const statusMap: { [key: string]: number } = {
+        評価前: 0,
+        一次通過: 1,
+        二次通過: 2,
+        三次通過: 3,
+        不採用: 4,
+      };
+      const statusValue = statusMap[searchStatus];
+      if (statusValue !== undefined) {
+        filtered = filtered.filter(
+          (review) => review.evaluations_status === statusValue,
+        );
+      }
+    }
+
+    setFilteredReviews(filtered);
+    setSelectedRowIds([]); // 検索時に選択をクリア
+  };
+
+  // 検索条件のリセット
+  const handleResetSearch = () => {
+    setSearchTitle("");
+    setSearchNickname("");
+    setSearchStatus("");
+    setFilteredReviews(reviews);
+    setSelectedRowIds([]);
+  };
+
+  const handleSort = (
+    key:
+      | "evaluations_status"
+      | "id"
+      | "book_title"
+      | "nickname"
+      | "evaluations_count",
+  ) => {
+    if (sortKey === key) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedReviews = [...filteredReviews].sort((a, b) => {
+    if (!sortKey) return 0;
+    const direction = sortDirection === "asc" ? 1 : -1;
+    const aValue = a[sortKey];
+    const bValue = b[sortKey];
+
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return (aValue - bValue) * direction;
+    }
+
+    return String(aValue).localeCompare(String(bValue), "ja") * direction;
+  });
+
+  // 総ページ数を計算
+  const totalPages =
+    displayCount === "all"
+      ? 1
+      : Math.ceil(sortedReviews.length / (displayCount as number));
+
+  // 表示するデータをスライス（ページネーション対応）
   const displayedData =
-    displayCount === "all" ? reviews : reviews.slice(0, displayCount);
+    displayCount === "all"
+      ? sortedReviews
+      : sortedReviews.slice(
+          (currentPage - 1) * (displayCount as number),
+          currentPage * (displayCount as number),
+        );
 
   // 選択されたデータを取得
-  const selectedData = reviews.filter((row) => selectedRowIds.includes(row.id));
+  const selectedData = filteredReviews.filter((row) =>
+    selectedRowIds.includes(row.id),
+  );
 
   // StatusEditModal用にデータを整形（ステータスを数値に変換）
   const statusTargetReviews = selectedData.map((row) => ({
@@ -164,7 +292,13 @@ export default function Page() {
 
         <div className="">
           <label htmlFor="title_box">書籍タイトル</label>
-          <Textbox size="lg" className="custom-input-full" id="title_box" />
+          <Textbox
+            size="lg"
+            className="custom-input-full"
+            id="title_box"
+            value={searchTitle}
+            onChange={(e) => setSearchTitle(e.target.value)}
+          />
         </div>
         <div className="">
           <label htmlFor="nickname_box">ニックネーム</label>
@@ -172,6 +306,8 @@ export default function Page() {
             className="custom-input-full"
             type="text"
             id="nickname_box"
+            value={searchNickname}
+            onChange={(e) => setSearchNickname(e.target.value)}
           />
         </div>
 
@@ -179,21 +315,37 @@ export default function Page() {
           <label htmlFor="status" className="block">
             ステータス
           </label>
-          <select className="input-group" id="status">
+          <select
+            className="input-group"
+            id="status"
+            value={searchStatus}
+            onChange={(e) => setSearchStatus(e.target.value)}
+          >
+            <option value="">すべて</option>
             <option value="評価前">評価前</option>
             <option value="一次通過">一次通過</option>
             <option value="二次通過">二次通過</option>
             <option value="三次通過">三次通過</option>
+            <option value="不採用">不採用</option>
           </select>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-3">
           <AdminButton
             label="検索"
-            type="submit"
+            type="button"
             icon="mdi:search"
             iconPosition="left"
             className="mt-5 search-btn"
+            onClick={handleSearch}
+          />
+          <AdminButton
+            label="リセット"
+            type="button"
+            icon="mdi:refresh"
+            iconPosition="left"
+            className="mt-5 search-btn"
+            onClick={handleResetSearch}
           />
         </div>
       </details>
@@ -208,6 +360,7 @@ export default function Page() {
             onChange={(e) => {
               const value = e.target.value;
               setDisplayCount(value === "all" ? "all" : Number(value));
+              setCurrentPage(1); // 表示数変更時にページをリセット
             }}
           >
             <option value="10">10</option>
@@ -217,7 +370,9 @@ export default function Page() {
             <option value="30">30</option>
             <option value="all">全件表示</option>
           </select>
-          <button className="choice-btn font-bold">一括選択</button>
+          <button className="choice-btn font-bold" onClick={handleBulkSelect}>
+            一括選択
+          </button>
         </div>
 
         <div className="flex justify-end mx-8 gap-3">
@@ -262,27 +417,42 @@ export default function Page() {
                 </div>
               </th>
               <th className="w-[27.777%]">
-                <div className="flex justify-center items-center">
+                <div
+                  className="flex justify-center items-center cursor-pointer"
+                  onClick={() => handleSort("evaluations_status")}
+                >
                   ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
               <th className="w-[11.111%]">
-                <div className="flex items-center justify-start">
+                <div
+                  className="flex items-center justify-start cursor-pointer"
+                  onClick={() => handleSort("id")}
+                >
                   ID<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
               <th className="w-[27.777%]">
-                <div className="flex items-center">
+                <div
+                  className="flex items-center cursor-pointer"
+                  onClick={() => handleSort("book_title")}
+                >
                   書籍タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
               <th className="w-1/6">
-                <div className="flex items-center">
+                <div
+                  className="flex items-center cursor-pointer"
+                  onClick={() => handleSort("nickname")}
+                >
                   ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
               <th className="w-[11.111%]">
-                <div className="flex items-center">
+                <div
+                  className="flex items-center cursor-pointer"
+                  onClick={() => handleSort("evaluations_count")}
+                >
                   投票数<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
@@ -341,7 +511,9 @@ export default function Page() {
                         <section className="w-4/7">
                           <h3 className="font-bold mb-2 ml-4">書評本文</h3>
                           <div className="book-review-section w-auto h-84 ml-4 p-2">
-                            <p className="whitespace-pre-wrap">{row.review}</p>
+                            <p className="whitespace-pre-wrap">
+                              {getReviewText(row.review)}
+                            </p>
                           </div>
                         </section>
 
@@ -390,7 +562,7 @@ export default function Page() {
 
       <div className="flex justify-end mr-8 my-5">
         <AdminButton
-          label="全件CSV出力"
+          label="選択したデータのCSV出力"
           icon="material-symbols:download"
           iconPosition="left"
           className="w-auto"
@@ -398,7 +570,7 @@ export default function Page() {
         />
       </div>
       {/* ページネーション */}
-      {displayCount !== "all" && (
+      {displayCount !== "all" && totalPages > 1 && (
         <div className="flex items-center justify-center my-5 page-section">
           <Icon
             icon="weui:arrow-filled"
@@ -406,41 +578,17 @@ export default function Page() {
             width={20}
             className="page-arrow"
           ></Icon>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 1 ? "active" : ""}`}
-            onClick={() => setCurrentPage(1)}
-            aria-current={currentPage === 1 ? "page" : undefined}
-          >
-            1
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 2 ? "active" : ""}`}
-            onClick={() => setCurrentPage(2)}
-            aria-current={currentPage === 2 ? "page" : undefined}
-          >
-            2
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 3 ? "active" : ""}`}
-            onClick={() => setCurrentPage(3)}
-            aria-current={currentPage === 3 ? "page" : undefined}
-          >
-            3
-          </button>
-          <span className="px-4 py-1 page-number" aria-hidden="true">
-            ...
-          </span>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 5 ? "active" : ""}`}
-            onClick={() => setCurrentPage(5)}
-            aria-current={currentPage === 5 ? "page" : undefined}
-          >
-            5
-          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              type="button"
+              className={`px-4 py-1 page-number ${currentPage === page ? "active" : ""}`}
+              onClick={() => setCurrentPage(page)}
+              aria-current={currentPage === page ? "page" : undefined}
+            >
+              {page}
+            </button>
+          ))}
           <Icon
             icon="weui:arrow-filled"
             width={20}
@@ -457,7 +605,7 @@ export default function Page() {
       <CsvOutputModal
         isOpen={isCsvOutputModalOpen}
         onClose={closeModal}
-        data={displayedData}
+        data={selectedData}
       />
       <AllMessageSendModal
         isOpen={isAllMessageSendModalOpen}
