@@ -155,6 +155,13 @@ export default function Page() {
     router.push("/admin/print-preview");
   };
 
+  const getReviewText = (html: string) => {
+    if (!html) return "";
+    if (typeof window === "undefined") return html.replace(/<[^>]+>/g, "");
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent ?? "";
+  };
+
   // 検索処理
   const handleSearch = () => {
     let filtered = reviews;
@@ -494,7 +501,9 @@ export default function Page() {
                         <section className="w-4/7">
                           <h3 className="font-bold mb-2 ml-4">書評本文</h3>
                           <div className="book-review-section w-auto h-84 ml-4 p-2">
-                            <p className="whitespace-pre-wrap">{row.review}</p>
+                            <p className="whitespace-pre-wrap">
+                              {getReviewText(row.review)}
+                            </p>
                           </div>
                         </section>
 
