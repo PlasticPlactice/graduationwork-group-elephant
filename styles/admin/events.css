@@ -144,6 +144,17 @@ progress {
   background-color: var(--color-main); /* プログレスバーの進捗部分色/-moz- 用 */
 }
 
+.edit_btn{
+  width: 5rem;
+  border: 1px solid var(--color-main);
+  padding: 0;
+}
+.delete-conf-btn{
+  width: 5rem;
+  border: 1px solid var(--color-main);
+  padding: 0;
+}
+
 .event-data-headline {
   font-size: var(--font-size-h1);
 }
