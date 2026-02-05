@@ -313,15 +313,17 @@ export default function Page() {
 
   return (
     <main className="notice-container">
+      <div className="flex justify-end mr-8">
       {/*---------------------------
             お知らせ登録ボタン
             ---------------------------*/}
-      <AdminButton
-        label="お知らせ登録"
-        type="button"
-        className="register-btn ml-8 mt-5"
-        onClick={handleRegister}
-      />
+        <AdminButton
+          label="お知らせ登録"
+          type="button"
+          className="register-btn mt-5"
+          onClick={handleRegister}
+        />
+      </div>
       {/*---------------------------
                 検索ボックス
                ---------------------------*/}
