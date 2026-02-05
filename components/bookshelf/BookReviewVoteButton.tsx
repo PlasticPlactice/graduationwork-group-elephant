@@ -90,7 +90,7 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
         };
 
         // ボタンのスタイル定義
-        const voteButtonClass = `flex h-14 min-h-[3.5rem] flex-1 items-center justify-center gap-3 rounded-full border border-solid text-base font-bold tracking-wide transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-200 appearance-none shadow-none ${
+        const voteButtonClass = `flex ml-5 h-14 min-h-[3.5rem] flex-1 items-center justify-center gap-3 rounded-full border border-solid text-base font-bold tracking-wide transition-transform duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-red-200 appearance-none shadow-none ${
         isVoted
             ? "!bg-red-500 !text-white !border-red-500 ![box-shadow:0_10px_24px_rgba(239,68,68,0.3)]"
             : "!bg-red-50 !text-red-600 !border-red-400 ![box-shadow:0_10px_20px_rgba(239,68,68,0.18)]"

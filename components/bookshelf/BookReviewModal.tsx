@@ -124,7 +124,7 @@ export function BookReviewModal({
     };
   }, [open, onClose]);
 
-  const favoriteButtonClass = `flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
+  const favoriteButtonClass = `flex h-20 w-20 mr-2 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
     isFavorited ? "!text-yellow-400" : "!text-gray-400"
   }`;
 
@@ -278,7 +278,11 @@ export function BookReviewModal({
         onClick={(event) => event.stopPropagation()}
         tabIndex={-1}
       >
-        <div className="relative z-10 flex h-full flex-col">
+      <div className={styles.bookOpen} style={coverStyle}>
+        <div className={styles.bookOpenCover} aria-hidden="true" />
+          <div className={styles.bookOpenEdge} aria-hidden="true" />
+          <div className={styles.bookOpenContent}>
+          <div className="relative z-10 flex h-full flex-col">
           <div
             dangerouslySetInnerHTML={{
               __html: book.review ?? "書評が登録されていません",
@@ -286,7 +290,7 @@ export function BookReviewModal({
             className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6"
           ></div>
           <div className="mt-6 flex flex-col gap-4">
-            <div className="flex justify-center gap-4 w-full">
+            <div className="flex justify-center gap-4 w-full mr-2 ">
               {REACTION_TYPES.map((type) => {
                 const targetData = afterCheckedData?.find(
                   (r) => String(r.reaction_id) === String(type.id),
@@ -303,7 +307,7 @@ export function BookReviewModal({
                       handleReactionClick(type.id);
                     }}
                   >
-                    <img src={type.icon_path} alt="リアクション画像" width={35} height={35} />
+                    <img src={type.icon_path} alt="リアクション画像" width={25} height={25} />
                     <span className={`font-bold ml-2`}>{count}</span>
                   </button>
                 );
@@ -345,17 +349,21 @@ export function BookReviewModal({
               </button>
             </div>
 
-            <button
-              type="button"
-              onClick={onComplete}
-              ref={actionButtonRef}
-              className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
-            >
-              {actionLabel}
-            </button>
+            <div className="mx-4 mb-4">
+                <button
+                type="button"
+                onClick={onComplete}
+                ref={actionButtonRef}
+                className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
+              >
+                {actionLabel}
+              </button>
+            </div>
           </div>
         </div>
+        </div>
+        </div>
       </div>
-    </div>
+      </div>
   );
 }
