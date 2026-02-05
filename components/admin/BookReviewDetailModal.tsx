@@ -41,6 +41,7 @@ export default function BookReviewDetailModal({
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState("");
   const [sendSuccess, setSendSuccess] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   // Tiptapエディタ
   const editor = useEditor({
     extensions: [
@@ -62,6 +63,7 @@ export default function BookReviewDetailModal({
       setIsLoading(false);
       setMessage("");
       setIsSending(false);
+      setIsSaving(false);
       setSendError("");
       setSendSuccess("");
       return;
@@ -151,6 +153,46 @@ export default function BookReviewDetailModal({
       setSendError("メッセージ送信に失敗しました。");
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleSaveReview = async () => {
+    if (!reviewId || !editor) return;
+
+    const trimmedText = editor.getText().trim();
+    if (!trimmedText) {
+      alert("書評本文を入力してください。");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/admin/reviews/${reviewId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          review: editor.getHTML(),
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        alert(data?.error ?? "更新に失敗しました。");
+        return;
+      }
+
+      alert("書評本文を保存しました。");
+      router.refresh();
+      onClose();
+    } catch (err) {
+      console.error("Error updating review:", err);
+      alert(
+        "書評本文の更新中に通信エラーが発生しました。時間をおいて再度お試しください。",
+      );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -306,10 +348,7 @@ export default function BookReviewDetailModal({
                 </p>
               </div>
               <div>
-                <button
-                  className="preview-btn"
-                  onClick={handlePreview}
-                >
+                <button className="preview-btn" onClick={handlePreview}>
                   <span className="font-lg">印刷プレビュー</span>
                 </button>
               </div>
@@ -318,6 +357,8 @@ export default function BookReviewDetailModal({
               type="submit"
               className="w-full save-btn"
               label="確定して保存"
+              onClick={handleSaveReview}
+              disabled={isSaving || !reviewId || !editor}
             />
           </section>
         </div>
