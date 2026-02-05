@@ -34,6 +34,17 @@ export default function Page() {
   const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]); // 選択された行IDを管理
   const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
 
+  // ソート条件
+  const [sortKey, setSortKey] = useState<
+    | "evaluations_status"
+    | "id"
+    | "book_title"
+    | "nickname"
+    | "evaluations_count"
+    | null
+  >(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
   // 検索条件
   const [searchTitle, setSearchTitle] = useState<string>("");
   const [searchNickname, setSearchNickname] = useState<string>("");
@@ -192,11 +203,40 @@ export default function Page() {
     setSelectedRowIds([]);
   };
 
+  const handleSort = (
+    key:
+      | "evaluations_status"
+      | "id"
+      | "book_title"
+      | "nickname"
+      | "evaluations_count",
+  ) => {
+    if (sortKey === key) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedReviews = [...filteredReviews].sort((a, b) => {
+    if (!sortKey) return 0;
+    const direction = sortDirection === "asc" ? 1 : -1;
+    const aValue = a[sortKey];
+    const bValue = b[sortKey];
+
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return (aValue - bValue) * direction;
+    }
+
+    return String(aValue).localeCompare(String(bValue), "ja") * direction;
+  });
+
   // 表示するデータをスライス
   const displayedData =
     displayCount === "all"
-      ? filteredReviews
-      : filteredReviews.slice(0, displayCount);
+      ? sortedReviews
+      : sortedReviews.slice(0, displayCount);
 
   // 選択されたデータを取得
   const selectedData = filteredReviews.filter((row) =>
@@ -360,27 +400,42 @@ export default function Page() {
                 </div>
               </th>
               <th className="w-[27.777%]">
-                <div className="flex justify-center items-center">
+                <div
+                  className="flex justify-center items-center cursor-pointer"
+                  onClick={() => handleSort("evaluations_status")}
+                >
                   ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
               <th className="w-[11.111%]">
-                <div className="flex items-center justify-start">
+                <div
+                  className="flex items-center justify-start cursor-pointer"
+                  onClick={() => handleSort("id")}
+                >
                   ID<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
               <th className="w-[27.777%]">
-                <div className="flex items-center">
+                <div
+                  className="flex items-center cursor-pointer"
+                  onClick={() => handleSort("book_title")}
+                >
                   書籍タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
               <th className="w-1/6">
-                <div className="flex items-center">
+                <div
+                  className="flex items-center cursor-pointer"
+                  onClick={() => handleSort("nickname")}
+                >
                   ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
               <th className="w-[11.111%]">
-                <div className="flex items-center">
+                <div
+                  className="flex items-center cursor-pointer"
+                  onClick={() => handleSort("evaluations_count")}
+                >
                   投票数<Icon icon="uil:arrow" rotate={1}></Icon>
                 </div>
               </th>
