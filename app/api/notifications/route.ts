@@ -96,25 +96,46 @@ export async function GET(req: NextRequest) {
 
     // NotificationItem 形式に変換
     const items: NotificationItem[] = notifications.map((notification) => {
+      // ユーティリティ関数
+      const isImageFile = (path: string): boolean =>
+        /\.(jpg|jpeg|png|gif|webp)$/i.test(path);
+
+      const normalizePath = (path: string): string =>
+        path.startsWith("/") ? path : `/${path}`;
+
+      // メイン画像の特定：最初の画像ファイルのインデックスを探す
+      const imageFileIndex = notification.notificationFiles.findIndex((nf) =>
+        isImageFile(nf.file.data_path),
+      );
+
+      // PDF ファイルを探す
       const pdfFile = notification.notificationFiles.find((nf) =>
         nf.file.data_path.toLowerCase().endsWith(".pdf"),
       );
 
-      const attachments = notification.notificationFiles.map((nf) => ({
-        name: nf.file.name,
-        url: nf.file.data_path,
-      }));
+      // メイン画像のパス
+      const image =
+        imageFileIndex >= 0
+          ? normalizePath(
+              notification.notificationFiles[imageFileIndex].file.data_path,
+            )
+          : "/top/image.png";
+
+      // 添付ファイル：メイン画像以外のすべてのファイル
+      const attachments = notification.notificationFiles
+        .filter((_, index) => index !== imageFileIndex)
+        .map((nf) => ({
+          name: nf.file.name,
+          url: normalizePath(nf.file.data_path),
+        }));
 
       return {
         id: notification.id,
         date: notification.public_date.toISOString().split("T")[0],
         title: notification.title,
         content: notification.detail || undefined,
-        image:
-          notification.notificationFiles.length > 0
-            ? notification.notificationFiles[0].file.data_path
-            : "/top/image.png",
-        pdfUrl: pdfFile ? pdfFile.file.data_path : undefined,
+        image,
+        pdfUrl: pdfFile ? normalizePath(pdfFile.file.data_path) : undefined,
         attachments,
       };
     });
