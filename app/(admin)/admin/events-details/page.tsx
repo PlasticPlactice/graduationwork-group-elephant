@@ -239,11 +239,20 @@ export default function Page() {
     return String(aValue).localeCompare(String(bValue), "ja") * direction;
   });
 
-  // 表示するデータをスライス
+  // 総ページ数を計算
+  const totalPages =
+    displayCount === "all"
+      ? 1
+      : Math.ceil(sortedReviews.length / (displayCount as number));
+
+  // 表示するデータをスライス（ページネーション対応）
   const displayedData =
     displayCount === "all"
       ? sortedReviews
-      : sortedReviews.slice(0, displayCount);
+      : sortedReviews.slice(
+          (currentPage - 1) * (displayCount as number),
+          currentPage * (displayCount as number),
+        );
 
   // 選択されたデータを取得
   const selectedData = filteredReviews.filter((row) =>
@@ -351,6 +360,7 @@ export default function Page() {
             onChange={(e) => {
               const value = e.target.value;
               setDisplayCount(value === "all" ? "all" : Number(value));
+              setCurrentPage(1); // 表示数変更時にページをリセット
             }}
           >
             <option value="10">10</option>
@@ -560,7 +570,7 @@ export default function Page() {
         />
       </div>
       {/* ページネーション */}
-      {displayCount !== "all" && (
+      {displayCount !== "all" && totalPages > 1 && (
         <div className="flex items-center justify-center my-5 page-section">
           <Icon
             icon="weui:arrow-filled"
@@ -568,41 +578,17 @@ export default function Page() {
             width={20}
             className="page-arrow"
           ></Icon>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 1 ? "active" : ""}`}
-            onClick={() => setCurrentPage(1)}
-            aria-current={currentPage === 1 ? "page" : undefined}
-          >
-            1
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 2 ? "active" : ""}`}
-            onClick={() => setCurrentPage(2)}
-            aria-current={currentPage === 2 ? "page" : undefined}
-          >
-            2
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 3 ? "active" : ""}`}
-            onClick={() => setCurrentPage(3)}
-            aria-current={currentPage === 3 ? "page" : undefined}
-          >
-            3
-          </button>
-          <span className="px-4 py-1 page-number" aria-hidden="true">
-            ...
-          </span>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 5 ? "active" : ""}`}
-            onClick={() => setCurrentPage(5)}
-            aria-current={currentPage === 5 ? "page" : undefined}
-          >
-            5
-          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              type="button"
+              className={`px-4 py-1 page-number ${currentPage === page ? "active" : ""}`}
+              onClick={() => setCurrentPage(page)}
+              aria-current={currentPage === page ? "page" : undefined}
+            >
+              {page}
+            </button>
+          ))}
           <Icon
             icon="weui:arrow-filled"
             width={20}
