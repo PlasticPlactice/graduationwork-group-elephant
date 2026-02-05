@@ -399,29 +399,13 @@ export default function PostPage() {
                   </div>
                   <div>
                     <p>文字色</p>
-                    <div className="flex gap-2 items-center">
-                      <button
-                        type="button"
-                        onClick={() => handleColorClick("#000000")}
-                        className={`${colorActive === "#000000" ? `${Styles.activeColorButton} ${Styles.blackButton}` : Styles.inactiveButton} ${Styles.editorColorButton}`}
-                      >
-                        黒
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleColorClick("#FF0000")}
-                        className={`${colorActive === "#FF0000" ? `${Styles.activeColorButton} ${Styles.redButton}` : Styles.inactiveButton} ${Styles.editorColorButton}`}
-                      >
-                        赤
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleColorClick("#0000FF")}
-                        className={`${colorActive === "#0000FF" ? `${Styles.activeColorButton} ${Styles.blueButton}` : Styles.inactiveButton} ${Styles.editorColorButton}`}
-                      >
-                        青
-                      </button>
-                    </div>
+                    <div className="w-20 items-center">
+                    <input 
+                      type="color"
+                      onChange={(e) => editor?.chain().focus().setColor(e.target.value).run()}
+                      className={`w-full h-8 rounded border cursor-pointer ${Styles.ColorPicker}`}
+                    />
+                  </div>
                   </div>
                 </div>
               </div>

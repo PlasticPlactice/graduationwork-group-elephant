@@ -54,6 +54,12 @@ export async function GET(req: NextRequest, context: RouteContext) {
             evaluations_status: true,
             evaluations_count: true,
             created_at: true,
+            event: {
+              select: {
+                id: true,
+                title: true
+              }
+            }
           },
           orderBy: {
             created_at: "desc",
