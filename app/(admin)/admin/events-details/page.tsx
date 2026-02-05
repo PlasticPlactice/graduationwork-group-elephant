@@ -27,11 +27,17 @@ interface ReviewData {
 
 export default function Page() {
   const [reviews, setReviews] = useState<ReviewData[]>([]);
+  const [filteredReviews, setFilteredReviews] = useState<ReviewData[]>([]);
   const [openRows, setOpenRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [displayCount, setDisplayCount] = useState<number | "all">(10);
   const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]); // 選択された行IDを管理
   const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
+
+  // 検索条件
+  const [searchTitle, setSearchTitle] = useState<string>("");
+  const [searchNickname, setSearchNickname] = useState<string>("");
+  const [searchStatus, setSearchStatus] = useState<string>("");
 
   const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
   const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
@@ -50,6 +56,7 @@ export default function Page() {
         if (res.ok) {
           const data = await res.json();
           setReviews(data);
+          setFilteredReviews(data);
         } else {
           console.error("Failed to fetch reviews");
         }
@@ -137,12 +144,64 @@ export default function Page() {
     router.push("/admin/print-preview");
   };
 
+  // 検索処理
+  const handleSearch = () => {
+    let filtered = reviews;
+
+    // 書籍タイトルで絞り込み
+    if (searchTitle.trim()) {
+      filtered = filtered.filter((review) =>
+        review.book_title.toLowerCase().includes(searchTitle.toLowerCase()),
+      );
+    }
+
+    // ニックネームで絞り込み
+    if (searchNickname.trim()) {
+      filtered = filtered.filter((review) =>
+        review.nickname.toLowerCase().includes(searchNickname.toLowerCase()),
+      );
+    }
+
+    // ステータスで絞り込み
+    if (searchStatus) {
+      const statusMap: { [key: string]: number } = {
+        評価前: 0,
+        一次通過: 1,
+        二次通過: 2,
+        三次通過: 3,
+        不採用: 4,
+      };
+      const statusValue = statusMap[searchStatus];
+      if (statusValue !== undefined) {
+        filtered = filtered.filter(
+          (review) => review.evaluations_status === statusValue,
+        );
+      }
+    }
+
+    setFilteredReviews(filtered);
+    setSelectedRowIds([]); // 検索時に選択をクリア
+  };
+
+  // 検索条件のリセット
+  const handleResetSearch = () => {
+    setSearchTitle("");
+    setSearchNickname("");
+    setSearchStatus("");
+    setFilteredReviews(reviews);
+    setSelectedRowIds([]);
+  };
+
   // 表示するデータをスライス
   const displayedData =
-    displayCount === "all" ? reviews : reviews.slice(0, displayCount);
+    displayCount === "all"
+      ? filteredReviews
+      : filteredReviews.slice(0, displayCount);
 
   // 選択されたデータを取得
-  const selectedData = reviews.filter((row) => selectedRowIds.includes(row.id));
+  const selectedData = filteredReviews.filter((row) =>
+    selectedRowIds.includes(row.id),
+  );
 
   // StatusEditModal用にデータを整形（ステータスを数値に変換）
   const statusTargetReviews = selectedData.map((row) => ({
@@ -177,7 +236,13 @@ export default function Page() {
 
         <div className="">
           <label htmlFor="title_box">書籍タイトル</label>
-          <Textbox size="lg" className="custom-input-full" id="title_box" />
+          <Textbox
+            size="lg"
+            className="custom-input-full"
+            id="title_box"
+            value={searchTitle}
+            onChange={(e) => setSearchTitle(e.target.value)}
+          />
         </div>
         <div className="">
           <label htmlFor="nickname_box">ニックネーム</label>
@@ -185,6 +250,8 @@ export default function Page() {
             className="custom-input-full"
             type="text"
             id="nickname_box"
+            value={searchNickname}
+            onChange={(e) => setSearchNickname(e.target.value)}
           />
         </div>
 
@@ -192,21 +259,37 @@ export default function Page() {
           <label htmlFor="status" className="block">
             ステータス
           </label>
-          <select className="input-group" id="status">
+          <select
+            className="input-group"
+            id="status"
+            value={searchStatus}
+            onChange={(e) => setSearchStatus(e.target.value)}
+          >
+            <option value="">すべて</option>
             <option value="評価前">評価前</option>
             <option value="一次通過">一次通過</option>
             <option value="二次通過">二次通過</option>
             <option value="三次通過">三次通過</option>
+            <option value="不採用">不採用</option>
           </select>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-3">
           <AdminButton
             label="検索"
-            type="submit"
+            type="button"
             icon="mdi:search"
             iconPosition="left"
             className="mt-5 search-btn"
+            onClick={handleSearch}
+          />
+          <AdminButton
+            label="リセット"
+            type="button"
+            icon="mdi:refresh"
+            iconPosition="left"
+            className="mt-5 search-btn"
+            onClick={handleResetSearch}
           />
         </div>
       </details>
