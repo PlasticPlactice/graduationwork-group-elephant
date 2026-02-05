@@ -82,6 +82,18 @@ export default function Page() {
     );
   };
 
+  // 一括選択ボタンのハンドラ（トグル動作）
+  const handleBulkSelect = () => {
+    if (
+      selectedRowIds.length === displayedData.length &&
+      displayedData.length > 0
+    ) {
+      setSelectedRowIds([]);
+    } else {
+      setSelectedRowIds(displayedData.map((row) => row.id));
+    }
+  };
+
   // モーダルが開いている時に背景のスクロールを防ぐ
   useEffect(() => {
     if (isStatusEditModalOpen) {
@@ -101,7 +113,8 @@ export default function Page() {
     setIsStatusEditModalOpen(true);
   };
   const handleCsvOutput = () => {
-    // CSV出力は今回は表示中のデータを対象とする（要件に応じて選択データのみに変更も可）
+    // 選択されたデータがない場合はアラートを表示
+    if (selectedRowIds.length === 0) return alert("データが選択されていません");
     setIsCsvOutputModalOpen(true);
   };
   const handleAllMessageSend = () => {
@@ -217,7 +230,9 @@ export default function Page() {
             <option value="30">30</option>
             <option value="all">全件表示</option>
           </select>
-          <button className="choice-btn font-bold">一括選択</button>
+          <button className="choice-btn font-bold" onClick={handleBulkSelect}>
+            一括選択
+          </button>
         </div>
 
         <div className="flex justify-end mx-8 gap-3">
@@ -390,7 +405,7 @@ export default function Page() {
 
       <div className="flex justify-end mr-8 my-5">
         <AdminButton
-          label="全件CSV出力"
+          label="選択したデータのCSV出力"
           icon="material-symbols:download"
           iconPosition="left"
           className="w-auto"
@@ -457,7 +472,7 @@ export default function Page() {
       <CsvOutputModal
         isOpen={isCsvOutputModalOpen}
         onClose={closeModal}
-        data={displayedData}
+        data={selectedData}
       />
       <AllMessageSendModal
         isOpen={isAllMessageSendModalOpen}
