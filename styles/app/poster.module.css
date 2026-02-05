@@ -330,3 +330,9 @@
   font-weight: bold;
   box-shadow: none;
 }
+
+.ColorPicker {
+  padding: 0 !important;
+  border: none !important;
+
+}
