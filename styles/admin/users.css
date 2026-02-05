@@ -143,6 +143,11 @@ details[open] .icon {
   background-color: var(--color-bg);
   box-shadow: none;
 }
+.close-btn:hover {
+  background-color: var(--color-bg);
+  box-shadow: none;
+  border: none;
+}
 .user-data-title {
   color: var(--color-sub);
 }
