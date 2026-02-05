@@ -179,24 +179,19 @@ export default function UserDetailModal({
           <table className="w-full event-table">
             <thead className="table-head">
               <tr>
-                <th className="w-1/5">
+                <th>
+                  <div className="flex items-center ml-3">
+                    イベント名<Icon icon="uil:arrow" rotate={1}></Icon>
+                  </div>
+                </th>
+                <th>
                   <div className="flex items-center ml-3">
                     ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
                   </div>
                 </th>
-                <th className="w-1/10">
-                  <div className="flex items-center justify-start">
-                    ID<Icon icon="uil:arrow" rotate={1}></Icon>
-                  </div>
-                </th>
-                <th className="w-2/5">
+                <th>
                   <div className="flex items-center">
                     書籍タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
-                  </div>
-                </th>
-                <th className="w-1/5">
-                  <div className="flex items-center">
-                    イベント名<Icon icon="uil:arrow" rotate={1}></Icon>
                   </div>
                 </th>
                 <th>{/* <Icon icon='fe:arrow-up'></Icon> */}</th>
@@ -214,6 +209,9 @@ export default function UserDetailModal({
                 displayedData.map((row) => (
                   <React.Fragment key={row.id}>
                     <tr className="table-row">
+                      <td>
+                        <span className="ml-3">{row.event?.title}</span>
+                      </td>
                       <td className="text-left">
                         <span className="">
                           {(() => {
@@ -235,14 +233,8 @@ export default function UserDetailModal({
                           })()}
                         </span>
                       </td>
-                      <td className="text-left">
-                        <span>{row.id}</span>
-                      </td>
                       <td>
                         <span className="modal-title-text">{row.book_title}</span>
-                      </td>
-                      <td>
-                        <span>{row.event?.title}</span>
                       </td>
                       <td className="text-right align-middle pr-3">
                         <button
@@ -260,7 +252,7 @@ export default function UserDetailModal({
                     </tr>
                     {openRows.includes(row.id) && (
                       <tr key={`${row.id}-details`} className="details-row">
-                        <td colSpan={5} className="details-content">
+                        <td colSpan={4} className="details-content">
                           <div className="p-4 flex">
                             <section className="w-[57.142%]">
                               <h3 className="font-bold mb-2 ml-4">書評本文</h3>
