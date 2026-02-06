@@ -143,6 +143,11 @@ details[open] .icon {
   background-color: var(--color-bg);
   box-shadow: none;
 }
+.close-btn:hover {
+  background-color: var(--color-bg);
+  box-shadow: none;
+  border: none;
+}
 .user-data-title {
   color: var(--color-sub);
 }
@@ -182,9 +187,8 @@ summary {
 details[open] .icon {
   transform: rotate(180deg);
 }
-.title-text {
-  color: var(--color-main);
-  border-bottom: 1px solid var(--color-main);
+.modal-title-text {
+  color: var(--color-text);
 }
 .status-text {
   color: #1e40af;
@@ -235,7 +239,7 @@ details[open] .icon {
   box-shadow: none;
 }
 .exit-btn {
-  width: 10rem;
+  width: 13rem;
   height: 2.5rem;
   font-size: 1.5rem;
   box-shadow: none;

@@ -133,7 +133,14 @@ details[open] .icon {
 .notice-record:hover {
   background-color: rgba(54, 168, 177, 0.08);
 }
-
+.delete-btn{
+  background-color: var(--color-bg);
+  box-shadow: none;
+  color: var(--color-main);
+}
+.delete-btn:hover{
+  background-color: rgba(54, 168, 177, 0.08);
+}
 .notice-delete-btn {
   width: 36px;
   height: 36px;

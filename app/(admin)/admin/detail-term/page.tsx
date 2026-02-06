@@ -80,11 +80,13 @@ export default function Page() {
 
   return (
     <main className="p-6">
-      <AdminButton
-        label="利用規約登録"
-        className="resiter-btn"
-        onClick={handleRegister}
-      />
+      <div className="flex justify-end">
+        <AdminButton
+          label="利用規約登録"
+          className="resiter-btn"
+          onClick={handleRegister}
+          />
+      </div>
       {isLoading && <p className="text-center mt-8">読み込み中...</p>}
       {error && (
         <p className="text-center mt-8 text-red-600">エラー: {error}</p>

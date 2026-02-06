@@ -82,8 +82,8 @@ details[open] .icon {
   transform: rotate(180deg);
 }
 .title-text{
-  color: var(--color-main);
-  border-bottom: 1px solid var(--color-main);
+  color: var(--color-admin-link);
+  border-bottom: 1px solid var(--color-admin-link);
   cursor: pointer
 }
 .status-text{
@@ -130,6 +130,9 @@ details[open] .icon {
 .book-content{
   font-size: 20px;
   margin: 0 0 0.6rem 0;
+}
+.review-edit-btn{
+  box-shadow: none;
 }
 .print-preview-btn{
   box-shadow: none;

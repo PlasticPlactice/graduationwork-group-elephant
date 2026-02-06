@@ -415,7 +415,7 @@ export default function Page() {
             </div>
 
             <div className="schedule-table">
-              <div className="row ">
+              <div className="row">
                 <div className="label text-center">テーマタイトル</div>
                 <div className="content">{end.title}</div>
               </div>

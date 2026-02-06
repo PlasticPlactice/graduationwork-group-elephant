@@ -121,8 +121,14 @@ progress {
 }
 .admin-card:hover{
   background-color: var(--color-main);
+  color: var(--color-bg);
 }
-
+.admin-card:hover .card-title {
+  color: var(--color-bg);
+}
+.admin-card:hover .card-description {
+  color: var(--color-bg);
+}
 .admin-icon {
   background-color: var(--color-main);
   color: var(--color-bg);
