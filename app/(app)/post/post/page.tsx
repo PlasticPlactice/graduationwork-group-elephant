@@ -128,6 +128,8 @@ export default function PostPage() {
     author: string;
     publishers: string;
     event_id: string;
+    draft_flag: boolean;
+    public_flag: boolean;
   }>({
     user_id: null,
     review: "",
@@ -136,7 +138,7 @@ export default function PostPage() {
     pattern_color: "#FFFFFF",
     isbn: "",
     book_title: "",
-    evaluations_status: 2,
+    evaluations_status: 0,
     nickname: "",
     address: "",
     age: 1,
@@ -145,12 +147,15 @@ export default function PostPage() {
     author: "",
     publishers: "",
     event_id: "",
+    draft_flag: false,
+    public_flag: true
   });
 
+  // 書評確認画面へデータを送る
   const handleConfirm = () => {
     setForm({
       ...form,
-      evaluations_status: 2,
+      evaluations_status: 0,
     });
 
     sessionStorage.setItem(
@@ -187,7 +192,7 @@ export default function PostPage() {
   const handleDraftConfirm = () => {
     const nextForm = {
       ...form,
-      evaluations_status: 1,
+      draft_flag: true
     };
 
     setForm(nextForm);

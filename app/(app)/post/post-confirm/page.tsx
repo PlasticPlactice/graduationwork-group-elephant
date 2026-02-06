@@ -43,7 +43,7 @@ export default function PostConfirmPage({}: {}) {
   // PUT処理関数
   const updateBookReview = async () => {
     try {
-      const isDraftStatus = data.evaluations_status === 1 ? true : false;
+      const isDraftStatus = data.draft_flg === true ? true : false;
       console.log(isDraftStatus);
 
       const res = await fetch(`/api/book-reviews/mypage/edit`, {
