@@ -4,8 +4,16 @@ import React, { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { Pagination } from "@/components/ui/pagination";
+import { useSearchParams } from "next/navigation";
 
-export default function EventPage() {
+function EventPageInner() {
+  const searchParams = useSearchParams();
+  const currentPageRaw = Number(searchParams?.get("page") ?? "1");
+  const currentPage =
+    Number.isFinite(currentPageRaw) && currentPageRaw > 0
+      ? Math.floor(currentPageRaw)
+      : 1;
+
   // 仮のイベントデータ（例として3件）
   const activeEventList = [
     {
@@ -45,46 +53,55 @@ export default function EventPage() {
     },
   ];
 
+  const itemsPerPage = 6;
+  const totalPages = Math.max(1, Math.ceil(endEventList.length / itemsPerPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * itemsPerPage;
+  const pagedEndEventList = endEventList.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
   return (
-    <div className="min-h-screen bg-white pt-6">
-      <div className="container mx-auto px-2 max-w-2xl">
+    <div className="min-h-screen bg-white pt-6 pb-16">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         {/* ファンサイトへ戻るボタンを追加 */}
-        <div className="mb-12">
+        <div className="mb-12 flex justify-center lg:justify-start">
           <Button
             href="/"
-            className="w-full bg-white border font-bold h-auto rounded-lg shadow hover:bg-slate-50 transition-colors"
-            style={{ padding: "12px 0" }}
+            className="w-full lg:w-auto bg-white border font-bold h-auto rounded-lg shadow hover:bg-slate-50 transition-colors py-3 px-6"
           >
             象と花ファンサイトへ
           </Button>
         </div>
 
-        <h2 className="text-center text-2xl font-bold mb-10 text-slate-900">
+        <h2 className="text-center lg:text-left text-2xl font-bold mb-10 text-slate-900">
           現在開催中のイベント
         </h2>
 
-        <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center">
           {activeEventList.map((event, idx) => (
-            <EventCard
-              key={idx}
-              eventId=""
-              title={event.title}
-              daysLeft={event.daysLeft}
-              detail={event.description}
-              buttonText={event.buttonText}
-              href={event.href}
-              isFinished={event.isFinished}
-            />
+            <div key={idx} className="w-full max-w-xl">
+              <EventCard
+                eventId=""
+                title={event.title}
+                daysLeft={event.daysLeft}
+                detail={event.description}
+                buttonText={event.buttonText}
+                href={event.href}
+                isFinished={event.isFinished}
+              />
+            </div>
           ))}
         </div>
 
-        <h2 className="text-center text-2xl font-bold my-10 text-slate-900">
+        <h2 className="text-center lg:text-left text-2xl font-bold my-10 text-slate-900">
           過去のイベント
         </h2>
 
-        <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           {/* イベントカードをループで表示 */}
-          {endEventList.map((event, idx) => (
+          {pagedEndEventList.map((event, idx) => (
             <EventCard
               key={idx}
               eventId=""
@@ -99,10 +116,16 @@ export default function EventPage() {
         </div>
 
         {/* ページネーション */}
-        <Suspense fallback={null}>
-          <Pagination totalPages={3} currentPage={1} />
-        </Suspense>
+        <Pagination totalPages={totalPages} currentPage={safeCurrentPage} />
       </div>
     </div>
+  );
+}
+
+export default function EventPage() {
+  return (
+    <Suspense fallback={null}>
+      <EventPageInner />
+    </Suspense>
   );
 }
