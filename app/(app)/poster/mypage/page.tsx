@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { CSSProperties } from "react";
@@ -47,20 +47,20 @@ interface BookReviewData {
 export default function MyPage() {
   const router = useRouter();
 
-  // 初期表示時にモーダルを表示
+  // 蛻晄悄陦ｨ遉ｺ譎ゅ↓繝｢繝ｼ繝繝ｫ繧定｡ｨ遉ｺ
   const [showModal, setShowModal] = useState(false);
-  // プロフィール編集、退会確認、DM（運営からのお知らせ）モーダルの表示
+  // 繝励Ο繝輔ぅ繝ｼ繝ｫ邱ｨ髮・・莨夂｢ｺ隱阪．M・磯°蝟ｶ縺九ｉ縺ｮ縺顔衍繧峨○・峨Δ繝ｼ繝繝ｫ縺ｮ陦ｨ遉ｺ
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showDMModal, setShowDMModal] = useState(false);
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
-  // ユーザーデータ
+  // 繝ｦ繝ｼ繧ｶ繝ｼ繝・・繧ｿ
   const [userData, setUserData] = useState<ProfileData | null>(null);
-  // ユーザの書評データ
+  // 繝ｦ繝ｼ繧ｶ縺ｮ譖ｸ隧輔ョ繝ｼ繧ｿ
   const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
-  // イベントデータ
+  // 繧､繝吶Φ繝医ョ繝ｼ繧ｿ
   const [eventData, setEventData] = useState<EventData[]>([])
-  // 未読メッセージデータ
+  // 譛ｪ隱ｭ繝｡繝・そ繝ｼ繧ｸ繝・・繧ｿ
   interface UnreadMessage {
     id: number;
     message: {
@@ -73,9 +73,9 @@ export default function MyPage() {
     null,
   );
 
-  // イベント取得関数
-  // ステータス１のイベントのみ
-  // １が投稿可能なイベントの想定。
+  // 繧､繝吶Φ繝亥叙蠕鈴未謨ｰ
+  // 繧ｹ繝・・繧ｿ繧ｹ・代・繧､繝吶Φ繝医・縺ｿ
+  // ・代′謚慕ｨｿ蜿ｯ閭ｽ縺ｪ繧､繝吶Φ繝医・諠ｳ螳壹・
   const fetchEventList = useCallback(async () => {
     try {
       const res = await fetch("/api/events?status=1", {
@@ -123,7 +123,7 @@ export default function MyPage() {
     }
   }, []);
 
-  // 未読メッセージ取得
+  // 譛ｪ隱ｭ繝｡繝・そ繝ｼ繧ｸ蜿門ｾ・
   const fetchUnreadMessage = useCallback(async () => {
     try {
       const res = await fetch("/api/user/messages/unread");
@@ -131,7 +131,7 @@ export default function MyPage() {
         const data = await res.json();
         if (data.unreadMessage) {
           setUnreadMessage(data.unreadMessage);
-          setShowModal(true); // 未読がある場合のみモーダルを開く
+          setShowModal(true); // 譛ｪ隱ｭ縺後≠繧句ｴ蜷医・縺ｿ繝｢繝ｼ繝繝ｫ繧帝幕縺・
         }
       }
     } catch (error) {
@@ -139,7 +139,7 @@ export default function MyPage() {
     }
   }, []);
 
-  // メッセージ既読化処理
+  // 繝｡繝・そ繝ｼ繧ｸ譌｢隱ｭ蛹門・逅・
   const handleConfirmRead = async () => {
     if (!unreadMessage) {
       setShowModal(false);
@@ -153,12 +153,12 @@ export default function MyPage() {
       setUnreadMessage(null);
     } catch (error) {
       console.error("Failed to mark as read:", error);
-      // エラーでもとりあえず閉じる（UX優先）
+      // 繧ｨ繝ｩ繝ｼ縺ｧ繧ゅ→繧翫≠縺医★髢峨§繧具ｼ・X蜆ｪ蜈茨ｼ・
       setShowModal(false);
     }
   };
 
-  // 初回レンダリング時にデータを取得
+  // 蛻晏屓繝ｬ繝ｳ繝繝ｪ繝ｳ繧ｰ譎ゅ↓繝・・繧ｿ繧貞叙蠕・
   useEffect(() => {
     fetchUserData();
     fetchBookReviewData();
@@ -167,47 +167,30 @@ export default function MyPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const sampleEvents = [
-    {
-      title: "第1回 文庫Xイベント",
-      daysLeft: 10,
-      description: "投稿可能期間中です！投稿してみましょう！",
-      buttonText: "投稿へ",
-      href: "/post/barcode-scan",
-    },
-    {
-      title: "第2回 文庫Xイベント",
-      daysLeft: 15,
-      description: "投稿可能期間中です！投稿してみましょう！",
-      buttonText: "投稿へ",
-      href: "/post/barcode-scan",
-    },
-  ];
-
   const REVIEW_FILTER_TABS: {
     key: ReviewFilterTab;
     label: string;
   }[] = [
-    { key: "all" as const, label: "全て" },
-    { key: 1, label: "下書き" },
-    { key: 2, label: "１次審査前" },
-    { key: 3, label: "審査中" },
-    { key: 4, label: "終了済み" },
+    { key: "all" as const, label: "すべて" },
+    { key: 1, label: "未審査" },
+    { key: 2, label: "一次審査中" },
+    { key: 3, label: "二次審査中" },
+    { key: 4, label: "終了" },
   ];
 
   const REVIEW_STATUS_MAP = {
     1: {
-      label: "下書き",
+      label: "未審査",
       badgeType: "gray",
       canEdit: true,
     },
     2: {
-      label: "１次審査前",
+      label: "一次審査中",
       badgeType: "red",
       canEdit: true,
     },
     3: {
-      label: "審査中",
+      label: "二次審査中",
       badgeType: "blue",
       canEdit: false,
     },
@@ -218,14 +201,14 @@ export default function MyPage() {
     },
   } as const;
 
-  // DB/APIの文字列・数値をUI用コード(1..4)へ正規化
+  // DB/API縺ｮ譁・ｭ怜・繝ｻ謨ｰ蛟､繧旦I逕ｨ繧ｳ繝ｼ繝・1..4)縺ｸ豁｣隕丞喧
   const normalizeStatus = (val: number): ReviewStatusCode => {
     return val === 1 || val === 2 || val === 3 || val === 4
       ? (val as ReviewStatusCode)
       : 2;
   };
 
-  // 表示用にデータを整形
+  // 陦ｨ遉ｺ逕ｨ縺ｫ繝・・繧ｿ繧呈紛蠖｢
   const uiReviews = bookReviewData.map((review) => {
     const code = normalizeStatus(review.evaluations_status);
     const status = REVIEW_STATUS_MAP[code];
@@ -233,7 +216,7 @@ export default function MyPage() {
     return {
       bookReviewId: review.id,
       title: review.book_title,
-      status: status?.label ?? "未分類",
+      status: status?.label ?? "未設定",
       evaluations_status: code,
       badgeType: status?.badgeType ?? "gray",
       excerpt: review.review,
@@ -262,24 +245,29 @@ export default function MyPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ reason: "ユーザーからの退会申請" }),
+        body: JSON.stringify({ reason: "ユーザー退会" }),
       });
 
       if (res.ok) {
-        // 退会成功
-        alert("退会処理が完了しました。ご利用ありがとうございました。");
-        // ログアウトしてトップページへ
+        // 騾莨壽・蜉・
+        alert(
+          "退会処理が完了しました。ご利用ありがとうございました。"
+        );
+        // 繝ｭ繧ｰ繧｢繧ｦ繝医＠縺ｦ繝医ャ繝励・繝ｼ繧ｸ縺ｸ
         await signOut({ callbackUrl: "/" });
       } else {
         const data = await res.json();
         alert(
-          data.message || "退会処理に失敗しました。もう一度お試しください。",
+          data.message ||
+            "退会処理に失敗しました。時間をおいて再度お試しください。"
         );
         setIsDeleting(false);
       }
     } catch (error) {
       console.error("Withdraw error:", error);
-      alert("退会処理中にエラーが発生しました。もう一度お試しください。");
+      alert(
+        "退会処理中にエラーが発生しました。時間をおいて再度お試しください。"
+      );
       setIsDeleting(false);
     } finally {
       setShowDeleteModal(false);
@@ -297,7 +285,7 @@ export default function MyPage() {
     router.push("/post/edit");
   };
 
-  // 投稿締め切りまでの日数を計算する関数
+  // 謚慕ｨｿ邱繧∝・繧翫∪縺ｧ縺ｮ譌･謨ｰ繧定ｨ育ｮ励☆繧矩未謨ｰ
   function daysFromToday(dateString: string): number {
   const today = new Date();
   const target = new Date(dateString);
@@ -319,14 +307,14 @@ export default function MyPage() {
 
   return (
     <>
-      {/* 1次審査通過モーダル */}
+      {/* 1谺｡蟇ｩ譟ｻ騾夐℃繝｢繝ｼ繝繝ｫ */}
       <ReviewPassedModal
         open={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={handleConfirmRead}
         message={unreadMessage?.message?.message}
       />
-      {/* 退会確認モーダル */}
+      {/* 騾莨夂｢ｺ隱阪Δ繝ｼ繝繝ｫ */}
       <AccountDeleteModal
         open={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -337,18 +325,67 @@ export default function MyPage() {
         className="min-h-screen bg-white px-4 py-4 box-border"
         style={{ "--color-main": "#36A8B1" } as CSSProperties}
       >
-        <div className="text-center mt-3 relative">
-          <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
-          <div className="flex items-center justify-center gap-3 mt-1">
-            <div className={`font-bold ${Styles.mainColor}`}>
-              {userData?.nickName || "ゲスト"}さん
+        <div className="mt-3 max-w-6xl mx-auto px-4 flex flex-col gap-3 md:flex-row md:items-start">
+          <Link href="/" className="hidden md:block">
+            <div
+              className="flex items-center px-2 rounded shadow-md h-10 w-64"
+              style={{ backgroundColor: "var(--color-bg)" ,border: "1px solid var(--color-main)"}}
+            >
+              <Image
+                src="/layout/new_logo.png"
+                alt="logo"
+                width={32}
+                height={32}
+                className="ml-2"
+              />
+              <span
+                className="font-bold ml-2 whitespace-nowrap"
+                style={{ color: "var(--color-main)" }}
+              >
+                象と花ファンサイトへ
+                <span className="ml-2" aria-hidden="true">
+                  &gt;
+                </span>
+              </span>
+            </div>
+          </Link>
+
+          <div className="flex-1 text-center">
+            <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
+            <div className="flex items-center justify-center gap-3 mt-1">
+              <div className={`font-bold ${Styles.mainColor}`}>
+                {userData?.nickName || "ゲストさん"}
+              </div>
+            </div>
+            <div className="mt-3 flex justify-center md:hidden">
+              <Link href="/">
+                <div
+                  className="flex items-center px-2 rounded shadow-md h-10 w-full max-w-md md:w-64"
+                  style={{ backgroundColor: "var(--color-bg)" ,border: "1px solid var(--color-main)"}}
+                >
+                  <Image
+                    src="/layout/new_logo.png"
+                    alt="logo"
+                    width={32}
+                    height={32}
+                    className="ml-2"
+                  />
+                  <span
+                    className="font-bold ml-2 whitespace-nowrap"
+                    style={{ color: "var(--color-main)" }}
+                  >
+                    象と花ファンサイトへ
+                    <span className="ml-2" aria-hidden="true">
+                      &gt;
+                    </span>
+                  </span>
+                </div>
+              </Link>
             </div>
           </div>
-          <div
-            className="absolute right-3 top-2 flex items-center"
-            aria-hidden="true"
-          >
-            {/* SVG 封筒アイコン（大きめ） */}
+
+          <div className="hidden md:flex items-center w-64 justify-end" aria-hidden="true">
+            {/* SVG 蟆∫ｭ偵い繧､繧ｳ繝ｳ・亥､ｧ縺阪ａ・・*/}
             <svg
               width="40"
               height="40"
@@ -375,55 +412,20 @@ export default function MyPage() {
             <MassageModal
               open={showDMModal}
               onClose={() => setShowDMModal(false)}
-              userName={userData?.nickName || "ゲスト"}
+              userName={userData?.nickName || "ゲストさん"}
             />
           </div>
         </div>
 
-        <div className="mb-1">
-          {/* <Link
-            href="/"
-            className="inline-block mt-6 ml-1 font-bold text-sky-500"
-            aria-label="ファンサイトのトップページへ移動"
-          >
-            <span className="mr-1" aria-hidden="true">
-              &lt;
-            </span>{" "}
-            ファンサイトはこちら
-          </Link> */}
-          <Link href="/">
-            <div
-              className="flex items-center px-2 rounded shadow-md my-10"
-              style={{ backgroundColor: "var(--color-bg)" ,border: "1px solid var(--color-main)"}}
-            >
-              <Image
-                src="/layout/new_logo.png"
-                alt="logo"
-                width={50}
-                height={50}
-                className="ml-3"
-              />
-              <span
-                className="font-bold ml-auto"
-                style={{ color: "var(--color-main)" }}
-              >
-                象と花ファンサイトへ
-                <span className="ml-4" aria-hidden="true">
-                  &gt;
-                </span>
-              </span>
+        <div className="max-w-6xl mx-auto my-4 lg:grid lg:grid-cols-2 lg:gap-10">
+          <div className="max-w-2xl mx-auto lg:mx-0">
+            <div className="flex items-center justify-center gap-4 my-6 lg:mb-10">
+              <div className="w-24 h-px bg-black" />
+              <h2 className="font-bold text-slate-900">現在開催中のイベント</h2>
+              <div className="w-24 h-px bg-black" />
             </div>
-          </Link>
-        </div>
 
-        <div className="max-w-2xl mx-auto my-4">
-          <div className="flex items-center justify-center gap-4 my-6">
-            <div className="w-24 h-px bg-black" />
-            <h2 className="font-bold text-slate-900">投稿のイベント</h2>
-            <div className="w-24 h-px bg-black" />
-          </div>
-
-          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
             {eventData.map((event, eventIndex) => (
               <div key={eventIndex} className="max-w-2xl">
                 <EventCard
@@ -436,22 +438,24 @@ export default function MyPage() {
                 />
               </div>
             ))}
+            </div>
+
           </div>
 
-          {/* あなたの書評セクション (イベントカードの次に表示) */}
-          <div className="max-w-2xl mx-auto my-3">
+          {/* 縺ゅ↑縺溘・譖ｸ隧輔そ繧ｯ繧ｷ繝ｧ繝ｳ (繧､繝吶Φ繝医き繝ｼ繝峨・谺｡縺ｫ陦ｨ遉ｺ) */}
+          <div className="max-w-2xl mx-auto my-3 lg:mx-0 lg:mt-0">
             <div className="text-center my-6">
-              <div className="flex items-center justify-center gap-4 mt-20">
+              <div className="flex items-center justify-center gap-4 mt-20 lg:mt-6">
                 <div className="w-24 h-px bg-black" />
                 <h2 className="font-bold text-slate-900">あなたの書評</h2>
                 <div className="w-24 h-px bg-black" />
               </div>
               <div className={`text-sm mt-1 font-bold ${Styles.mainColor}`}>
-                ※１次審査前のみ編集できます。
+                ※一次審査中のみ編集できます
               </div>
             </div>
 
-            {/* tabs: use ul/li/a structure (参考) */}
+            {/* tabs: use ul/li/a structure (蜿り・ */}
             <ul
               className="flex flex-wrap justify-center text-sm font-medium text-center border-b border-gray-500 my-3"
               role="tablist"
@@ -543,7 +547,7 @@ export default function MyPage() {
                       {review.excerpt}
                     </div>
 
-                    {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
+                    {/* 邱ｨ髮・・繧ｿ繝ｳ縺ｯ隕∫ｴ・・荳九↓驟咲ｽｮ・医き繝ｼ繝我ｸ句ｯ・○・・*/}
                     <div className="mt-4">
                       {review.href ? (
                         <button
@@ -568,7 +572,7 @@ export default function MyPage() {
                 </div>
               ))}
             </div>
-            {/* マイページ下部のメニュー（添付画像のコンテンツ） */}
+            {/* 繝槭う繝壹・繧ｸ荳矩Κ縺ｮ繝｡繝九Η繝ｼ・域ｷｻ莉倡判蜒上・繧ｳ繝ｳ繝・Φ繝・ｼ・*/}
             <div className="max-w-2xl mx-auto my-10">
               <ul
                 className="divide-y-2 bg-white overflow-hidden border-t-2 border-b-2"
@@ -583,7 +587,7 @@ export default function MyPage() {
                     onClick={() => setShowEditProfileModal(true)}
                     className={`${Styles.mypage__linkButton}`}
                   >
-                    プロフィールの編集
+                    プロフィール編集
                   </button>
                 </li>
                 {userData && (
@@ -599,9 +603,9 @@ export default function MyPage() {
                     href="/poster/mypage/password"
                     className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-sky-300"
                     style={{ color: "var(--color-text)" }}
-                    aria-label="パスワードの変更へ"
+                    aria-label="パスワード変更"
                   >
-                    パスワードの変更
+                    パスワード変更
                   </a>
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>
@@ -626,10 +630,10 @@ export default function MyPage() {
                       setShowDeleteModal(true);
                     }}
                     className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                    aria-label="退会手続きへ"
+                    aria-label="退会"
                     style={{ color: "var(--color-main)" }}
                   >
-                    退会する
+                    退会
                   </a>
                 </li>
               </ul>
@@ -640,3 +644,4 @@ export default function MyPage() {
     </>
   );
 }
+
