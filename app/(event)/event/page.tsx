@@ -6,7 +6,7 @@ import { EventCard } from "@/components/features/EventCard";
 import { Pagination } from "@/components/ui/pagination";
 import { useSearchParams } from "next/navigation";
 
-export default function EventPage() {
+function EventPageInner() {
   const searchParams = useSearchParams();
   const currentPageRaw = Number(searchParams?.get("page") ?? "1");
   const currentPage =
@@ -116,10 +116,16 @@ export default function EventPage() {
         </div>
 
         {/* ページネーション */}
-        <Suspense fallback={null}>
-          <Pagination totalPages={totalPages} currentPage={safeCurrentPage} />
-        </Suspense>
+        <Pagination totalPages={totalPages} currentPage={safeCurrentPage} />
       </div>
     </div>
+  );
+}
+
+export default function EventPage() {
+  return (
+    <Suspense fallback={null}>
+      <EventPageInner />
+    </Suspense>
   );
 }
