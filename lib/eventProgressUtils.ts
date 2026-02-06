@@ -50,6 +50,21 @@ export const getEventCircleClassName = (
   }
 };
 
+export const getEventLabelClassName = (
+  index: number,
+  status: number | string,
+): string => {
+  const statusNumber =
+    typeof status === "string" ? parseInt(status, 10) : status;
+  if (index < statusNumber) {
+    return "event-condition-label-past";
+  } else if (index === statusNumber) {
+    return "event-condition-label-now";
+  } else {
+    return "event-condition-label-future";
+  }
+};
+
 /**
  * ステータス矢印アイコンが表示されるべき位置を判定する関数
  * @param index インデックス (0, 1, 2, 3)

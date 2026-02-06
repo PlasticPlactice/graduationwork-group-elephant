@@ -124,6 +124,9 @@ input:checked + .slider:before {
   color: var(--color-main);
   margin: auto;
 }
+.event-condition-label-past{
+    color: var(--color-main);
+}
 .event-condition-circle-now {
     color: var(--color-admin-ban-background);
     margin: auto;
@@ -131,6 +134,10 @@ input:checked + .slider:before {
 .event-condition-circle-future {
     color: var(--color-admin-sub);
     margin: auto;
+}
+.event-condition-label-now {
+    color: var(--color-admin-ban-background);
+    font-weight: bold;
 }
 
 progress {
