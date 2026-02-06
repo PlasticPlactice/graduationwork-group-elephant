@@ -81,7 +81,10 @@ export default function PostConfirmPage({}: {}) {
   if (!data) return null;
 
   return (
-    <div className={`${Styles.posterContainer}`}>
+    <div
+      className={`${Styles.posterContainer}`}
+      style={{ ["--color-main" as const]: "#36A8B1" }}
+    >
       <p className={`font-bold text-center my-4 ${Styles.text24px}`}>
         書評を確認
       </p>

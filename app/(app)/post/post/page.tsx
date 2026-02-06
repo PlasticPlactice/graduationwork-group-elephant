@@ -312,7 +312,10 @@ export default function PostPage() {
   }, [editor]);
 
   return (
-    <div className={`${Styles.posterContainer}`}>
+    <div
+      className={`${Styles.posterContainer}`}
+      style={{ ["--color-main" as const]: "#36A8B1" }}
+    >
       <p className={`font-bold text-center my-5 ${Styles.text24px}`}>
         あなただけの書評を書く
       </p>
@@ -335,7 +338,7 @@ export default function PostPage() {
         <div className={`my-2`}>
           <p className={``}>
             残り
-            <span className="text-red-400 font-bold text-xl">
+            <span className={`font-bold text-xl ${Styles.mainColor}`}>
               {Math.max(remaining, 0)}
             </span>
             文字
@@ -448,7 +451,10 @@ export default function PostPage() {
                       className={`relative w-12 h-12 rounded-full transition-all duration-200 hover:scale-110 ${Styles.colorButton}`}
                     >
                       {bookColor === color.value && (
-                        <div className="absolute inset-0 rounded-full border-4 border-white shadow-lg ring-2 ring-red-400"></div>
+                        <div
+                          className="absolute inset-0 rounded-full border-4 border-white shadow-lg"
+                          style={{ boxShadow: "0 0 0 2px var(--color-main)" }}
+                        ></div>
                       )}
                     </button>
                   ))}
@@ -479,7 +485,8 @@ export default function PostPage() {
                 >
                   {pattern === item.value && (
                     <div
-                      className={`absolute inset-0.5 rounded-sm border-4 border-white shadow-lg ring-4 ring-red-400 ${Styles.patternButton}`}
+                      className={`absolute inset-0.5 rounded-sm border-4 border-white shadow-lg ${Styles.patternButton}`}
+                      style={{ boxShadow: "0 0 0 4px var(--color-main)" }}
                     ></div>
                   )}
                 </button>
@@ -508,7 +515,10 @@ export default function PostPage() {
                       className={`relative w-12 h-12 rounded-full transition-all duration-200 hover:scale-110 ${Styles.colorButton}`}
                     >
                       {patternColor === color.value && (
-                        <div className="absolute inset-0 rounded-full border-4 border-white shadow-lg ring-2 ring-red-400"></div>
+                        <div
+                          className="absolute inset-0 rounded-full border-4 border-white shadow-lg"
+                          style={{ boxShadow: "0 0 0 2px var(--color-main)" }}
+                        ></div>
                       )}
                     </button>
                   ))}
