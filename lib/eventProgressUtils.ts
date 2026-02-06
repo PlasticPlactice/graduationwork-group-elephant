@@ -41,9 +41,13 @@ export const getEventCircleClassName = (
 ): string => {
   const statusNumber =
     typeof status === "string" ? parseInt(status, 10) : status;
-  return index <= statusNumber
-    ? "event-condition-circle-now"
-    : "event-condition-circle-future";
+  if (index < statusNumber) {
+    return "event-condition-circle-past";
+  } else if (index === statusNumber) {
+    return "event-condition-circle-now";
+  } else {
+    return "event-condition-circle-future";
+  }
 };
 
 /**
