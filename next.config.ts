@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         hostname: "books.google.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "www.morijyobi.net",
+        pathname: "/**",
+      }
     ],
   },
 };
