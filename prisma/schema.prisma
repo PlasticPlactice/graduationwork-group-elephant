@@ -107,7 +107,7 @@ model BookReview {
   color                    String   @db.VarChar(255)
   pattern                  String   @db.VarChar(255)
   pattern_color            String   @db.VarChar(255)
-  public_flag              Boolean  @default(false)
+  public_flag              Boolean  @default(true)
   created_at               DateTime  @default(now()) @db.Timestamptz(3)
   updated_at               DateTime  @updatedAt @db.Timestamptz(3)
   deleted_flag             Boolean  @default(false)
