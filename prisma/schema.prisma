@@ -111,6 +111,7 @@ model BookReview {
   created_at               DateTime  @default(now()) @db.Timestamptz(3)
   updated_at               DateTime  @updatedAt @db.Timestamptz(3)
   deleted_flag             Boolean  @default(false)
+  draft_flag               Boolean  @default(false)
 
   user                     User     @relation(fields: [user_id], references: [id])
   book                     Book     @relation(fields: [isbn], references: [isbn])
@@ -122,6 +123,7 @@ model BookReview {
   @@index([event_id])
   @@index([deleted_flag])
   @@index([public_flag])
+  @@index([draft_flag])
 }
 
 model BookReviewReaction {
