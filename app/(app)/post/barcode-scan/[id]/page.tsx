@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
@@ -82,7 +82,7 @@ export default function BarcodeScanPage() {
         if (fetchId !== fetchIdRef.current) return;
 
         if (!res.ok) {
-          setBookError("本情報の取得に失敗しました。");
+          setBookError("本の情報の取得に失敗しました。");
           return;
         }
 
@@ -91,7 +91,7 @@ export default function BarcodeScanPage() {
 
         console.log("firstItem" + JSON.stringify(firstItem))
         if (!firstItem) {
-          setBookError("本情報が見つかりませんでした。");
+          setBookError("本の情報が見つかりませんでした。");
           return;
         }
 
@@ -118,8 +118,9 @@ export default function BarcodeScanPage() {
         setLastFetchedIsbn(isbn);
       } catch (error) {
         console.error("Failed to fetch book info", error);
-        if (fetchId === fetchIdRef.current)
-          setBookError("本情報の取得に失敗しました。");
+        if (fetchId === fetchIdRef.current) {
+          setBookError("本の情報の取得に失敗しました。");
+        }
       } finally {
         if (fetchId === fetchIdRef.current) setBookLoading(false);
       }
@@ -166,7 +167,7 @@ export default function BarcodeScanPage() {
       setSelectedIsbn(normalized);
       fetchBookInfo(normalized);
       await stopScanner();
-      setScanStatus("ISBNを検出しました。入力欄をご確認ください。");
+      setScanStatus("ISBNを確認しました。書籍情報を確認してください。");
       setConfirmOpen(true);
     },
     [fetchBookInfo, stopScanner, validateIsbn13]
@@ -209,7 +210,7 @@ export default function BarcodeScanPage() {
     } catch (error) {
       console.error("Failed to start camera", error);
       setScanError(
-        "カメラの起動に失敗しました。権限を許可して再度お試しください。"
+        "カメラの起動に失敗しました。権限を確認してください。"
       );
       await stopScanner();
     }
@@ -228,7 +229,7 @@ export default function BarcodeScanPage() {
   const handleManualConfirm = useCallback(() => {
     const normalized = isbnInput.replace(/[^0-9]/g, "");
     if (!validateIsbn13(normalized)) {
-      setScanError("ISBNが不正です。13桁の数字を入力してください。");
+      setScanError("ISBNが不正です。13桁のISBNを入力してください。");
       return;
     }
     setDetectedIsbn(normalized);
@@ -239,7 +240,7 @@ export default function BarcodeScanPage() {
     setScanError(null);
   }, [fetchBookInfo, isbnInput, validateIsbn13]);
 
-  const displayIsbn = selectedIsbn ?? detectedIsbn ?? (isbnInput || "未取得");
+  const displayIsbn = selectedIsbn ?? detectedIsbn ?? (isbnInput || "未検出");
 
   return (
     <div>
@@ -257,9 +258,9 @@ export default function BarcodeScanPage() {
               : "translate-y-5 opacity-0"
           }`}
         >
-          <div className="text-5xl mb-4">⚠️</div>
+          <div className="text-5xl mb-4">警告</div>
           <p className="text-lg leading-relaxed">
-            上のISBNバーコードを
+            下のISBNバーコードを
             <br />
             読み取ってください
           </p>
@@ -318,10 +319,10 @@ export default function BarcodeScanPage() {
         </div>
         <div>
           <p className={`text-center font-bold mb-4 ${Styles.text16px}`}>
-            読み取れない方、読み取りにくい方はこちら
+            読み取れない場合は下の入力欄からISBNコードを入力してください。
           </p>
           <p className={`${Styles.mainColor} ${Styles.text12px}`}>
-            ※ハイフンなしで入力してください
+            ※ハイフンなしで入力してください。
           </p>
 
           <div className="flex gap-3">
@@ -338,20 +339,21 @@ export default function BarcodeScanPage() {
               onClick={handleManualConfirm}
               className="w-2/4"
             >
-              検索
+              確認
             </button>
           </div>
 
           <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-            <div className="mb-10">
+            <div style={{ ["--color-main" as const]: "#36A8B1" }}>
+              <div className="mb-10">
               <p>ISBNコード</p>
               <div className={`border rounded-sm py-2 mb-4 ${Styles.text16px}`}>
                 <p className={`font-bold text-center`}>{displayIsbn}</p>
               </div>
               <div className="mb-6">
-                <p className="font-bold mb-2">本情報</p>
+                <p className="font-bold mb-2">書籍情報</p>
                 <div className="border rounded-sm p-3">
-                  {bookLoading && <p>本情報を取得中...</p>}
+                  {bookLoading && <p>書籍情報を取得中...</p>}
                   {!bookLoading && bookError && (
                     <p className={`${Styles.warningColor} ${Styles.text12px}`}>
                       {bookError}
@@ -383,12 +385,14 @@ export default function BarcodeScanPage() {
                     </div>
                   )}
                   {!bookLoading && !bookError && !bookItem && (
-                    <p className={Styles.text12px}>ISBNを確認しています...</p>
+                    <p className={Styles.text12px}>
+                      ISBNを確認してください。
+                    </p>
                   )}
                 </div>
               </div>
               <p className={`font-bold text-center ${Styles.text16px}`}>
-                こちらのISBNで登録を進めますか？
+                このISBNで投稿しますか？
               </p>
               <div
                 className={`mb-10 rounded-sm ${Styles.barcodeScan__alertContainer}`}
@@ -396,55 +400,60 @@ export default function BarcodeScanPage() {
                 <p
                   className={`py-2 px-3 font-bold ${Styles.warningColor} ${Styles.text12px}`}
                 >
-                  この先のページに進むと、本の変更はできません。内容をご確認の上、「登録へ」ボタンを押してください。
+                  この画面を閉じると入力内容は保存されません。
                 </p>
               </div>
-            </div>
-            <Link href="/post/post">
-              <button type="button" onClick={handleConfirm} className={`w-full mb-3`}>
-                登録へ
+              </div>
+              <Link href="/post/post">
+                <button type="button" onClick={handleConfirm} className={`w-full mb-3`}>
+                  投稿へ
+                </button>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className={`w-full inline-flex items-center justify-center font-bold border ${Styles.barcodeScan__backButton}`}
+              >
+                戻る
               </button>
-            </Link>
-            <button
-              type="button"
-              onClick={() => setConfirmOpen(false)}
-              className={`w-full inline-flex items-center justify-center font-bold border ${Styles.barcodeScan__backButton}`}
-            >
-              戻る
-            </button>
+            </div>
           </Modal>
 
           <div className="flex items-center my-2">
             <p className="">ISBNコードとは</p>
             <button
               type="button"
-              aria-label="ISBNコードのヘルプを表示"
+              aria-label="ISBNコードとはのヘルプを表示"
               onClick={() => setHelpOpen(true)}
               className={`${Styles.helpButton}`}
             >
               <Image
                 src="/app/help-circle-outline.png"
-                alt="ヘルプマーク"
+                alt="ヘルプ"
                 width={30}
                 height={20}
               />
             </button>
 
             <Modal open={helpOpen} onClose={() => setHelpOpen(false)}>
-              <h2 className="font-bold text-center mb-4">ISBNコードとは？</h2>
-              <p className="mb-4">
-                ISBNコードは、本の背表紙や裏表紙に記載されている13桁または10桁の数字です。このコードは、書籍を特定するための国際的な標準番号であり、出版社や書店が本を管理する際に使用されます。
-              </p>
-              <p className="mb-4">
-                13桁のISBNコードは通常、「978」または「979」で始まり、その後に出版社コード、タイトルコード、チェックデジットが続きます。10桁のISBNコードは、古い形式であり、現在は主に13桁の形式が使用されています。
-              </p>
-              <button
-                type="button"
-                onClick={() => setHelpOpen(false)}
-                className="w-full mt-6"
-              >
-                閉じる
-              </button>
+              <div style={{ ["--color-main" as const]: "#36A8B1" }}>
+                <h2 className={`font-bold text-center mb-4 ${Styles.mainColor}`}>
+                  ISBNコードとは
+                </h2>
+                <p className="mb-4">
+                  ISBNは本を識別するための13桁のコードです。書籍の裏面に印字されています。
+                </p>
+                <p className="mb-4">
+                  入力する際はハイフンを除いた13桁の数字を入力してください。
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setHelpOpen(false)}
+                  className="w-full mt-6"
+                >
+                  閉じる
+                </button>
+              </div>
             </Modal>
           </div>
         </div>
@@ -452,3 +461,4 @@ export default function BarcodeScanPage() {
     </div>
   );
 }
+
