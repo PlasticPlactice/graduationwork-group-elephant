@@ -90,6 +90,7 @@ export async function POST(req: Request) {
         color: body.color,
         pattern: body.pattern,
         pattern_color: body.pattern_color,
+        draft_flag: body.draft_flag
       },
     });
 
