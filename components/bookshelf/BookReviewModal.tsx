@@ -11,10 +11,10 @@ import BookReviewVoteButton from "./BookReviewVoteButton";
 import styles from "@/components/bookshelf/BookReviewModal.module.css";
 
 const REACTION_TYPES = [
-  { id: "11", label: "いいね", icon_path: "/icons/loveReaction.png" },
-  { id: "12", label: "幸せ", icon_path: "/icons/happyReaction.png" },
-  { id: "13", label: "悲しみ", icon_path: "/icons/sadReaction.png" },
-  { id: "14", label: "怒り", icon_path: "/icons/angryReaction.png" },
+  { id: "1", label: "いいね", icon_path: "/icons/loveReaction.png" },
+  { id: "2", label: "幸せ", icon_path: "/icons/happyReaction.png" },
+  { id: "3", label: "悲しみ", icon_path: "/icons/sadReaction.png" },
+  { id: "4", label: "怒り", icon_path: "/icons/angryReaction.png" },
 ];
 
 type BookReviewModalProps = {
