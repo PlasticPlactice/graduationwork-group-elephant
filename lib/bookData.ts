@@ -8,6 +8,7 @@ export async function getPublicBookReviews(eventId: number) {
     include: { user: true },
     where: {
       public_flag: true,
+      evaluations_status: 1,
       deleted_flag: false,
       event_id: eventId,
     },
