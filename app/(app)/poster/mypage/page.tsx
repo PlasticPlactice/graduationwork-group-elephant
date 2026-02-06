@@ -332,11 +332,14 @@ export default function MyPage() {
         onConfirm={handleDeleteAccount}
         isLoading={isDeleting}
       />
-      <div className="min-h-screen bg-white px-4 py-4 box-border">
+      <div
+        className="min-h-screen bg-white px-4 py-4 box-border"
+        style={{ ["--color-main" as const]: "#36A8B1" }}
+      >
         <div className="text-center mt-3 relative">
           <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
           <div className="flex items-center justify-center gap-3 mt-1">
-            <div className="text-rose-500 font-bold">
+            <div className={`font-bold ${Styles.mainColor}`}>
               {userData?.nickName || "ゲスト"}さん
             </div>
           </div>
@@ -442,7 +445,7 @@ export default function MyPage() {
                 <h2 className="font-bold text-slate-900">あなたの書評</h2>
                 <div className="w-24 h-px bg-black" />
               </div>
-              <div className="text-rose-500 text-sm mt-1 font-bold">
+              <div className={`text-sm mt-1 font-bold ${Styles.mainColor}`}>
                 ※１次審査前のみ編集できます。
               </div>
             </div>
@@ -516,11 +519,20 @@ export default function MyPage() {
                       <span
                         className={`px-3 py-1 rounded-full font-bold text-sm flex-shrink-0 ${
                           review.badgeType === "red"
-                            ? "bg-rose-50 text-rose-600 border border-rose-100"
+                            ? "border"
                             : review.badgeType === "blue"
                               ? "bg-sky-50 text-sky-600 border border-sky-100"
                               : "bg-slate-100 text-slate-600 border border-slate-200"
                         }`}
+                        style={
+                          review.badgeType === "red"
+                            ? {
+                                backgroundColor: "var(--color-warning-bg)",
+                                color: "var(--color-main)",
+                                borderColor: "var(--color-main)",
+                              }
+                            : undefined
+                        }
                       >
                         {review.status}
                       </span>
@@ -535,7 +547,8 @@ export default function MyPage() {
                       {review.href ? (
                         <button
                           type="button"
-                          className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
+                          className="w-full text-white px-3 py-2 rounded-md font-bold"
+                          style={{ backgroundColor: "var(--color-main)" }}
                           onClick={() => handleEditButton(review.bookReviewId)}
                         >
                           {review.buttonText}
@@ -597,9 +610,9 @@ export default function MyPage() {
                       e.preventDefault();
                       signOut({ callbackUrl: "/poster/login" });
                     }}
-                    className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                    className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200"
                     aria-label="ログアウト"
-                    style={{ color: "red" }}
+                    style={{ color: "var(--color-main)" }}
                   >
                     ログアウト
                   </a>
@@ -611,9 +624,9 @@ export default function MyPage() {
                       e.preventDefault();
                       setShowDeleteModal(true);
                     }}
-                    className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                    className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200"
                     aria-label="退会手続きへ"
-                    style={{ color: "red" }}
+                    style={{ color: "var(--color-main)" }}
                   >
                     退会する
                   </a>

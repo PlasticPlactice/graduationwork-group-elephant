@@ -266,7 +266,10 @@ export default function BarcodeScanPage() {
         </div>
       </div>
 
-      <div className={`${Styles.posterContainer}`}>
+      <div
+        className={`${Styles.posterContainer}`}
+        style={{ ["--color-main" as const]: "#36A8B1" }}
+      >
         <div className="mt-7 mb-10">
           <h1 className="font-bold text-center">本のバーコードをスキャン</h1>
           <p className={`font-bold text-center ${Styles.subColor}`}>
