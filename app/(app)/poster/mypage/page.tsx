@@ -34,13 +34,14 @@ interface EventData {
   first_voting_start_period: Timestamp;
 }
 
-type ReviewFilterTab = "all" | 1 | 2 | 3 | 4;
-type ReviewStatusCode = 1 | 2 | 3 | 4;
+type ReviewFilterTab = "all" | 0 | 1 | 2 | 3;
+type ReviewStatusCode = 0 | 1 | 2 | 3;
 
 interface BookReviewData {
   id: number;
   book_title: string;
   evaluations_status: number;
+  public_flag: boolean;
   review: string;
 }
 
@@ -116,6 +117,7 @@ export default function MyPage() {
       });
       if (res.ok) {
         const data = await res.json();
+        console.log("data:" + JSON.stringify(data, null, 2))
         setBookReviewData(data);
       }
     } catch (error) {
@@ -189,40 +191,40 @@ export default function MyPage() {
     label: string;
   }[] = [
     { key: "all" as const, label: "全て" },
-    { key: 1, label: "下書き" },
-    { key: 2, label: "１次審査前" },
-    { key: 3, label: "審査中" },
-    { key: 4, label: "終了済み" },
+    { key: 0, label: "下書き" },
+    { key: 1, label: "１次通過" },
+    { key: 2, label: "２次通過" },
+    { key: 3, label: "終了済み" },
   ];
 
   const REVIEW_STATUS_MAP = {
+    0: {
+      label: "審査前",
+      badgeType: "gray",
+      canEdit: true,
+    },
     1: {
-      label: "下書き",
+      label: "１次通過",
       badgeType: "gray",
       canEdit: true,
     },
     2: {
-      label: "１次審査前",
-      badgeType: "red",
-      canEdit: true,
-    },
-    3: {
-      label: "審査中",
+      label: "２次通過",
       badgeType: "blue",
       canEdit: false,
     },
-    4: {
-      label: "終了",
-      badgeType: "gray",
+    3: {
+      label: "３次通過",
+      badgeType: "red",
       canEdit: false,
     },
   } as const;
 
-  // DB/APIの文字列・数値をUI用コード(1..4)へ正規化
+  // DB/APIの文字列・数値をUI用コード(0..3)へ正規化
   const normalizeStatus = (val: number): ReviewStatusCode => {
-    return val === 1 || val === 2 || val === 3 || val === 4
+    return val === 0 || val === 1 || val === 2 || val === 3
       ? (val as ReviewStatusCode)
-      : 2;
+      : 0;
   };
 
   // 表示用にデータを整形
