@@ -4,6 +4,7 @@ import Styles from "@/styles/app/poster.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
+import type { CSSProperties } from "react";
 import { preparePostConfirm } from "./actions";
 import { useActionState } from "react";
 // tiptapのimport
@@ -314,7 +315,7 @@ export default function PostPage() {
   return (
     <div
       className={`${Styles.posterContainer}`}
-      style={{ ["--color-main" as const]: "#36A8B1" }}
+      style={{ "--color-main": "#36A8B1" } as CSSProperties}
     >
       <p className={`font-bold text-center my-5 ${Styles.text24px}`}>
         あなただけの書評を書く

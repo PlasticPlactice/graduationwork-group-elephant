@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 
 import Styles from "@/styles/app/poster.module.css";
@@ -83,7 +84,7 @@ export default function PostConfirmPage({}: {}) {
   return (
     <div
       className={`${Styles.posterContainer}`}
-      style={{ ["--color-main" as const]: "#36A8B1" }}
+      style={{ "--color-main": "#36A8B1" } as CSSProperties}
     >
       <p className={`font-bold text-center my-4 ${Styles.text24px}`}>
         書評を確認

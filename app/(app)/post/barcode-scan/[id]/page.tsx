@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import type { Html5Qrcode } from "html5-qrcode";
 
 import Modal from "@/app/(app)/Modal";
@@ -269,7 +270,7 @@ export default function BarcodeScanPage() {
 
       <div
         className={`${Styles.posterContainer}`}
-        style={{ ["--color-main" as const]: "#36A8B1" }}
+        style={{ "--color-main": "#36A8B1" } as CSSProperties}
       >
         <div className="mt-7 mb-10">
           <h1 className="font-bold text-center">本のバーコードをスキャン</h1>
@@ -344,7 +345,7 @@ export default function BarcodeScanPage() {
           </div>
 
           <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-            <div style={{ ["--color-main" as const]: "#36A8B1" }}>
+            <div style={{ "--color-main": "#36A8B1" } as CSSProperties}>
               <div className="mb-10">
               <p>ISBNコード</p>
               <div className={`border rounded-sm py-2 mb-4 ${Styles.text16px}`}>
@@ -436,7 +437,7 @@ export default function BarcodeScanPage() {
             </button>
 
             <Modal open={helpOpen} onClose={() => setHelpOpen(false)}>
-              <div style={{ ["--color-main" as const]: "#36A8B1" }}>
+              <div style={{ "--color-main": "#36A8B1" } as CSSProperties}>
                 <h2 className={`font-bold text-center mb-4 ${Styles.mainColor}`}>
                   ISBNコードとは
                 </h2>

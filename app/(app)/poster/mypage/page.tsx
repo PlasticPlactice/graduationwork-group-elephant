@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
@@ -334,7 +335,7 @@ export default function MyPage() {
       />
       <div
         className="min-h-screen bg-white px-4 py-4 box-border"
-        style={{ ["--color-main" as const]: "#36A8B1" }}
+        style={{ "--color-main": "#36A8B1" } as CSSProperties}
       >
         <div className="text-center mt-3 relative">
           <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
