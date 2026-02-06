@@ -34,6 +34,12 @@ export default function PostConfirmPage({}: {}) {
       }
 
       sessionStorage.removeItem("bookReviewDraft");
+
+      sessionStorage.setItem(
+        "eventId",
+        String(data.event_id),
+      );
+
       router.push("/post/post-complete");
     } catch (e) {
       alert("通信に失敗しました。");
@@ -59,10 +65,16 @@ export default function PostConfirmPage({}: {}) {
         return;
       }
 
-      sessionStorage.removeItem("bookReviewDraft");
+      // 下書き状態か？
       if (!isDraftStatus) {
+        sessionStorage.removeItem("bookReviewDraft");
         router.push("/poster/mypage");
       } else {
+        sessionStorage.setItem(
+          "eventId",
+          String(data.event_id),
+        );
+
         router.push("/post/post-complete");
       }
     } catch (error) {
