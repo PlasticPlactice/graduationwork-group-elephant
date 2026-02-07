@@ -1,7 +1,7 @@
 /**
  * イベント進捗バーの進捗値を計算する関数
  * @param status イベントのステータス (0, 1, 2, 3)
- * @param variant 進捗値のパターン ('compact' = 11,37,63,89 / 'full' = 18,39,61,83)
+ * @param variant 進捗値のパターン ('compact' = 24,75,125,179 / 'full' = 37,79,121,163)
  * @returns 進捗バーに表示する値 (0-100)
  */
 export const getEventProgressValue = (
@@ -13,16 +13,16 @@ export const getEventProgressValue = (
 
   const progressMaps: Record<"compact" | "full", Record<number, number>> = {
     compact: {
-      0: 11,
-      1: 37,
-      2: 63,
-      3: 89,
+      0: 24,
+      1: 75,
+      2: 125,
+      3: 179,
     },
     full: {
-      0: 18,
-      1: 39,
-      2: 61,
-      3: 83,
+      0: 37,
+      1: 79,
+      2: 121,
+      3: 163,
     },
   };
 

@@ -97,7 +97,7 @@ export function EventProgressBar({
       {/* プログレスバー */}
       <div className="flex justify-center mt-2">
         <progress
-          max={100}
+          max={200}
           value={getEventProgressValue(status, variant)}
           className={progressClassName}
         ></progress>
