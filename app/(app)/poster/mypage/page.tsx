@@ -60,7 +60,7 @@ export default function MyPage() {
   // ユーザの書評データ
   const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
   // イベントデータ
-  const [eventData, setEventData] = useState<EventData[]>([])
+  const [eventData, setEventData] = useState<EventData[]>([]);
   // 未読メッセージデータ
   interface UnreadMessage {
     id: number;
@@ -87,13 +87,13 @@ export default function MyPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        console.log("data" + JSON.stringify(data, null, 2))
+        console.log("data" + JSON.stringify(data, null, 2));
         setEventData(data);
       }
     } catch (error) {
       console.error("Failed to fetch event data", error);
     }
-  }, [])
+  }, []);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -117,7 +117,7 @@ export default function MyPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        console.log("data:" + JSON.stringify(data, null, 2))
+        console.log("data:" + JSON.stringify(data, null, 2));
         setBookReviewData(data);
       }
     } catch (error) {
@@ -220,6 +220,11 @@ export default function MyPage() {
     },
   } as const;
 
+  // HTMLタグを削除してプレーンテキストに変換
+  const stripHtmlTags = (html: string): string => {
+    return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ");
+  };
+
   // DB/APIの文字列・数値をUI用コード(0..3)へ正規化
   const normalizeStatus = (val: number): ReviewStatusCode => {
     return val === 0 || val === 1 || val === 2 || val === 3
@@ -238,7 +243,7 @@ export default function MyPage() {
       status: status?.label ?? "未分類",
       evaluations_status: code,
       badgeType: status?.badgeType ?? "gray",
-      excerpt: review.review,
+      excerpt: stripHtmlTags(review.review),
       buttonText: status?.canEdit ? "編集する" : "編集不可",
       href: status?.canEdit ? "/poster/edit" : undefined,
     };
@@ -301,19 +306,19 @@ export default function MyPage() {
 
   // 投稿締め切りまでの日数を計算する関数
   function daysFromToday(dateString: string): number {
-  const today = new Date();
-  const target = new Date(dateString);
+    const today = new Date();
+    const target = new Date(dateString);
 
-  const todayStart = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  );
-  const targetStart = new Date(
-    target.getFullYear(),
-    target.getMonth(),
-    target.getDate()
-  );
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    const targetStart = new Date(
+      target.getFullYear(),
+      target.getMonth(),
+      target.getDate(),
+    );
 
     const diffMs = targetStart.getTime() - todayStart.getTime();
     return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
@@ -396,7 +401,10 @@ export default function MyPage() {
           <Link href="/">
             <div
               className="flex items-center px-2 rounded shadow-md my-10"
-              style={{ backgroundColor: "var(--color-bg)" ,border: "1px solid var(--color-main)"}}
+              style={{
+                backgroundColor: "var(--color-bg)",
+                border: "1px solid var(--color-main)",
+              }}
             >
               <Image
                 src="/layout/new_logo.png"
@@ -432,7 +440,9 @@ export default function MyPage() {
                   eventId={String(event.id)}
                   title={event.title}
                   href="/post/barcode-scan"
-                  daysLeft={daysFromToday(String(event.first_voting_start_period))}
+                  daysLeft={daysFromToday(
+                    String(event.first_voting_start_period),
+                  )}
                   detail={event.detail}
                   buttonText="このイベントに投稿する"
                 />
