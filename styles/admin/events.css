@@ -7,6 +7,7 @@
   padding: 0.75rem 2rem;
   font-size: var(--page-padding-lg);
   height: auto;
+  border: 1px solid var(--color-main);
 }
 .events-header {
   display: grid;
@@ -117,16 +118,27 @@ input:checked + .slider:before {
     color: #868884;
 }
 .up-arrow {
-    color: var(--color-main);
+    color: var(--color-admin-ban-background);
     /* margin: 0 0 0 30.4rem; */
 }
-.event-condition-circle-now {
+.event-condition-circle-past {
+  color: var(--color-main);
+  margin: auto;
+}
+.event-condition-label-past{
     color: var(--color-main);
+}
+.event-condition-circle-now {
+    color: var(--color-admin-ban-background);
     margin: auto;
 }
 .event-condition-circle-future {
     color: var(--color-admin-sub);
     margin: auto;
+}
+.event-condition-label-now {
+    color: var(--color-admin-ban-background);
+    font-weight: bold;
 }
 
 progress {
@@ -249,6 +261,13 @@ details[open] .icon {
 }
 .datetime-input{
   width: 40%;
+  border: 1px solid var(--color-admin-sub);
+}
+.datetime-input-start,
+.datetime-input-end,
+.datetime-input-post,
+.datetime-input-vote{
+  width: 30%;
   border: 1px solid var(--color-admin-sub);
 }
 .event-detail-text{

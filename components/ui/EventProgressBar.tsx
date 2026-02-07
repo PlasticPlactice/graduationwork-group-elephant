@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import {
   getEventProgressValue,
   getEventCircleClassName,
+  getEventLabelClassName,
   isArrowVisible,
 } from "@/lib/eventProgressUtils";
 
@@ -96,7 +97,7 @@ export function EventProgressBar({
       {/* プログレスバー */}
       <div className="flex justify-center mt-2">
         <progress
-          max={100}
+          max={200}
           value={getEventProgressValue(status, variant)}
           className={progressClassName}
         ></progress>
@@ -106,7 +107,7 @@ export function EventProgressBar({
       {showLabels && (
         <div className={`flex justify-between ${width} m-auto`}>
           {labels.map((label, index) => (
-            <span key={`label-${index}`}>{label}</span>
+            <span key={`label-${index}`} className={getEventLabelClassName(index, status)}>{label}</span>
           ))}
         </div>
       )}

@@ -66,12 +66,23 @@
 }
 
 .up-arrow {
-    color: var(--color-main);
+    color: var(--color-admin-ban-background);
     /* margin: 0 0 0 30.4rem; */
 }
-.event-condition-circle-now {
+.event-condition-circle-past {
+  color: var(--color-main);
+  margin: auto;
+}
+.event-condition-label-past{
     color: var(--color-main);
+}
+.event-condition-circle-now {
+    color: var(--color-admin-ban-background);
     margin: auto;
+}
+.event-condition-label-now {
+    color: var(--color-admin-ban-background);
+    font-weight: bold;
 }
 .event-condition-circle-future {
     color: var(--color-admin-sub);
