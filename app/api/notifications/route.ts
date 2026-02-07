@@ -75,6 +75,7 @@ export async function GET(req: NextRequest) {
         title: true,
         detail: true,
         public_date: true,
+        main_image_path: true,
         notificationFiles: {
           where: {
             deleted_flag: false,
@@ -97,9 +98,6 @@ export async function GET(req: NextRequest) {
     // NotificationItem 形式に変換
     const items: NotificationItem[] = notifications.map((notification) => {
       // ユーティリティ関数
-      const isImageFile = (path: string): boolean =>
-        /\.(jpg|jpeg|png|gif|webp)$/i.test(path);
-
       const normalizePath = (path: string): string =>
         path.startsWith("/") ? path : `/${path}`;
 
@@ -113,37 +111,33 @@ export async function GET(req: NextRequest) {
         ) {
           return normalized;
         }
-        // 本番環境では環境変数から基本URLを取得
+        // 本番環境のみ完全URLに変換（localhost は除外）
         const baseUrl =
           process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || "";
-        if (baseUrl && normalized.startsWith("/uploads/")) {
+        const isProduction = baseUrl && !baseUrl.includes("localhost");
+
+        if (isProduction && normalized.startsWith("/uploads/")) {
           // /uploads/ で始まる相対パスだけを完全URLに変換
           return baseUrl + normalized;
         }
         return normalized;
       };
 
-      // メイン画像の特定：最初の画像ファイルのインデックスを探す
-      const imageFileIndex = notification.notificationFiles.findIndex((nf) =>
-        isImageFile(nf.file.data_path),
+      // メイン画像の特定：DB の main_image_path を優先し、なければデフォルト
+      const image = notification.main_image_path
+        ? toFullUrl(notification.main_image_path)
+        : "/top/image.png";
+
+      // PDF ファイルを探す（メイン画像以外）
+      const pdfFile = notification.notificationFiles.find(
+        (nf) =>
+          nf.file.data_path !== notification.main_image_path &&
+          nf.file.data_path.toLowerCase().endsWith(".pdf"),
       );
 
-      // PDF ファイルを探す
-      const pdfFile = notification.notificationFiles.find((nf) =>
-        nf.file.data_path.toLowerCase().endsWith(".pdf"),
-      );
-
-      // メイン画像のパス
-      const image =
-        imageFileIndex >= 0
-          ? toFullUrl(
-              notification.notificationFiles[imageFileIndex].file.data_path,
-            )
-          : "/top/image.png";
-
-      // 添付ファイル：メイン画像以外のすべてのファイル
+      // 添付ファイル：メイン画像（main_image_path）に該当するファイルを除外
       const attachments = notification.notificationFiles
-        .filter((_, index) => index !== imageFileIndex)
+        .filter((nf) => nf.file.data_path !== notification.main_image_path)
         .map((nf) => ({
           name: nf.file.name,
           url: toFullUrl(nf.file.data_path),
