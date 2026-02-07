@@ -196,6 +196,7 @@ model Notification {
   public_end_date          DateTime? @db.Timestamptz(3)
   notification_type        Int
   draft_flag               Boolean  @default(false)
+  main_image_path          String?  @db.VarChar(255)
   created_at               DateTime  @default(now()) @db.Timestamptz(3)
   updated_at               DateTime  @updatedAt @db.Timestamptz(3)
   deleted_flag             Boolean  @default(false)

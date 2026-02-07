@@ -148,6 +148,7 @@ export async function POST(req: NextRequest) {
       public_end_date,
       notification_type,
       draft_flag,
+      main_image_path,
       fileIds, // 追加: 添付ファイルのID配列
     } = body;
 
@@ -169,6 +170,7 @@ export async function POST(req: NextRequest) {
         public_end_date: public_end_date ? new Date(public_end_date) : null,
         notification_type: parseInt(notification_type),
         draft_flag: draft_flag ?? true,
+        main_image_path: main_image_path ?? null,
         notificationFiles: {
           create:
             fileIds?.map((fileId: number, index: number) => ({

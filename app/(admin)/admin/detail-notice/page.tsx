@@ -31,6 +31,7 @@ type ApiNotification = {
   public_end_date?: string | null;
   notification_type: number;
   draft_flag: boolean;
+  main_image_path?: string | null;
   notificationFiles: ApiNotificationFile[];
 };
 
@@ -95,13 +96,19 @@ function DetailNoticeContent() {
   }, [id]);
 
   const thumbnailSrc = useMemo(() => {
+    // main_image_path が優先、なければデフォルト
+    if (notification?.main_image_path) {
+      return safePath(notification.main_image_path);
+    }
+    // フォールバック: 最初のファイルを使用
     const file = notification?.notificationFiles?.[0]?.file;
     return safePath(file?.data_path ?? null);
   }, [notification]);
 
   const attachments: Attachment[] = useMemo(() => {
-    const remaining = notification?.notificationFiles?.slice(1) ?? [];
-    return remaining
+    // main_image_path に指定されたファイルを除外
+    return (notification?.notificationFiles ?? [])
+      .filter((nf) => nf.file?.data_path !== notification?.main_image_path)
       .map((nf) => {
         const file = nf.file;
         const name = file?.original_filename || file?.name || "ファイル";
