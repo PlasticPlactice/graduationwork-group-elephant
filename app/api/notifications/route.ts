@@ -113,10 +113,12 @@ export async function GET(req: NextRequest) {
         ) {
           return normalized;
         }
-        // 本番環境では環境変数から基本URLを取得
+        // 本番環境のみ完全URLに変換（localhost は除外）
         const baseUrl =
           process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || "";
-        if (baseUrl && normalized.startsWith("/uploads/")) {
+        const isProduction = baseUrl && !baseUrl.includes("localhost");
+
+        if (isProduction && normalized.startsWith("/uploads/")) {
           // /uploads/ で始まる相対パスだけを完全URLに変換
           return baseUrl + normalized;
         }
