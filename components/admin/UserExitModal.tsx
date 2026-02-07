@@ -6,6 +6,7 @@ import {
   USER_STATUS_CLASS,
   USER_STATUS_LABELS,
 } from "@/lib/constants/userStatus";
+import { DEMO_MODE } from "@/lib/constants/demoMode";
 
 interface UserExitModalProps {
   isOpen: boolean;
@@ -192,7 +193,7 @@ export default function UserExitModal({
             label={isSubmitting ? "処理中..." : "アカウント停止"}
             className="exit-decision-btn exit-modal-common"
             onClick={handleWithdraw}
-            disabled={isSubmitting || !user}
+            disabled={isSubmitting || !user || DEMO_MODE}
           />
         </div>
       </div>
