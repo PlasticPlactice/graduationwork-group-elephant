@@ -103,6 +103,26 @@ export async function GET(req: NextRequest) {
       const normalizePath = (path: string): string =>
         path.startsWith("/") ? path : `/${path}`;
 
+      // 完全URLに変換（本番環境用）
+      const toFullUrl = (path: string): string => {
+        const normalized = normalizePath(path);
+        // すでに完全URLの場合はそのまま返す
+        if (
+          normalized.startsWith("http://") ||
+          normalized.startsWith("https://")
+        ) {
+          return normalized;
+        }
+        // 本番環境では環境変数から基本URLを取得
+        const baseUrl =
+          process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || "";
+        if (baseUrl && normalized.startsWith("/uploads/")) {
+          // /uploads/ で始まる相対パスだけを完全URLに変換
+          return baseUrl + normalized;
+        }
+        return normalized;
+      };
+
       // メイン画像の特定：最初の画像ファイルのインデックスを探す
       const imageFileIndex = notification.notificationFiles.findIndex((nf) =>
         isImageFile(nf.file.data_path),
@@ -116,7 +136,7 @@ export async function GET(req: NextRequest) {
       // メイン画像のパス
       const image =
         imageFileIndex >= 0
-          ? normalizePath(
+          ? toFullUrl(
               notification.notificationFiles[imageFileIndex].file.data_path,
             )
           : "/top/image.png";
@@ -126,7 +146,7 @@ export async function GET(req: NextRequest) {
         .filter((_, index) => index !== imageFileIndex)
         .map((nf) => ({
           name: nf.file.name,
-          url: normalizePath(nf.file.data_path),
+          url: toFullUrl(nf.file.data_path),
         }));
 
       return {
@@ -135,7 +155,7 @@ export async function GET(req: NextRequest) {
         title: notification.title,
         content: notification.detail || undefined,
         image,
-        pdfUrl: pdfFile ? normalizePath(pdfFile.file.data_path) : undefined,
+        pdfUrl: pdfFile ? toFullUrl(pdfFile.file.data_path) : undefined,
         attachments,
       };
     });
