@@ -5,6 +5,7 @@ import {
   NotificationType,
   NotificationTypeValue,
 } from "@/lib/types/notification";
+import { toAbsoluteUrl, isPdfFile } from "@/lib/pathUtils";
 
 // 1ページあたりの表示件数
 const ITEMS_PER_PAGE = 8;
@@ -97,51 +98,21 @@ export async function GET(req: NextRequest) {
 
     // NotificationItem 形式に変換
     const items: NotificationItem[] = notifications.map((notification) => {
-      // ユーティリティ関数
-      const normalizePath = (path: string): string =>
-        path.startsWith("/") ? path : `/${path}`;
-
-      // 完全URLに変換（本番環境用）
-      const toFullUrl = (path: string): string => {
-        const normalized = normalizePath(path);
-        // すでに完全URLの場合はそのまま返す
-        if (
-          normalized.startsWith("http://") ||
-          normalized.startsWith("https://")
-        ) {
-          return normalized;
-        }
-        // 本番環境のみ完全URLに変換（localhost は除外）
-        const baseUrl =
-          process.env.NEXT_PUBLIC_API_URL || process.env.NEXTAUTH_URL || "";
-        const isProduction = baseUrl && !baseUrl.includes("localhost");
-
-        if (isProduction && normalized.startsWith("/uploads/")) {
-          // /uploads/ で始まる相対パスだけを完全URLに変換
-          return baseUrl + normalized;
-        }
-        return normalized;
-      };
-
       // メイン画像の特定：DB の main_image_path を優先し、なければデフォルト
       const image = notification.main_image_path
-        ? toFullUrl(notification.main_image_path)
+        ? toAbsoluteUrl(notification.main_image_path)
         : "/top/image.png";
 
-      // PDF ファイルを探す（メイン画像以外）
-      const pdfFile = notification.notificationFiles.find(
-        (nf) =>
-          nf.file.data_path !== notification.main_image_path &&
-          nf.file.data_path.toLowerCase().endsWith(".pdf"),
+      // PDF ファイルを探す（notificationFiles にはメイン画像は含まれない）
+      const pdfFile = notification.notificationFiles.find((nf) =>
+        isPdfFile(nf.file.data_path),
       );
 
-      // 添付ファイル：メイン画像（main_image_path）に該当するファイルを除外
-      const attachments = notification.notificationFiles
-        .filter((nf) => nf.file.data_path !== notification.main_image_path)
-        .map((nf) => ({
-          name: nf.file.name,
-          url: toFullUrl(nf.file.data_path),
-        }));
+      // 添付ファイル（notificationFiles にはメイン画像は含まれないため、そのまま使用）
+      const attachments = notification.notificationFiles.map((nf) => ({
+        name: nf.file.name,
+        url: toAbsoluteUrl(nf.file.data_path),
+      }));
 
       return {
         id: notification.id,
@@ -149,7 +120,7 @@ export async function GET(req: NextRequest) {
         title: notification.title,
         content: notification.detail || undefined,
         image,
-        pdfUrl: pdfFile ? toFullUrl(pdfFile.file.data_path) : undefined,
+        pdfUrl: pdfFile ? toAbsoluteUrl(pdfFile.file.data_path) : undefined,
         attachments,
       };
     });

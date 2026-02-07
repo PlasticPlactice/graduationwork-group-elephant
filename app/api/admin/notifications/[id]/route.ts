@@ -208,7 +208,8 @@ export async function PUT(req: NextRequest, context: RouteContext) {
           public_end_date: public_end_date ? new Date(public_end_date) : null,
           notification_type: notificationTypeInt,
           draft_flag: draft_flag ?? true,
-          main_image_path: main_image_path ?? null,
+          // API層でデフォルト画像を設定（未指定時は /top/image.png）
+          main_image_path: main_image_path ?? "/top/image.png",
           updated_at: new Date(),
         };
 

@@ -148,70 +148,52 @@ function EditNoticeContent() {
           editor?.commands.setContent(data.detail);
         }
 
-        // main_image_path を取得して保存
+        // main_image_path を取得してサムネイルとして設定
         if (data.main_image_path) {
           setExistingMainImagePath(data.main_image_path);
+          const path = data.main_image_path.startsWith("/")
+            ? data.main_image_path
+            : `/${data.main_image_path}`;
+          setThumbnailPreview(path);
+          // 注: メイン画像は notificationFiles には含まれないため、fileId は設定しない
         }
 
-        // 添付ファイルを処理
+        // 添付ファイルを処理（notificationFiles にはメイン画像は含まれない）
         if (data.notificationFiles && data.notificationFiles.length > 0) {
-          // main_image_path に該当するファイルを見つけてサムネイルとして扱う
-          const mainImageFile = data.notificationFiles.find(
-            (nf: RemoteNotificationFile) =>
-              nf.file?.data_path === data.main_image_path,
+          const previews: UploadPreview[] = data.notificationFiles.map(
+            (nf: RemoteNotificationFile) => {
+              const fileName =
+                nf.file?.original_filename || nf.file?.name || "ファイル";
+              const dataPath = nf.file?.data_path;
+              const fullPath = dataPath?.startsWith("/")
+                ? dataPath
+                : `/${dataPath}`;
+              const isImage =
+                nf.file?.type?.startsWith("image/") ||
+                fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+
+              if (isImage && fullPath) {
+                return {
+                  kind: "image" as const,
+                  src: fullPath,
+                  name: fileName,
+                  file: undefined,
+                  fileId: nf.file?.id,
+                  mimeType: nf.file?.type,
+                };
+              } else {
+                return {
+                  kind: "file" as const,
+                  name: fileName,
+                  file: undefined,
+                  fileId: nf.file?.id,
+                  mimeType: nf.file?.type,
+                  src: fullPath,
+                };
+              }
+            },
           );
-
-          if (mainImageFile?.file?.data_path) {
-            const path = mainImageFile.file.data_path.startsWith("/")
-              ? mainImageFile.file.data_path
-              : `/${mainImageFile.file.data_path}`;
-            setExistingThumbnailFileId(mainImageFile.file.id ?? null);
-            setExistingThumbnailPath(path);
-            setThumbnailPreview(path);
-          }
-
-          // メイン画像以外のすべてのファイルを添付ファイルとして表示
-          const attachmentFiles = data.notificationFiles.filter(
-            (nf: RemoteNotificationFile) =>
-              nf.file?.data_path !== data.main_image_path,
-          );
-
-          if (attachmentFiles.length > 0) {
-            const previews: UploadPreview[] = attachmentFiles.map(
-              (nf: RemoteNotificationFile) => {
-                const fileName =
-                  nf.file?.original_filename || nf.file?.name || "ファイル";
-                const dataPath = nf.file?.data_path;
-                const fullPath = dataPath?.startsWith("/")
-                  ? dataPath
-                  : `/${dataPath}`;
-                const isImage =
-                  nf.file?.type?.startsWith("image/") ||
-                  fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-
-                if (isImage && fullPath) {
-                  return {
-                    kind: "image" as const,
-                    src: fullPath,
-                    name: fileName,
-                    file: undefined,
-                    fileId: nf.file?.id,
-                    mimeType: nf.file?.type,
-                  };
-                } else {
-                  return {
-                    kind: "file" as const,
-                    name: fileName,
-                    file: undefined,
-                    fileId: nf.file?.id,
-                    mimeType: nf.file?.type,
-                    src: fullPath,
-                  };
-                }
-              },
-            );
-            setAttachedFilePreviews(previews);
-          }
+          setAttachedFilePreviews(previews);
         }
       } catch (error) {
         setErrorMessage(
@@ -512,15 +494,8 @@ function EditNoticeContent() {
         }
       }
 
-      // サムネイル: 新規があればそれを先頭に、なければ既存IDを先頭に置く
-      const finalFileIds: number[] = [];
-      if (thumbnailFile && uploadedThumbnailId !== null) {
-        finalFileIds.push(uploadedThumbnailId);
-      } else if (existingThumbnailFileId !== null) {
-        finalFileIds.push(existingThumbnailFileId);
-      }
-
-      finalFileIds.push(...attachmentFileIds);
+      // メイン画像は main_image_path で管理、添付ファイルのみを fileIds に含める
+      const finalFileIds: number[] = [...attachmentFileIds];
 
       // 2. お知らせ更新API呼び出し
       setUploadProgress(75);
