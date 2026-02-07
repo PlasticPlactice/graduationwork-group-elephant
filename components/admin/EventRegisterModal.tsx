@@ -128,17 +128,29 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <label htmlFor="event-start-datetime" className="text-xl block">
-                イベント開催期間<span className="required">*</span>
-              </label>
-              <p className="event-detail-text text-sm">
-                イベントの開催期間を決定します
-              </p>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-around items-center">
+                <label htmlFor="event-start-datetime" className="text-xl block">
+                  イベント開催期間<span className="text-white">*</span>
+                </label>
+                <p className="text-white">～</p>
+                <label htmlFor="event-start-datetime" className="text-xl text-white">
+                  イベント開催期間<span className="text-white">*</span>
+                </label>
+              </div>
+              <div className="flex justify-evenly items-center">
+                <p className="event-detail-text text-sm">
+                  イベントの開催期間を決定します
+                </p>
+                <p className="text-white">～</p>
+                <p className="text-white text-sm">
+                  イベントの開催期間を決定します
+                </p>
+              </div>
+              <div className="flex gap-15 justify-center items-center">
                 <Textbox
                   id="event-start-datetime"
                   name="event-start-datetime"
-                  className="datetime-input"
+                  className="datetime-input-start"
                   type="datetime-local"
                   value={startPeriod}
                   onChange={(e) => setStartPeriod(e.target.value)}
@@ -148,7 +160,7 @@ export default function EventRegisterModal({
                 <Textbox
                   id="event-end-datetime"
                   name="event-end-datetime"
-                  className="datetime-input"
+                  className="datetime-input-end"
                   type="datetime-local"
                   value={endPeriod}
                   onChange={(e) => setEndPeriod(e.target.value)}
@@ -158,17 +170,29 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <label htmlFor="book-post-datetime" className="text-xl block">
-                書評投稿期間<span className="required">*</span>
-              </label>
-              <p className="event-detail-text text-sm">
-                ユーザーが書評を投稿できる期間を決定します
-              </p>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-around items-center">
+                <label htmlFor="book-post-datetime" className="text-xl block">
+                  書評投稿期間<span className="required">*</span>
+                </label>
+                <p className="text-white">～</p>
+                <label htmlFor="book-post-datetime" className="text-xl text-white">
+                  書評投稿期間<span className="text-white">*</span>
+                </label>
+              </div>
+              <div className="flex justify-evenly items-center">
+                <p className="event-detail-text text-sm">
+                  ユーザーが書評を投稿できる期間を決定します
+                </p>
+                <p className="text-white">～</p>
+                <p className="text-white text-sm">
+                  ユーザーが書評を投稿できる期間を決定します
+                </p>
+              </div>
+              <div className="flex gap-15 justify-center items-center">
                 <Textbox
                   id="book-post-start-datetime"
                   name="book-post-start-datetime"
-                  className="datetime-input"
+                  className="datetime-input-post"
                   type="datetime-local"
                   value={firstVotingStart}
                   onChange={(e) => setFirstVotingStart(e.target.value)}
@@ -178,7 +202,7 @@ export default function EventRegisterModal({
                 <Textbox
                   id="book-post-end-datetime"
                   name="book-post-end-datetime"
-                  className="datetime-input"
+                  className="datetime-input-post"
                   type="datetime-local"
                   value={firstVotingEnd}
                   onChange={(e) => setFirstVotingEnd(e.target.value)}
@@ -188,17 +212,29 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <label htmlFor="book-vote-datetime" className="text-xl block">
-                書評投票期間<span className="required">*</span>
-              </label>
-              <p className="event-detail-text text-sm">
-                ユーザーが書評に対して投票できる期間を決定します
-              </p>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-around items-center">
+                <label htmlFor="book-vote-datetime" className="text-xl block">
+                  書評投票期間<span className="required">*</span>
+                </label>
+                <p className="text-white">～</p>
+                <label htmlFor="book-vote-datetime" className="text-xl text-white">
+                  書評投票期間<span className="text-white">*</span>
+                </label>
+              </div>
+              <div className="flex justify-evenly items-center">
+                <p className="event-detail-text text-sm">
+                  ユーザーが書評に対して投票できる期間を決定します
+                </p>
+                <p className="text-white">～</p>
+                <p className="text-white text-sm">
+                  ユーザーが書評に対して投票できる期間を決定します
+                </p>
+              </div>
+              <div className="flex gap-15 justify-center items-center">
                 <Textbox
                   id="book-vote-start-datetime"
                   name="book-vote-start-datetime"
-                  className="datetime-input"
+                  className="datetime-input-vote"
                   type="datetime-local"
                   value={secondVotingStart}
                   onChange={(e) => setSecondVotingStart(e.target.value)}
@@ -208,84 +244,12 @@ export default function EventRegisterModal({
                 <Textbox
                   id="book-vote-end-datetime"
                   name="book-vote-end-datetime"
-                  className="datetime-input"
+                  className="datetime-input-vote"
                   type="datetime-local"
                   value={secondVotingEnd}
                   onChange={(e) => setSecondVotingEnd(e.target.value)}
                   style={{ backgroundColor: "#F9FAFB" }}
                 />
-              </div>
-            </div>
-
-            <div className="my-4">
-              <label htmlFor="event-status" className="text-xl block">
-                ステータス
-              </label>
-              <div className="flex justify-between w-4/5 m-auto">
-                <p className="w-10">
-                  <Icon
-                    icon="bxs:up-arrow"
-                    rotate={2}
-                    className="up-arrow m-auto"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="m-auto text-white"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="m-auto text-white"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="m-auto text-white"
-                  ></Icon>
-                </p>
-              </div>
-              <div className="flex justify-between w-4/5 m-auto">
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="event-condition-circle-now"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="event-condition-circle-now"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="event-condition-circle-future"
-                  ></Icon>
-                </p>
-                <p className="w-10">
-                  <Icon
-                    icon="material-symbols:circle"
-                    className="event-condition-circle-future"
-                  ></Icon>
-                </p>
-              </div>
-              <div className="flex justify-center mt-2">
-                <progress
-                  max={100}
-                  value={11}
-                  className="w-full h-0.5"
-                ></progress>
-              </div>
-              <div className="flex justify-between w-4/5 m-auto">
-                <span>開催前</span>
-                <span>一次審査</span>
-                <span>二次審査</span>
-                <span>終了済</span>
               </div>
             </div>
 
