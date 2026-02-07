@@ -97,18 +97,19 @@ function DetailNoticeContent() {
 
   const thumbnailSrc = useMemo(() => {
     // main_image_path が優先、なければデフォルト
-    if (notification?.main_image_path) {
-      return safePath(notification.main_image_path);
-    }
-    // フォールバック: 最初のファイルを使用
-    const file = notification?.notificationFiles?.[0]?.file;
-    return safePath(file?.data_path ?? null);
+    if (!notification?.main_image_path) return undefined;
+    return safePath(notification.main_image_path);
   }, [notification]);
 
   const attachments: Attachment[] = useMemo(() => {
     // main_image_path に指定されたファイルを除外
+    const mainImagePath = notification?.main_image_path;
+
     return (notification?.notificationFiles ?? [])
-      .filter((nf) => nf.file?.data_path !== notification?.main_image_path)
+      .filter((nf) => {
+        if (!mainImagePath) return true;
+        return nf.file?.data_path !== mainImagePath;
+      })
       .map((nf) => {
         const file = nf.file;
         const name = file?.original_filename || file?.name || "ファイル";
@@ -223,21 +224,21 @@ function DetailNoticeContent() {
 
   return (
     <main className="p-6">
-      {/* サムネイル */}
-      <section className="thumbnail-container" style={{ height: "200px" }}>
-        <div
-          className="thumbnail-inner flex justify-center relative"
-          style={{ width: "100%", height: "100%" }}
-        >
-          {thumbnailSrc && (
+      {/* サムネイル（`main_image_path` が設定されている場合のみ表示） */}
+      {thumbnailSrc ? (
+        <section className="thumbnail-container" style={{ height: "200px" }}>
+          <div
+            className="thumbnail-inner flex justify-center relative"
+            style={{ width: "100%", height: "100%" }}
+          >
             <img
               src={thumbnailSrc}
               alt="サムネイル"
               className="thumbnail-preview w-full"
             />
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : null}
 
       {/* タイトル */}
       <h1 className="notice-title font-bold">{notification?.title ?? ""}</h1>

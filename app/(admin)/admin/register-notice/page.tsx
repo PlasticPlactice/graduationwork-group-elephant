@@ -205,7 +205,10 @@ export default function Page() {
   };
 
   // ファイルアップロード共通関数
-  const uploadFile = async (file: File): Promise<number | null> => {
+  // サーバはアップロード後に { id, data_path } を返すため、それを受け取る
+  const uploadFile = async (
+    file: File,
+  ): Promise<{ id: number; data_path: string } | null> => {
     const formData = new FormData();
     formData.append("file", file);
 
@@ -224,7 +227,7 @@ export default function Page() {
         );
       }
       const uploadedFile = await res.json();
-      return uploadedFile.id;
+      return { id: uploadedFile.id, data_path: uploadedFile.data_path };
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
@@ -304,21 +307,26 @@ export default function Page() {
 
     try {
       // 1. ファイルアップロード
-      const uploadedFileIds: number[] = [];
+      const uploadedAttachmentIds: number[] = [];
+      let uploadedThumbnailId: number | null = null;
+      let uploadedThumbnailPath: string | null = null;
       const totalFiles = (thumbnailFile ? 1 : 0) + attachedFiles.length;
       let uploadedCount = 0;
 
       if (thumbnailFile) {
         setUploadProgress(Math.round(((uploadedCount / totalFiles) * 100) / 2)); // アップロード進捗は50%まで
-        const fileId = await uploadFile(thumbnailFile);
-        if (fileId !== null) uploadedFileIds.push(fileId);
+        const result = await uploadFile(thumbnailFile);
+        if (result !== null) {
+          uploadedThumbnailId = result.id;
+          uploadedThumbnailPath = result.data_path;
+        }
         uploadedCount++;
       }
 
       for (const file of attachedFiles) {
         setUploadProgress(Math.round(((uploadedCount / totalFiles) * 100) / 2));
-        const fileId = await uploadFile(file);
-        if (fileId !== null) uploadedFileIds.push(fileId);
+        const resFile = await uploadFile(file);
+        if (resFile !== null) uploadedAttachmentIds.push(resFile.id);
         uploadedCount++;
       }
 
@@ -328,6 +336,11 @@ export default function Page() {
       setUploadProgress(75);
       const notificationTypeInt = notificationType === "notice" ? 0 : 1;
       const shouldPublish = !saveAsDraft && isPublic;
+      // finalFileIds: サムネイルがあれば先頭に置き、続けて添付のIDを追加
+      const finalFileIds: number[] = [];
+      if (uploadedThumbnailId !== null) finalFileIds.push(uploadedThumbnailId);
+      finalFileIds.push(...uploadedAttachmentIds);
+
       const notificationData = {
         title: title,
         detail: detailHtml,
@@ -340,7 +353,8 @@ export default function Page() {
           : null,
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
-        fileIds: uploadedFileIds,
+        fileIds: finalFileIds,
+        main_image_path: uploadedThumbnailPath ?? null,
       };
 
       const res = await fetch("/api/admin/notifications", {
@@ -473,7 +487,9 @@ export default function Page() {
           </div>
         </section>
 
-        <label htmlFor="title" className="block mt-5 mb-1">タイトル<span className="required">*</span></label>
+        <label htmlFor="title" className="block mt-5 mb-1">
+          タイトル<span className="required">*</span>
+        </label>
         <Textbox
           type="text"
           className="title w-full mb-5"
@@ -546,7 +562,9 @@ export default function Page() {
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="w-38">公開期間<span className="required">*</span></label>
+            <label className="w-38">
+              公開期間<span className="required">*</span>
+            </label>
             <Textbox
               type="datetime-local"
               placeholder="公開開始"
@@ -568,7 +586,9 @@ export default function Page() {
           </div>
         </div>
         {/* ツールバー */}
-        <label htmlFor="title" className="block mt-5 mb-1">本文<span className="required">*</span></label>
+        <label htmlFor="title" className="block mt-5 mb-1">
+          本文<span className="required">*</span>
+        </label>
         <div className="flex items-center gap-2 design-container py-2 pl-3">
           {/* 太字 */}
           <button
