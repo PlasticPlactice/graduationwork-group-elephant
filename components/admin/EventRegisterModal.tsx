@@ -130,7 +130,7 @@ export default function EventRegisterModal({
             <div className="my-4">
               <div className="flex justify-around items-center">
                 <label htmlFor="event-start-datetime" className="text-xl block">
-                  イベント開催期間<span className="text-white">*</span>
+                  イベント開催期間<span className="required">*</span>
                 </label>
                 <p className="text-white">～</p>
                 <label htmlFor="event-start-datetime" className="text-xl text-white">
