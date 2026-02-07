@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { DEMO_MODE } from "@/lib/constants/demoMode";
 
 export default function PasswordChangePage() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -33,7 +34,7 @@ export default function PasswordChangePage() {
 
     if (!passwordComplexityRegex.test(newPassword)) {
       setError(
-        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください"
+        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください",
       );
       return;
     }
@@ -181,7 +182,7 @@ export default function PasswordChangePage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleChangePassword}
-              disabled={isLoading}
+              disabled={isLoading || DEMO_MODE}
               className="w-full text-white px-4 py-3 rounded-md font-bold text-center hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: "var(--color-main)",
