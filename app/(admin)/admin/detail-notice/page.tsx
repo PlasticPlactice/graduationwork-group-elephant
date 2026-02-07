@@ -8,6 +8,7 @@ import { ja } from "date-fns/locale";
 import { useEffect, useMemo, useState, Suspense } from "react";
 import NoticeDisableModal from "@/components/admin/NoticeDisableModal";
 import NoticeDeleteModal from "@/components/admin/NoticeDeleteModal";
+import { normalizeFilePath, isImageFile } from "@/lib/pathUtils";
 
 type ApiFile = {
   id?: number;
@@ -45,11 +46,6 @@ const getStatusLabel = (pub: boolean, draft: boolean): string => {
   if (draft) return "下書き";
   if (pub) return "公開中";
   return "非公開";
-};
-
-const safePath = (p?: string | null): string | undefined => {
-  if (!p) return undefined;
-  return p.startsWith("/") ? p : `/${p}`;
 };
 
 function DetailNoticeContent() {
@@ -96,30 +92,28 @@ function DetailNoticeContent() {
   }, [id]);
 
   const thumbnailSrc = useMemo(() => {
-    // main_image_path が優先、なければデフォルト
-    if (!notification?.main_image_path) return undefined;
-    return safePath(notification.main_image_path);
+    // main_image_path をサムネイルとして表示
+    const mp = notification?.main_image_path;
+    if (!mp) return undefined;
+    // 完全URLの場合はそのまま返す
+    if (mp.startsWith("http://") || mp.startsWith("https://")) return mp;
+    // 相対パスの場合は正規化
+    return normalizeFilePath(mp);
   }, [notification]);
 
   const attachments: Attachment[] = useMemo(() => {
-    // main_image_path に指定されたファイルを除外
-    const mainImagePath = notification?.main_image_path;
-
+    // notificationFiles にはメイン画像が含まれないため、そのまま使用
     return (notification?.notificationFiles ?? [])
-      .filter((nf) => {
-        if (!mainImagePath) return true;
-        return nf.file?.data_path !== mainImagePath;
-      })
       .map((nf) => {
         const file = nf.file;
         const name = file?.original_filename || file?.name || "ファイル";
-        const path = safePath(file?.data_path ?? null);
-        const isImage =
-          (file?.type ?? "").startsWith("image/") ||
-          /\.(jpg|jpeg|png|gif|webp)$/i.test(name);
-        return { kind: isImage ? "image" : "file", src: path, name };
+        const dataPath = file?.data_path;
+        if (!dataPath) return null;
+        const path = normalizeFilePath(dataPath);
+        const isImage = isImageFile(name) || (file?.type ?? "").startsWith("image/");
+        return { kind: isImage ? "image" as const : "file" as const, src: path, name };
       })
-      .filter((p): p is Attachment => Boolean(p.src));
+      .filter((p): p is Attachment => p !== null);
   }, [notification]);
 
   const handleEdit = () => {

@@ -336,10 +336,8 @@ export default function Page() {
       setUploadProgress(75);
       const notificationTypeInt = notificationType === "notice" ? 0 : 1;
       const shouldPublish = !saveAsDraft && isPublic;
-      // finalFileIds: サムネイルがあれば先頭に置き、続けて添付のIDを追加
-      const finalFileIds: number[] = [];
-      if (uploadedThumbnailId !== null) finalFileIds.push(uploadedThumbnailId);
-      finalFileIds.push(...uploadedAttachmentIds);
+      // メイン画像は main_image_path で管理、添付ファイルのみを fileIds に含める
+      const finalFileIds: number[] = [...uploadedAttachmentIds];
 
       const notificationData = {
         title: title,
