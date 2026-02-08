@@ -8,7 +8,7 @@ import StatusEditModal from "@/components/admin/StatusEditModal";
 import CsvOutputModal from "@/components/admin/CsvOutputModal";
 import AllMessageSendModal from "@/components/admin/AllMessageSendModal";
 import BookReviewDetailModal from "@/components/admin/BookReviewDetailModal";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { REVIEW_STATUS_LABELS } from "@/lib/constants/reviewStatus";
 
@@ -58,12 +58,18 @@ export default function Page() {
     useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // データ取得
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch("/api/admin/reviews");
+        const eventId = searchParams.get("eventId");
+        const url =
+          eventId !== null
+            ? `/api/admin/reviews?eventId=${eventId}`
+            : "/api/admin/reviews";
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           setReviews(data);
@@ -76,7 +82,7 @@ export default function Page() {
       }
     };
     fetchReviews();
-  }, []);
+  }, [searchParams]);
 
   const toggleRow = (id: number) => {
     setOpenRows((prev) =>
