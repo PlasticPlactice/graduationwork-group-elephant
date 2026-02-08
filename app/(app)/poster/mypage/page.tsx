@@ -464,27 +464,35 @@ export default function MyPage() {
                 </span>
               </span>
             </div>
+          </Link>
+        </div>
 
-            <div className="flex flex-col gap-4">
-            {eventData.map((event, eventIndex) => (
-              <div key={eventIndex} className="max-w-2xl">
-                <EventCard
-                  eventId={String(event.id)}
-                  title={event.title}
-                  href="/post/barcode-scan"
-                  daysLeft={daysFromToday(
-                    String(event.first_voting_start_period),
-                  )}
-                  detail={event.detail}
-                  buttonText="このイベントに投稿する"
-                />
-              </div>
-            ))}
+        <div className="max-w-6xl mx-auto my-4 lg:grid lg:grid-cols-2 lg:gap-10">
+          <div className="max-w-2xl mx-auto lg:mx-0">
+            <div className="flex items-center justify-center gap-4 my-6">
+              <div className="w-24 h-px bg-black" />
+              <h2 className="font-bold text-slate-900">現在開催中のイベント</h2>
+              <div className="w-24 h-px bg-black" />
             </div>
-
+            <div className="flex flex-col gap-4">
+              {eventData.map((event, eventIndex) => (
+                <div key={eventIndex} className="max-w-2xl">
+                  <EventCard
+                    eventId={String(event.id)}
+                    title={event.title}
+                    href="/post/barcode-scan"
+                    daysLeft={daysFromToday(
+                      String(event.first_voting_start_period)
+                    )}
+                    detail={event.detail}
+                    buttonText="このイベントに投稿する"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* 縺ゅ↑縺溘・譖ｸ隧輔そ繧ｯ繧ｷ繝ｧ繝ｳ (繧､繝吶Φ繝医き繝ｼ繝峨・谺｡縺ｫ陦ｨ遉ｺ) */}
+          {/* あなたの書評セクション */}
           <div className="max-w-2xl mx-auto my-3 lg:mx-0 lg:mt-0">
             <div className="text-center my-6">
               <div className="flex items-center justify-center gap-4 mt-20 lg:mt-6">
@@ -497,7 +505,7 @@ export default function MyPage() {
               </div>
             </div>
 
-            {/* tabs: use ul/li/a structure (蜿り・ */}
+            {/* tabs: use ul/li/a structure */}
             <ul
               className="flex flex-wrap justify-center text-sm font-medium text-center border-b border-gray-500 my-3"
               role="tablist"
