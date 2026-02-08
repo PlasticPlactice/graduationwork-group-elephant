@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
@@ -22,7 +22,7 @@ export default function Page() {
     router.push("/admin/events");
   };
 
-  // イベントデータを取得する関数
+  // イベントデータを取得
   const fetchEvents = async () => {
     try {
       const res = await fetch("/api/events?status=0,1,2");
@@ -32,7 +32,7 @@ export default function Page() {
       }
       const data = await res.json();
 
-      // 締切が近い順にソート（緊急度優先）
+      // 一次審査終了日で近い順にソート
       const sortedData = data.sort((a: EventItem, b: EventItem) => {
         if (!a.first_voting_end_period) return 1;
         if (!b.first_voting_end_period) return -1;
@@ -48,7 +48,7 @@ export default function Page() {
     }
   };
 
-  // 初期ロード
+  // 初期読み込み
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -67,8 +67,7 @@ export default function Page() {
               <div className="mx-auto flex items-center justify-between w-4/5">
                 <p className="font-bold event-name">{event.title}</p>
                 <p className="event-date event-date-now">
-                  一次審査の締切：
-                  {formatDateTime(event.first_voting_end_period)}
+                  一次審査終了日: {formatDateTime(event.first_voting_end_period)}
                 </p>
               </div>
 
@@ -92,7 +91,8 @@ export default function Page() {
       </div>
 
       <div className="home-actions grid gap-x-14 gap-y-5 mt-10 mb-3">
-        {/* お知らせ・寄贈管理 */}
+        <h1 className="text-center event-title">管理者ボタン</h1>
+        {/* お知らせ管理 */}
         <Link href="/admin/notice" className="flex p-2 shadow-md admin-card">
           <div className="flex items-center justify-center w-auto mx-1">
             <Icon
@@ -103,11 +103,9 @@ export default function Page() {
             />
           </div>
           <div>
-            <h2 className="mb-1 ml-6 text-left card-title">
-              お知らせ・寄贈管理
-            </h2>
+            <h2 className="mb-1 ml-6 text-left card-title">お知らせ管理</h2>
             <p className="mb-1 ml-6 card-description">
-              お知らせの一覧・投稿・編集
+              お知らせの作成・編集・公開
             </p>
           </div>
         </Link>
@@ -127,7 +125,7 @@ export default function Page() {
           </div>
           <div>
             <h2 className="mb-1 ml-6 text-left card-title">イベント管理</h2>
-            <p className="mb-1 ml-6 card-description">イベントの作成・編集</p>
+            <p className="mb-1 ml-6 card-description">イベントの作成・編集・公開</p>
           </div>
         </Link>
 
@@ -147,7 +145,7 @@ export default function Page() {
           <div>
             <h2 className="mb-1 ml-6 text-left card-title">ユーザー管理</h2>
             <p className="mb-1 ml-6 card-description">
-              ユーザー情報閲覧・書評閲覧
+              ユーザー情報の閲覧・管理
             </p>
           </div>
         </Link>
@@ -167,7 +165,7 @@ export default function Page() {
           </div>
           <div>
             <h2 className="mb-1 ml-6 text-left card-title">パスワード変更</h2>
-            <p className="mb-1 ml-6 card-description">パスワードを変更</p>
+            <p className="mb-1 ml-6 card-description">管理者パスワードを変更</p>
           </div>
         </Link>
 
@@ -186,7 +184,7 @@ export default function Page() {
           </div>
           <div>
             <h2 className="mb-1 ml-6 text-left card-title">利用規約管理</h2>
-            <p className="mb-1 ml-6 card-description">利用規約を管理</p>
+            <p className="mb-1 ml-6 card-description">利用規約の編集</p>
           </div>
         </Link>
       </div>

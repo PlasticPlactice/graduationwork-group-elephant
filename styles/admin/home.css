@@ -1,4 +1,4 @@
-.home-main {
+﻿・ｿ.home-main {
   background-color: var(--color-bg);
   color: var(--color-text);
 }
@@ -7,7 +7,7 @@
 .home-sections {
   display: grid;
   gap: 32px;
-  align-items: start;
+  align-items: stretch;
   max-width: 1100px;
   margin: 20px auto 0;
   padding: 0 6px 24px;
@@ -16,10 +16,14 @@
 .home-events,
 .home-actions {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .home-actions {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
 }
 
 @media (min-width: 1024px) {
@@ -33,9 +37,11 @@
   }
 }
 .event-scroll-content {
-  max-height: 450px; /* 2件がきれいに見える高さを確保 */
-  min-height: 450px;
+  max-height: 490px; /* 2闔会ｽｶ邵ｺ蠕娯ｳ郢ｧ蠕鯉ｼ樒ｸｺ・ｫ髫穂ｹ昶斡郢ｧ遏ｩ・ｫ蛟･・・ｹｧ蝣､・｢・ｺ闖ｫ繝ｻ*/
+  min-height: 490px;
+  flex: 1 1 auto;
   overflow-y: auto;
+  margin-top: 20px;
   border: 2px solid var(--color-main);
   background-color: #fff;
   border-radius: var(--control-radius);
@@ -47,6 +53,16 @@
   font-weight: bold;
   width: 100%;
   white-space: nowrap;
+}
+
+.home-events .event-title,
+.home-actions .event-title {
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+.home-actions .event-title {
+  margin-top: 16px;
 }
 
 .event-container {
@@ -79,20 +95,20 @@
 }
 
 progress {
-  -webkit-appearance: none; /* -webkit- 逕ｨ: 繝励Ο繧ｰ繝ｬ繧ｹ繝舌・縺ｮ繧ｹ繧ｿ繧､繝ｫ繧偵Μ繧ｻ繝・ヨ */
-  -moz-appearance: none;    /* -moz- 逕ｨ: 繝励Ο繧ｰ繝ｬ繧ｹ繝舌・縺ｮ繧ｹ繧ｿ繧､繝ｫ繧偵Μ繧ｻ繝・ヨ */
-  background-color: var(--color-admin-sub); /* -moz- 逕ｨ: 繝励Ο繧ｰ繝ｬ繧ｹ繝舌・縺ｮ閭梧勹濶ｲ */
+  -webkit-appearance: none; /* -webkit- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ驛｢・ｧ繝ｻ・ｹ驛｢・ｧ繝ｻ・ｿ驛｢・ｧ繝ｻ・､驛｢譎｢・ｽ・ｫ驛｢・ｧ陋幢ｽｵ・取㏍・ｹ・ｧ繝ｻ・ｻ驛｢譏ｴ繝ｻ郢晢ｽｨ */
+  -moz-appearance: none;    /* -moz- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ驛｢・ｧ繝ｻ・ｹ驛｢・ｧ繝ｻ・ｿ驛｢・ｧ繝ｻ・､驛｢譎｢・ｽ・ｫ驛｢・ｧ陋幢ｽｵ・取㏍・ｹ・ｧ繝ｻ・ｻ驛｢譏ｴ繝ｻ郢晢ｽｨ */
+  background-color: var(--color-admin-sub); /* -moz- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ鬮｢・ｭ隴ｴ・ｧ陷搾ｽｹ雎ｼ・ｶ繝ｻ・ｲ */
   border: none;
   height: 3px;
 }
 ::-webkit-progress-bar {
-  background-color: var(--color-admin-sub); /* -webkit- 逕ｨ: 繝励Ο繧ｰ繝ｬ繧ｹ繝舌・縺ｮ閭梧勹濶ｲ */
+  background-color: var(--color-admin-sub); /* -webkit- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ鬮｢・ｭ隴ｴ・ｧ陷搾ｽｹ雎ｼ・ｶ繝ｻ・ｲ */
 }
 ::-webkit-progress-value {
-  background-color: var(--color-main); /* -webkit- 逕ｨ: 繝励Ο繧ｰ繝ｬ繧ｹ繝舌・縺ｮ騾ｲ謐鈴Κ蛻・牡 */
+  background-color: var(--color-main); /* -webkit- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ鬯ｨ・ｾ繝ｻ・ｲ髫ｰ螳｣譁｡・主､雁ｴ慕ｹ晢ｽｻ霑夲ｽ｡ */
 }
 ::-moz-progress-bar {
-  background-color: var(--color-main); /* -moz- 逕ｨ: 繝励Ο繧ｰ繝ｬ繧ｹ繝舌・縺ｮ騾ｲ謐鈴Κ蛻・牡 */
+  background-color: var(--color-main); /* -moz- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ鬯ｨ・ｾ繝ｻ・ｲ髫ｰ螳｣譁｡・主､雁ｴ慕ｹ晢ｽｻ霑夲ｽ｡ */
 }
 
 .event-date {
@@ -143,5 +159,8 @@ progress {
   color: var(--color-input-bg);
   font-size: var(--font-size-small);
 }
+
+
+
 
 
