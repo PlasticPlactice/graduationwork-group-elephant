@@ -247,6 +247,7 @@ export function BookshelfTop({ reviews }: Props) {
   const scatterAreaRef = useRef<HTMLDivElement | null>(null);
   const actionButtonRef = useRef<HTMLButtonElement | null>(null);
   const voteButtonRef = useRef<HTMLButtonElement | null>(null);
+  const reviewContentRef = useRef<HTMLDivElement | null>(null);
   const scatterBookRef = useRef<HTMLElement | null>(null);
 
   const [maxBooksPerShelf, setMaxBooksPerShelf] = useState(
@@ -266,9 +267,9 @@ export function BookshelfTop({ reviews }: Props) {
   const [modalState, setModalState] = useState<ModalState | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [votedBookId, setVotedBookId] = useState<string | null>(null);
-  const [tutorialStep, setTutorialStep] = useState<0 | 1 | 2 | 3 | 4 | null>(
-    0
-  );
+  const [tutorialStep, setTutorialStep] = useState<
+    0 | 1 | 2 | 3 | 4 | 5 | null
+  >(0);
   const [tutorialBookId, setTutorialBookId] = useState<string | null>(null);
   const [isEventInfoOpen, setIsEventInfoOpen] = useState(false);
   const [isScatterView, setIsScatterView] = useState(false);
@@ -412,7 +413,7 @@ export function BookshelfTop({ reviews }: Props) {
   }, [maxBooksPerShelf, bookIndexById]); // ★依存配列に bookIndexById を追加
 
   useEffect(() => {
-    if (tutorialStep !== 4) return;
+    if (tutorialStep !== 5) return;
     if (modalState || !tutorialBookId) return;
     
     // ★修正: BOOKS.find ではなく reviews.find を使用
@@ -576,9 +577,9 @@ export function BookshelfTop({ reviews }: Props) {
     }
     moveScatterBookToShelf(modalState.book.id);
     setModalState(null);
-    if (tutorialStep === 2) {
+    if (tutorialStep === 3) {
       setTutorialBookId(completedBookId);
-      setTutorialStep(3);
+      setTutorialStep(4);
     }
   }, [
     booksState.shelves,
@@ -614,7 +615,7 @@ export function BookshelfTop({ reviews }: Props) {
     if (tutorialStep === 1) {
       scrollToScatter();
     }
-    if (tutorialStep === 3) {
+    if (tutorialStep === 4) {
       scrollToShelf();
     }
   }, [scrollToScatter, scrollToShelf, tutorialStep]);
@@ -733,6 +734,7 @@ export function BookshelfTop({ reviews }: Props) {
         isVoted={modalState ? votedBookId === modalState.book.id : false}
         actionButtonRef={actionButtonRef}
         voteButtonRef={voteButtonRef}
+        reviewContentRef={reviewContentRef}
         onVoteChange={handleVoteChange}
         onToggleFavorite={() =>
           modalState && toggleFavorite(modalState.book.id)
@@ -740,7 +742,7 @@ export function BookshelfTop({ reviews }: Props) {
         onToggleVote={() => {
           if (!modalState) return;
           const voted = toggleVote(modalState.book.id);
-          if (voted && tutorialStep !== 4) {
+          if (voted && tutorialStep !== 5) {
             handleCompleteBook();
           }
         }}
@@ -793,19 +795,30 @@ export function BookshelfTop({ reviews }: Props) {
       ) : null}
       {!isEventInfoOpen && tutorialStep === 2 ? (
         <TutorialOverlay
-          targetRef={actionButtonRef as RefObject<HTMLElement>}
-          message="本棚にしまうボタンを押してください。"
+          targetRef={reviewContentRef as RefObject<HTMLElement>}
+          message="ここで書評を見ることができます。"
+          showNext
+          nextLabel="次へ"
+          onNext={() => setTutorialStep(3)}
+          preferPlacement="bottom"
         />
       ) : null}
       {!isEventInfoOpen && tutorialStep === 3 ? (
         <TutorialOverlay
-          targetRef={shelfAreaRef as RefObject<HTMLElement>}
-          message="本棚にしまわれました。次は投票の説明です。"
-          showNext
-          onNext={() => setTutorialStep(4)}
+          targetRef={actionButtonRef as RefObject<HTMLElement>}
+          message="本棚にしまうボタンを押してください。"
         />
       ) : null}
       {!isEventInfoOpen && tutorialStep === 4 ? (
+        <TutorialOverlay
+          targetRef={shelfAreaRef as RefObject<HTMLElement>}
+          message="本棚にしまわれました。次は投票の説明です。"
+          showNext
+          nextLabel="次へ"
+          onNext={() => setTutorialStep(5)}
+        />
+      ) : null}
+      {!isEventInfoOpen && tutorialStep === 5 ? (
         <TutorialOverlay
           targetRef={voteButtonRef as RefObject<HTMLElement>}
           message="ここから投票できます。"

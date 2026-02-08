@@ -30,6 +30,7 @@ type BookReviewModalProps = {
   onToggleVote?: () => void;
   actionButtonRef?: Ref<HTMLButtonElement>;
   voteButtonRef?: Ref<HTMLButtonElement>;
+  reviewContentRef?: Ref<HTMLDivElement>;
   onVoteChange?: (isVoted: boolean, eventId: string) => void;
 };
 
@@ -52,6 +53,7 @@ export function BookReviewModal({
   onToggleVote,
   actionButtonRef,
   voteButtonRef,
+  reviewContentRef,
   onVoteChange,
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -284,6 +286,7 @@ export function BookReviewModal({
           <div className={styles.bookOpenContent}>
           <div className="relative z-10 flex h-full flex-col">
           <div
+            ref={reviewContentRef}
             dangerouslySetInnerHTML={{
               __html: book.review ?? "書評が登録されていません",
             }}
