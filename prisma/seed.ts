@@ -173,6 +173,7 @@ async function main() {
         pattern: user.pattern,
         pattern_color: user.pattern_color,
         public_flag: true,
+        draft_flag: false,
       },
     });
     reviews.push(review);

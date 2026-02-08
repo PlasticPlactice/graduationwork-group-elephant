@@ -3,8 +3,15 @@
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function PostCompletePage() {
+  const [eventId, setEventId] = useState<String | null>(null);
+  
+  useEffect(() => {
+    setEventId(sessionStorage.getItem("eventId"));
+  }, [])
+
   return (
     <div className={`${Styles.posterContainer}`}>
       <Image
@@ -68,7 +75,7 @@ export default function PostCompletePage() {
       >
         像と花ファンサイトへ
       </button>
-      <Link href="barcode-scan" className="w-full block mb-5">
+      <Link href={`barcode-scan/${eventId}`} className="w-full block mb-5">
         <button
           type="button"
           className={`w-full ${Styles.barcodeScan__backButton}`}

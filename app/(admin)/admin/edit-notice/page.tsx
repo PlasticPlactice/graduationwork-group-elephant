@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, Suspense,useRef } from "react";
+import React, { useEffect, useState, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
@@ -90,6 +90,9 @@ function EditNoticeContent() {
   const [existingThumbnailPath, setExistingThumbnailPath] = useState<
     string | null
   >(null);
+  const [existingMainImagePath, setExistingMainImagePath] = useState<
+    string | null
+  >(null);
   const [attachedFilePreviews, setAttachedFilePreviews] = useState<
     UploadPreview[]
   >([]);
@@ -145,57 +148,52 @@ function EditNoticeContent() {
           editor?.commands.setContent(data.detail);
         }
 
-        // 添付ファイルを処理
+        // main_image_path を取得してサムネイルとして設定
+        if (data.main_image_path) {
+          setExistingMainImagePath(data.main_image_path);
+          const path = data.main_image_path.startsWith("/")
+            ? data.main_image_path
+            : `/${data.main_image_path}`;
+          setThumbnailPreview(path);
+          // 注: メイン画像は notificationFiles には含まれないため、fileId は設定しない
+        }
+
+        // 添付ファイルを処理（notificationFiles にはメイン画像は含まれない）
         if (data.notificationFiles && data.notificationFiles.length > 0) {
-          // 最初のファイルをサムネイルとして扱う
-          const firstFile = data.notificationFiles[0];
-          if (firstFile?.file?.data_path) {
-            const path = firstFile.file.data_path.startsWith("/")
-              ? firstFile.file.data_path
-              : `/${firstFile.file.data_path}`;
-            setExistingThumbnailFileId(firstFile.file.id ?? null);
-            setExistingThumbnailPath(path);
-            setThumbnailPreview(path);
-          }
+          const previews: UploadPreview[] = data.notificationFiles.map(
+            (nf: RemoteNotificationFile) => {
+              const fileName =
+                nf.file?.original_filename || nf.file?.name || "ファイル";
+              const dataPath = nf.file?.data_path;
+              const fullPath = dataPath?.startsWith("/")
+                ? dataPath
+                : `/${dataPath}`;
+              const isImage =
+                nf.file?.type?.startsWith("image/") ||
+                fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
 
-          // 2番目以降のファイルを添付ファイルとして表示
-          const remainingFiles = data.notificationFiles.slice(1);
-          if (remainingFiles.length > 0) {
-            const previews: UploadPreview[] = remainingFiles.map(
-              (nf: RemoteNotificationFile) => {
-                const fileName =
-                  nf.file?.original_filename || nf.file?.name || "ファイル";
-                const dataPath = nf.file?.data_path;
-                const fullPath = dataPath?.startsWith("/")
-                  ? dataPath
-                  : `/${dataPath}`;
-                const isImage =
-                  nf.file?.type?.startsWith("image/") ||
-                  fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-
-                if (isImage && fullPath) {
-                  return {
-                    kind: "image" as const,
-                    src: fullPath,
-                    name: fileName,
-                    file: undefined,
-                    fileId: nf.file?.id,
-                    mimeType: nf.file?.type,
-                  };
-                } else {
-                  return {
-                    kind: "file" as const,
-                    name: fileName,
-                    file: undefined,
-                    fileId: nf.file?.id,
-                    mimeType: nf.file?.type,
-                    src: fullPath,
-                  };
-                }
-              },
-            );
-            setAttachedFilePreviews(previews);
-          }
+              if (isImage && fullPath) {
+                return {
+                  kind: "image" as const,
+                  src: fullPath,
+                  name: fileName,
+                  file: undefined,
+                  fileId: nf.file?.id,
+                  mimeType: nf.file?.type,
+                };
+              } else {
+                return {
+                  kind: "file" as const,
+                  name: fileName,
+                  file: undefined,
+                  fileId: nf.file?.id,
+                  mimeType: nf.file?.type,
+                  src: fullPath,
+                };
+              }
+            },
+          );
+          setAttachedFilePreviews(previews);
         }
       } catch (error) {
         setErrorMessage(
@@ -348,7 +346,9 @@ function EditNoticeContent() {
   };
 
   // ファイルアップロード共通関数
-  const uploadFile = async (file: File): Promise<number | null> => {
+  const uploadFile = async (
+    file: File,
+  ): Promise<{ id: number; data_path: string } | null> => {
     const formData = new FormData();
     formData.append("file", file);
 
@@ -367,7 +367,7 @@ function EditNoticeContent() {
         );
       }
       const uploadedFile = await res.json();
-      return uploadedFile.id;
+      return { id: uploadedFile.id, data_path: uploadedFile.data_path };
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
@@ -445,6 +445,7 @@ function EditNoticeContent() {
       );
       const totalFiles = (thumbnailFile ? 1 : 0) + filesNeedingUpload.length;
       let uploadedThumbnailId: number | null = null;
+      let uploadedThumbnailPath: string | null = null;
       const uploadedAttachmentIds: number[] = [];
       let uploadedCount = 0;
 
@@ -454,10 +455,12 @@ function EditNoticeContent() {
             Math.round(((uploadedCount / totalFiles) * 100) / 2),
           );
         }
-        const fileId = await uploadFile(thumbnailFile);
-        if (fileId !== null) {
-          uploadedThumbnailId = fileId;
-          console.log("Uploaded new thumbnail with ID:", fileId);
+        const result = await uploadFile(thumbnailFile);
+        if (result !== null) {
+          uploadedThumbnailId = result.id;
+          uploadedThumbnailPath = result.data_path;
+          setExistingMainImagePath(result.data_path);
+          console.log("Uploaded new thumbnail with ID:", result.id);
         }
         uploadedCount++;
       } else if (existingThumbnailPath) {
@@ -471,8 +474,8 @@ function EditNoticeContent() {
             Math.round(((uploadedCount / totalFiles) * 100) / 2),
           );
         }
-        const fileId = await uploadFile(preview.file);
-        if (fileId !== null) uploadedAttachmentIds.push(fileId);
+        const result = await uploadFile(preview.file);
+        if (result !== null) uploadedAttachmentIds.push(result.id);
         uploadedCount++;
       }
 
@@ -491,15 +494,8 @@ function EditNoticeContent() {
         }
       }
 
-      // サムネイル: 新規があればそれを先頭に、なければ既存IDを先頭に置く
-      const finalFileIds: number[] = [];
-      if (thumbnailFile && uploadedThumbnailId !== null) {
-        finalFileIds.push(uploadedThumbnailId);
-      } else if (existingThumbnailFileId !== null) {
-        finalFileIds.push(existingThumbnailFileId);
-      }
-
-      finalFileIds.push(...attachmentFileIds);
+      // メイン画像は main_image_path で管理、添付ファイルのみを fileIds に含める
+      const finalFileIds: number[] = [...attachmentFileIds];
 
       // 2. お知らせ更新API呼び出し
       setUploadProgress(75);
@@ -517,6 +513,7 @@ function EditNoticeContent() {
           : null,
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
+        main_image_path: existingMainImagePath,
         fileIds: finalFileIds,
       };
 
@@ -648,7 +645,9 @@ function EditNoticeContent() {
           </div>
         </section>
 
-        <label htmlFor="title" className="block mt-5 mb-1">タイトル<span className="required">*</span></label>
+        <label htmlFor="title" className="block mt-5 mb-1">
+          タイトル<span className="required">*</span>
+        </label>
         <Textbox
           type="text"
           className="title w-full mb-5"
@@ -721,7 +720,9 @@ function EditNoticeContent() {
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="w-38">公開期間<span className="required">*</span></label>
+            <label className="w-38">
+              公開期間<span className="required">*</span>
+            </label>
             <Textbox
               type="datetime-local"
               placeholder="公開開始"
@@ -743,7 +744,9 @@ function EditNoticeContent() {
           </div>
         </div>
         {/* ツールバー */}
-        <label htmlFor="title" className="block mt-5 mb-1">本文<span className="required">*</span></label>
+        <label htmlFor="title" className="block mt-5 mb-1">
+          本文<span className="required">*</span>
+        </label>
         <div className="flex items-center gap-2 design-container py-2 pl-3">
           {/* 太字 */}
           <button

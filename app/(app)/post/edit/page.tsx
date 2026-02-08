@@ -44,13 +44,15 @@ export default function PostPage() {
     pattern: string;
     pattern_color: string;
     evaluations_status: number;
+    draft_flag: boolean;
   }>({
     bookReview_id: null,
     review: "",
     color: "#FFFFFF",
     pattern: "dot",
     pattern_color: "#FFFFFF",
-    evaluations_status: 2,
+    evaluations_status: 0,
+    draft_flag: false,
   });
   const [draftForm, setDraftForm] = useState<{
     id: number | null;
@@ -59,13 +61,15 @@ export default function PostPage() {
     pattern: string;
     pattern_color: string;
     evaluations_status: number;
+    draft_flag: boolean
   }>({
     id: null,
     review: "",
     color: "#FFFFFF",
     pattern: "dot",
     pattern_color: "#FFFFFF",
-    evaluations_status: 1,
+    evaluations_status: 0,
+    draft_flag: true
   });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -121,8 +125,9 @@ export default function PostPage() {
 
     console.log("bookReviewData" + JSON.stringify(bookReviewData));
 
-    if (bookReviewData.evaluations_status == 1) {
-      setIsDraft(true);
+    // 下書きかどうかの判定
+    if (bookReviewData.draft_flag === true) {
+      setIsDraft(true)
     }
 
     setDraftForm((prev) => ({
@@ -173,17 +178,15 @@ export default function PostPage() {
   const handleDraftConfirm = () => {
     const nextForm = {
       ...draftForm,
-      evaluations_status: 1,
+      draft_flag: true
     };
-
-    console.log("nextForm" + JSON.stringify(nextForm));
 
     setDraftForm(nextForm);
 
     registerBookReviewDraft({
       ...nextForm,
     });
-    // router.push("/poster/mypage");
+    router.push("/poster/mypage");
   };
 
   // tiptapに関する関数

@@ -108,32 +108,15 @@ export default function CsvOutputModal({
                 <th>ID</th>
                 <th>書籍タイトル</th>
                 <th>ニックネーム</th>
-                <th>著者</th>
-                <th>出版社</th>
-                <th>ISBN</th>
-                <th>ステータス</th>
-                <th>投票数</th>
               </tr>
             </thead>
             <tbody className="border status-book-section">
               {data.map((record) => {
-                const statusLabels: { [key: number]: string } = {
-                  0: "評価前",
-                  1: "一次通過",
-                  2: "二次通過",
-                  3: "三次通過",
-                  4: "不採用",
-                };
                 return (
                   <tr key={record.id} className="status-record text-center">
                     <td>{record.id}</td>
                     <td>{record.book_title}</td>
                     <td>{record.nickname}</td>
-                    <td>{record.author || "-"}</td>
-                    <td>{record.publishers || "-"}</td>
-                    <td>{record.isbn}</td>
-                    <td>{statusLabels[record.evaluations_status] || "-"}</td>
-                    <td>{record.evaluations_count}</td>
                   </tr>
                 );
               })}

@@ -56,7 +56,6 @@ details[open] .icon {
 /* 繧ｹ繝・・繧ｿ繧ｹ螟画峩繝懊ち繝ｳ・亥・騾夲ｼ・*/
 .status-toggle {
   border: 1px solid var(--color-admin-sub);
-  font-size: var(--page-padding-lg);
   background-color: var(--color-bg);
   color: var(--color-admin-sub);
   transition: all 0.2s ease;

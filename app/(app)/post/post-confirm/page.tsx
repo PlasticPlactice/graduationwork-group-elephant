@@ -35,6 +35,12 @@ export default function PostConfirmPage({}: {}) {
       }
 
       sessionStorage.removeItem("bookReviewDraft");
+
+      sessionStorage.setItem(
+        "eventId",
+        String(data.event_id),
+      );
+
       router.push("/post/post-complete");
     } catch (e) {
       alert("通信に失敗しました。");
@@ -44,7 +50,7 @@ export default function PostConfirmPage({}: {}) {
   // PUT処理関数
   const updateBookReview = async () => {
     try {
-      const isDraftStatus = data.evaluations_status === 1 ? true : false;
+      const isDraftStatus = data.draft_flg === true ? true : false;
       console.log(isDraftStatus);
 
       const res = await fetch(`/api/book-reviews/mypage/edit`, {
@@ -60,10 +66,16 @@ export default function PostConfirmPage({}: {}) {
         return;
       }
 
-      sessionStorage.removeItem("bookReviewDraft");
+      // 下書き状態か？
       if (!isDraftStatus) {
+        sessionStorage.removeItem("bookReviewDraft");
         router.push("/poster/mypage");
       } else {
+        sessionStorage.setItem(
+          "eventId",
+          String(data.event_id),
+        );
+
         router.push("/post/post-complete");
       }
     } catch (error) {

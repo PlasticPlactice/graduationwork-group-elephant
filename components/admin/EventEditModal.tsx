@@ -162,17 +162,29 @@ export default function EventEditModal({
             </div>
 
             <div className="my-4">
-              <label htmlFor="event-start-datetime" className="text-xl block">
-                イベント開催期間<span className="required">*</span>
-              </label>
-              <p className="event-detail-text text-sm">
+              <div className="flex justify-around items-center">
+                <label htmlFor="event-start-datetime" className="text-xl block">
+                  イベント開催期間<span className="required">*</span>
+                </label>
+                <p className="text-white">～</p>
+                <label htmlFor="event-start-datetime" className="text-xl text-white">
+                  イベント開催期間<span className="text-white">*</span>
+                </label>
+              </div>
+              <div className="flex justify-evenly items-center">
+                <p className="event-detail-text text-sm">
+                  イベントの開催期間を決定します
+                </p>
+                <p className="text-white">～</p>
+                <p className="text-white text-sm">
                 イベントの開催期間を決定します
-              </p>
-              <div className="flex justify-between items-center">
+                </p>
+                </div>
+              <div className="flex gap-15 justify-center items-center">
                 <Textbox
                   id="event-start-datetime"
                   name="event-start-datetime"
-                  className="datetime-input"
+                  className="datetime-input-start"
                   type="datetime-local"
                   style={{ backgroundColor: "#F9FAFB" }}
                   value={start}
@@ -182,7 +194,7 @@ export default function EventEditModal({
                 <Textbox
                   id="event-end-datetime"
                   name="event-end-datetime"
-                  className="datetime-input"
+                  className="datetime-input-end"
                   type="datetime-local"
                   style={{ backgroundColor: "#F9FAFB" }}
                   value={end}
@@ -192,17 +204,29 @@ export default function EventEditModal({
             </div>
 
             <div className="my-4">
+              <div className="flex justify-around items-center">
               <label htmlFor="book-post-datetime" className="text-xl block">
                 書評投稿期間<span className="required">*</span>
               </label>
-              <p className="event-detail-text text-sm">
-                ユーザーが書評を投稿できる期間を決定します
-              </p>
-              <div className="flex justify-between items-center">
+              <p className="text-white">～</p>
+              <label htmlFor="book-post-datetime" className="text-xl text-white">
+                書評投稿期間<span className="text-white">*</span>
+              </label>
+              </div>
+              <div className="flex justify-evenly items-center">
+                <p className="event-detail-text text-sm">
+                  ユーザーが書評を投稿できる期間を決定します
+                </p>
+                <p className="text-white">～</p>
+                <p className="text-white text-sm">
+                  ユーザーが書評を投稿できる期間を決定します
+                </p>
+              </div>
+              <div className="flex gap-15 justify-center items-center">
                 <Textbox
                   id="book-post-start-datetime"
                   name="book-post-start-datetime"
-                  className="datetime-input"
+                  className="datetime-input-post"
                   type="datetime-local"
                   style={{ backgroundColor: "#F9FAFB" }}
                   value={firstStart}
@@ -212,7 +236,7 @@ export default function EventEditModal({
                 <Textbox
                   id="book-post-end-datetime"
                   name="book-post-end-datetime"
-                  className="datetime-input"
+                  className="datetime-input-post"
                   type="datetime-local"
                   style={{ backgroundColor: "#F9FAFB" }}
                   value={firstEnd}
@@ -222,17 +246,29 @@ export default function EventEditModal({
             </div>
 
             <div className="my-4">
-              <label htmlFor="book-vote-datetime" className="text-xl block">
-                書評投票期間<span className="required">*</span>
-              </label>
-              <p className="event-detail-text text-sm">
-                ユーザーが書評に対して投票できる期間を決定します
-              </p>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-around items-baseline">
+                <label htmlFor="book-vote-datetime" className="text-xl block">
+                  書評投票期間<span className="required">*</span>
+                </label>
+                <p className="text-white">～</p>
+                <label htmlFor="book-vote-datetime" className="text-xl text-white">
+                  書評投票期間<span className="text-white">*</span>
+                </label>
+              </div>
+              <div className="flex justify-evenly items-center">
+                <p className="event-detail-text text-sm">
+                  ユーザーが書評に対して投票できる期間を決定します
+                </p>
+                <p className="text-white">～</p>
+                <p className="text-white text-sm">
+                  ユーザーが書評に対して投票できる期間を決定します
+                </p>
+              </div>
+              <div className="flex gap-15 justify-center items-center">
                 <Textbox
                   id="book-vote-start-datetime"
                   name="book-vote-start-datetime"
-                  className="datetime-input"
+                  className="datetime-input-vote"
                   type="datetime-local"
                   style={{ backgroundColor: "#F9FAFB" }}
                   value={secondStart}
@@ -241,8 +277,8 @@ export default function EventEditModal({
                 <p>～</p>
                 <Textbox
                   id="book-vote-end-datetime"
-                  name="book-vote-end-datetime"
-                  className="datetime-input"
+                  name="book-vote-end-datetime-vote"
+                  className="datetime-input-vote"
                   type="datetime-local"
                   style={{ backgroundColor: "#F9FAFB" }}
                   value={secondEnd}

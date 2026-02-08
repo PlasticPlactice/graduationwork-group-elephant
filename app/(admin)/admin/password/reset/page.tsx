@@ -3,6 +3,7 @@
 import React, { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { DEMO_MODE } from "@/lib/constants/demoMode";
 
 function PasswordResetContent() {
   const searchParams = useSearchParams();
@@ -34,7 +35,7 @@ function PasswordResetContent() {
 
     if (!passwordComplexityRegex.test(newPassword)) {
       setMessage(
-        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください。"
+        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください。",
       );
       return;
     }
@@ -72,7 +73,7 @@ function PasswordResetContent() {
     } catch (error) {
       console.error("Password reset error:", error);
       setMessage(
-        "パスワード変更に失敗しました。リセットリンクが期限切れの可能性があります。"
+        "パスワード変更に失敗しました。リセットリンクが期限切れの可能性があります。",
       );
     } finally {
       setIsLoading(false);
@@ -170,7 +171,7 @@ function PasswordResetContent() {
 
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || DEMO_MODE}
                 className="w-full bg-blue-600 text-white px-4 py-3 rounded-md font-bold text-center hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "変更中..." : "パスワードを変更"}

@@ -5,6 +5,7 @@ import {
   NotificationType,
   NotificationTypeValue,
 } from "@/lib/types/notification";
+import { toAbsoluteUrl, isPdfFile } from "@/lib/pathUtils";
 
 // 1ページあたりの表示件数
 const ITEMS_PER_PAGE = 8;
@@ -75,6 +76,7 @@ export async function GET(req: NextRequest) {
         title: true,
         detail: true,
         public_date: true,
+        main_image_path: true,
         notificationFiles: {
           where: {
             deleted_flag: false,
@@ -96,38 +98,21 @@ export async function GET(req: NextRequest) {
 
     // NotificationItem 形式に変換
     const items: NotificationItem[] = notifications.map((notification) => {
-      // ユーティリティ関数
-      const isImageFile = (path: string): boolean =>
-        /\.(jpg|jpeg|png|gif|webp)$/i.test(path);
+      // メイン画像の特定：DB の main_image_path を優先し、なければデフォルト
+      const image = notification.main_image_path
+        ? toAbsoluteUrl(notification.main_image_path)
+        : "/top/image.png";
 
-      const normalizePath = (path: string): string =>
-        path.startsWith("/") ? path : `/${path}`;
-
-      // メイン画像の特定：最初の画像ファイルのインデックスを探す
-      const imageFileIndex = notification.notificationFiles.findIndex((nf) =>
-        isImageFile(nf.file.data_path),
-      );
-
-      // PDF ファイルを探す
+      // PDF ファイルを探す（notificationFiles にはメイン画像は含まれない）
       const pdfFile = notification.notificationFiles.find((nf) =>
-        nf.file.data_path.toLowerCase().endsWith(".pdf"),
+        isPdfFile(nf.file.data_path),
       );
 
-      // メイン画像のパス
-      const image =
-        imageFileIndex >= 0
-          ? normalizePath(
-              notification.notificationFiles[imageFileIndex].file.data_path,
-            )
-          : "/top/image.png";
-
-      // 添付ファイル：メイン画像以外のすべてのファイル
-      const attachments = notification.notificationFiles
-        .filter((_, index) => index !== imageFileIndex)
-        .map((nf) => ({
-          name: nf.file.name,
-          url: normalizePath(nf.file.data_path),
-        }));
+      // 添付ファイル（notificationFiles にはメイン画像は含まれないため、そのまま使用）
+      const attachments = notification.notificationFiles.map((nf) => ({
+        name: nf.file.name,
+        url: toAbsoluteUrl(nf.file.data_path),
+      }));
 
       return {
         id: notification.id,
@@ -135,7 +120,7 @@ export async function GET(req: NextRequest) {
         title: notification.title,
         content: notification.detail || undefined,
         image,
-        pdfUrl: pdfFile ? normalizePath(pdfFile.file.data_path) : undefined,
+        pdfUrl: pdfFile ? toAbsoluteUrl(pdfFile.file.data_path) : undefined,
         attachments,
       };
     });
