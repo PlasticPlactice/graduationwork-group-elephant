@@ -3,7 +3,7 @@ import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
 import "@/styles/admin/events-details.css";
 import { Icon } from "@iconify/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import StatusEditModal from "@/components/admin/StatusEditModal";
 import CsvOutputModal from "@/components/admin/CsvOutputModal";
 import AllMessageSendModal from "@/components/admin/AllMessageSendModal";
@@ -25,7 +25,7 @@ interface ReviewData {
   isbn: string;
 }
 
-export default function Page() {
+function EventsDetailsContent() {
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [filteredReviews, setFilteredReviews] = useState<ReviewData[]>([]);
   const [openRows, setOpenRows] = useState<number[]>([]);
@@ -629,5 +629,13 @@ export default function Page() {
         reviewId={selectedReviewId}
       />
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>読み込み中...</div>}>
+      <EventsDetailsContent />
+    </Suspense>
   );
 }
