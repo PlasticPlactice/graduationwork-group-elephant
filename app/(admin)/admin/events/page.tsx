@@ -166,8 +166,8 @@ export default function Page() {
     setSelectedEvent(null);
   };
 
-  const handledetail = () => {
-    router.push("/admin/events-details");
+  const handledetail = (eventId: number) => {
+    router.push(`/admin/events-details?eventId=${eventId}`);
   };
 
   // モーダル成功時に実行されるコールバック（データ再取得）
@@ -267,7 +267,7 @@ export default function Page() {
 
                 <span className="slider"></span>
               </label>
-              <p className="ml-3">{ now.public_flag ? "　公開" : "非公開" }</p>
+              <p className="ml-3">{now.public_flag ? "　公開" : "非公開"}</p>
             </div>
           </div>
 
@@ -341,7 +341,7 @@ export default function Page() {
             <AdminButton
               label="書評を見る"
               className="detail-btn"
-              onClick={handledetail}
+              onClick={() => handledetail(now.id)}
             />
           </div>
         </section>
@@ -386,7 +386,7 @@ export default function Page() {
 
                   <span className="slider"></span>
                 </label>
-              <p className="ml-3">{ end.public_flag ? "　公開" : "非公開" }</p>
+                <p className="ml-3">{end.public_flag ? "　公開" : "非公開"}</p>
               </div>
             </div>
 
