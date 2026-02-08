@@ -287,7 +287,7 @@ export default function UserDetailModal({
             <tbody className="border">
               {displayedData.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-4">
+                  <td colSpan={4} className="text-center py-4">
                     書評がありません
                   </td>
                 </tr>
