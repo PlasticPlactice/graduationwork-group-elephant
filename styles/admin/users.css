@@ -175,6 +175,19 @@ details[open] .icon {
   word-break: break-word;
   box-sizing: border-box;
 }
+
+.event-table th button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
+.event-table th button:focus {
+  outline: none;
+}
 .head-check {
   width: 1.5rem;
   height: 1.5rem;
