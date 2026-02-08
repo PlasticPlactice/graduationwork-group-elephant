@@ -11,14 +11,14 @@ export async function POST(req: NextRequest) {
     if (!token || !newPassword || !confirmPassword) {
       return NextResponse.json(
         { message: "すべてのフィールドが必須です" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (newPassword !== confirmPassword) {
       return NextResponse.json(
         { message: "新しいパスワードが一致しません" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
           message:
             "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     if (!passwordReset) {
       return NextResponse.json(
         { message: "無効なリセットリンクです" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
           message:
             "リセットリンクの有効期限が切れています。もう一度パスワードリセット手続きを行ってください",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     if (passwordReset.admin.deleted_flag) {
       return NextResponse.json(
         { message: "このアカウントは削除済みです" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -91,13 +91,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { message: "パスワードが正常に変更されました" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Password reset error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

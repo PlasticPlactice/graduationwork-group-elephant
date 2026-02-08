@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Textbox from "@/components/ui/admin-textbox";
-import AdminButton from "@/components/ui/admin-button";
 import "@/styles/admin/notice.css";
 import { Icon } from "@iconify/react";
+import AdminButton from "@/components/ui/admin-button";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -418,23 +418,26 @@ export default function Page() {
           {/*---------------------------
                 ステータス変更ボタン
                ---------------------------*/}
-          <div className="flex items-center justify-center px-3 status-wrapper py-1 mt-5">
-            {statusButtons.map((btn) => {
-              const isActive = selectedStatus === btn.id;
-              return (
-                <button
-                  key={btn.id}
-                  onClick={() =>
-                    setSelectedStatus(btn.id as typeof selectedStatus)
-                  } // 型アサーションを追加
-                  className={`mx-2 px-2 py-1 rounded status-toggle ${
-                    isActive ? "active" : ""
-                  }`}
-                >
-                  {btn.label}
-                </button>
-              );
-            })}
+          <div className="grid grid-flow-row mt-3">
+            <p className="px-5">現在表示中の{selectedTab === "notice" ? "お知らせ" : "寄贈"}のステータス</p>
+            <div className="flex items-center justify-center px-3 status-wrapper py-1 mt-2">
+              {statusButtons.map((btn) => {
+                const isActive = selectedStatus === btn.id;
+                return (
+                  <button
+                    key={btn.id}
+                    onClick={() =>
+                      setSelectedStatus(btn.id as typeof selectedStatus)
+                    } // 型アサーションを追加
+                    className={`mx-2 px-2 rounded status-toggle ${
+                      isActive ? "active" : ""
+                    }`}
+                  >
+                    <span className="text-xl">{btn.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

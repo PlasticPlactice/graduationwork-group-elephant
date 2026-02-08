@@ -23,7 +23,7 @@ export async function PUT(req: Request) {
         color: body.color,
         pattern: body.pattern,
         pattern_color: body.patternColor,
-        evaluations_status: body.evaluations_status,
+        draft_flag: body.draft_flag,
       },
     });
 

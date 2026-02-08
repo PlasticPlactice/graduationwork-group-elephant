@@ -34,13 +34,14 @@ interface EventData {
   first_voting_start_period: Timestamp;
 }
 
-type ReviewFilterTab = "all" | 1 | 2 | 3 | 4;
-type ReviewStatusCode = 1 | 2 | 3 | 4;
+type ReviewFilterTab = "all" | 0 | 1 | 2 | 3;
+type ReviewStatusCode = 0 | 1 | 2 | 3;
 
 interface BookReviewData {
   id: number;
   book_title: string;
   evaluations_status: number;
+  public_flag: boolean;
   review: string;
 }
 
@@ -58,9 +59,10 @@ export default function MyPage() {
   const [userData, setUserData] = useState<ProfileData | null>(null);
   // 繝ｦ繝ｼ繧ｶ縺ｮ譖ｸ隧輔ョ繝ｼ繧ｿ
   const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
-  // 繧､繝吶Φ繝医ョ繝ｼ繧ｿ
-  const [eventData, setEventData] = useState<EventData[]>([])
-  // 譛ｪ隱ｭ繝｡繝・そ繝ｼ繧ｸ繝・・繧ｿ
+
+  // イベントデータ
+  const [eventData, setEventData] = useState<EventData[]>([]);
+  // 未読メッセージデータ
   interface UnreadMessage {
     id: number;
     message: {
@@ -86,13 +88,13 @@ export default function MyPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        console.log("data" + JSON.stringify(data, null, 2))
+        console.log("data" + JSON.stringify(data, null, 2));
         setEventData(data);
       }
     } catch (error) {
       console.error("Failed to fetch event data", error);
     }
-  }, [])
+  }, []);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -116,6 +118,7 @@ export default function MyPage() {
       });
       if (res.ok) {
         const data = await res.json();
+        console.log("data:" + JSON.stringify(data, null, 2));
         setBookReviewData(data);
       }
     } catch (error) {
@@ -171,41 +174,48 @@ export default function MyPage() {
     key: ReviewFilterTab;
     label: string;
   }[] = [
-    { key: "all" as const, label: "すべて" },
-    { key: 1, label: "未審査" },
-    { key: 2, label: "一次審査中" },
-    { key: 3, label: "二次審査中" },
-    { key: 4, label: "終了" },
+
+    { key: "all" as const, label: "全て" },
+    { key: 0, label: "下書き" },
+    { key: 1, label: "１次通過" },
+    { key: 2, label: "２次通過" },
+    { key: 3, label: "終了済み" },
   ];
 
   const REVIEW_STATUS_MAP = {
+    0: {
+      label: "審査前",
+      badgeType: "gray",
+      canEdit: true,
+    },
     1: {
-      label: "未審査",
+      label: "１次通過",
       badgeType: "gray",
       canEdit: true,
     },
     2: {
-      label: "一次審査中",
-      badgeType: "red",
-      canEdit: true,
-    },
-    3: {
-      label: "二次審査中",
+      label: "２次通過",
       badgeType: "blue",
       canEdit: false,
     },
-    4: {
-      label: "終了",
-      badgeType: "gray",
+    3: {
+      label: "３次通過",
+      badgeType: "red",
       canEdit: false,
     },
   } as const;
 
-  // DB/API縺ｮ譁・ｭ怜・繝ｻ謨ｰ蛟､繧旦I逕ｨ繧ｳ繝ｼ繝・1..4)縺ｸ豁｣隕丞喧
+
+  // HTMLタグを削除してプレーンテキストに変換
+  const stripHtmlTags = (html: string): string => {
+    return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ");
+  };
+
+  // DB/APIの文字列・数値をUI用コード(0..3)へ正規化
   const normalizeStatus = (val: number): ReviewStatusCode => {
-    return val === 1 || val === 2 || val === 3 || val === 4
+    return val === 0 || val === 1 || val === 2 || val === 3
       ? (val as ReviewStatusCode)
-      : 2;
+      : 0;
   };
 
   // 陦ｨ遉ｺ逕ｨ縺ｫ繝・・繧ｿ繧呈紛蠖｢
@@ -219,7 +229,7 @@ export default function MyPage() {
       status: status?.label ?? "未設定",
       evaluations_status: code,
       badgeType: status?.badgeType ?? "gray",
-      excerpt: review.review,
+      excerpt: stripHtmlTags(review.review),
       buttonText: status?.canEdit ? "編集する" : "編集不可",
       href: status?.canEdit ? "/poster/edit" : undefined,
     };
@@ -287,19 +297,19 @@ export default function MyPage() {
 
   // 謚慕ｨｿ邱繧∝・繧翫∪縺ｧ縺ｮ譌･謨ｰ繧定ｨ育ｮ励☆繧矩未謨ｰ
   function daysFromToday(dateString: string): number {
-  const today = new Date();
-  const target = new Date(dateString);
+    const today = new Date();
+    const target = new Date(dateString);
 
-  const todayStart = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  );
-  const targetStart = new Date(
-    target.getFullYear(),
-    target.getMonth(),
-    target.getDate()
-  );
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    const targetStart = new Date(
+      target.getFullYear(),
+      target.getMonth(),
+      target.getDate(),
+    );
 
     const diffMs = targetStart.getTime() - todayStart.getTime();
     return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
@@ -417,12 +427,42 @@ export default function MyPage() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto my-4 lg:grid lg:grid-cols-2 lg:gap-10">
-          <div className="max-w-2xl mx-auto lg:mx-0">
-            <div className="flex items-center justify-center gap-4 my-6 lg:mb-10">
-              <div className="w-24 h-px bg-black" />
-              <h2 className="font-bold text-slate-900">現在開催中のイベント</h2>
-              <div className="w-24 h-px bg-black" />
+
+        <div className="mb-1">
+          {/* <Link
+            href="/"
+            className="inline-block mt-6 ml-1 font-bold text-sky-500"
+            aria-label="ファンサイトのトップページへ移動"
+          >
+            <span className="mr-1" aria-hidden="true">
+              &lt;
+            </span>{" "}
+            ファンサイトはこちら
+          </Link> */}
+          <Link href="/">
+            <div
+              className="flex items-center px-2 rounded shadow-md my-10"
+              style={{
+                backgroundColor: "var(--color-bg)",
+                border: "1px solid var(--color-main)",
+              }}
+            >
+              <Image
+                src="/layout/new_logo.png"
+                alt="logo"
+                width={50}
+                height={50}
+                className="ml-3"
+              />
+              <span
+                className="font-bold ml-auto"
+                style={{ color: "var(--color-main)" }}
+              >
+                象と花ファンサイトへ
+                <span className="ml-4" aria-hidden="true">
+                  &gt;
+                </span>
+              </span>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -432,7 +472,9 @@ export default function MyPage() {
                   eventId={String(event.id)}
                   title={event.title}
                   href="/post/barcode-scan"
-                  daysLeft={daysFromToday(String(event.first_voting_start_period))}
+                  daysLeft={daysFromToday(
+                    String(event.first_voting_start_period),
+                  )}
                   detail={event.detail}
                   buttonText="このイベントに投稿する"
                 />

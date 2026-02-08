@@ -267,6 +267,7 @@ export default function Page() {
 
                 <span className="slider"></span>
               </label>
+              <p className="ml-3">{ now.public_flag ? "　公開" : "非公開" }</p>
             </div>
           </div>
 
@@ -385,6 +386,7 @@ export default function Page() {
 
                   <span className="slider"></span>
                 </label>
+              <p className="ml-3">{ end.public_flag ? "　公開" : "非公開" }</p>
               </div>
             </div>
 

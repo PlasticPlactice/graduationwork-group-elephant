@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { DEMO_MODE } from "@/lib/constants/demoMode";
 
 export default function PasswordResetRequestPage() {
   const [email, setEmail] = useState("");
@@ -28,7 +29,9 @@ export default function PasswordResetRequestPage() {
         setMessage(data.message);
         setEmail("");
       } else {
-        setMessage(data.message || "エラーが発生しました。もう一度お試しください。");
+        setMessage(
+          data.message || "エラーが発生しました。もう一度お試しください。",
+        );
       }
     } catch (error) {
       console.error("Password reset request error:", error);
@@ -87,7 +90,7 @@ export default function PasswordResetRequestPage() {
             <div className="flex flex-col gap-3">
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || DEMO_MODE}
                 className="w-full bg-blue-600 text-white px-4 py-3 rounded-md font-bold text-center hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "送信中..." : "リセットリンクを送信"}
