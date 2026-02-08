@@ -513,7 +513,7 @@ function EditNoticeContent() {
           : null,
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
-        main_image_path: existingMainImagePath,
+        main_image_path: uploadedThumbnailPath ?? existingMainImagePath,
         fileIds: finalFileIds,
       };
 
