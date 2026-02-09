@@ -32,6 +32,7 @@ interface EventData {
   detail: string;
   status: number;
   first_voting_start_period: Timestamp;
+  first_voting_end_period: Timestamp;
 }
 
 type ReviewFilterTab = "all" | 0 | 1 | 2 | 3;
@@ -174,7 +175,6 @@ export default function MyPage() {
     key: ReviewFilterTab;
     label: string;
   }[] = [
-
     { key: "all" as const, label: "全て" },
     { key: 0, label: "下書き" },
     { key: 1, label: "１次通過" },
@@ -204,7 +204,6 @@ export default function MyPage() {
       canEdit: false,
     },
   } as const;
-
 
   // HTMLタグを削除してプレーンテキストに変換
   const stripHtmlTags = (html: string): string => {
@@ -260,23 +259,21 @@ export default function MyPage() {
 
       if (res.ok) {
         // 騾莨壽・蜉・
-        alert(
-          "退会処理が完了しました。ご利用ありがとうございました。"
-        );
+        alert("退会処理が完了しました。ご利用ありがとうございました。");
         // 繝ｭ繧ｰ繧｢繧ｦ繝医＠縺ｦ繝医ャ繝励・繝ｼ繧ｸ縺ｸ
         await signOut({ callbackUrl: "/" });
       } else {
         const data = await res.json();
         alert(
           data.message ||
-            "退会処理に失敗しました。時間をおいて再度お試しください。"
+            "退会処理に失敗しました。時間をおいて再度お試しください。",
         );
         setIsDeleting(false);
       }
     } catch (error) {
       console.error("Withdraw error:", error);
       alert(
-        "退会処理中にエラーが発生しました。時間をおいて再度お試しください。"
+        "退会処理中にエラーが発生しました。時間をおいて再度お試しください。",
       );
       setIsDeleting(false);
     } finally {
@@ -339,7 +336,10 @@ export default function MyPage() {
           <Link href="/" className="hidden md:block">
             <div
               className="flex items-center px-2 rounded shadow-md h-10 w-64"
-              style={{ backgroundColor: "var(--color-bg)" ,border: "1px solid var(--color-main)"}}
+              style={{
+                backgroundColor: "var(--color-bg)",
+                border: "1px solid var(--color-main)",
+              }}
             >
               <Image
                 src="/layout/new_logo.png"
@@ -371,7 +371,10 @@ export default function MyPage() {
               <Link href="/">
                 <div
                   className="flex items-center px-2 rounded shadow-md h-10 w-full max-w-md md:w-64"
-                  style={{ backgroundColor: "var(--color-bg)" ,border: "1px solid var(--color-main)"}}
+                  style={{
+                    backgroundColor: "var(--color-bg)",
+                    border: "1px solid var(--color-main)",
+                  }}
                 >
                   <Image
                     src="/layout/new_logo.png"
@@ -394,7 +397,10 @@ export default function MyPage() {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center w-64 justify-end" aria-hidden="true">
+          <div
+            className="hidden md:flex items-center w-64 justify-end"
+            aria-hidden="true"
+          >
             {/* SVG 蟆∫ｭ偵い繧､繧ｳ繝ｳ・亥､ｧ縺阪ａ・・*/}
             <svg
               width="40"
@@ -426,7 +432,6 @@ export default function MyPage() {
             />
           </div>
         </div>
-
 
         <div className="mb-1">
           {/* <Link
@@ -482,7 +487,7 @@ export default function MyPage() {
                     title={event.title}
                     href="/post/barcode-scan"
                     daysLeft={daysFromToday(
-                      String(event.first_voting_start_period)
+                      String(event.first_voting_end_period),
                     )}
                     detail={event.detail}
                     buttonText="このイベントに投稿する"
@@ -694,4 +699,3 @@ export default function MyPage() {
     </>
   );
 }
-

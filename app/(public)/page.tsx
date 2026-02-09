@@ -37,7 +37,7 @@ export default function Home() {
     fetch("/api/notifications?type=1&page=1")
       .then((res) => res.json())
       .then((data) => setDonations(data.data || []));
-    fetch("/api/events?status=now")
+    fetch("/api/events?status=3")
       .then((res) => res.json())
       .then((data) => setEvents(Array.isArray(data) ? data : []))
       .catch(() => setEvents([]));
