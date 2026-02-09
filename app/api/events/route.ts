@@ -8,11 +8,16 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const statusParam = url.searchParams.get("status");
+    const idParam = url.searchParams.get("id");
 
     const where: Prisma.EventWhereInput = {
       public_flag: true,
       deleted_flag: false,
     };
+
+    if (idParam) {
+      where.id = Number(idParam);
+    }
 
     if (statusParam !== null) {
       // special keyword "now" -> [0,1,2]
