@@ -167,7 +167,10 @@ export default function EventEditModal({
                   イベント開催期間<span className="required">*</span>
                 </label>
                 <p className="text-white">～</p>
-                <label htmlFor="event-start-datetime" className="text-xl text-white">
+                <label
+                  htmlFor="event-start-datetime"
+                  className="text-xl text-white"
+                >
                   イベント開催期間<span className="text-white">*</span>
                 </label>
               </div>
@@ -177,9 +180,9 @@ export default function EventEditModal({
                 </p>
                 <p className="text-white">～</p>
                 <p className="text-white text-sm">
-                イベントの開催期間を決定します
+                  イベントの開催期間を決定します
                 </p>
-                </div>
+              </div>
               <div className="flex gap-15 justify-center items-center">
                 <Textbox
                   id="event-start-datetime"
@@ -205,13 +208,16 @@ export default function EventEditModal({
 
             <div className="my-4">
               <div className="flex justify-around items-center">
-              <label htmlFor="book-post-datetime" className="text-xl block">
-                書評投稿期間<span className="required">*</span>
-              </label>
-              <p className="text-white">～</p>
-              <label htmlFor="book-post-datetime" className="text-xl text-white">
-                書評投稿期間<span className="text-white">*</span>
-              </label>
+                <label htmlFor="book-post-datetime" className="text-xl block">
+                  書評投稿期間<span className="required">*</span>
+                </label>
+                <p className="text-white">～</p>
+                <label
+                  htmlFor="book-post-datetime"
+                  className="text-xl text-white"
+                >
+                  書評投稿期間<span className="text-white">*</span>
+                </label>
               </div>
               <div className="flex justify-evenly items-center">
                 <p className="event-detail-text text-sm">
@@ -251,7 +257,10 @@ export default function EventEditModal({
                   書評投票期間<span className="required">*</span>
                 </label>
                 <p className="text-white">～</p>
-                <label htmlFor="book-vote-datetime" className="text-xl text-white">
+                <label
+                  htmlFor="book-vote-datetime"
+                  className="text-xl text-white"
+                >
                   書評投票期間<span className="text-white">*</span>
                 </label>
               </div>
@@ -304,18 +313,22 @@ export default function EventEditModal({
                 現在のステータス
               </label>
               <div className="flex items-center gap-3">
-                {/* todo:statusが0なら開催前、1なら一次審査中、2なら二次審査中、3なら終了済にする */}
+                {/* todo:statusが0なら開催前、1なら投稿期間、2なら審査期間、3なら投票期間、4なら閲覧期間、5なら終了にする */}
                 <span className="now-status py-1 px-6 rounded-4xl font-bold">
                   {(() => {
                     switch (currentStatus) {
                       case 0:
                         return "開催前";
                       case 1:
-                        return "一次審査中";
+                        return "投稿期間";
                       case 2:
-                        return "二次審査中";
+                        return "審査期間";
                       case 3:
-                        return "終了済";
+                        return "投票期間";
+                      case 4:
+                        return "閲覧期間";
+                      case 5:
+                        return "終了";
                       default:
                         return "未設定";
                     }
@@ -328,9 +341,11 @@ export default function EventEditModal({
                   onChange={(e) => setNextStatus(Number(e.target.value))}
                 >
                   <option value="0">開催前</option>
-                  <option value="1">一次審査中</option>
-                  <option value="2">二次審査中</option>
-                  <option value="3">終了済</option>
+                  <option value="1">投稿期間</option>
+                  <option value="2">審査期間</option>
+                  <option value="3">投票期間</option>
+                  <option value="4">閲覧期間</option>
+                  <option value="5">終了</option>
                 </select>
               </div>
             </div>

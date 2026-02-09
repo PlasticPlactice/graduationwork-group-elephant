@@ -15,9 +15,9 @@ export async function GET(req: Request) {
     };
 
     if (statusParam !== null) {
-      // special keyword "now" -> [0,1,2]
+      // special keyword "now" -> [0,1,2,3,4] (開催前から閲覧期間まで)
       if (statusParam === "now") {
-        where.status = { in: [0, 1, 2] } as Prisma.IntFilter;
+        where.status = { in: [0, 1, 2, 3, 4] } as Prisma.IntFilter;
       } else {
         // allow comma-separated list like "0,1,2" or single number "1"
         const parts = statusParam
