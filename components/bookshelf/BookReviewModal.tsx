@@ -32,6 +32,7 @@ type BookReviewModalProps = {
   voteButtonRef?: Ref<HTMLButtonElement>;
   reviewContentRef?: Ref<HTMLDivElement>;
   onVoteChange?: (isVoted: boolean, eventId: string) => void;
+  canVote?: boolean;
 };
 
 type afterCheckedData = {
@@ -55,6 +56,7 @@ export function BookReviewModal({
   voteButtonRef,
   reviewContentRef,
   onVoteChange,
+  canVote = true,
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -280,93 +282,101 @@ export function BookReviewModal({
         onClick={(event) => event.stopPropagation()}
         tabIndex={-1}
       >
-      <div className={styles.bookOpen} style={coverStyle}>
-        <div className={styles.bookOpenCover} aria-hidden="true" />
+        <div className={styles.bookOpen} style={coverStyle}>
+          <div className={styles.bookOpenCover} aria-hidden="true" />
           <div className={styles.bookOpenEdge} aria-hidden="true" />
           <div className={styles.bookOpenContent}>
-          <div className="relative z-10 flex h-full flex-col">
-          <div
-            ref={reviewContentRef}
-            dangerouslySetInnerHTML={{
-              __html: book.review ?? "書評が登録されていません",
-            }}
-            className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6"
-          ></div>
-          <div className="mt-6 flex flex-col gap-4">
-            <div className="flex justify-center gap-4 w-full mr-2 ">
-              {REACTION_TYPES.map((type) => {
-                const targetData = afterCheckedData?.find(
-                  (r) => String(r.reaction_id) === String(type.id),
-                );
-
-                const count = targetData ? targetData.count : 0;
-                const isReacted = targetData ? targetData.is_reacted : false;
-
-                return (
-                  <button
-                    key={type.id}
-                    className={`${styles.reactionButton} ${isReacted ? styles.active : ""}`}
-                    onClick={() => {
-                      handleReactionClick(type.id);
-                    }}
-                  >
-                    <img src={type.icon_path} alt="リアクション画像" width={25} height={25} />
-                    <span className={`font-bold ml-2`}>{count}</span>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="flex items-center gap-3">
-              <BookReviewVoteButton
-                reviewId={`${book.id}`}
-                eventId={`${book.event_id}`}
-                ref={voteButtonRef}
-                onVoteChange={onVoteChange}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  onToggleFavorite?.();
+            <div className="relative z-10 flex h-full flex-col">
+              <div
+                ref={reviewContentRef}
+                dangerouslySetInnerHTML={{
+                  __html: book.review ?? "書評が登録されていません",
                 }}
-                className={favoriteButtonClass}
-                aria-pressed={isFavorited}
-                aria-label={
-                  isFavorited ? "ブックマーク済み" : "ブックマークに追加"
-                }
-                style={{ borderColor: "#f6e05e" }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 sm:h-9 sm:w-9"
-                  fill={isFavorited ? "currentColor" : "none"}
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 5v16l7-5 7 5V5a2 2 0 00-2-2H7a2 2 0 00-2 2z"
-                  />
-                </svg>
-              </button>
-            </div>
+                className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6"
+              ></div>
+              <div className="mt-6 flex flex-col gap-4">
+                <div className="flex justify-center gap-4 w-full mr-2 ">
+                  {REACTION_TYPES.map((type) => {
+                    const targetData = afterCheckedData?.find(
+                      (r) => String(r.reaction_id) === String(type.id),
+                    );
 
-            <div className="mx-4 mb-4">
-                <button
-                type="button"
-                onClick={onComplete}
-                ref={actionButtonRef}
-                className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
-              >
-                {actionLabel}
-              </button>
+                    const count = targetData ? targetData.count : 0;
+                    const isReacted = targetData
+                      ? targetData.is_reacted
+                      : false;
+
+                    return (
+                      <button
+                        key={type.id}
+                        className={`${styles.reactionButton} ${isReacted ? styles.active : ""}`}
+                        onClick={() => {
+                          handleReactionClick(type.id);
+                        }}
+                      >
+                        <img
+                          src={type.icon_path}
+                          alt="リアクション画像"
+                          width={25}
+                          height={25}
+                        />
+                        <span className={`font-bold ml-2`}>{count}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center gap-3">
+                  <BookReviewVoteButton
+                    reviewId={`${book.id}`}
+                    eventId={`${book.event_id}`}
+                    ref={voteButtonRef}
+                    onVoteChange={onVoteChange}
+                    disabled={!canVote}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onToggleFavorite?.();
+                    }}
+                    className={favoriteButtonClass}
+                    aria-pressed={isFavorited}
+                    aria-label={
+                      isFavorited ? "ブックマーク済み" : "ブックマークに追加"
+                    }
+                    style={{ borderColor: "#f6e05e" }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-8 w-8 sm:h-9 sm:w-9"
+                      fill={isFavorited ? "currentColor" : "none"}
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 5v16l7-5 7 5V5a2 2 0 00-2-2H7a2 2 0 00-2 2z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="mx-4 mb-4">
+                  <button
+                    type="button"
+                    onClick={onComplete}
+                    ref={actionButtonRef}
+                    className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
+                  >
+                    {actionLabel}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        </div>
-        </div>
       </div>
-      </div>
+    </div>
   );
 }

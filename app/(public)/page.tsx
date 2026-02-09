@@ -13,6 +13,7 @@ type PublicEvent = {
   title: string;
   detail?: string | null;
   first_voting_end_period: string;
+  second_voting_end_period: string;
 };
 
 export default function Home() {
@@ -21,7 +22,7 @@ export default function Home() {
   const [events, setEvents] = useState<PublicEvent[]>([]);
   const [showNewsModal, setShowNewsModal] = useState(false);
   const [selectedNews, setSelectedNews] = useState<NotificationItem | null>(
-    null
+    null,
   );
   const [isAtTop, setIsAtTop] = useState(true);
 
@@ -37,7 +38,7 @@ export default function Home() {
     fetch("/api/notifications?type=1&page=1")
       .then((res) => res.json())
       .then((data) => setDonations(data.data || []));
-    fetch("/api/events?status=now")
+    fetch("/api/events?status=3")
       .then((res) => res.json())
       .then((data) => setEvents(Array.isArray(data) ? data : []))
       .catch(() => setEvents([]));
@@ -149,17 +150,16 @@ export default function Home() {
               </h3>
 
               <div className="event-cards">
-
                 {events.length > 0 ? (
                   events.slice(0, 2).map((event) => {
                     const now = new Date();
-                    const votingEnd = new Date(event.first_voting_end_period);
+                    const votingEnd = new Date(event.second_voting_end_period);
                     const daysLeft = Math.max(
                       0,
                       Math.ceil(
                         (votingEnd.getTime() - now.getTime()) /
-                          (1000 * 60 * 60 * 24)
-                      )
+                          (1000 * 60 * 60 * 24),
+                      ),
                     );
                     return (
                       <EventCard
@@ -180,7 +180,6 @@ export default function Home() {
                 ) : (
                   <p>イベントが開催していないようです</p>
                 )}
-
               </div>
 
               <div className="bunko-x__all-events">
@@ -209,7 +208,6 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
-
               {news.length === 0 ? (
                 <p className="text-center text-sm text-slate-600">
                   現在お知らせはありません。
@@ -237,7 +235,6 @@ export default function Home() {
                   </div>
                 ))
               )}
-
             </div>
             <div className="news__button">
               <Button
@@ -264,7 +261,6 @@ export default function Home() {
               <span className="news__title-line"></span>
             </h2>
             <div className="news__list">
-
               {donations.length === 0 ? (
                 <p className="text-center text-sm text-slate-600">
                   現在寄贈情報はありません。
@@ -292,7 +288,6 @@ export default function Home() {
                   </div>
                 ))
               )}
-
             </div>
             <div className="donation-button">
               <Button
