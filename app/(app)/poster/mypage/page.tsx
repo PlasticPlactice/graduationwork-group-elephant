@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
+import { DEMO_MODE } from "@/lib/constants/demoMode";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
 import Image from "next/image";
@@ -258,9 +259,6 @@ export default function MyPage() {
       });
 
       if (res.ok) {
-        // 騾莨壽・蜉・
-        alert("退会処理が完了しました。ご利用ありがとうございました。");
-        // 繝ｭ繧ｰ繧｢繧ｦ繝医＠縺ｦ繝医ャ繝励・繝ｼ繧ｸ縺ｸ
         await signOut({ callbackUrl: "/" });
       } else {
         const data = await res.json();
@@ -272,11 +270,8 @@ export default function MyPage() {
       }
     } catch (error) {
       console.error("Withdraw error:", error);
-      alert(
-        "退会処理中にエラーが発生しました。時間をおいて再度お試しください。",
-      );
-      setIsDeleting(false);
     } finally {
+      setIsDeleting(false);
       setShowDeleteModal(false);
     }
   };
@@ -678,18 +673,28 @@ export default function MyPage() {
                   </a>
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowDeleteModal(true);
-                    }}
-                    className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                    aria-label="退会"
-                    style={{ color: "var(--color-main)" }}
-                  >
-                    退会
-                  </a>
+                  {DEMO_MODE ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200 text-slate-400 cursor-not-allowed"
+                      aria-label="退会"
+                      aria-disabled={true}
+                      style={{ color: "var(--color-main)" }}
+                    >
+                      退会
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteModal(true)}
+                      className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                      aria-label="退会"
+                      style={{ color: "var(--color-main)" }}
+                    >
+                      退会
+                    </button>
+                  )}
                 </li>
               </ul>
             </div>
