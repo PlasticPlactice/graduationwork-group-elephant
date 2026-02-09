@@ -13,6 +13,7 @@ type PublicEvent = {
   title: string;
   detail?: string | null;
   first_voting_end_period: string;
+  second_voting_end_period: string;
 };
 
 export default function Home() {
