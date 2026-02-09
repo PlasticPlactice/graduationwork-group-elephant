@@ -1,7 +1,7 @@
 /**
  * イベント進捗バーの進捗値を計算する関数
- * @param status イベントのステータス (0, 1, 2, 3)
- * @param variant 進捗値のパターン ('compact' = 24,75,125,179 / 'full' = 37,79,121,163)
+ * @param status イベントのステータス (0, 1, 2, 3, 4, 5)
+ * @param variant 進捗値のパターン ('compact' = 24,55,86,117,148,179 / 'full' = 37,62,87,113,138,163)
  * @returns 進捗バーに表示する値 (0-100)
  */
 export const getEventProgressValue = (
@@ -14,15 +14,19 @@ export const getEventProgressValue = (
   const progressMaps: Record<"compact" | "full", Record<number, number>> = {
     compact: {
       0: 24,
-      1: 75,
-      2: 125,
-      3: 179,
+      1: 55,
+      2: 86,
+      3: 117,
+      4: 148,
+      5: 179,
     },
     full: {
       0: 37,
-      1: 79,
-      2: 121,
-      3: 163,
+      1: 62,
+      2: 87,
+      3: 113,
+      4: 138,
+      5: 163,
     },
   };
 
@@ -31,8 +35,8 @@ export const getEventProgressValue = (
 
 /**
  * ステータス円形アイコンのクラス名を取得する関数
- * @param index 円のインデックス (0, 1, 2, 3)
- * @param status イベントのステータス (0, 1, 2, 3)
+ * @param index 円のインデックス (0, 1, 2, 3, 4, 5)
+ * @param status イベントのステータス (0, 1, 2, 3, 4, 5)
  * @returns CSSクラス名
  */
 export const getEventCircleClassName = (
@@ -67,8 +71,8 @@ export const getEventLabelClassName = (
 
 /**
  * ステータス矢印アイコンが表示されるべき位置を判定する関数
- * @param index インデックス (0, 1, 2, 3)
- * @param status イベントのステータス (0, 1, 2, 3)
+ * @param index インデックス (0, 1, 2, 3, 4, 5)
+ * @param status イベントのステータス (0, 1, 2, 3, 4, 5)
  * @returns 矢印を表示すべきかどうか
  */
 export const isArrowVisible = (

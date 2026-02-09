@@ -10,11 +10,13 @@ import {
 
 interface EventProgressBarProps {
   /**
-   * イベントのステータス (0, 1, 2, 3)
+   * イベントのステータス (0, 1, 2, 3, 4, 5)
    * 0: 開催前
-   * 1: 一次審査中
-   * 2: 二次審査中
-   * 3: 終了済
+   * 1: 投稿期間
+   * 2: 審査期間
+   * 3: 投票期間
+   * 4: 閲覧期間
+   * 5: 終了
    */
   status: number | string;
 
@@ -57,8 +59,15 @@ export function EventProgressBar({
   containerClassName = "",
   progressClassName = "w-full h-0.5",
 }: EventProgressBarProps) {
-  const statusIndices = [0, 1, 2, 3];
-  const labels = ["開催前", "一次審査", "二次審査", "終了済"];
+  const statusIndices = [0, 1, 2, 3, 4, 5];
+  const labels = [
+    "開催前",
+    "投稿期間",
+    "審査期間",
+    "投票期間",
+    "閲覧期間",
+    "終了",
+  ];
 
   return (
     <div className={containerClassName}>
@@ -107,7 +116,12 @@ export function EventProgressBar({
       {showLabels && (
         <div className={`flex justify-between ${width} m-auto`}>
           {labels.map((label, index) => (
-            <span key={`label-${index}`} className={getEventLabelClassName(index, status)}>{label}</span>
+            <span
+              key={`label-${index}`}
+              className={getEventLabelClassName(index, status)}
+            >
+              {label}
+            </span>
           ))}
         </div>
       )}
