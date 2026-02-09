@@ -9,7 +9,7 @@ export async function PUT(req: Request) {
   try {
     const body = await req.json();
 
-    if (!body.id) {
+    if (!body.bookReview_id) {
       return NextResponse.json(
         { message: "id is required" },
         { status: 400 }
@@ -17,7 +17,7 @@ export async function PUT(req: Request) {
     }
 
     const review = await prisma.bookReview.update({
-      where: { id: body.id },
+      where: { id: body.bookReview_id },
       data: {
         review: body.review,
         color: body.color,
