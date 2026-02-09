@@ -55,7 +55,7 @@ export default function PostPage() {
     draft_flag: false,
   });
   const [draftForm, setDraftForm] = useState<{
-    id: number | null;
+    bookReview_id: number | null;
     review: string;
     color: string;
     pattern: string;
@@ -63,7 +63,7 @@ export default function PostPage() {
     evaluations_status: number;
     draft_flag: boolean
   }>({
-    id: null,
+    bookReview_id: null,
     review: "",
     color: "#FFFFFF",
     pattern: "dot",
@@ -123,16 +123,14 @@ export default function PostPage() {
   useEffect(() => {
     if (!bookReviewData) return;
 
-    console.log("bookReviewData" + JSON.stringify(bookReviewData));
-
     // 下書きかどうかの判定
     if (bookReviewData.draft_flag === true) {
       setIsDraft(true)
     }
 
-    setDraftForm((prev) => ({
+    setForm((prev) => ({
       ...prev,
-      id: bookReviewData.id,
+      bookReview_id: bookReviewData.id,
       review: bookReviewData.review,
       color: bookReviewData.color,
       pattern: bookReviewData.pattern,
@@ -155,7 +153,8 @@ export default function PostPage() {
   }, [fetchBookReviewDataById]);
 
   // 下書き登録用
-  const registerBookReviewDraft = async (payload: typeof draftForm) => {
+  const registerBookReviewDraft = async (payload: typeof form) => {
+
     try {
       const res = await fetch("/api/book-reviews/mypage/edit", {
         method: "PUT",
@@ -177,11 +176,11 @@ export default function PostPage() {
   // 下書きボタン押したときの処理
   const handleDraftConfirm = () => {
     const nextForm = {
-      ...draftForm,
+      ...form,
       draft_flag: true
     };
 
-    setDraftForm(nextForm);
+    setDraftForm(nextForm); 
 
     registerBookReviewDraft({
       ...nextForm,
@@ -212,15 +211,39 @@ export default function PostPage() {
     ],
     content: "",
     onUpdate({ editor }) {
-      setForm({
-        ...form,
+      setForm(prev => ({
+        ...prev,
         review: editor.getHTML(),
-        color: bookColor,
-        pattern: pattern,
-        pattern_color: patternColor,
-      });
+        // color: bookColor,
+        // pattern: pattern,
+        // pattern_color: patternColor,
+      }));
     },
   });
+
+  // 色が選択された時
+  const onChangePatternColor = (patternColor: string) => {
+    setForm(prev => ({
+      ...prev,
+      patternColor,
+    }));
+  };
+
+  // パターンが選択された時
+  const onChangePattern = (pattern: string) => {
+    setForm(prev => ({
+      ...prev,
+      pattern,
+    }));
+  };
+
+  // 本の色が選択された時
+  const onChangeBookColor = (color: string) => {
+    setForm(prev => ({
+      ...prev,
+      color,
+    }));
+  };
 
   // boldボタンの状態管理
   const toggleBoldButton = () => {
@@ -440,6 +463,7 @@ export default function PostPage() {
                         type="button"
                         onClick={() => {
                           setBookColor(color.value);
+                          onChangeBookColor(color.value);
                         }}
                         style={{ backgroundColor: color.value }}
                         aria-label={color.name}
@@ -461,6 +485,7 @@ export default function PostPage() {
                     type="button"
                     onClick={() => {
                       setPattern(item.value);
+                      onChangePattern(item.value);
                     }}
                     style={{
                       backgroundImage: `url(${item.bg})`,
@@ -492,6 +517,7 @@ export default function PostPage() {
                         type="button"
                         onClick={() => {
                           setPatternColor(color.value);
+                          onChangePatternColor(color.value);
                         }}
                         style={{ backgroundColor: color.value }}
                         aria-label={color.name}
