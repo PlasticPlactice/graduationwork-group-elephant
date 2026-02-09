@@ -73,7 +73,7 @@ export default function PostConfirmPage() {
       ];
 
       const missingFields = requiredFields.filter((field) => {
-        const value = (data as Record<string, unknown>)[field];
+        const value = (data as unknown as Record<string, unknown>)[field];
         return (
           value === undefined ||
           value === null ||
