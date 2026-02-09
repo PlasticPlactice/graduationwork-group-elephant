@@ -1,28 +1,94 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
-import Link from "next/link";
 
-export default function PostConfirmPage({}: {}) {
+interface BookReviewData {
+  user_id: number | null;
+  review: string;
+  color: string;
+  pattern: string;
+  pattern_color: string;
+  isbn: string;
+  book_title: string;
+  evaluations_status: number | null;
+  nickname: string;
+  address: string;
+  age: number;
+  gender: number;
+  self_introduction: string;
+  author: string;
+  publishers: string;
+  event_id: string;
+  draft_flag: boolean;
+  public_flag: boolean;
+  mode: "create" | "edit";
+  draft_flg?: boolean;
+}
+
+export default function PostConfirmPage() {
   const router = useRouter();
-  const [data, setData] = useState<any>(null);
-
-  useEffect(() => {
-    console.log(sessionStorage.getItem("bookReviewDraft"));
+  const [data] = useState<BookReviewData | null>(() => {
+    if (typeof window === "undefined") return null;
     const raw = sessionStorage.getItem("bookReviewDraft");
-
-    if (!raw) return;
-
-    setData(JSON.parse(raw));
-  }, []);
+    if (!raw) {
+      console.warn("No bookReviewDraft in sessionStorage");
+      return null;
+    }
+    try {
+      return JSON.parse(raw) as BookReviewData;
+    } catch (error) {
+      console.error("Failed to parse bookReviewDraft:", error);
+      return null;
+    }
+  });
 
   const registerBookReview = async () => {
     try {
+      // データの存在確認
+      if (!data) {
+        alert("書評データが見つかりません。");
+        return;
+      }
+
+      // 必須フィールドの検証
+      const requiredFields = [
+        "user_id",
+        "isbn",
+        "review",
+        "book_title",
+        "nickname",
+        "address",
+        "age",
+        "gender",
+        "self_introduction",
+        "color",
+        "pattern",
+        "pattern_color",
+        "evaluations_status",
+      ];
+
+      const missingFields = requiredFields.filter((field) => {
+        const value = (data as Record<string, unknown>)[field];
+        return (
+          value === undefined ||
+          value === null ||
+          (typeof value === "string" && value.trim() === "")
+        );
+      });
+
+      if (missingFields.length > 0) {
+        alert(`必須項目が不足しています: ${missingFields.join(", ")}`);
+        console.error("Missing fields:", missingFields);
+        return;
+      }
+
+      console.log("[Register] Submitting data:", JSON.stringify(data, null, 2));
+
       const res = await fetch("/api/book-reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -30,19 +96,21 @@ export default function PostConfirmPage({}: {}) {
       });
 
       if (!res.ok) {
-        alert("登録に失敗しました。");
+        const errorData = await res.json().catch(() => ({}));
+        console.error("[Register] API Error:", errorData);
+        alert(`登録に失敗しました。${errorData.message || ""}`);
         return;
       }
 
       sessionStorage.removeItem("bookReviewDraft");
 
-      sessionStorage.setItem(
-        "eventId",
-        String(data.event_id),
-      );
+      if (data.event_id) {
+        sessionStorage.setItem("eventId", String(data.event_id));
+      }
 
       router.push("/post/post-complete");
     } catch (e) {
+      console.error("[Register] Error:", e);
       alert("通信に失敗しました。");
     }
   };
@@ -50,7 +118,12 @@ export default function PostConfirmPage({}: {}) {
   // PUT処理関数
   const updateBookReview = async () => {
     try {
-      const isDraftStatus = data.draft_flg === true ? true : false;
+      if (!data) {
+        alert("書評データが見つかりません。");
+        return;
+      }
+
+      const isDraftStatus = data.draft_flg === true;
       console.log(isDraftStatus);
 
       const res = await fetch(`/api/book-reviews/mypage/edit`, {
@@ -70,12 +143,8 @@ export default function PostConfirmPage({}: {}) {
       if (isDraftStatus) {
         sessionStorage.removeItem("bookReviewDraft");
         router.push("/poster/mypage");
-      } else {
-        sessionStorage.setItem(
-          "eventId",
-          String(data.event_id),
-        );
-
+      } else if (data.event_id) {
+        sessionStorage.setItem("eventId", String(data.event_id));
         router.push("/post/post-complete");
       }
     } catch (error) {
@@ -84,10 +153,26 @@ export default function PostConfirmPage({}: {}) {
   };
 
   const handleSubmit = () => {
+    if (!data) {
+      alert("書評データが見つかりません。");
+      return;
+    }
+
     if (data.mode === "create") {
       registerBookReview();
     } else {
       updateBookReview();
+    }
+  };
+
+  const handleGoBack = () => {
+    // データを保持したまま前のページに戻る
+    if (data?.mode === "edit") {
+      // 編集モード時は前の状態に戻す
+      router.back();
+    } else {
+      // 作成モード時は /post/post に戻る
+      router.push("/post/post");
     }
   };
 
@@ -135,12 +220,13 @@ export default function PostConfirmPage({}: {}) {
         <button className={`w-full mt-10`} onClick={handleSubmit}>
           登録
         </button>
-        <Link href={data.mode === "create" ? "/post/post" : "edit"}
-              className="w-full mt-4 block">
-          <button className={`w-full ${Styles.barcodeScan__backButton}`}>
-            戻る
-          </button>
-        </Link>
+        <button
+          type="button"
+          onClick={handleGoBack}
+          className={`w-full mt-4 ${Styles.barcodeScan__backButton}`}
+        >
+          戻る
+        </button>
       </div>
     </div>
   );

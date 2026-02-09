@@ -3,7 +3,13 @@
 import Styles from "@/styles/app/poster.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from "react";
 import type { CSSProperties } from "react";
 import { preparePostConfirm } from "./actions";
 import { useActionState } from "react";
@@ -27,7 +33,7 @@ interface ProfileData {
 export default function PostPage() {
   const router = useRouter();
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const userId = (session?.user as { id?: string })?.id;
 
   // HTML送信用
@@ -43,9 +49,9 @@ export default function PostPage() {
   const [boldActive, setBoldActive] = useState(false);
   const [italicActive, setItalicActive] = useState(false);
   const [underlineActive, setUnderlineActive] = useState(false);
-  const [colorActive, setColorActive] = useState<string>("#000000");
 
-  const [state, formAction] = useActionState(preparePostConfirm, null);
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  const [_state, formAction] = useActionState(preparePostConfirm, null);
   const [bookData, setBookData] = useState({
     isbn: "",
     title: "",
@@ -55,63 +61,8 @@ export default function PostPage() {
   });
   // ユーザーデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
-  const [data, setData] = useState<any>(null);
 
-  // 色選択用の配列
-  const colors = [
-    { name: "ホワイト", value: "#FFFFFF" },
-    { name: "イエロー", value: "#FCD34D" },
-    { name: "オレンジ", value: "#FF8C42" },
-    { name: "ライムグリーン", value: "#BEF264" },
-    { name: "グリーン", value: "#34D399" },
-    { name: "シアン", value: "#67E8F9" },
-    { name: "ピンク", value: "#F9A8D4" },
-    { name: "パープル", value: "#A78BFA" },
-    { name: "コーラル", value: "#FB7185" },
-    { name: "スカイブルー", value: "#93C5FD" },
-    { name: "ブルー", value: "#3B82F6" },
-    { name: "ブラック", value: "#1F2937" },
-  ];
-
-  const patterns = [
-    { name: "ドット", value: "dot", bg: "/app/bubble-pattern.png" },
-    { name: "ストライプ", value: "stripe", bg: "/app/stripe-pattern.png" },
-    { name: "チェック", value: "check", bg: "/app/check-pattern.png" },
-    { name: "模様なし", value: "none", bg: "/app/stop-pattern.png" },
-  ];
-
-  const fetchUserData = useCallback(async () => {
-    try {
-      const res = await fetch("/api/user/profile");
-      if (res.ok) {
-        const data = await res.json();
-        setUserData(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch user data", error);
-    }
-  }, []);
-
-  useEffect(() => {
-    const draft = sessionStorage.getItem("bookItemDraft");
-
-    if (!draft) return;
-
-    const bookDataDraft = JSON.parse(draft);
-
-    console.log(JSON.stringify(bookDataDraft, null, 2));
-
-    fetchUserData();
-
-    setBookData({
-      isbn: bookDataDraft.isbn,
-      title: bookDataDraft.title,
-      author: bookDataDraft.author,
-      publishers: bookDataDraft.publishers,
-      event_id: bookDataDraft.eventId,
-    });
-  }, []);
-
+  // フォーム状態（useEffect内で使用されるため先に宣言）
   const [form, setForm] = useState<{
     user_id: number | null;
     review: string;
@@ -149,42 +100,190 @@ export default function PostPage() {
     publishers: "",
     event_id: "",
     draft_flag: false,
-    public_flag: true
+    public_flag: true,
   });
+
+  // 色選択用の配列
+  const colors = [
+    { name: "ホワイト", value: "#FFFFFF" },
+    { name: "イエロー", value: "#FCD34D" },
+    { name: "オレンジ", value: "#FF8C42" },
+    { name: "ライムグリーン", value: "#BEF264" },
+    { name: "グリーン", value: "#34D399" },
+    { name: "シアン", value: "#67E8F9" },
+    { name: "ピンク", value: "#F9A8D4" },
+    { name: "パープル", value: "#A78BFA" },
+    { name: "コーラル", value: "#FB7185" },
+    { name: "スカイブルー", value: "#93C5FD" },
+    { name: "ブルー", value: "#3B82F6" },
+    { name: "ブラック", value: "#1F2937" },
+  ];
+
+  const patterns = [
+    { name: "ドット", value: "dot", bg: "/app/bubble-pattern.png" },
+    { name: "ストライプ", value: "stripe", bg: "/app/stripe-pattern.png" },
+    { name: "チェック", value: "check", bg: "/app/check-pattern.png" },
+    { name: "模様なし", value: "none", bg: "/app/stop-pattern.png" },
+  ];
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/profile");
+      if (res.ok) {
+        const data = await res.json();
+        setUserData(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+    }
+  }, []);
+
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // 確認画面から戻ってきた場合、保存されていたデータを復元
+    const savedReviewData = sessionStorage.getItem("bookReviewDraft");
+    if (savedReviewData) {
+      try {
+        const reviewData = JSON.parse(savedReviewData);
+        console.log("Restoring review data from sessionStorage:", reviewData);
+
+        // フォームデータを復元
+        /* eslint-disable-next-line react-hooks/set-state-in-effect */
+        setForm({
+          user_id: reviewData.user_id,
+          review: reviewData.review || "",
+          color: reviewData.color || "#FFFFFF",
+          pattern: reviewData.pattern || "dot",
+          pattern_color: reviewData.pattern_color || "#FFFFFF",
+          isbn: reviewData.isbn || "",
+          book_title: reviewData.book_title || "",
+          evaluations_status: reviewData.evaluations_status || 0,
+          nickname: reviewData.nickname || "",
+          address: reviewData.address || "",
+          age: reviewData.age || 1,
+          gender: reviewData.gender || 1,
+          self_introduction: reviewData.self_introduction || "",
+          author: reviewData.author || "",
+          publishers: reviewData.publishers || "",
+          event_id: reviewData.event_id || "",
+          draft_flag: reviewData.draft_flag || false,
+          public_flag:
+            reviewData.public_flag !== undefined
+              ? reviewData.public_flag
+              : true,
+        });
+
+        // 本情報を復元
+        setBookData({
+          isbn: reviewData.isbn || "",
+          title: reviewData.book_title || "",
+          author: reviewData.author || "",
+          publishers: reviewData.publishers || "",
+          event_id: reviewData.event_id || "",
+        });
+
+        // 色・パターン情報を復元
+        setBookColor(reviewData.color || "#FFFFFF");
+        setPattern(reviewData.pattern || "dot");
+        setPatternColor(reviewData.pattern_color || "#FFFFFF");
+
+        return;
+      } catch (error) {
+        console.error("Failed to restore review data:", error);
+      }
+    }
+
+    // 本の情報がある場合は復元
+    const draft = sessionStorage.getItem("bookItemDraft");
+
+    if (!draft) return;
+
+    const bookDataDraft = JSON.parse(draft);
+
+    console.log(JSON.stringify(bookDataDraft, null, 2));
+
+    fetchUserData();
+
+    setBookData({
+      isbn: bookDataDraft.isbn,
+      title: bookDataDraft.title,
+      author: bookDataDraft.author,
+      publishers: bookDataDraft.publishers,
+      event_id: bookDataDraft.eventId,
+    });
+  }, [fetchUserData]);
 
   // 書評確認画面へデータを送る
   const handleConfirm = () => {
-    setForm({
-      ...form,
-      evaluations_status: 0,
-    });
+    if (!editor) {
+      alert("エディターが初期化されていません。");
+      return;
+    }
 
-    sessionStorage.setItem(
-      "bookReviewDraft",
-      JSON.stringify({
-        mode: "create",
-        ...form,
-      }),
+    // エディターの現在のHTMLを取得
+    const currentHtml = editor.getHTML();
+
+    // review フィールドとその他の必須フィールドを検証
+    if (!currentHtml || currentHtml.trim() === "<p></p>") {
+      alert("書評を入力してください。");
+      return;
+    }
+
+    if (!form.isbn) {
+      alert("本の情報が不足しています。");
+      return;
+    }
+
+    if (
+      !form.nickname ||
+      !form.address ||
+      !form.age ||
+      !form.gender ||
+      !form.self_introduction
+    ) {
+      alert("プロフィール情報が不完全です。");
+      return;
+    }
+
+    const submitData = {
+      ...form,
+      review: currentHtml,
+      evaluations_status: 0,
+      mode: "create",
+    };
+
+    console.log(
+      "[Post Confirm] Submitting data:",
+      JSON.stringify(submitData, null, 2),
     );
+
+    sessionStorage.setItem("bookReviewDraft", JSON.stringify(submitData));
     router.push("/post/post-confirm");
   };
 
   // 下書き登録用
   const registerBookReviewDraft = async (payload: typeof form) => {
     try {
-      const res = await fetch("http://localhost:3000/api/book-reviews", {
+      const res = await fetch("/api/book-reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          review: editor?.getHTML() || "",
+        }),
       });
 
       if (!res.ok) {
-        alert("登録に失敗しました。");
+        const errorData = await res.json().catch(() => ({}));
+        console.error("[Draft Register] API Error:", errorData);
+        alert(`下書き保存に失敗しました。${errorData.message || ""}`);
         return;
       }
 
       router.push("/poster/mypage");
     } catch (e) {
+      console.error("[Draft Register] Error:", e);
       alert("通信に失敗しました。");
     }
   };
@@ -193,7 +292,7 @@ export default function PostPage() {
   const handleDraftConfirm = () => {
     const nextForm = {
       ...form,
-      draft_flag: true
+      draft_flag: true,
     };
 
     setForm(nextForm);
@@ -261,21 +360,14 @@ export default function PostPage() {
     editor.chain().focus().toggleUnderline().run();
     setUnderlineActive((prev) => !prev);
   };
-  // colorボタンの状態管理
-  const handleColorClick = (color: string) => {
-    if (!editor) return;
-
-    editor.chain().focus().setColor(color).run();
-    setColorActive(color);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = () => {
     if (!editor) return;
     setHtml(editor.getHTML());
   };
 
   useEffect(() => {
     if (bookData.publishers) {
+      /* eslint-disable-next-line react-hooks/set-state-in-effect */
       setForm((prev) => ({
         ...prev,
         publishers: bookData.publishers,
@@ -287,11 +379,12 @@ export default function PostPage() {
         author: bookData.author,
       }));
     }
-  }, [bookData.publishers, bookData.author]);
+  }, [bookData]);
 
   useEffect(() => {
     if (!userId || !userData) return;
 
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
     setForm((prev) => ({
       ...prev,
       user_id: Number(userId),
@@ -303,7 +396,7 @@ export default function PostPage() {
       age: userData.age,
       self_introduction: userData.introduction,
     }));
-  }, [userId, userData]);
+  }, [userId, userData, bookData]);
 
   // SSR対策で element を後付けする
   useEffect(() => {
@@ -315,6 +408,21 @@ export default function PostPage() {
       plugin.options.element = bubbleRef.current;
     }
   }, [editor]);
+
+  // エディターのコンテンツを復元
+  useEffect(() => {
+    if (!editor || !form.review) return;
+
+    // フォームの review が更新されていて、エディターが異なる場合のみ更新
+    const currentContent = editor.getHTML();
+    if (currentContent !== form.review && form.review.trim() !== "") {
+      console.log(
+        "Restoring editor content:",
+        form.review.substring(0, 50) + "...",
+      );
+      editor.commands.setContent(form.review);
+    }
+  }, [editor, form.review]);
 
   return (
     <div
@@ -393,9 +501,11 @@ export default function PostPage() {
                 <div>
                   <p>文字色</p>
                   <div className="w-20 items-center">
-                    <input 
+                    <input
                       type="color"
-                      onChange={(e) => editor?.chain().focus().setColor(e.target.value).run()}
+                      onChange={(e) =>
+                        editor?.chain().focus().setColor(e.target.value).run()
+                      }
                       className={`w-full h-8 rounded border cursor-pointer ${Styles.ColorPicker}`}
                     />
                   </div>
