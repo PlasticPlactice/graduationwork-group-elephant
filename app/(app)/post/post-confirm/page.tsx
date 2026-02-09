@@ -67,7 +67,7 @@ export default function PostConfirmPage({}: {}) {
       }
 
       // 下書き状態か？
-      if (!isDraftStatus) {
+      if (isDraftStatus) {
         sessionStorage.removeItem("bookReviewDraft");
         router.push("/poster/mypage");
       } else {
