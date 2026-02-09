@@ -3,6 +3,7 @@
 import Styles from "@/styles/app/poster.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   useState,
   useEffect,
@@ -432,9 +433,12 @@ export default function PostPage() {
       <p className={`font-bold text-center my-5 ${Styles.text24px}`}>
         あなただけの書評を書く
       </p>
-      <a href="" className={`block font-bold ${Styles.subColor}`}>
+      <Link
+        href="/poster/mypage"
+        className={`block font-bold ${Styles.subColor}`}
+      >
         <span>&lt;</span> マイページに戻る
-      </a>
+      </Link>
 
       <div className="py-2 flex items-center justify-between border-t">
         <p className={`${Styles.subColor}`}>タイトル</p>
