@@ -53,6 +53,7 @@ type ModalState = {
 type Props = {
   reviews: Book[];
   eventStatus?: number;
+  eventTitle?: string;
 };
 
 function renderShelfRow(
@@ -241,7 +242,11 @@ function TutorialOverlay({
 }
 // ... TutorialOverlayここまで ...
 
-export function BookshelfTop({ reviews, eventStatus = 3 }: Props) {
+export function BookshelfTop({
+  reviews,
+  eventStatus = 3,
+  eventTitle = "文庫Xイベント",
+}: Props) {
   const shelfTopRef = useRef<HTMLDivElement | null>(null);
   const scatterTopRef = useRef<HTMLDivElement | null>(null);
   const shelfAreaRef = useRef<HTMLDivElement | null>(null);
@@ -632,9 +637,7 @@ export function BookshelfTop({ reviews, eventStatus = 3 }: Props) {
     <>
       <div className="mb-6 flex flex-col items-center gap-3 text-center px-4">
         <div className="flex items-center justify-center gap-2">
-          <h1 className="text-2xl font-bold text-slate-900">
-            第〇回文庫Xイベント
-          </h1>
+          <h1 className="text-2xl font-bold text-slate-900">{eventTitle}</h1>
           <button
             type="button"
             onClick={() => setIsEventInfoOpen(true)}

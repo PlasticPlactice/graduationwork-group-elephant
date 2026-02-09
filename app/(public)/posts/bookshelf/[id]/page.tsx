@@ -18,7 +18,7 @@ export default async function BookshelfDetailPage({ params }: Props) {
     getPublicBookReviews(eventId),
     prisma.event.findUnique({
       where: { id: eventId },
-      select: { status: true },
+      select: { status: true, title: true },
     }),
   ]);
 
@@ -27,7 +27,11 @@ export default async function BookshelfDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="py-6">
-        <BookshelfTop reviews={bookReviews} eventStatus={event?.status ?? 0} />
+        <BookshelfTop
+          reviews={bookReviews}
+          eventStatus={event?.status ?? 0}
+          eventTitle={event?.title ?? "文庫Xイベント"}
+        />
       </div>
     </div>
   );
