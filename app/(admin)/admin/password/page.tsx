@@ -79,15 +79,6 @@ export default function PasswordChangePage() {
     <div className="min-h-screen bg-white px-4 py-4 box-border">
       {/* ヘッダー */}
       <div className="text-center mt-3">
-        <div className="flex items-center justify-start gap-2 mb-4">
-          <Link
-            href="/admin/home"
-            className="font-bold text-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-300"
-            aria-label="マイページへ戻る"
-          >
-            <span aria-hidden="true">&lt;</span> 戻る
-          </Link>
-        </div>
         <h1 className="text-lg font-bold text-slate-900">パスワードの変更</h1>
       </div>
 
