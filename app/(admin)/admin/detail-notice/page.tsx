@@ -268,55 +268,69 @@ function DetailNoticeContent() {
       {attachments.length > 0 && (
         <>
           <p className="img-file">添付画像・ファイル</p>
-          <div className="flex flex-wrap">
-            {attachments.map((att, idx) => (
-              <div
-                key={idx}
-                className="relative overflow-hidden upload-preview w-1/4"
+          <div className="flex justify-between flex-wrap">
+            <div>
+              {attachments.map((att, idx) => (
+                <div
+                  key={idx}
+                  className="relative overflow-hidden upload-preview w-1/4"
+                >
+                  {att.kind === "image" ? (
+                    <img
+                      src={att.src}
+                      onClick={() => openPreview(idx)}
+                      alt={att.name}
+                      className="img-border w-full h-full object-cover h-20 flex items-center justify-center text-sm text-black"
+                    />
+                  ) : (
+                    <div className="img-border w-full h-20 flex items-center justify-center text-sm text-black">
+                      {att.name}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {/* 操作ボタン */}
+            <div className="btn-group flex items-center gap-4">
+              <button onClick={handleEdit} className="edit-btn">
+                編集する
+              </button>
+              <button
+                className={
+                  notification?.public_flag ? "not-public-btn" : "public-btn"
+                }
+                onClick={handleNoticeDisable}
               >
-                {att.kind === "image" ? (
-                  <img
-                    src={att.src}
-                    onClick={() => openPreview(idx)}
-                    alt={att.name}
-                    className="img-border w-full h-full object-cover h-20 flex items-center justify-center text-sm text-black"
-                  />
-                ) : (
-                  <div className="img-border w-full h-20 flex items-center justify-center text-sm text-black">
-                    {att.name}
-                  </div>
-                )}
-              </div>
-            ))}
+                {notification?.public_flag ? "非公開にする" : "公開する"}
+              </button>
+              <button onClick={handleDelete} className="delete-conf-btn">
+                削除する
+              </button>
+            </div>
           </div>
         </>
       )}
-
-      {/* 操作ボタン */}
-      <div className="btn-group flex items-center mt-6">
-        <button
-          className={
-            notification?.public_flag ? "not-public-btn" : "public-btn"
-          }
-          onClick={handleNoticeDisable}
-        >
-          {notification?.public_flag ? "非公開にする" : "公開する"}
-        </button>
-        <div className="ml-auto flex gap-2">
-          <button
-            className="close-btn"
-            onClick={() => router.push("/admin/notice")}
-          >
-            閉じる
-          </button>
-          <button onClick={handleEdit} className="edit-btn">
-            編集する
-          </button>
-          <button onClick={handleDelete} className="delete-conf-btn">
-            削除する
-          </button>
-        </div>
-      </div>
+      {/* 添付画像・ファイルがないとき */}
+      {attachments.length === 0 && (
+        <>
+          <div className="btn-group flex justify-end items-center gap-4">
+            <button onClick={handleEdit} className="edit-btn">
+              編集する
+            </button>
+            <button
+              className={
+                notification?.public_flag ? "not-public-btn" : "public-btn"
+              }
+              onClick={handleNoticeDisable}
+            >
+              {notification?.public_flag ? "非公開にする" : "公開する"}
+            </button>
+            <button onClick={handleDelete} className="delete-conf-btn">
+              削除する
+            </button>
+          </div>
+        </>
+      )}
 
       {/* プレビューモーダル */}
       {modalIndex !== null &&
