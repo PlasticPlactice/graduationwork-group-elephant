@@ -5,12 +5,79 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+type EventItem = {
+  id: number;
+  title: string;
+  status: number;
+
+  created_at?: string;
+  end_period?: string;
+
+  first_voting_start_period: string;
+  first_voting_end_period?: string;
+  second_voting_start_period: string;
+  second_voting_end_period?: string;
+};
+type EventItemView = {
+  id: number;
+  title: string;
+  status: number;
+  first_voting_start_period: string;
+  second_voting_start_period: string;
+  end_period: string;
+};
+
+
 export default function PostCompletePage() {
-  const [eventId, setEventId] = useState<String | null>(null);
-  
+  const [eventId, setEventId] = useState<string | null>(null);
+  const [eventData, setEventData] = useState<EventItem[]>([]);
+
+  const toView = (item: EventItem): EventItemView => ({
+    id: item.id,
+    title: item.title,
+    status: item.status,
+    first_voting_start_period: item.first_voting_start_period
+      ? formatDate(new Date(item.first_voting_start_period))
+      : "",
+    second_voting_start_period: item.second_voting_start_period
+      ? formatDate(new Date(item.second_voting_start_period))
+      : "",
+    end_period: item.end_period
+      ? formatDate(new Date(item.end_period))
+      : "",
+  });
+
+  const fetchEventById = async (eventId: number) => {
+    try {
+      const res = await fetch(`/api/events?id=${eventId}`);
+      if (!res.ok) {
+        console.error("events fetch failed", await res.text());
+        return;
+      }
+      const data: EventItem[] = await res.json();
+
+      const viewData = data.map(toView);
+
+      setEventData(viewData);
+    } catch (err) {
+      console.error("Failed to fetch events:", err);
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}年${m}月${d}日`;
+  };
+
   useEffect(() => {
     setEventId(sessionStorage.getItem("eventId"));
   }, [])
+
+  useEffect(() => {
+    fetchEventById(Number(eventId))
+  }, [eventId])
 
   return (
     <div className={`${Styles.posterContainer}`}>
@@ -29,12 +96,12 @@ export default function PostCompletePage() {
       </p>
 
       <div className={`border rounded-sm p-4 mt-4 mb-8`}>
-        <p className={`text-center border-b pb-4`}>第１回文庫X</p>
+        <p className={`text-center border-b pb-4`}>{eventData[0]?.title}</p>
         <div className="max-w-10/12 mx-auto">
           <div className="mt-4">
             <div className="flex gap-7 justify-between">
               <p className={`${Styles.text16px}`}>１次審査開始</p>
-              <p className={`font-bold text-blue-500`}>2025年8月1日</p>
+              <p className={`font-bold text-blue-500`}>{eventData[0]?.first_voting_start_period}</p>
             </div>
             <p className={`${Styles.text12px} ${Styles.subColor}`}>
               運営が１次審査を行います。
@@ -43,7 +110,7 @@ export default function PostCompletePage() {
           <div className="mt-4">
             <div className="flex gap-7 justify-between">
               <p className={`${Styles.text16px}`}>２次審査開始</p>
-              <p className={`font-bold`}>2025年8月30日</p>
+              <p className={`font-bold`}>{eventData[0]?.second_voting_start_period}</p>
             </div>
             <p className={`${Styles.text12px} ${Styles.subColor}`}>
               ユーザーの皆さんが２次審査を行います。
@@ -52,7 +119,7 @@ export default function PostCompletePage() {
           <div className="mt-4">
             <div className="flex gap-7 justify-between">
               <p className={`${Styles.text16px}`}>結果発表</p>
-              <p className={`font-bold`}>2025年9月25日</p>
+              <p className={`font-bold`}>{eventData[0]?.end_period}</p>
             </div>
             <p className={`${Styles.text12px} ${Styles.subColor}`}>
               上位作品は入賞しサイトに掲載されます。
