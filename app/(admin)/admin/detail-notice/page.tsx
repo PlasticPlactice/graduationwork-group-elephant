@@ -269,7 +269,7 @@ function DetailNoticeContent() {
         <>
           <p className="img-file">添付画像・ファイル</p>
           <div className="flex justify-between flex-wrap">
-            <div>
+            <div className="flex flex-wrap gap-4 mb-6">
               {attachments.map((att, idx) => (
                 <div
                   key={idx}
