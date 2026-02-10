@@ -261,7 +261,7 @@ export default function BarcodeScanPage() {
         >
           <div className="text-5xl mb-4">警告</div>
           <p className="text-lg leading-relaxed">
-            下のISBNバーコードを
+            上のISBNバーコードを
             <br />
             読み取ってください
           </p>

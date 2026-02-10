@@ -214,9 +214,6 @@ export default function PostPage() {
       setForm(prev => ({
         ...prev,
         review: editor.getHTML(),
-        // color: bookColor,
-        // pattern: pattern,
-        // pattern_color: patternColor,
       }));
     },
   });
@@ -354,13 +351,9 @@ export default function PostPage() {
         bookReviewId={bookReviewData?.id}
       />
       <div className={`${Styles.posterContainer}`}>
-        <p className={`font-bold text-center my-3 ${Styles.text24px}`}>
+        <p className={`font-bold text-center my-9 ${Styles.text24px}`}>
           書評を修正
         </p>
-        <a href="" className={`block font-bold ${Styles.subColor}`}>
-          <span>&lt;</span> マイページに戻る
-        </a>
-
         <div className="py-2 flex items-center justify-between border-t">
           <p className={`${Styles.subColor}`}>本のタイトル</p>
           <p className={`w-2/3`}>{bookReviewData?.book_title}</p>
