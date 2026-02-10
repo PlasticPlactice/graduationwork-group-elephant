@@ -494,7 +494,7 @@ export default function Page() {
                   </td>
                   <td className="">{user.account_id}</td>
                   <td className="">{user.nickname}</td>
-                  <td className="">{user.age}</td>
+                  <td className="">{user.age}代</td>
                   <td className="">{user.address}</td>
                   <td className="">{user.reviewCount}</td>
                 </tr>
