@@ -459,7 +459,7 @@ export default function Page() {
             style={{ width: "100%", height: "100%" }}
           >
             <input
-              id="thumbnail"
+              id="register-thumbnail"
               type="file"
               name="thumbnailFile"
               className="thumbnail-btn"
@@ -477,7 +477,7 @@ export default function Page() {
               />
             )}
             <label
-              htmlFor="thumbnail"
+              htmlFor="register-thumbnail"
               className="thumbnail-label inline-block px-3 py-2 cursor-pointer"
             >
               {thumbnailPreview ? "サムネイルを変更" : "サムネイルを選択"}
@@ -503,12 +503,12 @@ export default function Page() {
                 type="radio"
                 className="notice-radio"
                 name="notification-type"
-                id="notice"
+                id="register-notice-type"
                 value="notice"
                 checked={notificationType === "notice"}
                 onChange={() => setNotificationType("notice")}
               />
-              <label htmlFor="notice" className="radio-label">
+              <label htmlFor="register-notice-type" className="radio-label">
                 お知らせ
               </label>
             </div>
@@ -517,12 +517,12 @@ export default function Page() {
                 type="radio"
                 className="notice-radio"
                 name="notification-type"
-                id="donation"
+                id="register-donation-type"
                 value="donation"
                 checked={notificationType === "donation"}
                 onChange={() => setNotificationType("donation")}
               />
-              <label htmlFor="donation" className="radio-label">
+              <label htmlFor="register-donation-type" className="radio-label">
                 寄贈
               </label>
             </div>
@@ -533,12 +533,12 @@ export default function Page() {
                   type="radio"
                   className="notice-radio"
                   name="publish-status"
-                  id="publish"
+                  id="register-publish"
                   value="public"
                   checked={isPublic}
                   onChange={() => setIsPublic(true)}
                 />
-                <label htmlFor="publish" className="radio-label">
+                <label htmlFor="register-publish" className="radio-label">
                   公開
                 </label>
               </div>
@@ -547,12 +547,12 @@ export default function Page() {
                   type="radio"
                   className="notice-radio"
                   name="publish-status"
-                  id="private"
+                  id="register-private"
                   value="private"
                   checked={!isPublic}
                   onChange={() => setIsPublic(false)}
                 />
-                <label htmlFor="private" className="radio-label">
+                <label htmlFor="register-private" className="radio-label">
                   非公開
                 </label>
               </div>
@@ -656,12 +656,12 @@ export default function Page() {
         </div>
 
         {/* 添付画像・ファイル */}
-        <label htmlFor="upload" className="block mt-4">
+        <label htmlFor="register-upload" className="block mt-4">
           添付画像・ファイル
         </label>
         <div className="flex items-center gap-10">
           <input
-            id="upload"
+            id="register-upload"
             type="file"
             name="attachedFile"
             className="upload-btn"
@@ -669,7 +669,7 @@ export default function Page() {
             multiple={false} // 複数選択を許可しない
           />
           <label
-            htmlFor="upload"
+            htmlFor="register-upload"
             className="upload-label inline-block h-fit px-3 py-2 cursor-pointer"
           >
             添付する画像・ファイルを選択

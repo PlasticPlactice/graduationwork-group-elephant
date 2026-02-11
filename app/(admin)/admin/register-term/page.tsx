@@ -133,7 +133,7 @@ export default function Page() {
       <h1 className="text-2xl font-bold mb-6">利用規約登録</h1>
       <form onSubmit={handleSubmit}>
         <div className="my-4">
-          <label htmlFor="pdf-upload" className="text-xl block">
+          <label htmlFor="register-pdf-upload" className="text-xl block">
             PDFアップロード
           </label>
           <p className="detail-text text-sm">
@@ -143,7 +143,7 @@ export default function Page() {
             <div className="w-full flex items-start gap-6">
               <Textbox
                 type="file"
-                id="pdf-upload"
+                id="register-pdf-upload"
                 name="pdf-upload"
                 accept=".pdf,application/pdf"
                 onChange={handleFileChange}
@@ -192,18 +192,18 @@ export default function Page() {
                 <input
                   type="radio"
                   name="apply"
-                  id="datetime"
+                  id="register-datetime"
                   checked={mode === "datetime"}
                   onChange={() => setMode("datetime")}
                   disabled={isLoading}
                 />
-                <label htmlFor="datetime">日時予約適用</label>
+                <label htmlFor="register-datetime">日時予約適用</label>
               </div>
               <div className="flex items-center">
                 <input
                   type="radio"
                   name="apply"
-                  id="immediate"
+                  id="register-immediate"
                   checked={mode === "immediate"}
                   onChange={() => {
                     setMode("immediate");
@@ -211,7 +211,7 @@ export default function Page() {
                   }}
                   disabled={isLoading}
                 />
-                <label htmlFor="immediate">即時適用</label>
+                <label htmlFor="register-immediate">即時適用</label>
               </div>
             </div>
             <div className="flex justify-center mt-6">

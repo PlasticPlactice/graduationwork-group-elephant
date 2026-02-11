@@ -619,7 +619,7 @@ function EditNoticeContent() {
             style={{ width: "100%", height: "100%" }}
           >
             <input
-              id="thumbnail"
+              id="edit-thumbnail"
               type="file"
               name="thumbnailFile"
               className="thumbnail-btn"
@@ -637,7 +637,7 @@ function EditNoticeContent() {
               />
             )}
             <label
-              htmlFor="thumbnail"
+              htmlFor="edit-thumbnail"
               className="thumbnail-label inline-block px-3 py-2 cursor-pointer"
             >
               {thumbnailPreview ? "サムネイルを変更" : "サムネイルを選択"}
@@ -663,12 +663,12 @@ function EditNoticeContent() {
                 type="radio"
                 className="notice-radio"
                 name="notification-type"
-                id="notice"
+                id="edit-notice-type"
                 value="notice"
                 checked={notificationType === "notice"}
                 onChange={() => setNotificationType("notice")}
               />
-              <label htmlFor="notice" className="radio-label">
+              <label htmlFor="edit-notice-type" className="radio-label">
                 お知らせ
               </label>
             </div>
@@ -677,12 +677,12 @@ function EditNoticeContent() {
                 type="radio"
                 className="notice-radio"
                 name="notification-type"
-                id="donation"
+                id="edit-donation-type"
                 value="donation"
                 checked={notificationType === "donation"}
                 onChange={() => setNotificationType("donation")}
               />
-              <label htmlFor="donation" className="radio-label">
+              <label htmlFor="edit-donation-type" className="radio-label">
                 寄贈
               </label>
             </div>
@@ -693,12 +693,12 @@ function EditNoticeContent() {
                   type="radio"
                   className="notice-radio"
                   name="publish-status"
-                  id="publish"
+                  id="edit-publish"
                   value="public"
                   checked={isPublic}
                   onChange={() => setIsPublic(true)}
                 />
-                <label htmlFor="publish" className="radio-label">
+                <label htmlFor="edit-publish" className="radio-label">
                   公開
                 </label>
               </div>
@@ -707,12 +707,12 @@ function EditNoticeContent() {
                   type="radio"
                   className="notice-radio"
                   name="publish-status"
-                  id="private"
+                  id="edit-private"
                   value="private"
                   checked={!isPublic}
                   onChange={() => setIsPublic(false)}
                 />
-                <label htmlFor="private" className="radio-label">
+                <label htmlFor="edit-private" className="radio-label">
                   非公開
                 </label>
               </div>
@@ -816,12 +816,12 @@ function EditNoticeContent() {
         </div>
 
         {/* 添付画像・ファイル */}
-        <label htmlFor="upload" className="block mt-4">
+        <label htmlFor="edit-upload" className="block mt-4">
           添付画像・ファイル
         </label>
         <div className="flex items-center gap-10">
           <input
-            id="upload"
+            id="edit-upload"
             type="file"
             name="attachedFile"
             className="upload-btn"
@@ -829,7 +829,7 @@ function EditNoticeContent() {
             multiple={false}
           />
           <label
-            htmlFor="upload"
+            htmlFor="edit-upload"
             className="upload-label inline-block h-fit px-3 py-2 cursor-pointer"
           >
             添付する画像・ファイルを選択
