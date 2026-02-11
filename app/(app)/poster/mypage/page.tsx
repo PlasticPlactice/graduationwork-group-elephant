@@ -36,7 +36,7 @@ interface EventData {
   first_voting_end_period: Timestamp;
 }
 
-type ReviewFilterTab = "all" | 0 | 1 | 2 | 3;
+type ReviewFilterTab = "all" | 0 | 4 | "passed";
 type ReviewStatusCode = 0 | 1 | 2 | 3;
 
 interface BookReviewData {
@@ -44,6 +44,7 @@ interface BookReviewData {
   book_title: string;
   evaluations_status: number;
   public_flag: boolean;
+  draft_flag: boolean;
   review: string;
 }
 
@@ -177,14 +178,14 @@ export default function MyPage() {
     label: string;
   }[] = [
     { key: "all" as const, label: "全て" },
-    { key: 0, label: "下書き" },
-    { key: 1, label: "１次通過" },
-    { key: 2, label: "２次通過" },
-    { key: 3, label: "終了済み" },
+    { key: 4, label: "下書き" },
+    { key: 0, label: "審査前" },
+    { key: "passed", label: "審査通過" },
   ];
 
   const REVIEW_STATUS_MAP = {
-    0: {
+    0
+    : {
       label: "審査前",
       badgeType: "gray",
       canEdit: true,
@@ -204,6 +205,11 @@ export default function MyPage() {
       badgeType: "red",
       canEdit: false,
     },
+    4: {
+      label: "下書き",
+      badgeType: "gray",
+      canEdit: true,
+    }
   } as const;
 
   // HTMLタグを削除してプレーンテキストに変換
@@ -220,6 +226,19 @@ export default function MyPage() {
 
   // 陦ｨ遉ｺ逕ｨ縺ｫ繝・・繧ｿ繧呈紛蠖｢
   const uiReviews = bookReviewData.map((review) => {
+    if (review.draft_flag) {
+      return {
+        bookReviewId: review.id,
+        title: review.book_title,
+        status: REVIEW_STATUS_MAP[4].label,
+        evaluations_status: 4,
+        badgeType: REVIEW_STATUS_MAP[4].badgeType,
+        excerpt: stripHtmlTags(review.review),
+        buttonText: "編集する",
+        href: "/poster/edit",
+      };
+    }
+
     const code = normalizeStatus(review.evaluations_status);
     const status = REVIEW_STATUS_MAP[code];
 
@@ -242,6 +261,7 @@ export default function MyPage() {
 
   const filteredReviews = uiReviews.filter((review) => {
     if (activeFilterTab === "all") return true;
+    if (activeFilterTab === "passed") return [1, 2, 3].includes(review.evaluations_status);
     return review.evaluations_status === activeFilterTab;
   });
 
