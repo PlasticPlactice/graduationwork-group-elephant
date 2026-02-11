@@ -124,7 +124,7 @@ details[open] .icon {
   color: var(--color-bg);
 }
 .page-arrow {
-  color: var(--color-admin-sub);
+  color: var(--color-bg);
 }
 
 /* モーダル */
