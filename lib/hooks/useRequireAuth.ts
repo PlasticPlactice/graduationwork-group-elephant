@@ -42,8 +42,10 @@ export function useRequireAuth(options: UseRequireAuthOptions = {}) {
       requiredRole &&
       session?.user?.role !== requiredRole
     ) {
-      // ロール不一致者は公開ページへリダイレクト
-      router.push("/");
+      const redirectUrl =
+        redirectUrlIfUnauthenticated ||
+        (requiredRole === "admin" ? "/admin" : "/poster/login");
+      router.push(redirectUrl);
     }
   }, [
     status,
