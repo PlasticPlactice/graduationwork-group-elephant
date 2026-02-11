@@ -217,7 +217,7 @@ export default function PostConfirmPage() {
           </div>
         </div>
 
-        <button className={`w-full mt-10`} onClick={handleSubmit}>
+        <button type="button" className={`w-full mt-10`} onClick={handleSubmit}>
           登録
         </button>
         <button
