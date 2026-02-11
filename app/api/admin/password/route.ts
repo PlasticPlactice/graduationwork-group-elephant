@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import bcrypt from "bcrypt";
 
+export const runtime = "nodejs";
+
 export async function PUT(req: NextRequest) {
   const session = (await getServerSession(authOptions)) as {
     user?: { id?: string; role?: string };

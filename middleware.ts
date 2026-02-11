@@ -7,21 +7,45 @@ const SESSION_COOKIES = [
 
 export function middleware(request: NextRequest) {
   const hasSession = SESSION_COOKIES.some((name) =>
-    Boolean(request.cookies.get(name)?.value)
+    Boolean(request.cookies.get(name)?.value),
   );
 
   if (!hasSession) {
-    const signInUrl = new URL("/admin", request.url);
-    signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
-    return NextResponse.redirect(signInUrl);
+    const pathname = request.nextUrl.pathname;
+
+    // admin ページへのアクセス → /admin へリダイレクト
+    if (pathname.startsWith("/admin")) {
+      const signInUrl = new URL("/admin", request.url);
+      signInUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+
+    // post, poster ページへのアクセス（/poster/login, /poster/create 除外） → /poster/login へリダイレクト
+    if (
+      (pathname.startsWith("/post") && !pathname.startsWith("/poster")) ||
+      (pathname.startsWith("/poster") &&
+        pathname !== "/poster/login" &&
+        pathname !== "/poster/create")
+    ) {
+      const signInUrl = new URL("/poster/login", request.url);
+      signInUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(signInUrl);
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  // /admin 直下（ログインページと、拡張子ありファイル）を除外し、
-  // /admin/home などのページのみを保護する
-  // 正規表現 /admin/((?!.*\..*$).+) は拡張子を含むパスを弾き、管理画面の画面遷移だけを対象にする
-  matcher: ["/admin/((?!.*\\..*$).+)"],
+  // 保護対象：
+  // - /admin/** (ファイル除外)
+  // - /post/** (ファイル除外)
+  // - /poster/** (ファイル除外)
+  // 除外は middleware の条件分岐で処理
+  // 公開対象：/(public)/**, /event/**
+  matcher: [
+    "/admin/((?!.*\\..*$).+)",
+    "/post/((?!.*\\..*$).+)",
+    "/poster/((?!.*\\..*$).+)",
+  ],
 };

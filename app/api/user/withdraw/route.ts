@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+
+export const runtime = "nodejs";
 import { USER_STATUS } from "@/lib/constants/userStatus";
 
 export async function POST(req: NextRequest) {

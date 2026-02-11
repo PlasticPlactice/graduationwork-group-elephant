@@ -3,13 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
+export const runtime = "nodejs";
+
 export async function POST(req: Request) {
   try {
     // セッションチェック（管理者権限の確認）
     const session = await getServerSession(authOptions);
-    const user = (session as { user?: { id: string; role: string } } | null)?.user as
-      | { id: string; role: string }
-      | undefined;
+    const user = (session as { user?: { id: string; role: string } } | null)
+      ?.user as { id: string; role: string } | undefined;
 
     if (!user || user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

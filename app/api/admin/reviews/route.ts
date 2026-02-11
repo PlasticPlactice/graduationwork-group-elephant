@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import type { Session } from "next-auth";
 
+export const runtime = "nodejs";
+
 export async function GET(request: Request) {
   try {
     // セッションチェック（管理者権限の確認）

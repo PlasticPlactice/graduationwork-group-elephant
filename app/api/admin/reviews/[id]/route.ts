@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { requireAdminAuth } from "@/lib/api/authMiddleware";
 import type { Session } from "next-auth";
+
+export const runtime = "nodejs";
 
 export async function GET(
   req: Request,
   context: { params: Promise<{ id: string }> },
 ) {
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   try {
-    const session = (await getServerSession(authOptions)) as Session | null;
-    const user = session?.user as { id: string; role: string } | undefined;
-
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { id } = await context.params;
     const reviewId = Number(id);
 
@@ -58,14 +57,12 @@ export async function PATCH(
   req: Request,
   context: { params: Promise<{ id: string }> },
 ) {
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   try {
-    const session = (await getServerSession(authOptions)) as Session | null;
-    const user = session?.user as { id: string; role: string } | undefined;
-
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { id } = await context.params;
     const reviewId = Number(id);
 
