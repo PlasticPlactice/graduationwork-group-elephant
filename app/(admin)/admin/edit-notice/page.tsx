@@ -865,7 +865,7 @@ function EditNoticeContent() {
                 <button
                   type="button"
                   aria-label="プレビューを削除"
-                  className="absolute -top-2 -right-2 rounded w-6 h-6 flex items-center justify-center transition-colors"
+                  className="absolute -top-2 -right-2 rounded w-10 h-10 flex items-center justify-center transition-colors"
                   style={{
                     backgroundColor: "transparent",
                     boxShadow: "none",
@@ -876,7 +876,7 @@ function EditNoticeContent() {
                     removeAttachedFilePreview(i);
                   }}
                 >
-                  &times;
+                  <span className="text-3xl">&times;</span>
                 </button>
               </div>
             ))}

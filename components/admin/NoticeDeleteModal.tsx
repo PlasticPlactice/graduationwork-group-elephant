@@ -1,5 +1,5 @@
 "use client";
-import "@/styles/admin/detail-term.css";
+// import "@/styles/admin/notice.css";
 
 interface NoticeDeleteModalProps {
   isOpen: boolean;
@@ -18,7 +18,7 @@ export default function NoticeDeleteModal({
 
   return (
     <div
-      className="fixed inset-0 term-apply-confirm-modal bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 notice-delete-modal bg-opacity-50 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div

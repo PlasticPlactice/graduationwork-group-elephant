@@ -21,6 +21,7 @@ import {
   type ScatterEntry,
 } from "@/components/bookshelf/ScatterArea";
 import Modal from "@/app/(app)/Modal";
+import "@/components/bookshelf/BookReviewModal.module.css"
 
 const MOBILE_MAX_BOOKS_PER_SHELF = 8;
 const DESKTOP_MAX_BOOKS_PER_SHELF = 15;
@@ -637,12 +638,13 @@ export function BookshelfTop({
     <>
       <div className="mb-6 flex flex-col items-center gap-3 text-center px-4">
         <div className="flex items-center justify-center gap-2">
-          <h1 className="text-2xl font-bold text-slate-900">{eventTitle}</h1>
+          <h1 className="text-2xl font-bold text-slate-900 event-head">{eventTitle}</h1>
           <button
             type="button"
             onClick={() => setIsEventInfoOpen(true)}
             aria-label="文庫Xイベントの説明を表示"
             className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-pink-400 bg-white text-sm font-black text-pink-500 shadow-sm transition hover:-translate-y-0.5 hover:bg-pink-50 hover:text-pink-600"
+            id="help-btn"
           >
             ?
           </button>
@@ -773,23 +775,25 @@ export function BookshelfTop({
             <p className="mt-2 text-sm text-slate-600">
               画面のガイドに沿って操作してください。
             </p>
-            <button
-              type="button"
-              onClick={() => setTutorialStep(1)}
-              className="mt-5 rounded-full bg-pink-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-pink-600"
-            >
-              はじめる
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                window.localStorage.setItem(TUTORIAL_STORAGE_KEY, "1");
-                setTutorialStep(null);
-              }}
-              className="absolute bottom-3 right-4 text-xs font-semibold text-slate-400 transition hover:text-pink-500"
-            >
-              スキップ
-            </button>
+            <div className="flex justify-center gap-3 mt-3">
+              <button
+                type="button"
+                onClick={() => setTutorialStep(1)}
+                className="rounded-full bg-pink-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-pink-600"
+              >
+                はじめる
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  window.localStorage.setItem(TUTORIAL_STORAGE_KEY, "1");
+                  setTutorialStep(null);
+                }}
+                className=" text-xs font-semibold text-slate-400 transition hover:text-pink-500"
+              >
+                スキップ
+              </button>
+            </div>
           </div>
         </div>
       ) : null}

@@ -188,6 +188,17 @@ details[open] .icon {
   color: var(--color-bg);
 }
 .page-arrow {
-  color: var(--color-admin-sub);
+  color: var(--color-bg);
 }
 
+/* モーダル */
+.notice-delete-modal{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-btn-common{
+  border: 1px solid var(--color-main);
+}
+.modal-btn-common:hover{
+  background-color: var(--color-bg);
+  color: var(--color-main);
+}

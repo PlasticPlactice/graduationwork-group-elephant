@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import "@/styles/admin/header.css";
+import Image from "next/image";
 
 export function AdminHeader() {
   const [openMenu, setOpenMenu] = useState(false);
@@ -85,7 +86,12 @@ export function AdminHeader() {
           href="/admin/home"
           className="flex items-center hover:opacity-80 transition-opacity shrink-0"
         >
-          ホーム
+          <Image
+            src="/layout/new_logo.png"
+            alt="Admin Logo"
+            width={70}
+            height={70}
+          />
         </Link>
 
         <nav
@@ -214,7 +220,7 @@ export function AdminHeader() {
 
               <li>
                 <Link
-                  href="/admin/notice"
+                  href="/admin/detail-term"
                   onClick={() => setOpenMenu(false)}
                   className="group relative block rounded-md px-4 py-3 text-left text-lg font-bold text-gray-800 hover:opacity-90 focus:outline-none"
                 >

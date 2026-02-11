@@ -33,27 +33,47 @@
 .img-file {
   color: var(--color-sub);
 }
-
+.edit-btn {
+  box-shadow: none;
+  border: 1px solid var(--color-main);
+}
+.edit-btn:hover {
+  border: 1px solid var(--color-main);
+  background-color: var(--color-bg);
+  color: var(--color-main);
+}
 .not-public-btn {
   box-shadow: none;
-  font-size: var(--font-size-h1);
-  background-color: var(--color-warning);
+  background-color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  color: var(--color-text);
 }
 .public-btn {
   box-shadow: none;
-  font-size: var(--font-size-h1);
   background-color: var(--color-admin-active-background);
   color: var(--color-text);
+  border: 1px solid var(--color-admin-active-background);
 }
 .not-public-btn:hover {
-  border: 1px solid var(--color-warning);
-  background-color: var(--color-bg);
-  color: var(--color-warning);
+  border: 1px solid var(--color-accent);
+  background-color: var(--color-admin-sub);
+  color: var(--color-accent);
 }
 .public-btn:hover {
   border: 1px solid var(--color-admin-active-background);
   background-color: var(--color-bg);
   color: var(--color-admin-active-background);
+}
+.delete-conf-btn{
+  box-shadow: none;
+  border: 1px solid var(--color-warning);
+  background-color: var(--color-warning);
+  color: var(--color-bg);
+}
+.delete-conf-btn:hover{
+  border: 1px solid var(--color-warning);
+  background-color: var(--color-bg);
+  color: var(--color-warning);
 }
 
 .close-btn:hover {
