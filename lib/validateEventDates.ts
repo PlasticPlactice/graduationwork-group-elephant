@@ -22,29 +22,73 @@ export function validateEventDates(d: EventDateInputs): string | null {
     return isNaN(n.getTime()) ? null : n;
   };
 
-  const s = d.start_period !== undefined ? (toDate(d.start_period) ?? 'INVALID') : undefined;
-  const e = d.end_period !== undefined ? (toDate(d.end_period) ?? 'INVALID') : undefined;
-  const fs = d.first_voting_start_period !== undefined ? (toDate(d.first_voting_start_period) ?? 'INVALID') : undefined;
-  const fe = d.first_voting_end_period !== undefined ? (toDate(d.first_voting_end_period) ?? 'INVALID') : undefined;
-  const ss = d.second_voting_start_period !== undefined ? (toDate(d.second_voting_start_period) ?? 'INVALID') : undefined;
-  const se = d.second_voting_end_period !== undefined ? (toDate(d.second_voting_end_period) ?? 'INVALID') : undefined;
+  const s =
+    d.start_period !== undefined
+      ? (toDate(d.start_period) ?? "INVALID")
+      : undefined;
+  const e =
+    d.end_period !== undefined
+      ? (toDate(d.end_period) ?? "INVALID")
+      : undefined;
+  const fs =
+    d.first_voting_start_period !== undefined
+      ? (toDate(d.first_voting_start_period) ?? "INVALID")
+      : undefined;
+  const fe =
+    d.first_voting_end_period !== undefined
+      ? (toDate(d.first_voting_end_period) ?? "INVALID")
+      : undefined;
+  const ss =
+    d.second_voting_start_period !== undefined
+      ? (toDate(d.second_voting_start_period) ?? "INVALID")
+      : undefined;
+  const se =
+    d.second_voting_end_period !== undefined
+      ? (toDate(d.second_voting_end_period) ?? "INVALID")
+      : undefined;
 
-  if (s === 'INVALID') return 'start_period is invalid date';
-  if (e === 'INVALID') return 'end_period is invalid date';
-  if (fs === 'INVALID') return 'first_voting_start_period is invalid date';
-  if (fe === 'INVALID') return 'first_voting_end_period is invalid date';
-  if (ss === 'INVALID') return 'second_voting_start_period is invalid date';
-  if (se === 'INVALID') return 'second_voting_end_period is invalid date';
+  if (s === "INVALID") return "start_period is invalid date";
+  if (e === "INVALID") return "end_period is invalid date";
+  if (fs === "INVALID") return "first_voting_start_period is invalid date";
+  if (fe === "INVALID") return "first_voting_end_period is invalid date";
+  if (ss === "INVALID") return "second_voting_start_period is invalid date";
+  if (se === "INVALID") return "second_voting_end_period is invalid date";
 
   // 比較は両端が Date のときのみ
-  if (s instanceof Date && e instanceof Date && s > e) {
-    return 'イベント開始日時よりイベント終了日時の方が早いです。';
+  if (s instanceof Date && e instanceof Date && s >= e) {
+    return "イベント開始日時はイベント終了日時より前に設定してください。";
   }
-  if (fs instanceof Date && fe instanceof Date && fs > fe) {
-    return '一次審査開始日時より一次審査終了日時の方が早いです。';
+  if (fs instanceof Date && fe instanceof Date && fs >= fe) {
+    return "書評投稿開始日時は書評投稿終了日時より前に設定してください。";
   }
-  if (ss instanceof Date && se instanceof Date && ss > se) {
-    return '二次審査開始日時より二次審査終了日時の方が早いです。';
+  if (ss instanceof Date && se instanceof Date && ss >= se) {
+    return "書評投票開始日時は書評投票終了日時より前に設定してください。";
+  }
+
+  const hasAllDates =
+    s instanceof Date &&
+    e instanceof Date &&
+    fs instanceof Date &&
+    fe instanceof Date &&
+    ss instanceof Date &&
+    se instanceof Date;
+
+  if (hasAllDates) {
+    if (s >= fs) {
+      return "イベント開始日時は書評投稿開始日時より前に設定してください。";
+    }
+    if (fs >= fe) {
+      return "書評投稿開始日時は書評投稿終了日時より前に設定してください。";
+    }
+    if (fe >= ss) {
+      return "書評投稿終了日時は書評投票開始日時より前に設定してください。";
+    }
+    if (ss >= se) {
+      return "書評投票開始日時は書評投票終了日時より前に設定してください。";
+    }
+    if (se >= e) {
+      return "書評投票終了日時はイベント終了日時より前に設定してください。";
+    }
   }
 
   return null;

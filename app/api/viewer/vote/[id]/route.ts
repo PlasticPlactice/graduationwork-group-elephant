@@ -1,18 +1,69 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Prismaクライアントのパスに合わせてね
+import {
+  calculateEventStatus,
+  EVENT_STATUS,
+} from "@/lib/constants/eventStatus";
 
 export async function PUT(
   request: Request,
-  props : { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> },
 ) {
   try {
-    const params = await props.params
+    const params = await props.params;
 
     const { type } = await request.json(); // "increment" or "decrement"
     const reviewId = Number(params.id); // 文字列の場合もあるので適宜 Number() 変換
 
     if (isNaN(reviewId)) {
       return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
+    }
+
+    const review = await prisma.bookReview.findUnique({
+      where: { id: reviewId },
+      select: {
+        id: true,
+        event_id: true,
+        event: {
+          select: {
+            start_period: true,
+            end_period: true,
+            first_voting_start_period: true,
+            first_voting_end_period: true,
+            second_voting_start_period: true,
+            second_voting_end_period: true,
+          },
+        },
+      },
+    });
+
+    if (!review) {
+      return NextResponse.json(
+        { message: "Review not found" },
+        { status: 404 },
+      );
+    }
+
+    if (!review.event_id || !review.event) {
+      return NextResponse.json(
+        { message: "Event is required for voting" },
+        { status: 400 },
+      );
+    }
+
+    const status = calculateEventStatus({
+      start_period: review.event.start_period,
+      end_period: review.event.end_period,
+      first_voting_start_period: review.event.first_voting_start_period,
+      first_voting_end_period: review.event.first_voting_end_period,
+      second_voting_start_period: review.event.second_voting_start_period,
+      second_voting_end_period: review.event.second_voting_end_period,
+    });
+    if (status !== EVENT_STATUS.VOTING) {
+      return NextResponse.json(
+        { message: "Voting period is not active" },
+        { status: 400 },
+      );
     }
 
     if (type === "increment") {
