@@ -113,11 +113,14 @@ export default function EventRegisterModal({
         <div className="modal-scroll-area overflow-y-auto p-3">
           <form onSubmit={handleSubmit} className="p-3">
             <div className="my-4">
-              <label htmlFor="title-form" className="title-label text-xl block">
+              <label
+                htmlFor="register-event-title"
+                className="title-label text-xl block"
+              >
                 タイトル<span className="required">*</span>
               </label>
               <Textbox
-                id="title-form"
+                id="register-event-title"
                 name="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -132,13 +135,17 @@ export default function EventRegisterModal({
                 <label htmlFor="event-start-datetime" className="text-xl block">
                   イベント開催期間<span className="required">*</span>
                 </label>
+                <p className="text-white">～</p>
+                <label htmlFor="event-start-datetime" className="text-xl text-white">
+                  イベント開催期間<span className="text-white">*</span>
+                </label>
               </div>
               <p className="event-detail-text text-sm">
                 イベントの開催期間を決定します
               </p>
               <div className="flex justify-between items-center">
                 <Textbox
-                  id="event-start-datetime"
+                  id="register-event-start-datetime"
                   name="event-start-datetime"
                   className="datetime-input-start"
                   type="datetime-local"
@@ -148,7 +155,7 @@ export default function EventRegisterModal({
                 />
                 <p>～</p>
                 <Textbox
-                  id="event-end-datetime"
+                  id="register-event-end-datetime"
                   name="event-end-datetime"
                   className="datetime-input-end"
                   type="datetime-local"
@@ -160,15 +167,27 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <label htmlFor="book-post-datetime" className="text-xl block">
-                書評投稿期間<span className="required">*</span>
-              </label>
-              <p className="event-detail-text text-sm">
-                ユーザーが書評を投稿できる期間を決定します
-              </p>
-              <div className="flex gap-15 items-center">
+              <div className="flex justify-around items-center">
+                <label htmlFor="book-post-datetime" className="text-xl block">
+                  書評投稿期間<span className="required">*</span>
+                </label>
+                <p className="text-white">～</p>
+                <label htmlFor="book-post-datetime" className="text-xl text-white">
+                  書評投稿期間<span className="text-white">*</span>
+                </label>
+              </div>
+              <div className="flex justify-evenly items-center">
+                <p className="event-detail-text text-sm">
+                  ユーザーが書評を投稿できる期間を決定します
+                </p>
+                <p className="text-white">～</p>
+                <p className="text-white text-sm">
+                  ユーザーが書評を投稿できる期間を決定します
+                </p>
+              </div>
+              <div className="flex gap-15 justify-center items-center">
                 <Textbox
-                  id="book-post-start-datetime"
+                  id="register-book-post-start-datetime"
                   name="book-post-start-datetime"
                   className="datetime-input-post"
                   type="datetime-local"
@@ -178,7 +197,7 @@ export default function EventRegisterModal({
                 />
                 <p>～</p>
                 <Textbox
-                  id="book-post-end-datetime"
+                  id="register-book-post-end-datetime"
                   name="book-post-end-datetime"
                   className="datetime-input-post"
                   type="datetime-local"
@@ -190,15 +209,27 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <label htmlFor="book-vote-datetime" className="text-xl block">
-                書評投票期間<span className="required">*</span>
-              </label>
-              <p className="event-detail-text text-sm">
-                ユーザーが書評に対して投票できる期間を決定します
-              </p>
-              <div className="flex gap-15 items-center">
+              <div className="flex justify-around items-center">
+                <label htmlFor="book-vote-datetime" className="text-xl block">
+                  書評投票期間<span className="required">*</span>
+                </label>
+                <p className="text-white">～</p>
+                <label htmlFor="book-vote-datetime" className="text-xl text-white">
+                  書評投票期間<span className="text-white">*</span>
+                </label>
+              </div>
+              <div className="flex justify-evenly items-center">
+                <p className="event-detail-text text-sm">
+                  ユーザーが書評に対して投票できる期間を決定します
+                </p>
+                <p className="text-white">～</p>
+                <p className="text-white text-sm">
+                  ユーザーが書評に対して投票できる期間を決定します
+                </p>
+              </div>
+              <div className="flex gap-15 justify-center items-center">
                 <Textbox
-                  id="book-vote-start-datetime"
+                  id="register-book-vote-start-datetime"
                   name="book-vote-start-datetime"
                   className="datetime-input-vote"
                   type="datetime-local"
@@ -208,7 +239,7 @@ export default function EventRegisterModal({
                 />
                 <p>～</p>
                 <Textbox
-                  id="book-vote-end-datetime"
+                  id="register-book-vote-end-datetime"
                   name="book-vote-end-datetime"
                   className="datetime-input-vote"
                   type="datetime-local"
@@ -220,7 +251,7 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <label htmlFor="remarks" className="text-xl block">
+              <label htmlFor="register-event-remarks" className="text-xl block">
                 備考欄
               </label>
               <p className="event-detail-text text-sm">
@@ -229,7 +260,7 @@ export default function EventRegisterModal({
               </p>
               <textarea
                 name="remarks"
-                id="remarks"
+                id="register-event-remarks"
                 value={detail}
                 onChange={(e) => setDetail(e.target.value)}
               ></textarea>

@@ -16,7 +16,7 @@ interface UserExitModalProps {
 }
 
 interface ExitUser {
-  id: number;
+  account_id: string | number;
   nickname: string;
   age: number | null;
   address: string | null;
@@ -51,7 +51,7 @@ export default function UserExitModal({
         if (!res.ok) throw new Error("Failed to fetch user");
         const data = await res.json();
         setUser({
-          id: data.id,
+          account_id: data.account_id,
           nickname: data.nickname,
           age: data.age,
           address: data.address,
@@ -148,7 +148,7 @@ export default function UserExitModal({
             <p className="col-span-5 text-base font-normal">読み込み中...</p>
           ) : user ? (
             <>
-              <p>{String(user.id).padStart(6, "0")}</p>
+              <p>{String(user.account_id).padStart(6, "0")}</p>
               <p>{user.nickname}</p>
               <p>
                 <span className={`status-badge ${statusClass}`}>

@@ -147,11 +147,14 @@ export default function EventEditModal({
         <div className="modal-scroll-area overflow-y-auto p-3">
           <form onSubmit={handleSubmit} className="p-3">
             <div className="my-4">
-              <label htmlFor="title-form" className="title-label text-xl block">
+              <label
+                htmlFor="edit-event-title"
+                className="title-label text-xl block"
+              >
                 タイトル<span className="required">*</span>
               </label>
               <Textbox
-                id="title-form"
+                id="edit-event-title"
                 name="title"
                 className="w-full custom-input"
                 style={{ backgroundColor: "#F9FAFB" }}
@@ -170,7 +173,7 @@ export default function EventEditModal({
               </p>
               <div className="flex justify-between items-center">
                 <Textbox
-                  id="event-start-datetime"
+                  id="edit-event-start-datetime"
                   name="event-start-datetime"
                   className="datetime-input-start"
                   type="datetime-local"
@@ -180,7 +183,7 @@ export default function EventEditModal({
                 />
                 <p>～</p>
                 <Textbox
-                  id="event-end-datetime"
+                  id="edit-event-end-datetime"
                   name="event-end-datetime"
                   className="datetime-input-end"
                   type="datetime-local"
@@ -200,7 +203,7 @@ export default function EventEditModal({
               </p>
               <div className="flex gap-15 items-center">
                 <Textbox
-                  id="book-post-start-datetime"
+                  id="edit-book-post-start-datetime"
                   name="book-post-start-datetime"
                   className="datetime-input-post"
                   type="datetime-local"
@@ -210,7 +213,7 @@ export default function EventEditModal({
                 />
                 <p>～</p>
                 <Textbox
-                  id="book-post-end-datetime"
+                  id="edit-book-post-end-datetime"
                   name="book-post-end-datetime"
                   className="datetime-input-post"
                   type="datetime-local"
@@ -230,7 +233,7 @@ export default function EventEditModal({
               </p>
               <div className="flex gap-15 items-center">
                 <Textbox
-                  id="book-vote-start-datetime"
+                  id="edit-book-vote-start-datetime"
                   name="book-vote-start-datetime"
                   className="datetime-input-vote"
                   type="datetime-local"
@@ -240,7 +243,7 @@ export default function EventEditModal({
                 />
                 <p>～</p>
                 <Textbox
-                  id="book-vote-end-datetime"
+                  id="edit-book-vote-end-datetime"
                   name="book-vote-end-datetime-vote"
                   className="datetime-input-vote"
                   type="datetime-local"
