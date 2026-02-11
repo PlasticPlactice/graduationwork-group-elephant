@@ -39,14 +39,14 @@ export async function PUT(
 
     if (!review) {
       return NextResponse.json(
-        { message: "Review not found" },
+        { message: "指定の書評が見つかりませんでした。" },
         { status: 404 },
       );
     }
 
     if (!review.event_id || !review.event) {
       return NextResponse.json(
-        { message: "Event is required for voting" },
+        { message: "投票にはイベントが紐づいている必要があります。" },
         { status: 400 },
       );
     }
@@ -61,7 +61,10 @@ export async function PUT(
     });
     if (status !== EVENT_STATUS.VOTING) {
       return NextResponse.json(
-        { message: "Voting period is not active" },
+        {
+          message:
+            "現在は投票期間ではありません。投票は投票期間中のみ可能です。",
+        },
         { status: 400 },
       );
     }

@@ -96,7 +96,11 @@ export async function POST(req: Request) {
       second_voting_start_period: body.second_voting_start_period,
       second_voting_end_period: body.second_voting_end_period,
     });
-    if (err) return NextResponse.json({ error: err }, { status: 400 });
+    if (err)
+      return NextResponse.json(
+        { error: Array.isArray(err) ? err.join("。\n") : err },
+        { status: 400 },
+      );
 
     const created = await prisma.event.create({
       data: {
@@ -161,7 +165,11 @@ export async function PATCH(req: Request) {
       };
 
       const err = validateEventDates(merged);
-      if (err) return NextResponse.json({ error: err }, { status: 400 });
+      if (err)
+        return NextResponse.json(
+          { error: Array.isArray(err) ? err.join("。\n") : err },
+          { status: 400 },
+        );
     }
 
     // 更新データ構築（body に含まれるものだけ変換して設定）

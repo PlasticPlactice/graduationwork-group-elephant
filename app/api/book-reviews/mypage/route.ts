@@ -74,7 +74,10 @@ export async function POST(req: Request) {
       });
       if (status !== EVENT_STATUS.POSTING) {
         return NextResponse.json(
-          { message: "Review posting period is not active" },
+          {
+            message:
+              "現在は書評投稿期間ではありません。投稿は投稿期間中のみ可能です。",
+          },
           { status: 400 },
         );
       }
