@@ -272,7 +272,10 @@ details[open] .icon {
   border: 1px solid var(--color-admin-sub);
 }
 .datetime-input-start,
-.datetime-input-end,
+.datetime-input-end{
+  width: 40%;
+  border: 1px solid var(--color-admin-sub);
+}
 .datetime-input-post,
 .datetime-input-vote{
   width: 30%;
