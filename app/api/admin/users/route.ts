@@ -5,6 +5,8 @@ import { authOptions } from "@/lib/auth";
 import { USER_STATUS } from "@/lib/constants/userStatus";
 import { Prisma } from "@prisma/client";
 
+export const runtime = "nodejs";
+
 const PAGE_SIZE = 7;
 
 export async function GET(req: NextRequest) {

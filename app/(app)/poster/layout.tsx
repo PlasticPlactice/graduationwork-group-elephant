@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { AfterLoginHeader } from "@/components/layout/after-login-header";
+import { Providers } from "@/app/providers";
+import { PosterLayoutClient } from "./poster-layout-client";
 
 export const metadata: Metadata = {
   title: "象と花プロジェクト",
   description: "象と花プロジェクトのログインサイトです。",
   icons: {
     icon: "/favicon.ico",
-  }
+  },
 };
 export default function RootLayout({
   children,
@@ -21,7 +23,11 @@ export default function RootLayout({
         className="antialiased min-h-screen flex flex-col"
       >
         <AfterLoginHeader />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          <Providers>
+            <PosterLayoutClient>{children}</PosterLayoutClient>
+          </Providers>
+        </main>
       </body>
     </html>
   );

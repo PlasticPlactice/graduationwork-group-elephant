@@ -6,6 +6,8 @@ import {
   REVIEW_STATUS,
   REVIEW_STATUS_LABELS,
 } from "@/lib/constants/reviewStatus";
+
+export const runtime = "nodejs";
 import { Session } from "next-auth";
 
 export async function PATCH(req: Request) {
@@ -40,17 +42,23 @@ export async function PATCH(req: Request) {
 
     await prisma.$transaction(async (tx) => {
       if (action === "increment") {
-        const maxStatus = Math.max(...Object.values(REVIEW_STATUS) as unknown as number[]);
+        const maxStatus = Math.max(
+          ...(Object.values(REVIEW_STATUS) as unknown as number[]),
+        );
         const statusToUsers = new Map<number, Set<number>>();
 
         for (const r of reviews) {
-          const newStatus = Math.min((r.evaluations_status ?? 0) + 1, maxStatus);
+          const newStatus = Math.min(
+            (r.evaluations_status ?? 0) + 1,
+            maxStatus,
+          );
           await tx.bookReview.update({
             where: { id: r.id },
             data: { evaluations_status: newStatus },
           });
 
-          if (!statusToUsers.has(newStatus)) statusToUsers.set(newStatus, new Set());
+          if (!statusToUsers.has(newStatus))
+            statusToUsers.set(newStatus, new Set());
           statusToUsers.get(newStatus)!.add(r.user_id);
         }
 

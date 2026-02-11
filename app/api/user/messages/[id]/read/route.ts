@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { Session } from "next-auth";
 
+export const runtime = "nodejs";
+
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> },

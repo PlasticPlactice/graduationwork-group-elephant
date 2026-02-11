@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 
+export const runtime = "nodejs";
+
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(req: NextRequest, context: RouteContext) {
@@ -57,9 +59,9 @@ export async function GET(req: NextRequest, context: RouteContext) {
             event: {
               select: {
                 id: true,
-                title: true
-              }
-            }
+                title: true,
+              },
+            },
           },
           orderBy: {
             created_at: "desc",

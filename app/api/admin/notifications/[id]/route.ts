@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { requireAdminAuth } from "@/lib/api/authMiddleware";
+
+export const runtime = "nodejs";
 import { Prisma } from "@prisma/client";
 
 type RouteContext = {
@@ -26,17 +27,13 @@ const normalizeId = (
  * 管理者用: 特定のお知らせの詳細を取得する
  */
 export async function GET(req: NextRequest, context: RouteContext) {
-  const session = (await getServerSession(authOptions)) as {
-    user?: { id?: string; role?: string };
-  } | null;
-  const user = session?.user;
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   const params = await context.params;
   const rawId = normalizeId(params?.id, req.nextUrl.pathname);
-
-  // 認証チェック
-  if (!user?.id || user.role !== "admin") {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   try {
     const notificationId = Number(rawId);
@@ -83,17 +80,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
  * 管理者用: 特定のお知らせを更新する
  */
 export async function PUT(req: NextRequest, context: RouteContext) {
-  const session = (await getServerSession(authOptions)) as {
-    user?: { id?: string; role?: string };
-  } | null;
-  const user = session?.user;
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   const params = await context.params;
   const rawId = normalizeId(params?.id, req.nextUrl.pathname);
-
-  // 認証チェック
-  if (!user?.id || user.role !== "admin") {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   try {
     const notificationId = Number(rawId);
@@ -258,17 +251,13 @@ export async function PUT(req: NextRequest, context: RouteContext) {
  * 管理者用: 特定のお知らせを削除する (ソフトデリート)
  */
 export async function DELETE(req: NextRequest, context: RouteContext) {
-  const session = (await getServerSession(authOptions)) as {
-    user?: { id?: string; role?: string };
-  } | null;
-  const user = session?.user;
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   const params = await context.params;
   const rawId = normalizeId(params?.id, req.nextUrl.pathname);
-
-  // 認証チェック
-  if (!user?.id || user.role !== "admin") {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   try {
     const notificationId = Number(rawId);
