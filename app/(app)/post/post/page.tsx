@@ -430,15 +430,9 @@ export default function PostPage() {
       className={`${Styles.posterContainer}`}
       style={{ "--color-main": "#36A8B1" } as CSSProperties}
     >
-      <p className={`font-bold text-center my-5 ${Styles.text24px}`}>
+      <p className={`font-bold text-center my-9 ${Styles.text24px}`}>
         あなただけの書評を書く
       </p>
-      <Link
-        href="/poster/mypage"
-        className={`block font-bold ${Styles.subColor}`}
-      >
-        <span>&lt;</span> マイページに戻る
-      </Link>
 
       <div className="py-2 flex items-center justify-between border-t">
         <p className={`${Styles.subColor}`}>タイトル</p>

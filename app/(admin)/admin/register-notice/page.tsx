@@ -705,7 +705,7 @@ export default function Page() {
                 <button
                   type="button"
                   aria-label="プレビューを削除"
-                  className="absolute -top-2 -right-2 rounded w-6 h-6 flex items-center justify-center transition-colors"
+                  className="absolute -top-2 -right-2 rounded w-10 h-10 flex items-center justify-center transition-colors"
                   style={{
                     backgroundColor: "transparent",
                     boxShadow: "none",
@@ -716,7 +716,7 @@ export default function Page() {
                     removeAttachedFilePreview(i);
                   }}
                 >
-                  &times;
+                  <span className="text-3xl">&times;</span>
                 </button>
               </div>
             ))}

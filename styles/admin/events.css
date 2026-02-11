@@ -33,7 +33,7 @@
     margin: 1.5rem 0 1.5rem 0;
 }
 .event-title{
-    width: 10rem;
+    width: auto;
     font-size: var(--page-padding-lg);
 }
 .now-event-section{
@@ -160,11 +160,19 @@ progress {
   width: 5rem;
   border: 1px solid var(--color-main);
   padding: 0;
+  box-shadow: none;
 }
 .delete-conf-btn{
+  background-color: var(--color-warning) !important; 
   width: 5rem;
-  border: 1px solid var(--color-main);
+  border: 1px solid var(--color-warning);
   padding: 0;
+  box-shadow: none;
+}
+.delete-conf-btn:hover {
+  background-color: var(--color-bg) !important;
+  color: var(--color-warning) !important;
+  border: 1px solid var(--color-warning) !important;
 }
 
 .event-data-headline {
@@ -264,7 +272,10 @@ details[open] .icon {
   border: 1px solid var(--color-admin-sub);
 }
 .datetime-input-start,
-.datetime-input-end,
+.datetime-input-end{
+  width: 40%;
+  border: 1px solid var(--color-admin-sub);
+}
 .datetime-input-post,
 .datetime-input-vote{
   width: 30%;

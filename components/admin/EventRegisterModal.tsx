@@ -131,28 +131,19 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <div className="flex justify-around items-center">
+              <div className="flex items-center">
                 <label htmlFor="event-start-datetime" className="text-xl block">
                   イベント開催期間<span className="required">*</span>
                 </label>
                 <p className="text-white">～</p>
-                <label
-                  htmlFor="event-start-datetime"
-                  className="text-xl text-white"
-                >
+                <label htmlFor="event-start-datetime" className="text-xl text-white">
                   イベント開催期間<span className="text-white">*</span>
                 </label>
               </div>
-              <div className="flex justify-evenly items-center">
-                <p className="event-detail-text text-sm">
-                  イベントの開催期間を決定します
-                </p>
-                <p className="text-white">～</p>
-                <p className="text-white text-sm">
-                  イベントの開催期間を決定します
-                </p>
-              </div>
-              <div className="flex gap-15 justify-center items-center">
+              <p className="event-detail-text text-sm">
+                イベントの開催期間を決定します
+              </p>
+              <div className="flex justify-between items-center">
                 <Textbox
                   id="register-event-start-datetime"
                   name="event-start-datetime"
@@ -181,10 +172,7 @@ export default function EventRegisterModal({
                   書評投稿期間<span className="required">*</span>
                 </label>
                 <p className="text-white">～</p>
-                <label
-                  htmlFor="book-post-datetime"
-                  className="text-xl text-white"
-                >
+                <label htmlFor="book-post-datetime" className="text-xl text-white">
                   書評投稿期間<span className="text-white">*</span>
                 </label>
               </div>
@@ -226,10 +214,7 @@ export default function EventRegisterModal({
                   書評投票期間<span className="required">*</span>
                 </label>
                 <p className="text-white">～</p>
-                <label
-                  htmlFor="book-vote-datetime"
-                  className="text-xl text-white"
-                >
+                <label htmlFor="book-vote-datetime" className="text-xl text-white">
                   書評投票期間<span className="text-white">*</span>
                 </label>
               </div>

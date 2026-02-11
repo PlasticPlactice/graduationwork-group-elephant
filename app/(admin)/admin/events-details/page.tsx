@@ -580,33 +580,83 @@ function EventsDetailsContent() {
           onClick={handleCsvOutput}
         />
       </div>
-      {/* ページネーション */}
-      {displayCount !== "all" && totalPages > 1 && (
-        <div className="flex items-center justify-center my-5 page-section">
+      <div className="flex items-center justify-center my-5 page-section">
+        <button
+          type="button"
+          onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          aria-label="前のページ"
+          className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}
+        >
           <Icon
             icon="weui:arrow-filled"
             rotate={2}
             width={20}
             className="page-arrow"
           ></Icon>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              type="button"
-              className={`px-4 py-1 page-number ${currentPage === page ? "active" : ""}`}
-              onClick={() => setCurrentPage(page)}
-              aria-current={currentPage === page ? "page" : undefined}
-            >
-              {page}
-            </button>
-          ))}
+        </button>
+        {(() => {
+          const pages: (number | string)[] = [];
+          if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+          } else {
+            pages.push(1);
+            if (currentPage <= 4) {
+              for (let i = 2; i <= 5; i++) pages.push(i);
+              pages.push("...");
+            } else if (currentPage >= totalPages - 3) {
+              pages.push("...");
+              for (let i = totalPages - 4; i <= totalPages - 1; i++)
+                pages.push(i);
+            } else {
+              pages.push("...");
+              for (let i = currentPage - 1; i <= currentPage + 1; i++)
+                pages.push(i);
+              pages.push("...");
+            }
+            pages.push(totalPages);
+          }
+
+          return pages.map((pageNum, index) =>
+            typeof pageNum === "number" ? (
+              <button
+                key={`page-${pageNum}`}
+                type="button"
+                className={`px-4 py-1 page-number ${currentPage === pageNum ? "active" : ""}`}
+                onClick={() => setCurrentPage(pageNum)}
+                aria-current={currentPage === pageNum ? "page" : undefined}
+              >
+                {pageNum}
+              </button>
+            ) : (
+              <span
+                key={`ellipsis-${index}`}
+                className="px-4 py-1 page-number"
+                aria-hidden="true"
+              >
+                {pageNum}
+              </span>
+            ),
+          );
+        })()}
+        <button
+          type="button"
+          onClick={() =>
+            currentPage < totalPages && setCurrentPage(currentPage + 1)
+          }
+          disabled={currentPage === totalPages}
+          aria-label="次のページ"
+          className={
+            currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+          }
+        >
           <Icon
             icon="weui:arrow-filled"
             width={20}
             className="page-arrow"
           ></Icon>
-        </div>
-      )}
+        </button>
+      </div>
       {/* モーダル */}
       <StatusEditModal
         isOpen={isStatusEditModalOpen}

@@ -80,6 +80,9 @@ input[type="datetime-local"]::before {
   height: 100%;
 }
 
+.upload-preview{
+  background: var(--color-bg);
+}
 /* 削除ボタンを右上に重ねる */
 .upload-preview .remove-btn {
   position: absolute;
