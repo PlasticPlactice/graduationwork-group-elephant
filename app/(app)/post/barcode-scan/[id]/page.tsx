@@ -34,7 +34,7 @@ export default function BarcodeScanPage() {
   const [bookItem, setBookItem] = useState<RakutenBookItem | null>(null);
   const [lastFetchedIsbn, setLastFetchedIsbn] = useState<string | null>(null);
   const [scanStatus, setScanStatus] = useState(
-    "冊子のバーコードを読み込む必要があります。"
+    "冊子のバーコードを読み込む必要があります。",
   );
   const [scanError, setScanError] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -48,7 +48,7 @@ export default function BarcodeScanPage() {
     const digits = value.split("").map(Number);
     const checksum = digits.reduce(
       (sum, digit, idx) => sum + digit * (idx % 2 === 0 ? 1 : 3),
-      0
+      0,
     );
     return checksum % 10 === 0;
   }, []);
@@ -90,7 +90,7 @@ export default function BarcodeScanPage() {
         const data = await res.json();
         const firstItem = data?.Items?.[0]?.Item;
 
-        console.log("firstItem" + JSON.stringify(firstItem))
+        console.log("firstItem" + JSON.stringify(firstItem));
         if (!firstItem) {
           setBookError("本の情報が見つかりませんでした。");
           return;
@@ -108,13 +108,10 @@ export default function BarcodeScanPage() {
           eventId: params.id,
           title: firstItem.title ?? "",
           author: firstItem.author ?? "",
-          publishers: firstItem.publisher ?? ""
-        }
+          publishers: firstItem.publisher ?? "",
+        };
 
-        sessionStorage.setItem(
-          "bookItemDraft",
-          JSON.stringify(bookItemDraft)
-        )
+        sessionStorage.setItem("bookItemDraft", JSON.stringify(bookItemDraft));
 
         setLastFetchedIsbn(isbn);
       } catch (error) {
@@ -126,12 +123,12 @@ export default function BarcodeScanPage() {
         if (fetchId === fetchIdRef.current) setBookLoading(false);
       }
     },
-    [lastFetchedIsbn]
+    [lastFetchedIsbn],
   );
 
   const handleConfirm = () => {
     router.push("/post/post");
-  }
+  };
 
   const handleScanSuccess = useCallback(
     async (decodedText: string) => {
@@ -171,7 +168,7 @@ export default function BarcodeScanPage() {
       setScanStatus("ISBNを確認しました。書籍情報を確認してください。");
       setConfirmOpen(true);
     },
-    [fetchBookInfo, stopScanner, validateIsbn13]
+    [fetchBookInfo, stopScanner, validateIsbn13],
   );
 
   const handleScanFailure = useCallback((error: string) => {
@@ -184,9 +181,8 @@ export default function BarcodeScanPage() {
     setScanError(null);
     setScanStatus("カメラを起動中...");
     try {
-      const { Html5Qrcode, Html5QrcodeSupportedFormats } = await import(
-        "html5-qrcode"
-      );
+      const { Html5Qrcode, Html5QrcodeSupportedFormats } =
+        await import("html5-qrcode");
 
       if (!scannerRef.current) {
         scannerRef.current = new Html5Qrcode(QR_REGION_ID, {
@@ -203,16 +199,14 @@ export default function BarcodeScanPage() {
           disableFlip: true,
         },
         handleScanSuccess,
-        handleScanFailure
+        handleScanFailure,
       );
 
       setIsScanning(true);
       setScanStatus("スキャン中。バーコードを枠に合わせてください。");
     } catch (error) {
       console.error("Failed to start camera", error);
-      setScanError(
-        "カメラの起動に失敗しました。権限を確認してください。"
-      );
+      setScanError("カメラの起動に失敗しました。権限を確認してください。");
       await stopScanner();
     }
   }, [handleScanFailure, handleScanSuccess, stopScanner]);
@@ -320,7 +314,7 @@ export default function BarcodeScanPage() {
         </div>
         <div>
           <p className={`text-center font-bold mb-4 ${Styles.text16px}`}>
-            読み取れない場合は下の入力欄からISBNコードを入力してください。
+            読み取れない場合は下の入力欄から<br />ISBNコードを入力してください。
           </p>
           <p className={`${Styles.mainColor} ${Styles.text12px}`}>
             ※ハイフンなしで入力してください。
@@ -347,66 +341,74 @@ export default function BarcodeScanPage() {
           <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
             <div style={{ "--color-main": "#36A8B1" } as CSSProperties}>
               <div className="mb-10">
-              <p>ISBNコード</p>
-              <div className={`border rounded-sm py-2 mb-4 ${Styles.text16px}`}>
-                <p className={`font-bold text-center`}>{displayIsbn}</p>
-              </div>
-              <div className="mb-6">
-                <p className="font-bold mb-2">書籍情報</p>
-                <div className="border rounded-sm p-3">
-                  {bookLoading && <p>書籍情報を取得中...</p>}
-                  {!bookLoading && bookError && (
-                    <p className={`${Styles.warningColor} ${Styles.text12px}`}>
-                      {bookError}
-                    </p>
-                  )}
-                  {!bookLoading && !bookError && bookItem && (
-                    <div className="flex gap-3 items-start">
-                      {bookItem.mediumImageUrl ? (
-                        <Image
-                          src={bookItem.mediumImageUrl}
-                          alt={bookItem.title || "book image"}
-                          width={100}
-                          height={140}
-                          className="rounded"
-                        />
-                      ) : (
-                        <div className="w-[100px] h-[140px] bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
-                          No Image
+                <p>ISBNコード</p>
+                <div
+                  className={`border rounded-sm py-2 mb-4 ${Styles.text16px}`}
+                >
+                  <p className={`font-bold text-center`}>{displayIsbn}</p>
+                </div>
+                <div className="mb-6">
+                  <p className="font-bold mb-2">書籍情報</p>
+                  <div className="border rounded-sm p-3">
+                    {bookLoading && <p>書籍情報を取得中...</p>}
+                    {!bookLoading && bookError && (
+                      <p
+                        className={`${Styles.warningColor} ${Styles.text12px}`}
+                      >
+                        {bookError}
+                      </p>
+                    )}
+                    {!bookLoading && !bookError && bookItem && (
+                      <div className="flex gap-3 items-start">
+                        {bookItem.mediumImageUrl ? (
+                          <Image
+                            src={bookItem.mediumImageUrl}
+                            alt={bookItem.title || "book image"}
+                            width={100}
+                            height={140}
+                            className="rounded"
+                          />
+                        ) : (
+                          <div className="w-[100px] h-[140px] bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+                            No Image
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-bold mb-2 break-words">
+                            {bookItem.title}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {bookItem.author}
+                          </p>
                         </div>
-                      )}
-                      <div>
-                        <p className="font-bold mb-2 break-words">
-                          {bookItem.title}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {bookItem.author}
-                        </p>
                       </div>
-                    </div>
-                  )}
-                  {!bookLoading && !bookError && !bookItem && (
-                    <p className={Styles.text12px}>
-                      ISBNを確認してください。
-                    </p>
-                  )}
+                    )}
+                    {!bookLoading && !bookError && !bookItem && (
+                      <p className={Styles.text12px}>
+                        ISBNを確認してください。
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <p className={`font-bold text-center ${Styles.text16px}`}>
+                  このISBNで投稿しますか？
+                </p>
+                <div
+                  className={`mb-10 rounded-sm ${Styles.barcodeScan__alertContainer}`}
+                >
+                  <p
+                    className={`py-2 px-3 font-bold ${Styles.warningColor} ${Styles.text12px}`}
+                  >
+                    この画面を閉じると入力内容は保存されません。
+                  </p>
                 </div>
               </div>
-              <p className={`font-bold text-center ${Styles.text16px}`}>
-                このISBNで投稿しますか？
-              </p>
-              <div
-                className={`mb-10 rounded-sm ${Styles.barcodeScan__alertContainer}`}
-              >
-                <p
-                  className={`py-2 px-3 font-bold ${Styles.warningColor} ${Styles.text12px}`}
-                >
-                  この画面を閉じると入力内容は保存されません。
-                </p>
-              </div>
-              </div>
               <Link href="/post/post">
-                <button type="button" onClick={handleConfirm} className={`w-full mb-3`}>
+                <button
+                  type="button"
+                  onClick={handleConfirm}
+                  className={`w-full mb-3`}
+                >
                   投稿へ
                 </button>
               </Link>
@@ -438,7 +440,9 @@ export default function BarcodeScanPage() {
 
             <Modal open={helpOpen} onClose={() => setHelpOpen(false)}>
               <div style={{ "--color-main": "#36A8B1" } as CSSProperties}>
-                <h2 className={`font-bold text-center mb-4 ${Styles.mainColor}`}>
+                <h2
+                  className={`font-bold text-center mb-4 ${Styles.mainColor}`}
+                >
                   ISBNコードとは
                 </h2>
                 <p className="mb-4">
@@ -462,4 +466,3 @@ export default function BarcodeScanPage() {
     </div>
   );
 }
-

@@ -51,16 +51,16 @@ interface BookReviewData {
 export default function MyPage() {
   const router = useRouter();
 
-  // 蛻晄悄陦ｨ遉ｺ譎ゅ↓繝｢繝ｼ繝繝ｫ繧定｡ｨ遉ｺ
+  // 各モーダルの表示フラグ
   const [showModal, setShowModal] = useState(false);
-  // 繝励Ο繝輔ぅ繝ｼ繝ｫ邱ｨ髮・・莨夂｢ｺ隱阪．M・磯°蝟ｶ縺九ｉ縺ｮ縺顔衍繧峨○・峨Δ繝ｼ繝繝ｫ縺ｮ陦ｨ遉ｺ
+  // 編集用モーダルやDMモーダルなどの表示状態
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showDMModal, setShowDMModal] = useState(false);
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
-  // 繝ｦ繝ｼ繧ｶ繝ｼ繝・・繧ｿ
+  // ユーザープロフィールデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
-  // 繝ｦ繝ｼ繧ｶ縺ｮ譖ｸ隧輔ョ繝ｼ繧ｿ
+  // 書評データ
   const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
 
   // イベントデータ
@@ -78,9 +78,7 @@ export default function MyPage() {
     null,
   );
 
-  // 繧､繝吶Φ繝亥叙蠕鈴未謨ｰ
-  // 繧ｹ繝・・繧ｿ繧ｹ・代・繧､繝吶Φ繝医・縺ｿ
-  // ・代′謚慕ｨｿ蜿ｯ閭ｽ縺ｪ繧､繝吶Φ繝医・諠ｳ螳壹・
+  // APIからデータを取得する関数群
   const fetchEventList = useCallback(async () => {
     try {
       const res = await fetch("/api/events?status=1", {
@@ -129,7 +127,7 @@ export default function MyPage() {
     }
   }, []);
 
-  // 譛ｪ隱ｭ繝｡繝・そ繝ｼ繧ｸ蜿門ｾ・
+  // 未読メッセージの取得
   const fetchUnreadMessage = useCallback(async () => {
     try {
       const res = await fetch("/api/user/messages/unread");
@@ -137,7 +135,7 @@ export default function MyPage() {
         const data = await res.json();
         if (data.unreadMessage) {
           setUnreadMessage(data.unreadMessage);
-          setShowModal(true); // 譛ｪ隱ｭ縺後≠繧句ｴ蜷医・縺ｿ繝｢繝ｼ繝繝ｫ繧帝幕縺・
+          setShowModal(true); // 未読メッセージがあればモーダルを表示
         }
       }
     } catch (error) {
@@ -145,7 +143,7 @@ export default function MyPage() {
     }
   }, []);
 
-  // 繝｡繝・そ繝ｼ繧ｸ譌｢隱ｭ蛹門・逅・
+  // 未読メッセージを既読にする
   const handleConfirmRead = async () => {
     if (!unreadMessage) {
       setShowModal(false);
@@ -159,12 +157,12 @@ export default function MyPage() {
       setUnreadMessage(null);
     } catch (error) {
       console.error("Failed to mark as read:", error);
-      // 繧ｨ繝ｩ繝ｼ縺ｧ繧ゅ→繧翫≠縺医★髢峨§繧具ｼ・X蜆ｪ蜈茨ｼ・
+      // エラー時はモーダルを閉じる
       setShowModal(false);
     }
   };
 
-  // 蛻晏屓繝ｬ繝ｳ繝繝ｪ繝ｳ繧ｰ譎ゅ↓繝・・繧ｿ繧貞叙蠕・
+  // 初期データ読み込み（マウント時）
   useEffect(() => {
     fetchUserData();
     fetchBookReviewData();
@@ -184,8 +182,7 @@ export default function MyPage() {
   ];
 
   const REVIEW_STATUS_MAP = {
-    0
-    : {
+    0: {
       label: "審査前",
       badgeType: "gray",
       canEdit: true,
@@ -209,7 +206,7 @@ export default function MyPage() {
       label: "下書き",
       badgeType: "gray",
       canEdit: true,
-    }
+    },
   } as const;
 
   // HTMLタグを削除してプレーンテキストに変換
@@ -224,7 +221,7 @@ export default function MyPage() {
       : 0;
   };
 
-  // 陦ｨ遉ｺ逕ｨ縺ｫ繝・・繧ｿ繧呈紛蠖｢
+  // 書評データをUI表示用に整形
   const uiReviews = bookReviewData.map((review) => {
     if (review.draft_flag) {
       return {
@@ -261,7 +258,8 @@ export default function MyPage() {
 
   const filteredReviews = uiReviews.filter((review) => {
     if (activeFilterTab === "all") return true;
-    if (activeFilterTab === "passed") return [1, 2, 3].includes(review.evaluations_status);
+    if (activeFilterTab === "passed")
+      return [1, 2, 3].includes(review.evaluations_status);
     return review.evaluations_status === activeFilterTab;
   });
 
@@ -307,7 +305,7 @@ export default function MyPage() {
     router.push("/post/edit");
   };
 
-  // 謚慕ｨｿ邱繧∝・繧翫∪縺ｧ縺ｮ譌･謨ｰ繧定ｨ育ｮ励☆繧矩未謨ｰ
+  // 指定日までの日数を計算
   function daysFromToday(dateString: string): number {
     const today = new Date();
     const target = new Date(dateString);
@@ -329,14 +327,14 @@ export default function MyPage() {
 
   return (
     <>
-      {/* 1谺｡蟇ｩ譟ｻ騾夐℃繝｢繝ｼ繝繝ｫ */}
+      {/* 審査通過モーダル */}
       <ReviewPassedModal
         open={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={handleConfirmRead}
         message={unreadMessage?.message?.message}
       />
-      {/* 騾莨夂｢ｺ隱阪Δ繝ｼ繝繝ｫ */}
+      {/* アカウント削除モーダル */}
       <AccountDeleteModal
         open={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -347,7 +345,7 @@ export default function MyPage() {
         className="min-h-screen bg-white px-4 py-4 box-border"
         style={{ "--color-main": "#36A8B1" } as CSSProperties}
       >
-        <div className="mt-3 max-w-6xl mx-auto px-4 flex flex-col gap-3 md:flex-row md:items-start">
+        <div className="mt-3 max-w-6xl mx-auto px-4 grid grid-cols-3 items-center gap-3">
           <Link href="/" className="hidden md:block">
             <div
               className="flex items-center px-2 rounded shadow-md h-10 w-64"
@@ -375,48 +373,23 @@ export default function MyPage() {
             </div>
           </Link>
 
-          <div className="flex-1 text-center">
-            <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
-            <div className="flex items-center justify-center gap-3 mt-1">
+          <div className="col-start-2 text-center flex flex-col items-center">
+            <h1 className="text-lg font-bold text-slate-900 whitespace-nowrap">
+              マイページ
+            </h1>
+            <div className="mt-1">
               <div className={`font-bold ${Styles.mainColor}`}>
                 {userData?.nickName || "ゲストさん"}
               </div>
             </div>
-            <div className="mt-3 flex justify-center md:hidden">
-              <Link href="/">
-                <div
-                  className="flex items-center px-2 rounded shadow-md h-10 w-full max-w-md md:w-64"
-                  style={{
-                    backgroundColor: "var(--color-bg)",
-                    border: "1px solid var(--color-main)",
-                  }}
-                >
-                  <Image
-                    src="/layout/new_logo.png"
-                    alt="logo"
-                    width={32}
-                    height={32}
-                    className="ml-2"
-                  />
-                  <span
-                    className="font-bold ml-2 whitespace-nowrap"
-                    style={{ color: "var(--color-main)" }}
-                  >
-                    象と花ファンサイトへ
-                    <span className="ml-2" aria-hidden="true">
-                      &gt;
-                    </span>
-                  </span>
-                </div>
-              </Link>
-            </div>
+            <div className="mt-3 hidden md:flex justify-center" />
           </div>
 
           <div
-            className="hidden md:flex items-center w-64 justify-end"
+            className="flex items-center justify-end w-auto md:w-64"
             aria-hidden="true"
           >
-            {/* SVG 蟆∫ｭ偵い繧､繧ｳ繝ｳ・亥､ｧ縺阪ａ・・*/}
+            {/* メッセージアイコン（SVG） */}
             <svg
               width="40"
               height="40"
@@ -448,20 +421,10 @@ export default function MyPage() {
           </div>
         </div>
 
-        <div className="mb-1">
-          {/* <Link
-            href="/"
-            className="inline-block mt-6 ml-1 font-bold text-sky-500"
-            aria-label="ファンサイトのトップページへ移動"
-          >
-            <span className="mr-1" aria-hidden="true">
-              &lt;
-            </span>{" "}
-            ファンサイトはこちら
-          </Link> */}
+        <div className="mb-1 block md:hidden">
           <Link href="/">
             <div
-              className="flex items-center px-2 rounded shadow-md my-10"
+              className="flex items-center px-2 rounded shadow-md my-10 md:hidden"
               style={{
                 backgroundColor: "var(--color-bg)",
                 border: "1px solid var(--color-main)",
@@ -617,7 +580,7 @@ export default function MyPage() {
                       {review.excerpt}
                     </div>
 
-                    {/* 邱ｨ髮・・繧ｿ繝ｳ縺ｯ隕∫ｴ・・荳九↓驟咲ｽｮ・医き繝ｼ繝我ｸ句ｯ・○・・*/}
+                    {/* 編集ボタン */}
                     <div className="mt-4">
                       {review.href ? (
                         <button
@@ -642,7 +605,7 @@ export default function MyPage() {
                 </div>
               ))}
             </div>
-            {/* 繝槭う繝壹・繧ｸ荳矩Κ縺ｮ繝｡繝九Η繝ｼ・域ｷｻ莉倡判蜒上・繧ｳ繝ｳ繝・Φ繝・ｼ・*/}
+            {/* プロフィール関連のリンク */}
             <div className="max-w-2xl mx-auto my-10">
               <ul
                 className="divide-y-2 bg-white overflow-hidden border-t-2 border-b-2"
@@ -697,7 +660,7 @@ export default function MyPage() {
                     <button
                       type="button"
                       disabled
-                      className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200 text-slate-400 cursor-not-allowed"
+                      className={Styles.mypage__linkButton}
                       aria-label="退会"
                       aria-disabled={true}
                       style={{ color: "var(--color-main)" }}
@@ -708,7 +671,7 @@ export default function MyPage() {
                     <button
                       type="button"
                       onClick={() => setShowDeleteModal(true)}
-                      className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                      className={Styles.mypage__linkButton}
                       aria-label="退会"
                       style={{ color: "var(--color-main)" }}
                     >
