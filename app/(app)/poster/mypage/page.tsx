@@ -57,6 +57,7 @@ export default function MyPage() {
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showDMModal, setShowDMModal] = useState(false);
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const listTopRef = useRef<HTMLDivElement>(null);
 
   // ユーザープロフィールデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
@@ -549,7 +550,14 @@ export default function MyPage() {
               ))}
             </ul>
 
-            <div className="flex flex-col gap-3">
+            <div ref={listTopRef} className={`flex flex-col gap-3 pb-2 ${
+                displayLimit > 3 ? "max-h-[600px] overflow-y-auto pr-2" : ""
+              }`}
+              style={{
+                scrollbarWidth: 'thin',
+                scrollBehavior: 'smooth'
+              }}
+            >
               {visibleReviews.map((review, reviewIndex) => (
                 <div
                   key={reviewIndex}
@@ -617,11 +625,15 @@ export default function MyPage() {
                     // もし今が「全件表示」なら3に戻し、そうでなければ全件にする
                     if (displayLimit >= filteredReviews.length) {
                       setDisplayLimit(3);
+                      listTopRef.current?.scrollIntoView({ behavior: "smooth" });
                     } else {
                       setDisplayLimit(filteredReviews.length);
+                      setTimeout(() => {
+                        listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }, 50);
                     }
                   }}
-                  className="py-3 mt-4 text-slate-600 font-bold"
+                  className="py-3 mt-4 mb-3 text-slate-600 font-bold"
                 >
                   {/* 表示数によってテキストを切り替え（三項演算子） */}
                   {displayLimit >= filteredReviews.length ? "閉じる" : `すべて表示する (全${filteredReviews.length}件)`}
