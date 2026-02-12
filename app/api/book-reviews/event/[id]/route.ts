@@ -40,9 +40,7 @@ export async function GET(
         event_id: eventId,
         deleted_flag: false,
       },
-      orderBy: {
-        created_at: "desc",
-      },
+      orderBy: [{ created_at: "desc" }, { id: "asc" }],
     });
 
     if (!reviews) {

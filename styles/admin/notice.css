@@ -116,6 +116,31 @@ details[open] .icon {
 .notice-content {
   color: var(--color-input-bg);
 }
+
+/* ヘッダーのソートアイコン強調（アイコンのみ目立たせる） */
+.notice-table th button .sort-icon {
+  margin-left: 0.5rem;
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+  color: rgba(255, 255, 255, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notice-table th button .sort-icon svg,
+.notice-table th button .sort-icon > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.notice-table th button.sorted .sort-icon {
+  color: #ffd54f;
+  transform: translateY(-1px) scale(1.4);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
 .status {
   border-radius: var(--control-radius);
 }
@@ -134,12 +159,12 @@ details[open] .icon {
 .notice-record:hover {
   background-color: rgba(54, 168, 177, 0.08);
 }
-.delete-btn{
+.delete-btn {
   background-color: var(--color-bg);
   box-shadow: none;
   color: var(--color-main);
 }
-.delete-btn:hover{
+.delete-btn:hover {
   background-color: rgba(54, 168, 177, 0.08);
 }
 .notice-delete-btn {
@@ -152,7 +177,11 @@ details[open] .icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
 }
 
 .notice-delete-btn:hover {
@@ -194,13 +223,13 @@ details[open] .icon {
 }
 
 /* モーダル */
-.notice-delete-modal{
-    background-color: rgba(0, 0, 0, 0.4);
+.notice-delete-modal {
+  background-color: rgba(0, 0, 0, 0.4);
 }
-.modal-btn-common{
+.modal-btn-common {
   border: 1px solid var(--color-main);
 }
-.modal-btn-common:hover{
+.modal-btn-common:hover {
   background-color: var(--color-bg);
   color: var(--color-main);
 }

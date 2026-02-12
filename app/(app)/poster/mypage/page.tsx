@@ -57,6 +57,7 @@ export default function MyPage() {
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showDMModal, setShowDMModal] = useState(false);
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const listTopRef = useRef<HTMLDivElement>(null);
 
   // ユーザープロフィールデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
@@ -176,7 +177,6 @@ export default function MyPage() {
     label: string;
   }[] = [
     { key: "all" as const, label: "全て" },
-    { key: 4, label: "下書き" },
     { key: 0, label: "審査前" },
     { key: "passed", label: "審査通過" },
   ];
@@ -189,8 +189,8 @@ export default function MyPage() {
     },
     1: {
       label: "１次通過",
-      badgeType: "gray",
-      canEdit: true,
+      badgeType: "blue",
+      canEdit: false,
     },
     2: {
       label: "２次通過",
@@ -228,7 +228,7 @@ export default function MyPage() {
         bookReviewId: review.id,
         title: review.book_title,
         status: REVIEW_STATUS_MAP[4].label,
-        evaluations_status: 4,
+        evaluations_status: review.evaluations_status,
         badgeType: REVIEW_STATUS_MAP[4].badgeType,
         excerpt: stripHtmlTags(review.review),
         buttonText: "編集する",
@@ -255,6 +255,7 @@ export default function MyPage() {
     useState<ReviewFilterTab>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(3);
 
   const filteredReviews = uiReviews.filter((review) => {
     if (activeFilterTab === "all") return true;
@@ -262,6 +263,12 @@ export default function MyPage() {
       return [1, 2, 3].includes(review.evaluations_status);
     return review.evaluations_status === activeFilterTab;
   });
+
+  useEffect(() => {
+    setDisplayLimit(3);
+  }, [activeFilterTab]);
+
+  const visibleReviews = filteredReviews.slice(0, displayLimit);
 
   const handleDeleteAccount = async () => {
     if (isDeleting) return;
@@ -454,7 +461,7 @@ export default function MyPage() {
           <div className="max-w-2xl mx-auto lg:mx-0">
             <div className="flex items-center justify-center gap-4 my-6">
               <div className="w-24 h-px bg-black" />
-              <h2 className="font-bold text-slate-900">現在開催中のイベント</h2>
+              <h2 className="font-bold text-slate-900">開催中のイベント</h2>
               <div className="w-24 h-px bg-black" />
             </div>
             <div className="flex flex-col gap-4">
@@ -468,7 +475,7 @@ export default function MyPage() {
                       String(event.first_voting_end_period),
                     )}
                     detail={event.detail}
-                    buttonText="このイベントに投稿する"
+                    buttonText="投稿する"
                   />
                 </div>
               ))}
@@ -483,8 +490,8 @@ export default function MyPage() {
                 <h2 className="font-bold text-slate-900">あなたの書評</h2>
                 <div className="w-24 h-px bg-black" />
               </div>
-              <div className={`text-sm mt-1 font-bold ${Styles.mainColor}`}>
-                ※一次審査中のみ編集できます
+              <div className={`text-sm mt-1 mx-10 font-bold ${Styles.mainColor}`}>
+                ※運営による審査（1次審査）が開始されるまで編集が可能です。
               </div>
             </div>
 
@@ -543,8 +550,15 @@ export default function MyPage() {
               ))}
             </ul>
 
-            <div className="flex flex-col gap-3">
-              {filteredReviews.map((review, reviewIndex) => (
+            <div ref={listTopRef} className={`flex flex-col gap-3 pb-2 ${
+                displayLimit > 3 ? "max-h-[600px] overflow-y-auto pr-2" : ""
+              }`}
+              style={{
+                scrollbarWidth: 'thin',
+                scrollBehavior: 'smooth'
+              }}
+            >
+              {visibleReviews.map((review, reviewIndex) => (
                 <div
                   key={reviewIndex}
                   className="border rounded-lg p-4 bg-white border-gray-500"
@@ -576,7 +590,7 @@ export default function MyPage() {
                       </span>
                     </div>
 
-                    <div className="text-slate-500 text-sm leading-relaxed mt-2">
+                    <div className="text-slate-500 text-sm leading-relaxed mt-2 break-words line-clamp-3">
                       {review.excerpt}
                     </div>
 
@@ -604,6 +618,27 @@ export default function MyPage() {
                   </div>
                 </div>
               ))}
+
+              {filteredReviews.length > 3 && (
+                <button
+                  onClick={() => {
+                    // もし今が「全件表示」なら3に戻し、そうでなければ全件にする
+                    if (displayLimit >= filteredReviews.length) {
+                      setDisplayLimit(3);
+                      listTopRef.current?.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                      setDisplayLimit(filteredReviews.length);
+                      setTimeout(() => {
+                        listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }, 50);
+                    }
+                  }}
+                  className="py-3 mt-4 mb-3 text-slate-600 font-bold"
+                >
+                  {/* 表示数によってテキストを切り替え（三項演算子） */}
+                  {displayLimit >= filteredReviews.length ? "閉じる" : `すべて表示する (全${filteredReviews.length}件)`}
+                </button>
+              )}
             </div>
             {/* プロフィール関連のリンク */}
             <div className="max-w-2xl mx-auto my-10">

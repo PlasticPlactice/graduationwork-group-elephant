@@ -140,6 +140,7 @@ export async function GET(req: NextRequest) {
       "age",
       "address",
       "user_status",
+      "reviewCount",
     ];
     const finalSortBy = validSortColumns.includes(sortBy)
       ? sortBy
@@ -150,8 +151,95 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * PAGE_SIZE;
     const take = PAGE_SIZE;
 
-    // ユーザー一覧取得（書評数を含める）
-    const users = await prisma.user.findMany({
+    // 共通型: DBから取得するユーザー行の型
+    type UserRow = {
+      id: number;
+      account_id: string;
+      nickname: string;
+      age: number;
+      address: string;
+      sub_address?: string | null;
+      user_status: number;
+      deleted_flag: boolean;
+    };
+
+    // 共通ヘルパー: 与えられた userId 配列から書評数の Map を返す
+    const fetchCountsFor = async (userIds: number[]) => {
+      if (userIds.length === 0) return new Map<number, number>();
+      const counts = await prisma.bookReview.groupBy({
+        by: ["user_id"],
+        where: { user_id: { in: userIds } },
+        _count: { _all: true },
+      });
+      const map = new Map<number, number>();
+      counts.forEach((c) => map.set(c.user_id, c._count._all));
+      return map;
+    };
+
+    // 共通ヘルパー: User レコード配列と countMap からレスポンス形式に整形
+    const formatUsers = (rows: UserRow[], countMap: Map<number, number>) =>
+      rows.map((user) => ({
+        id: user.id,
+        account_id: user.account_id,
+        nickname: user.nickname,
+        age: user.age,
+        address: user.address,
+        sub_address: user.sub_address ?? null,
+        status: user.user_status,
+        reviewCount: countMap.get(user.id) ?? 0,
+        deletedFlag: user.deleted_flag,
+      }));
+
+    // reviewCount ソートは集計してメモリ内ソート・ページング
+    if (finalSortBy === "reviewCount") {
+      const allUsers: UserRow[] = await prisma.user.findMany({
+        where,
+        select: {
+          id: true,
+          account_id: true,
+          nickname: true,
+          age: true,
+          address: true,
+          sub_address: true,
+          user_status: true,
+          deleted_flag: true,
+        },
+      });
+
+      const countMap = await fetchCountsFor(allUsers.map((u) => u.id));
+
+      const usersWithCount = allUsers.map((u) => ({
+        ...u,
+        reviewCount: countMap.get(u.id) ?? 0,
+      }));
+
+      usersWithCount.sort((a, b) => {
+        if (a.reviewCount === b.reviewCount) return a.id - b.id;
+        return finalSortOrder === "asc"
+          ? a.reviewCount - b.reviewCount
+          : b.reviewCount - a.reviewCount;
+      });
+
+      const paged = usersWithCount.slice(skip, skip + take);
+      const total = await prisma.user.count({ where });
+      const usersResponse = formatUsers(paged, countMap);
+
+      return NextResponse.json({
+        users: usersResponse,
+        total,
+        page,
+        pageSize: PAGE_SIZE,
+        totalPages: Math.ceil(total / PAGE_SIZE),
+      });
+    }
+
+    // 通常ソート: DB でページングしてから書評数を取得してマージ
+    const orderBy: Prisma.UserOrderByWithRelationInput[] = [
+      { [finalSortBy]: finalSortOrder } as Prisma.UserOrderByWithRelationInput,
+      { id: "asc" } as Prisma.UserOrderByWithRelationInput,
+    ];
+
+    const rows: UserRow[] = await prisma.user.findMany({
       where,
       select: {
         id: true,
@@ -159,35 +247,18 @@ export async function GET(req: NextRequest) {
         nickname: true,
         age: true,
         address: true,
+        sub_address: true,
         user_status: true,
         deleted_flag: true,
-        _count: {
-          select: {
-            bookReviews: true,
-          },
-        },
       },
-      orderBy: {
-        [finalSortBy]: finalSortOrder,
-      },
+      orderBy,
       skip,
       take,
     });
 
-    // 総件数取得
     const total = await prisma.user.count({ where });
-
-    // レスポンスデータの整形
-    const usersResponse = users.map((user) => ({
-      id: user.id,
-      account_id: user.account_id,
-      nickname: user.nickname,
-      age: user.age,
-      address: user.address,
-      status: user.user_status,
-      reviewCount: user._count.bookReviews,
-      deletedFlag: user.deleted_flag,
-    }));
+    const countMap = await fetchCountsFor(rows.map((r) => r.id));
+    const usersResponse = formatUsers(rows, countMap);
 
     return NextResponse.json({
       users: usersResponse,

@@ -10,6 +10,7 @@ import { TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import AdminButton from "@/components/ui/admin-button";
 import { REVIEW_STATUS_LABELS } from "@/lib/constants/reviewStatus";
+import { formatAddress } from "@/lib/formatAddress";
 
 interface BookReviewDetailModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ interface BookReviewDetail {
   nickname: string;
   age: number;
   address: string;
+  sub_address?: string | null;
   evaluations_status: number;
   evaluations_count: number;
   review: string;
@@ -304,7 +306,7 @@ export default function BookReviewDetailModal({
               </div>
               <div className="my-2 grid grid-cols-2">
                 <p>所在地</p>
-                <p>{detail?.address ?? "-"}</p>
+                <p>{formatAddress(detail?.address, detail?.sub_address)}</p>
               </div>
               <div className="my-2 grid grid-cols-2">
                 <p>ステータス</p>

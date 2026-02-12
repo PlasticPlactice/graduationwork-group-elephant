@@ -5,16 +5,14 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const reviews = await prisma.reaction.findMany({
-      orderBy: {
-        created_at: "asc",
-      },
+      orderBy: [{ created_at: "asc" }, { id: "asc" }],
     });
 
     return NextResponse.json(reviews);
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to fetch reviews" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -31,7 +29,7 @@ export async function POST(req: Request) {
     if (Number.isNaN(bookReviewId) || Number.isNaN(userId)) {
       return NextResponse.json(
         { error: "Invalid parameters" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -47,7 +45,6 @@ export async function POST(req: Request) {
     // ※ ここで userId がある場合は where に userId も加えます
     const existingReaction = await prisma.bookReviewReaction.findFirst({
       where: {
-
         book_review_id: bookReviewId,
         reaction_id: reactionId,
         user: {

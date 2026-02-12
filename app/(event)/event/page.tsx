@@ -100,7 +100,7 @@ function EventPageInner() {
           daysLeft: "終了",
           description:
             event.detail || "投票が終了しました。結果を確認してみましょう。",
-          buttonText: "確認する",
+          buttonText: "結果を確認する",
           href: `/posts/bookshelf`,
           isFinished: true,
         }));

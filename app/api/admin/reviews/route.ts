@@ -23,9 +23,7 @@ export async function GET(request: Request) {
     // データの取得（eventId がある場合はフィルタリング）
     const reviews = await prisma.bookReview.findMany({
       where: eventId ? { event_id: parseInt(eventId, 10) } : {},
-      orderBy: {
-        created_at: "desc",
-      },
+      orderBy: [{ created_at: "desc" }, { id: "asc" }],
       select: {
         id: true,
         book_title: true,

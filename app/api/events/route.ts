@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import { validateEventDates } from "@/lib/validateEventDates";
+import { getServerSession } from "next-auth";
+import type { NextAuthOptions } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // 一覧取得
 export async function GET(req: Request) {
@@ -10,10 +13,25 @@ export async function GET(req: Request) {
     const statusParam = url.searchParams.get("status");
     const idParam = url.searchParams.get("id");
 
+    const includePrivate = url.searchParams.get("include_private");
+
     const where: Prisma.EventWhereInput = {
-      public_flag: true,
+      // by default only public and not deleted
       deleted_flag: false,
     };
+
+    // include_private=true を要求された場合は管理者セッションを確認して公開フィルタを外す
+    if (includePrivate !== "true") {
+      where.public_flag = true;
+    } else {
+      // 管理者かどうかチェック
+      const session = await getServerSession(authOptions as NextAuthOptions);
+      const user = session?.user;
+      if (!user || user.role !== "admin") {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      // 管理者の場合は public_flag フィルタを付けない（非公開も含めて取得）
+    }
 
     if (idParam) {
       where.id = Number(idParam);
@@ -39,7 +57,7 @@ export async function GET(req: Request) {
 
     const events = await prisma.event.findMany({
       where,
-      orderBy: { start_period: "desc" },
+      orderBy: [{ start_period: "desc" }, { id: "asc" }],
       select: {
         id: true,
         title: true,

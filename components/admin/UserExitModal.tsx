@@ -7,6 +7,7 @@ import {
   USER_STATUS_LABELS,
 } from "@/lib/constants/userStatus";
 import { DEMO_MODE } from "@/lib/constants/demoMode";
+import { formatAddress } from "@/lib/formatAddress";
 
 interface UserExitModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ interface ExitUser {
   nickname: string;
   age: number | null;
   address: string | null;
+  sub_address?: string | null;
   user_status: number;
 }
 
@@ -55,6 +57,7 @@ export default function UserExitModal({
           nickname: data.nickname,
           age: data.age,
           address: data.address,
+          sub_address: data.sub_address,
           user_status: data.user_status,
         });
       } catch (err) {
@@ -156,7 +159,7 @@ export default function UserExitModal({
                 </span>
               </p>
               <p>{user.age ? `${user.age}代` : "-"}</p>
-              <p>{user.address || "-"}</p>
+              <p>{formatAddress(user.address, user.sub_address)}</p>
             </>
           ) : (
             <p className="col-span-5 text-base font-normal">

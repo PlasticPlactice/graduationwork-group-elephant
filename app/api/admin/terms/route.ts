@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
           select: { id: true, email: true },
         },
       },
-      orderBy: { created_at: "desc" },
+      orderBy: [{ created_at: "desc" }, { id: "asc" }],
     });
 
     return NextResponse.json(terms);

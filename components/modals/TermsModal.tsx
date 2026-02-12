@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Modal from "@/app/(app)/Modal";
+import Styles from "@/styles/app/modal.module.css";
 
 interface TermsModalProps {
   open: boolean;
@@ -28,13 +29,17 @@ export default function TermsModal({
       <div className="border-b border-gray-300 mb-4"></div>
 
       {!pdfPath ? (
-        <div className="h-96 flex items-center justify-center">
+        <div
+          className={`${Styles.modalScrollArea} flex items-center justify-center`}
+        >
           <p className="text-gray-600">
             利用規約が設定されていません。管理者にお問い合わせください。
           </p>
         </div>
       ) : iframeError ? (
-        <div className="h-96 flex flex-col items-center justify-center gap-4">
+        <div
+          className={`${Styles.modalScrollArea} flex flex-col items-center justify-center gap-4`}
+        >
           <p className="text-gray-600">
             PDFの表示に失敗しました。以下からダウンロードしてご確認ください。
           </p>
@@ -47,10 +52,10 @@ export default function TermsModal({
           </a>
         </div>
       ) : (
-        <div className="h-96 my-5">
+        <div className={`${Styles.modalScrollArea} my-5`}>
           <iframe
             src={pdfPath}
-            className="w-full h-full border border-gray-300 rounded"
+            className={`${Styles.pdfIframe} w-full h-full border border-gray-300 rounded`}
             title="利用規約"
             onError={handleIframeError}
           />

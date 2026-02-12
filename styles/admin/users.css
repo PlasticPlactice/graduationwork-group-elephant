@@ -290,7 +290,7 @@ details[open] .icon {
   color: var(--color-admin-sub);
   border: 1px solid var(--color-admin-sub);
 }
-.exit-decision-btn{
+.exit-decision-btn {
   background-color: var(--color-warning) !important;
   color: var(--color-bg) !important;
   border: 1px solid var(--color-warning) !important;
@@ -299,4 +299,28 @@ details[open] .icon {
   background-color: var(--color-bg) !important;
   color: var(--color-warning) !important;
   border: 1px solid var(--color-warning) !important;
+}
+
+/* ヘッダーのソートアイコン強調（アイコンのみ目立たせる） */
+.user-table th button .sort-icon {
+  margin-left: 0.5rem;
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+  color: rgba(255, 255, 255, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-table th button .sort-icon svg,
+.user-table th button .sort-icon > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.user-table th button.sorted .sort-icon {
+  color: #ffd54f;
+  transform: translateY(-1px) scale(1.4);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
 }
