@@ -20,9 +20,7 @@ type PreviewReview = {
 
 const stripHtml = (html: string) => {
   if (!html) return "";
-  if (typeof window === "undefined") {
-    return html.replace(/<[^>]*>/g, "");
-  }
+  if (typeof window === "undefined") return html.replace(/<[^>]*>/g, "");
   const doc = new DOMParser().parseFromString(html, "text/html");
   return (doc.body.textContent ?? "").trim();
 };
@@ -33,8 +31,8 @@ export default function Page() {
 
   const [selectedButtonId, setSelectedButtonId] = useState<string>("btn-1-1");
   const [review, setReview] = useState<PreviewReview | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handlePrint = () => {
     window.print();
@@ -52,6 +50,7 @@ export default function Page() {
     }
 
     let mounted = true;
+
     const fetchReview = async () => {
       setIsLoading(true);
       setError("");
@@ -61,22 +60,21 @@ export default function Page() {
           throw new Error("レビューの取得に失敗しました。");
         }
         const data = (await res.json()) as PreviewReview;
-        if (mounted) {
-          setReview(data);
-        }
+        if (mounted) setReview(data);
       } catch (e) {
         if (mounted) {
           setReview(null);
-          setError(e instanceof Error ? e.message : "レビューの取得に失敗しました。");
+          setError(
+            e instanceof Error ? e.message : "レビューの取得に失敗しました。",
+          );
         }
       } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+        if (mounted) setIsLoading(false);
       }
     };
 
     void fetchReview();
+
     return () => {
       mounted = false;
     };
@@ -90,7 +88,6 @@ export default function Page() {
         <h2 className="panel-head">プレビュー</h2>
         <section className="print-area">
           <div className="card-area">
-            <p id="number">No. {review ? String(review.id).padStart(3, "0") : "---"}</p>
             <p id="book-review">
               {isLoading
                 ? "読み込み中..."
@@ -98,8 +95,10 @@ export default function Page() {
                   ? error
                   : reviewText || "書評データがありません。"}
             </p>
+
             <div id="reviewer-section">
               <p>【評者】{review?.nickname ?? "-"}</p>
+              <p id="number">No. {review ? String(review.id).padStart(3, "0") : "---"}</p>
               <p id="reviewer-introduction">
                 {review?.self_introduction ?? "自己紹介データがありません。"}
               </p>
@@ -110,6 +109,7 @@ export default function Page() {
             </div>
           </div>
         </section>
+
         <div className="preview-action-row">
           <button id="print-btn" onClick={handlePrint}>
             印刷
