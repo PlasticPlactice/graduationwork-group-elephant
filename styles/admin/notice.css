@@ -100,6 +100,8 @@ details[open] .icon {
 .notice-table th,
 .notice-table td {
   border-bottom: 1px solid var(--color-input-bg);
+  text-align: left;
+  padding-left: 0.75rem;
 }
 .notice-table th:first-child {
   min-width: 9rem;

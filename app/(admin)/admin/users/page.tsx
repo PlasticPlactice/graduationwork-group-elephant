@@ -399,12 +399,12 @@ export default function Page() {
       <div className="mx-8 mt-8">
         <table className="w-full user-table">
           <colgroup>
-            <col className="w-1" />
-            <col className="w-10" />
-            <col className="w-10" />
-            <col className="w-10" />
-            <col className="w-10" />
-            <col className="w-10" />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "30%" }} />
+            <col style={{ width: "10%" }} />
+            <col style={{ width: "18%" }} />
+            <col style={{ width: "14%" }} />
           </colgroup>
           <thead className="table-head">
             <tr>
@@ -496,7 +496,12 @@ export default function Page() {
                   <td className="">{user.nickname}</td>
                   <td className="">{user.age}代</td>
                   <td className="">{user.address}</td>
-                  <td className="">{user.reviewCount}</td>
+                  <td
+                    className="pr-[110px]"
+                    style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}
+                  >
+                    {user.reviewCount}
+                  </td>
                 </tr>
               ))
             )}

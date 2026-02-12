@@ -46,6 +46,8 @@ details[open] .icon {
 
 .user-table {
   border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
 }
 .table-head {
   background-color: var(--color-main);
@@ -56,6 +58,8 @@ details[open] .icon {
 .user-table th,
 .user-table td {
   border-bottom: 1px solid var(--color-input-bg);
+  text-align: left;
+  padding-left: 0.75rem;
 }
 
 .user-table th button {
