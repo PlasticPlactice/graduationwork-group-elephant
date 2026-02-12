@@ -454,7 +454,7 @@ export default function MyPage() {
           <div className="max-w-2xl mx-auto lg:mx-0">
             <div className="flex items-center justify-center gap-4 my-6">
               <div className="w-24 h-px bg-black" />
-              <h2 className="font-bold text-slate-900">現在開催中のイベント</h2>
+              <h2 className="font-bold text-slate-900">開催中のイベント</h2>
               <div className="w-24 h-px bg-black" />
             </div>
             <div className="flex flex-col gap-4">
@@ -483,8 +483,8 @@ export default function MyPage() {
                 <h2 className="font-bold text-slate-900">あなたの書評</h2>
                 <div className="w-24 h-px bg-black" />
               </div>
-              <div className={`text-sm mt-1 font-bold ${Styles.mainColor}`}>
-                ※一次審査中のみ編集できます
+              <div className={`text-sm mt-1 mx-10 font-bold ${Styles.mainColor}`}>
+                ※運営による審査（1次審査）が開始されるまで編集が可能です。
               </div>
             </div>
 
