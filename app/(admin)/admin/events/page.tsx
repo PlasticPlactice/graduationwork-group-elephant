@@ -42,8 +42,8 @@ export default function Page() {
   const fetchEvents = async () => {
     try {
       const [resNow, resEnd] = await Promise.all([
-        fetch("/api/events?status=0,1,2,3,4"),
-        fetch("/api/events?status=5"),
+        fetch("/api/events?status=0,1,2,3,4&include_private=true"),
+        fetch("/api/events?status=5&include_private=true"),
       ]);
 
       if (!resNow.ok) {
