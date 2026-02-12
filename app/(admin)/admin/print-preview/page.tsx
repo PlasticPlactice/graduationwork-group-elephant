@@ -1,7 +1,7 @@
 "use client";
 
 import "@/styles/admin/print-preview.css";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { Suspense, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useSearchParams } from "next/navigation";
 
 type PreviewReview = {
@@ -151,7 +151,7 @@ const applyFontColorToHtml = (html: string, color: string) => {
   return doc.body.innerHTML;
 };
 
-export default function Page() {
+function PrintPreviewContent() {
   const searchParams = useSearchParams();
   const reviewId = searchParams.get("reviewId");
 
@@ -481,5 +481,13 @@ export default function Page() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<main className="print-preview-page">読み込み中...</main>}>
+      <PrintPreviewContent />
+    </Suspense>
   );
 }
