@@ -463,7 +463,10 @@ export default function PostPage() {
                         className={`relative w-12 h-12 rounded-full transition-all duration-200 hover:scale-110 ${Styles.colorButton}`}
                       >
                         {bookColor === color.value && (
-                          <div className="absolute inset-0 rounded-full border-4 border-white shadow-lg ring-2 ring-red-400"></div>
+                          <div
+                            className="absolute inset-0 rounded-full border-4 border-white shadow-lg"
+                            style={{ boxShadow: "0 0 0 2px var(--color-main)" }}
+                          ></div>
                         )}
                       </button>
                     ))}
@@ -491,7 +494,8 @@ export default function PostPage() {
                   >
                     {pattern === item.value && (
                       <div
-                        className={`absolute inset-0.5 rounded-sm border-4 border-white shadow-lg ring-4 ring-red-400 ${Styles.patternButton}`}
+                        className="absolute inset-0.5 rounded-sm border-4 border-white shadow-lg"
+                        style={{ boxShadow: "0 0 0 2px var(--color-main)" }}
                       ></div>
                     )}
                   </button>
@@ -517,7 +521,10 @@ export default function PostPage() {
                         className={`relative w-12 h-12 rounded-full transition-all duration-200 hover:scale-110 ${Styles.colorButton}`}
                       >
                         {patternColor === color.value && (
-                          <div className="absolute inset-0 rounded-full border-4 border-white shadow-lg ring-2 ring-red-400"></div>
+                          <div
+                            className="absolute inset-0 rounded-full border-4 border-white shadow-lg"
+                            style={{ boxShadow: "0 0 0 2px var(--color-main)" }}
+                          ></div>
                         )}
                       </button>
                     ))}
