@@ -188,9 +188,8 @@ export default function PostConfirmPage() {
       </p>
 
       <div
-        // formのデータ送信に必要？（今回はモックのため未使用）
         dangerouslySetInnerHTML={{ __html: data.review }}
-        className={`w-full border rounded-sm px-0.5 py-2 ${Styles.userIdContainer}`}
+        className={`w-full border rounded-sm px-0.5 py-2 break-words ${Styles.userIdContainer}`}
       ></div>
 
       <div>
