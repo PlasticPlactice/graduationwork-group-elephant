@@ -190,7 +190,7 @@ export default function MyPage() {
     1: {
       label: "１次通過",
       badgeType: "gray",
-      canEdit: true,
+      canEdit: false,
     },
     2: {
       label: "２次通過",
@@ -468,7 +468,7 @@ export default function MyPage() {
                       String(event.first_voting_end_period),
                     )}
                     detail={event.detail}
-                    buttonText="このイベントに投稿する"
+                    buttonText="投稿する"
                   />
                 </div>
               ))}

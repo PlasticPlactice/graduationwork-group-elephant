@@ -174,6 +174,7 @@ export default function Home() {
                         buttonBackgroundColor="var(--color-bg)"
                         buttonBorderColor="#36A8B1"
                         buttonTextColor="#36A8B1"
+                        buttonText="投票する"
                       />
                     );
                   })
