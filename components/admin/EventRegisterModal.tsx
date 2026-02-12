@@ -155,18 +155,9 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <div className="flex items-center">
-                <label htmlFor="event-start-datetime" className="text-xl block">
-                  イベント開催期間<span className="required">*</span>
-                </label>
-                <p className="text-white">～</p>
-                <label
-                  htmlFor="event-start-datetime"
-                  className="text-xl text-white"
-                >
-                  イベント開催期間<span className="text-white">*</span>
-                </label>
-              </div>
+              <label htmlFor="event-start-datetime" className="text-xl block">
+                イベント開催期間<span className="required">*</span>
+              </label>
               <p className="event-detail-text text-sm">
                 イベントの開催期間を決定します
               </p>
@@ -194,28 +185,13 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <div className="flex justify-around items-center">
-                <label htmlFor="book-post-datetime" className="text-xl block">
-                  書評投稿期間<span className="required">*</span>
-                </label>
-                <p className="text-white">～</p>
-                <label
-                  htmlFor="book-post-datetime"
-                  className="text-xl text-white"
-                >
-                  書評投稿期間<span className="text-white">*</span>
-                </label>
-              </div>
-              <div className="flex justify-evenly items-center">
-                <p className="event-detail-text text-sm">
-                  ユーザーが書評を投稿できる期間を決定します
-                </p>
-                <p className="text-white">～</p>
-                <p className="text-white text-sm">
-                  ユーザーが書評を投稿できる期間を決定します
-                </p>
-              </div>
-              <div className="flex gap-15 justify-center items-center">
+              <label htmlFor="book-post-datetime" className="text-xl block">
+                書評投稿期間<span className="required">*</span>
+              </label>
+              <p className="event-detail-text text-sm">
+                ユーザーが書評を投稿できる期間を決定します
+              </p>
+              <div className="flex gap-15 items-center">
                 <Textbox
                   id="register-book-post-start-datetime"
                   name="book-post-start-datetime"
@@ -239,28 +215,13 @@ export default function EventRegisterModal({
             </div>
 
             <div className="my-4">
-              <div className="flex justify-around items-center">
-                <label htmlFor="book-vote-datetime" className="text-xl block">
-                  書評投票期間<span className="required">*</span>
-                </label>
-                <p className="text-white">～</p>
-                <label
-                  htmlFor="book-vote-datetime"
-                  className="text-xl text-white"
-                >
-                  書評投票期間<span className="text-white">*</span>
-                </label>
-              </div>
-              <div className="flex justify-evenly items-center">
-                <p className="event-detail-text text-sm">
-                  ユーザーが書評に対して投票できる期間を決定します
-                </p>
-                <p className="text-white">～</p>
-                <p className="text-white text-sm">
-                  ユーザーが書評に対して投票できる期間を決定します
-                </p>
-              </div>
-              <div className="flex gap-15 justify-center items-center">
+              <label htmlFor="book-vote-datetime" className="text-xl block">
+                書評投票期間<span className="required">*</span>
+              </label>
+              <p className="event-detail-text text-sm">
+                ユーザーが書評に対して投票できる期間を決定します
+              </p>
+              <div className="flex gap-15 items-center">
                 <Textbox
                   id="register-book-vote-start-datetime"
                   name="book-vote-start-datetime"
@@ -293,6 +254,7 @@ export default function EventRegisterModal({
               </p>
               <textarea
                 name="remarks"
+                className="w-full"
                 id="register-event-remarks"
                 value={detail}
                 onChange={(e) => setDetail(e.target.value)}

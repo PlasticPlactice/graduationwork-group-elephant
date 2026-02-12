@@ -19,8 +19,7 @@ export default function Page() {
   };
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [mode, setMode] = useState<"datetime" | "immediate">("datetime");
+  const [mode, setMode] = useState<"datetime" | "immediate">("immediate");
   const [dateTimeValue, setDateTimeValue] = useState<string>(
     getNowDatetimeLocal(),
   );
@@ -75,7 +74,6 @@ export default function Page() {
     if (input) {
       input.value = "";
     }
-    setIsModalOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -119,15 +117,6 @@ export default function Page() {
     router.push("/admin/detail-term");
   };
 
-  useEffect(() => {
-    if (!isModalOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsModalOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [isModalOpen]);
-
   return (
     <main className="p-6">
       <h1 className="text-2xl font-bold mb-6">利用規約登録</h1>
@@ -147,7 +136,7 @@ export default function Page() {
                 name="pdf-upload"
                 accept=".pdf,application/pdf"
                 onChange={handleFileChange}
-                className="w-full custom-input"
+                className="w-full"
                 style={{ backgroundColor: "#F9FAFB" }}
                 disabled={isLoading}
               />
@@ -157,10 +146,10 @@ export default function Page() {
                     className="upload-preview w-28 h-28 flex items-center justify-center text-xs text-gray-400 border-2 border-dashed rounded overflow-hidden"
                     role="button"
                     aria-label={
-                      previewUrl ? "プレビューを開く" : "ファイル未選択"
+                      previewUrl ? "新しいタブで開く" : "ファイル未選択"
                     }
                     onClick={() => {
-                      if (previewUrl) setIsModalOpen(true);
+                      if (previewUrl) window.open(previewUrl, "_blank");
                     }}
                   >
                     {previewUrl ? (
@@ -187,18 +176,7 @@ export default function Page() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-center gap-4 mt-6 text-xl">
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  name="apply"
-                  id="register-datetime"
-                  checked={mode === "datetime"}
-                  onChange={() => setMode("datetime")}
-                  disabled={isLoading}
-                />
-                <label htmlFor="register-datetime">日時予約適用</label>
-              </div>
+            <div className="flex justify-start gap-4 mt-6 text-xl">
               <div className="flex items-center">
                 <input
                   type="radio"
@@ -213,8 +191,17 @@ export default function Page() {
                 />
                 <label htmlFor="register-immediate">即時適用</label>
               </div>
-            </div>
-            <div className="flex justify-center mt-6">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  name="apply"
+                  id="register-datetime"
+                  checked={mode === "datetime"}
+                  onChange={() => setMode("datetime")}
+                  disabled={isLoading}
+                />
+                <label htmlFor="register-datetime">日時予約適用</label>
+              </div>
               <input
                 type="datetime-local"
                 className="datetime-input"
@@ -224,47 +211,8 @@ export default function Page() {
               />
             </div>
           </div>
-          {/* PDFモーダル */}
-          {isModalOpen && previewUrl && (
-            <div
-              className="upload-modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-              onClick={() => setIsModalOpen(false)}
-            >
-              <div
-                className="bg-white rounded p-4 overflow-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex justify-between items-start gap-4">
-                  <h3 className="text-lg font-medium">プレビュー</h3>
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="close-btn text-2xl px-2 hover:bg-gray-100 rounded"
-                    aria-label="閉じる"
-                  >
-                    &times;
-                  </button>
-                </div>
-                <div className="p-4">
-                  <object
-                    data={previewUrl}
-                    type="application/pdf"
-                    // className="w-full"
-                    style={{ maxHeight: "70vh", minHeight: "60vh" }}
-                  >
-                    <p className="text-sm text-gray-600">
-                      PDFプレビューを表示できません。ダウンロードしてください。
-                    </p>
-                  </object>
-
-                  <p className="font-medium mt-4">ファイル名</p>
-                  <p className="mt-2 break-words">{selectedFileName}</p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
-        <div className="mt-6 flex gap-5 justify-end">
+        <div className="mt-6 flex gap-5">
           <AdminButton
             label="戻る"
             className="back-btn"
@@ -274,7 +222,7 @@ export default function Page() {
           <AdminButton
             label={isLoading ? "登録中..." : "登録"}
             type="submit"
-            className="register-btn"
+            className="register-term-btn"
             disabled={isLoading}
           />
         </div>

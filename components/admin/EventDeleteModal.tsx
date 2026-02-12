@@ -1,5 +1,5 @@
 "use client";
-import "@/styles/admin/detail-term.css";
+import "@/styles/admin/events.css";
 
 interface EventDeleteModalProps {
   isOpen: boolean;
@@ -22,7 +22,7 @@ export default function EventDeleteModal({
 
   return (
     <div
-      className="fixed inset-0 term-apply-confirm-modal bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 event-delete-modal bg-opacity-50 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div

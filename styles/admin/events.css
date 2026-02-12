@@ -358,7 +358,15 @@ textarea#remarks {
   color: #16A34A;
   border:1px solid #16A34A;
 }
+/* イベント削除モーダル */
+.event-delete-modal {
+  background-color: rgba(0, 0, 0, 0.4);
+}
 
+/* 登録モーダル */
+#register-event-remarks {
+  height: 5rem;
+}
 /* 編集モーダル */
 .now-status{
   font-size: var(--font-size-h1);

@@ -537,7 +537,7 @@ export default function Page() {
                   <td>
                     <span
                       className={
-                        "ml-3 py-1 px-9 " +
+                        "ml-2 py-1 px-9 " +
                         getStatusClass(notice.public_flag, notice.draft_flag)
                       }
                     >
