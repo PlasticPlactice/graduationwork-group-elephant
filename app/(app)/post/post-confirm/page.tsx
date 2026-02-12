@@ -3,9 +3,10 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
+import { BookPattern } from "@/components/bookshelf/BookPattern";
+import type { PatternType } from "@/components/bookshelf/bookData";
 
 import Styles from "@/styles/app/poster.module.css";
-import Image from "next/image";
 
 interface BookReviewData {
   user_id: number | null;
@@ -29,6 +30,14 @@ interface BookReviewData {
   mode: "create" | "edit";
   draft_flg?: boolean;
 }
+
+const normalizePattern = (pattern: string): PatternType => {
+  const value = (pattern ?? "").toLowerCase();
+  if (value === "dot" || value === "a" || value === "dots") return "dot";
+  if (value === "stripe" || value === "b" || value === "lines") return "stripe";
+  if (value === "check" || value === "c") return "check";
+  return "none";
+};
 
 export default function PostConfirmPage() {
   const router = useRouter();
@@ -178,6 +187,10 @@ export default function PostConfirmPage() {
 
   if (!data) return null;
 
+  const previewPattern = normalizePattern(data.pattern);
+  const previewColor = data.color || "#FFFFFF";
+  const previewPatternColor = data.pattern_color || "#FFFFFF";
+
   return (
     <div
       className={`${Styles.posterContainer}`}
@@ -198,22 +211,24 @@ export default function PostConfirmPage() {
         <div className="flex justify-evenly">
           <div>
             <p className={`text-center my-3 ${Styles.subColor}`}>選択前</p>
-            <Image
-              src="/app/book-bubble.png"
-              alt="水玉"
-              width={106}
-              height={164}
-            />
+            <div className="w-[106px] h-[164px] border rounded-sm overflow-hidden">
+              <BookPattern
+                pattern={previewPattern}
+                baseColor={previewColor}
+                patternColor={previewPatternColor}
+              />
+            </div>
           </div>
           <div className={`border-r`}></div>
           <div className="">
             <p className={`text-center my-3 ${Styles.subColor}`}>本棚</p>
-            <Image
-              src="/app/bubble-back.png"
-              alt="水玉"
-              width={34}
-              height={164}
-            />
+            <div className="w-[34px] h-[164px] border rounded-sm overflow-hidden">
+              <BookPattern
+                pattern={previewPattern}
+                baseColor={previewColor}
+                patternColor={previewPatternColor}
+              />
+            </div>
           </div>
         </div>
 
