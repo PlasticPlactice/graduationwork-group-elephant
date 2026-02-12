@@ -46,6 +46,8 @@ details[open] .icon {
 
 .user-table {
   border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
 }
 .table-head {
   background-color: var(--color-main);
