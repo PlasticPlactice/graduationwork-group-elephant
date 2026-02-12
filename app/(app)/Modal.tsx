@@ -38,6 +38,6 @@ export default function Modal({ open, onClose, children }: ModalProps) {
         {children}
       </div>
     </div>,
-    portalTarget
+    portalTarget,
   );
 }
