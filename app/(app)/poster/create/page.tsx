@@ -3,9 +3,9 @@ import styles from "@/styles/app/poster.module.css";
 
 import Image from "next/image";
 import { useCallback, useState, useMemo, useEffect } from "react";
+import { prefecturesList, iwateMunicipalities } from "@/lib/addressData";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Modal from "@/app/(app)/Modal";
 import TermsModal from "@/components/modals/TermsModal";
 import type { CurrentTermsResponse } from "@/lib/types/terms";
 
@@ -187,94 +187,7 @@ export default function CreateViewerPage() {
     { name: "ブラック", value: "#1F2937" },
   ];
 
-  // 居住地
-  const prefectures = [
-    "選択してください",
-    "北海道",
-    "青森県",
-    "岩手県",
-    "宮城県",
-    "秋田県",
-    "山形県",
-    "福島県",
-    "茨城県",
-    "栃木県",
-    "群馬県",
-    "埼玉県",
-    "千葉県",
-    "東京都",
-    "神奈川県",
-    "新潟県",
-    "富山県",
-    "石川県",
-    "福井県",
-    "山梨県",
-    "長野県",
-    "岐阜県",
-    "静岡県",
-    "愛知県",
-    "三重県",
-    "滋賀県",
-    "京都府",
-    "大阪府",
-    "兵庫県",
-    "奈良県",
-    "和歌山県",
-    "鳥取県",
-    "島根県",
-    "岡山県",
-    "広島県",
-    "山口県",
-    "徳島県",
-    "香川県",
-    "愛媛県",
-    "高知県",
-    "福岡県",
-    "佐賀県",
-    "長崎県",
-    "熊本県",
-    "大分県",
-    "宮崎県",
-    "鹿児島県",
-    "沖縄県",
-  ];
-
-  // 詳細の居住地
-  const iwateCities = [
-    "盛岡市",
-    "宮古市",
-    "大船渡市",
-    "花巻市",
-    "北上市",
-    "久慈市",
-    "遠野市",
-    "一関市",
-    "陸前高田市",
-    "釜石市",
-    "二戸市",
-    "八幡平市",
-    "奥州市",
-    "滝沢市",
-    "雫石町",
-    "葛巻町",
-    "岩手町",
-    "紫波町",
-    "矢巾町",
-    "西和賀町",
-    "金ケ崎町",
-    "平泉町",
-    "住田町",
-    "大槌町",
-    "山田町",
-    "岩泉町",
-    "田野畑村",
-    "普代村",
-    "軽米町",
-    "野田村",
-    "九戸村",
-    "洋野町",
-    "一戸町",
-  ];
+  // 都道府県・岩手県市町村リストは `lib/addressData.ts` から読み込む
 
   return (
     <>
@@ -428,7 +341,8 @@ export default function CreateViewerPage() {
               className={`text-black ${styles.inputSelectForm}`}
               required
             >
-              {prefectures.map((pref) => (
+              <option value="">選択してください</option>
+              {prefecturesList.map((pref) => (
                 <option key={pref} value={pref}>
                   {pref}
                 </option>
@@ -468,7 +382,7 @@ export default function CreateViewerPage() {
               ) : (
                 <>
                   <option value="">選択してください</option>
-                  {iwateCities.map((city) => (
+                  {iwateMunicipalities.map((city) => (
                     <option key={city} value={city}>
                       {city}
                     </option>

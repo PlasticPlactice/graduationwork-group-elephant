@@ -158,6 +158,7 @@ export async function GET(req: NextRequest) {
       nickname: string;
       age: number;
       address: string;
+      sub_address?: string | null;
       user_status: number;
       deleted_flag: boolean;
     };
@@ -183,6 +184,7 @@ export async function GET(req: NextRequest) {
         nickname: user.nickname,
         age: user.age,
         address: user.address,
+        sub_address: user.sub_address ?? null,
         status: user.user_status,
         reviewCount: countMap.get(user.id) ?? 0,
         deletedFlag: user.deleted_flag,
@@ -198,6 +200,7 @@ export async function GET(req: NextRequest) {
           nickname: true,
           age: true,
           address: true,
+          sub_address: true,
           user_status: true,
           deleted_flag: true,
         },
@@ -244,6 +247,7 @@ export async function GET(req: NextRequest) {
         nickname: true,
         age: true,
         address: true,
+        sub_address: true,
         user_status: true,
         deleted_flag: true,
       },
