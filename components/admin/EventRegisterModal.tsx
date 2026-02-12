@@ -3,7 +3,7 @@
 import { Icon } from "@iconify/react";
 import Textbox from "@/components/ui/admin-textbox";
 import "@/styles/admin/events.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { validateEventDates } from "@/lib/validateEventDates";
 import { toISOStringFromLocal } from "@/lib/dateUtils";
@@ -30,6 +30,11 @@ export default function EventRegisterModal({
   const [secondVotingStart, setSecondVotingStart] = useState("");
   const [secondVotingEnd, setSecondVotingEnd] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (isOpen) setErrorMessage("");
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -46,7 +51,8 @@ export default function EventRegisterModal({
       second_voting_end_period: secondVotingEnd,
     });
     if (err) {
-      alert(err);
+      const message = Array.isArray(err) ? err.join("。\n") : String(err);
+      setErrorMessage(message);
       setSubmitting(false);
       return;
     }
@@ -74,7 +80,7 @@ export default function EventRegisterModal({
       if (!res.ok) {
         const err = await res.json();
         console.error("イベント登録エラー", err);
-        alert("イベント登録に失敗しました。");
+        setErrorMessage("イベント登録に失敗しました。");
         setSubmitting(false);
         return;
       }
@@ -86,7 +92,7 @@ export default function EventRegisterModal({
       onClose();
     } catch (err) {
       console.error(err);
-      alert(
+      setErrorMessage(
         "イベントの登録処理中に通信エラーが発生しました。時間をかけてもう一度お試しください。解決しない場合は管理者にお問い合わせください。",
       );
     } finally {
@@ -111,6 +117,24 @@ export default function EventRegisterModal({
         </div>
 
         <div className="modal-scroll-area overflow-y-auto p-3">
+          {errorMessage && (
+            <div
+              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+              role="alert"
+            >
+              <strong className="font-bold">エラー:</strong>
+              <span className="block sm:inline ml-2">{errorMessage}</span>
+              <button
+                type="button"
+                className="absolute top-0 right-0 px-4 py-3 hover:bg-red-200 rounded transition-colors"
+                onClick={() => setErrorMessage("")}
+                aria-label="閉じる"
+              >
+                <span className="text-2xl">&times;</span>
+              </button>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="p-3">
             <div className="my-4">
               <label
@@ -136,7 +160,10 @@ export default function EventRegisterModal({
                   イベント開催期間<span className="required">*</span>
                 </label>
                 <p className="text-white">～</p>
-                <label htmlFor="event-start-datetime" className="text-xl text-white">
+                <label
+                  htmlFor="event-start-datetime"
+                  className="text-xl text-white"
+                >
                   イベント開催期間<span className="text-white">*</span>
                 </label>
               </div>
@@ -172,7 +199,10 @@ export default function EventRegisterModal({
                   書評投稿期間<span className="required">*</span>
                 </label>
                 <p className="text-white">～</p>
-                <label htmlFor="book-post-datetime" className="text-xl text-white">
+                <label
+                  htmlFor="book-post-datetime"
+                  className="text-xl text-white"
+                >
                   書評投稿期間<span className="text-white">*</span>
                 </label>
               </div>
@@ -214,7 +244,10 @@ export default function EventRegisterModal({
                   書評投票期間<span className="required">*</span>
                 </label>
                 <p className="text-white">～</p>
-                <label htmlFor="book-vote-datetime" className="text-xl text-white">
+                <label
+                  htmlFor="book-vote-datetime"
+                  className="text-xl text-white"
+                >
                   書評投票期間<span className="text-white">*</span>
                 </label>
               </div>

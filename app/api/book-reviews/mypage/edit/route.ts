@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import {
+  calculateEventStatus,
+  EVENT_STATUS,
+} from "@/lib/constants/eventStatus";
 
 /**
  * PUT /api/reviews
@@ -22,6 +26,53 @@ export async function PUT(req: Request) {
     }
 
     const reviewId = body.id || body.bookReview_id;
+
+    const existingReview = await prisma.bookReview.findUnique({
+      where: { id: reviewId },
+      select: {
+        id: true,
+        event_id: true,
+        event: {
+          select: {
+            start_period: true,
+            end_period: true,
+            first_voting_start_period: true,
+            first_voting_end_period: true,
+            second_voting_start_period: true,
+            second_voting_end_period: true,
+          },
+        },
+      },
+    });
+
+    if (!existingReview) {
+      return NextResponse.json(
+        { message: "Review not found" },
+        { status: 404 },
+      );
+    }
+
+    if (existingReview.event_id && existingReview.event) {
+      const status = calculateEventStatus({
+        start_period: existingReview.event.start_period,
+        end_period: existingReview.event.end_period,
+        first_voting_start_period:
+          existingReview.event.first_voting_start_period,
+        first_voting_end_period: existingReview.event.first_voting_end_period,
+        second_voting_start_period:
+          existingReview.event.second_voting_start_period,
+        second_voting_end_period: existingReview.event.second_voting_end_period,
+      });
+      if (status !== EVENT_STATUS.POSTING) {
+        return NextResponse.json(
+          {
+            message:
+              "現在は書評投稿期間ではありません。投稿は投稿期間中のみ可能です。",
+          },
+          { status: 400 },
+        );
+      }
+    }
 
     const review = await prisma.bookReview.update({
       where: { id: reviewId },
