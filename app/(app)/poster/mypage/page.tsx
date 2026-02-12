@@ -575,7 +575,7 @@ export default function MyPage() {
                       </span>
                     </div>
 
-                    <div className="text-slate-500 text-sm leading-relaxed mt-2">
+                    <div className="text-slate-500 text-sm leading-relaxed mt-2 break-words line-clamp-3">
                       {review.excerpt}
                     </div>
 
