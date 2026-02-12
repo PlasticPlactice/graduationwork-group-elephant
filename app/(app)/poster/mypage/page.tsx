@@ -184,8 +184,7 @@ export default function MyPage() {
   ];
 
   const REVIEW_STATUS_MAP = {
-    0
-    : {
+    0: {
       label: "審査前",
       badgeType: "gray",
       canEdit: true,
@@ -209,7 +208,7 @@ export default function MyPage() {
       label: "下書き",
       badgeType: "gray",
       canEdit: true,
-    }
+    },
   } as const;
 
   // HTMLタグを削除してプレーンテキストに変換
@@ -261,7 +260,8 @@ export default function MyPage() {
 
   const filteredReviews = uiReviews.filter((review) => {
     if (activeFilterTab === "all") return true;
-    if (activeFilterTab === "passed") return [1, 2, 3].includes(review.evaluations_status);
+    if (activeFilterTab === "passed")
+      return [1, 2, 3].includes(review.evaluations_status);
     return review.evaluations_status === activeFilterTab;
   });
 
@@ -347,7 +347,7 @@ export default function MyPage() {
         className="min-h-screen bg-white px-4 py-4 box-border"
         style={{ "--color-main": "#36A8B1" } as CSSProperties}
       >
-        <div className="mt-3 max-w-6xl mx-auto px-4 flex flex-col gap-3 md:flex-row md:items-start">
+        <div className="mt-3 max-w-6xl mx-auto px-4 grid grid-cols-3 items-center gap-3">
           <Link href="/" className="hidden md:block">
             <div
               className="flex items-center px-2 rounded shadow-md h-10 w-64"
@@ -375,15 +375,15 @@ export default function MyPage() {
             </div>
           </Link>
 
-          <div className="flex-1 text-center">
-            <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
-            <div className="flex items-center justify-center gap-3 mt-1">
+          <div className="col-start-2 text-center flex flex-col items-center">
+            <h1 className="text-lg font-bold text-slate-900 whitespace-nowrap">マイページ</h1>
+            <div className="mt-1">
               <div className={`font-bold ${Styles.mainColor}`}>
                 {userData?.nickName || "ゲストさん"}
               </div>
             </div>
-            <div className="mt-3 flex justify-center md:hidden">
-              <Link href="/">
+            <div className="mt-3 hidden md:flex justify-center">
+              {/* <Link href="/">
                 <div
                   className="flex items-center px-2 rounded shadow-md h-10 w-full max-w-md md:w-64"
                   style={{
@@ -408,12 +408,12 @@ export default function MyPage() {
                     </span>
                   </span>
                 </div>
-              </Link>
+              </Link> */}
             </div>
           </div>
 
           <div
-            className="hidden md:flex items-center w-64 justify-end"
+            className="flex items-center justify-end w-auto md:w-64"
             aria-hidden="true"
           >
             {/* SVG 蟆∫ｭ偵い繧､繧ｳ繝ｳ・亥､ｧ縺阪ａ・・*/}
@@ -448,7 +448,7 @@ export default function MyPage() {
           </div>
         </div>
 
-        <div className="mb-1">
+        <div className="mb-1 block md:hidden">
           {/* <Link
             href="/"
             className="inline-block mt-6 ml-1 font-bold text-sky-500"
@@ -461,7 +461,7 @@ export default function MyPage() {
           </Link> */}
           <Link href="/">
             <div
-              className="flex items-center px-2 rounded shadow-md my-10"
+              className="flex items-center px-2 rounded shadow-md my-10 md:hidden"
               style={{
                 backgroundColor: "var(--color-bg)",
                 border: "1px solid var(--color-main)",
