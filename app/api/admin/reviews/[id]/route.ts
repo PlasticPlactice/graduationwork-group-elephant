@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/lib/api/authMiddleware";
-import type { Session } from "next-auth";
 
 export const runtime = "nodejs";
 
@@ -79,10 +78,34 @@ export async function PATCH(
 
     const body = await req.json().catch(() => null);
     const review = body?.review;
+    const color = body?.color;
+    const patternColor = body?.pattern_color;
 
-    if (typeof review !== "string") {
+    const hasReview = review !== undefined;
+    const hasColor = color !== undefined;
+    const hasPatternColor = patternColor !== undefined;
+
+    if (!hasReview && !hasColor && !hasPatternColor) {
+      return NextResponse.json(
+        { error: "No updatable fields provided" },
+        { status: 400 },
+      );
+    }
+    if (hasReview && typeof review !== "string") {
       return NextResponse.json(
         { error: "Invalid review body" },
+        { status: 400 },
+      );
+    }
+    if (hasColor && typeof color !== "string") {
+      return NextResponse.json(
+        { error: "Invalid color" },
+        { status: 400 },
+      );
+    }
+    if (hasPatternColor && typeof patternColor !== "string") {
+      return NextResponse.json(
+        { error: "Invalid pattern_color" },
         { status: 400 },
       );
     }
@@ -101,8 +124,12 @@ export async function PATCH(
 
     const updated = await prisma.bookReview.update({
       where: { id: reviewId },
-      data: { review },
-      select: { id: true, review: true },
+      data: {
+        ...(hasReview ? { review } : {}),
+        ...(hasColor ? { color } : {}),
+        ...(hasPatternColor ? { pattern_color: patternColor } : {}),
+      },
+      select: { id: true, review: true, color: true, pattern_color: true },
     });
 
     return NextResponse.json(updated);
