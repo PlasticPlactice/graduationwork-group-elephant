@@ -25,7 +25,7 @@
 }
 
 .print-area {
-  background-image: repeating-linear-gradient(120deg, #ffb784, #ffb784 28px, transparent 28px, transparent 43px);
+  background-color: #ffb784;
   width: 100%;
   max-width: 920px;
   min-height: 550px;
@@ -282,56 +282,83 @@
 @media print {
   @page {
     size: A4 landscape;
-    margin: 0;
+    margin: 6mm;
   }
 
   html,
   body {
     margin: 0;
     padding: 0;
-    width: 297mm;
-    height: 210mm;
-    overflow: hidden;
+    width: auto;
+    height: auto;
+    overflow: visible;
   }
 
   body * {
     visibility: hidden;
   }
 
-  .design-area,
-  .design-area *,
-  .panel-head,
-  .preview-action-row {
-    visibility: hidden;
-    display: none;
-  }
-
-  .print-area,
-  .print-area * {
+  .preview-panel,
+  .preview-panel * {
     visibility: visible;
   }
 
-  .print-area {
-    position: fixed;
-    inset: 0;
-    width: 297mm;
-    height: 210mm;
+  .print-preview-page {
+    display: block;
+    max-width: none;
+    padding: 0;
     margin: 0;
-    padding: 20mm;
+    background: #ffffff;
+  }
+
+  .panel-head,
+  .preview-action-row,
+  .design-panel {
+    display: none !important;
+  }
+
+  .preview-panel {
+    position: static;
+    width: 100%;
+  }
+
+  .print-area {
+    position: static;
+    inset: auto;
+    width: calc(297mm - 12mm);
+    max-width: none;
+    height: 168mm;
+    min-height: 168mm;
+    aspect-ratio: auto;
+    margin: 0;
+    padding: 6mm;
+    box-sizing: border-box;
     overflow: hidden;
-    page-break-after: avoid;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    background-image: repeating-linear-gradient(120deg, #ffb784, #ffb784 28px, transparent 28px, transparent 43px);
+    page-break-after: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .card-area {
-    background-color: #ffffff;
-    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: "meta review";
+    column-gap: 20px;
+    row-gap: 0;
+    align-content: stretch;
+    height: 94%;
+    min-height: 0;
+    width: 96%;
+    margin: 0;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  #reviewer-section {
+    border-right: 1px solid rgba(15, 23, 42, 0.18);
   }
 }

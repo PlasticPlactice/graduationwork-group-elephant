@@ -33,6 +33,16 @@ export function AdminHeader() {
       "/admin/password/reset-request": "パスワード再設定申請",
       "/admin/print-preview": "印刷プレビュー",
     };
+
+    if (pathname === "/admin/print-preview") {
+      return [
+        { label: "管理者トップ", href: "/admin/home" },
+        { label: "イベント管理", href: "/admin/events" },
+        { label: "イベント詳細", href: "/admin/events-details" },
+        { label: "印刷プレビュー", href: "/admin/print-preview" },
+      ];
+    }
+
     const parentByPath: Record<string, string> = {
       "/admin/events-details": "/admin/events",
       "/admin/register-notice": "/admin/notice",

@@ -92,6 +92,40 @@ const toPatternPreviewStyle = (
   }
 };
 
+const toFramePatternStyle = (
+  pattern: string | undefined,
+  mainColor: string,
+  patternColor: string,
+): CSSProperties => {
+  const normalized = normalizePattern(pattern);
+
+  switch (normalized.key) {
+    case "stripe":
+      return {
+        backgroundColor: mainColor,
+        backgroundImage: `repeating-linear-gradient(120deg, ${patternColor}, ${patternColor} 28px, transparent 28px, transparent 43px)`,
+      };
+    case "dot":
+      return {
+        backgroundColor: mainColor,
+        backgroundImage: `radial-gradient(circle, ${patternColor} 24%, transparent 26%)`,
+        backgroundSize: "24px 24px",
+      };
+    case "check":
+      return {
+        backgroundColor: mainColor,
+        backgroundImage: `linear-gradient(45deg, ${patternColor} 25%, transparent 25%, transparent 75%, ${patternColor} 75%, ${patternColor}), linear-gradient(45deg, ${patternColor} 25%, transparent 25%, transparent 75%, ${patternColor} 75%, ${patternColor})`,
+        backgroundPosition: "0 0, 12px 12px",
+        backgroundSize: "24px 24px",
+      };
+    default:
+      return {
+        backgroundColor: mainColor,
+        backgroundImage: "none",
+      };
+  }
+};
+
 const applyFontColorToHtml = (html: string, color: string) => {
   if (typeof window === "undefined") return html;
 
@@ -263,6 +297,15 @@ export default function Page() {
     () => extractFirstFontColor(review?.review ?? "") ?? "#000000",
     [review?.review],
   );
+  const printAreaStyle = useMemo(
+    () =>
+      toFramePatternStyle(
+        review?.pattern,
+        selectedMainColor || "#ffb784",
+        selectedPatternColor || "#ffffff",
+      ),
+    [review?.pattern, selectedMainColor, selectedPatternColor],
+  );
 
   useEffect(() => {
     setSelectedFontColor(fontColor);
@@ -291,9 +334,9 @@ export default function Page() {
     <main className="print-preview-page">
       <div className="preview-panel">
         <h2 className="panel-head">プレビュー</h2>
-        <section className="print-area">
+        <section className="print-area" style={printAreaStyle}>
           <div className="card-area">
-            <p id="book-review">
+            <p id="book-review" style={{ color: selectedFontColor }}>
               {isLoading
                 ? "読み込み中..."
                 : error

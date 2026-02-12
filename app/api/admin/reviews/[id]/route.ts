@@ -79,13 +79,15 @@ export async function PATCH(
     const body = await req.json().catch(() => null);
     const review = body?.review;
     const color = body?.color;
+    const pattern = body?.pattern;
     const patternColor = body?.pattern_color;
 
     const hasReview = review !== undefined;
     const hasColor = color !== undefined;
+    const hasPattern = pattern !== undefined;
     const hasPatternColor = patternColor !== undefined;
 
-    if (!hasReview && !hasColor && !hasPatternColor) {
+    if (!hasReview && !hasColor && !hasPattern && !hasPatternColor) {
       return NextResponse.json(
         { error: "No updatable fields provided" },
         { status: 400 },
@@ -100,6 +102,12 @@ export async function PATCH(
     if (hasColor && typeof color !== "string") {
       return NextResponse.json(
         { error: "Invalid color" },
+        { status: 400 },
+      );
+    }
+    if (hasPattern && typeof pattern !== "string") {
+      return NextResponse.json(
+        { error: "Invalid pattern" },
         { status: 400 },
       );
     }
@@ -127,9 +135,10 @@ export async function PATCH(
       data: {
         ...(hasReview ? { review } : {}),
         ...(hasColor ? { color } : {}),
+        ...(hasPattern ? { pattern } : {}),
         ...(hasPatternColor ? { pattern_color: patternColor } : {}),
       },
-      select: { id: true, review: true, color: true, pattern_color: true },
+      select: { id: true, review: true, color: true, pattern: true, pattern_color: true },
     });
 
     return NextResponse.json(updated);
