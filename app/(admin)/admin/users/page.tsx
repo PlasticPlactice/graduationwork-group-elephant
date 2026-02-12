@@ -400,8 +400,8 @@ export default function Page() {
         <table className="w-full user-table">
           <colgroup>
             <col style={{ width: "14%" }} />
-            <col style={{ width: "15%" }} />
-            <col style={{ width: "29%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "30%" }} />
             <col style={{ width: "10%" }} />
             <col style={{ width: "18%" }} />
             <col style={{ width: "14%" }} />

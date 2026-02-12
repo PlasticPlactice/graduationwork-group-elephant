@@ -494,7 +494,13 @@ function EventsDetailsContent() {
                   <td>
                     <span>{row.nickname}</span>
                   </td>
-                  <td>
+                  <td
+                    style={{
+                      textAlign: "right",
+                      fontVariantNumeric: "tabular-nums",
+                      paddingRight: "100px",
+                    }}
+                  >
                     <span>{row.evaluations_count}</span>
                   </td>
                   <td>
