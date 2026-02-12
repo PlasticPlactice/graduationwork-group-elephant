@@ -189,7 +189,7 @@ export default function MyPage() {
     },
     1: {
       label: "１次通過",
-      badgeType: "gray",
+      badgeType: "blue",
       canEdit: false,
     },
     2: {
