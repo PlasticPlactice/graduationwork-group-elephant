@@ -288,7 +288,9 @@ export default function Page() {
               </div>
             </div>
             <div>
-              <label htmlFor="prefecture">居住地　※岩手県の場合、市区町村を選択可</label>
+              <label htmlFor="prefecture">
+                居住地　※岩手県の場合、市区町村を選択可
+              </label>
               <div className="flex">
                 <select
                   name="prefecture"
@@ -386,61 +388,169 @@ export default function Page() {
               <th className="py-2 pl-10 w-[15%]">
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "user_status" ? "sorted" : ""}`}
                   onClick={() => handleSort("user_status")}
                   aria-label={`ステータスで${sortBy === "user_status" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "user_status"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
+                  ステータス
+                  <span className="sort-icon">
+                    {sortBy === "user_status" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "account_id" ? "sorted" : ""}`}
                   onClick={() => handleSort("account_id")}
                   aria-label={`IDで${sortBy === "account_id" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "account_id"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ID<Icon icon="uil:arrow" rotate={1}></Icon>
+                  ID
+                  <span className="sort-icon">
+                    {sortBy === "account_id" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "nickname" ? "sorted" : ""}`}
                   onClick={() => handleSort("nickname")}
                   aria-label={`ニックネームで${sortBy === "nickname" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "nickname"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
+                  ニックネーム
+                  <span className="sort-icon">
+                    {sortBy === "nickname" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "age" ? "sorted" : ""}`}
                   onClick={() => handleSort("age")}
                   aria-label={`年代で${sortBy === "age" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "age"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  年代<Icon icon="uil:arrow" rotate={1}></Icon>
+                  年代
+                  <span className="sort-icon">
+                    {sortBy === "age" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "address" ? "sorted" : ""}`}
                   onClick={() => handleSort("address")}
                   aria-label={`居住地で${sortBy === "address" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "address"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  居住地<Icon icon="uil:arrow" rotate={1}></Icon>
+                  居住地
+                  <span className="sort-icon">
+                    {sortBy === "address" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "reviewCount" ? "sorted" : ""}`}
                   onClick={() => handleSort("reviewCount")}
                   aria-label={`投稿数で${sortBy === "reviewCount" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "reviewCount"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  投稿数<Icon icon="uil:arrow" rotate={1}></Icon>
+                  投稿数
+                  <span className="sort-icon">
+                    {sortBy === "reviewCount" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
             </tr>
