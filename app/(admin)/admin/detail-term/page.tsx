@@ -17,7 +17,6 @@ type Term = {
 
 export default function Page() {
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTerm, setSelectedTerm] = useState<Term | null>(null);
   const [currentTerm, setCurrentTerm] = useState<Term | null>(null);
   const [scheduledTerm, setScheduledTerm] = useState<Term | null>(null);
@@ -59,9 +58,6 @@ export default function Page() {
     fetchTerms();
   }, []);
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   const handleRegister = () => {
     router.push("/admin/register-term");
@@ -115,11 +111,7 @@ export default function Page() {
                       className="upload-preview w-28 h-28 flex items-center justify-center text-xs text-gray-400 border-2 border-dashed rounded overflow-hidden cursor-pointer hover:bg-gray-50"
                       role="button"
                       aria-label="プレビューを開く"
-                      onClick={() => {
-                        setSelectedTerm(currentTerm);
-                        setIsModalOpen(true);
-                      }}
-                    >
+                      onClick={() => window.open(currentTerm.data_path, "_blank")}                    >
                       <span>{currentTerm.file_name}</span>
                     </div>
                   </div>
@@ -152,10 +144,7 @@ export default function Page() {
                       className="upload-preview w-28 h-28 flex items-center justify-center text-xs text-gray-400 border-2 border-dashed rounded overflow-hidden cursor-pointer hover:bg-gray-50"
                       role="button"
                       aria-label="プレビューを開く"
-                      onClick={() => {
-                        setSelectedTerm(scheduledTerm);
-                        setIsModalOpen(true);
-                      }}
+                      onClick={() => window.open(scheduledTerm.data_path, "_blank")}
                     >
                       <span>{scheduledTerm.file_name}</span>
                     </div>
@@ -168,44 +157,6 @@ export default function Page() {
       )}
       {!isLoading && !error && !currentTerm && !scheduledTerm && (
         <p className="text-center mt-8">利用規約が登録されていません</p>
-      )}
-      {/* PDFモーダル */}
-      {isModalOpen && selectedTerm && (
-        <div
-          className="upload-modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={handleCloseModal}
-        >
-          <div
-            className="bg-white rounded p-4 overflow-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-start gap-4">
-              <h3 className="text-lg font-medium">プレビュー</h3>
-              <button
-                type="button"
-                onClick={handleCloseModal}
-                className="close-btn text-2xl px-2 hover:bg-gray-100 rounded"
-                aria-label="閉じる"
-              >
-                &times;
-              </button>
-            </div>
-            <div className="p-4">
-              <object
-                data={selectedTerm.data_path}
-                type="application/pdf"
-                style={{ maxHeight: "70vh", minHeight: "60vh" }}
-              >
-                <p className="text-sm text-gray-600">
-                  PDFプレビューを表示できません。ダウンロードしてください。
-                </p>
-              </object>
-
-              <p className="font-medium mt-4">ファイル名</p>
-              <p className="mt-2 break-words">{selectedTerm.file_name}</p>
-            </div>
-          </div>
-        </div>
       )}
     </main>
   );
