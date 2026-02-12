@@ -140,6 +140,7 @@ export async function GET(req: NextRequest) {
       "age",
       "address",
       "user_status",
+      "reviewCount",
     ];
     const finalSortBy = validSortColumns.includes(sortBy)
       ? sortBy
@@ -151,6 +152,25 @@ export async function GET(req: NextRequest) {
     const take = PAGE_SIZE;
 
     // ユーザー一覧取得（書評数を含める）
+    // 二次ソートを追加して順序を安定化（reviewCount が同値の場合は id 昇順）
+    const orderBy: (
+      | Prisma.UserOrderByWithRelationInput
+      | Prisma.UserOrderByWithAggregationInput
+    )[] =
+      finalSortBy === "reviewCount"
+        ? [
+            {
+              _count: { bookReviews: finalSortOrder },
+            } as Prisma.UserOrderByWithAggregationInput,
+            { id: "asc" } as Prisma.UserOrderByWithRelationInput,
+          ]
+        : [
+            {
+              [finalSortBy]: finalSortOrder,
+            } as Prisma.UserOrderByWithRelationInput,
+            { id: "asc" } as Prisma.UserOrderByWithRelationInput,
+          ];
+
     const users = await prisma.user.findMany({
       where,
       select: {
@@ -167,9 +187,7 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      orderBy: {
-        [finalSortBy]: finalSortOrder,
-      },
+      orderBy,
       skip,
       take,
     });

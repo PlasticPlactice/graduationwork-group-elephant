@@ -31,9 +31,7 @@ export async function GET() {
         user_id: userId,
         deleted_flag: false,
       },
-      orderBy: {
-        created_at: "desc",
-      },
+      orderBy: [{ created_at: "desc" }, { id: "asc" }],
     });
 
     return NextResponse.json(reviews);

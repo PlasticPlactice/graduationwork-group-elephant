@@ -39,7 +39,7 @@ export async function GET(req: Request) {
 
     const events = await prisma.event.findMany({
       where,
-      orderBy: { start_period: "desc" },
+      orderBy: [{ start_period: "desc" }, { id: "asc" }],
       select: {
         id: true,
         title: true,

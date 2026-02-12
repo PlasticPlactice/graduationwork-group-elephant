@@ -459,9 +459,14 @@ export default function Page() {
                 </button>
               </th>
               <th>
-                <div className="flex items-center">
+                <button
+                  type="button"
+                  className="flex items-center cursor-pointer"
+                  onClick={() => handleSort("reviewCount")}
+                  aria-label={`投稿数で${sortBy === "reviewCount" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                >
                   投稿数<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                </button>
               </th>
             </tr>
           </thead>
@@ -498,7 +503,10 @@ export default function Page() {
                   <td className="">{user.address}</td>
                   <td
                     className="pr-[110px]"
-                    style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}
+                    style={{
+                      textAlign: "right",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
                   >
                     {user.reviewCount}
                   </td>

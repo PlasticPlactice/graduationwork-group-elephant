@@ -89,9 +89,7 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      orderBy: {
-        public_date: "desc",
-      },
+      orderBy: [{ public_date: "desc" }, { id: "asc" }],
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     });

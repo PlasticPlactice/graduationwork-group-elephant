@@ -96,9 +96,7 @@ export async function GET(req: NextRequest) {
     const [notifications, total] = await prisma.$transaction([
       prisma.notification.findMany({
         where,
-        orderBy: {
-          [finalSortBy]: finalSortOrder,
-        },
+        orderBy: [{ [finalSortBy]: finalSortOrder }, { id: "asc" }],
         skip: (page - 1) * PAGE_SIZE,
         take: PAGE_SIZE,
       }),
