@@ -480,7 +480,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                   className={`w-full mt-7`}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "送信中..." : "送信"}
+                  {isSubmitting ? "保存中..." : "変更を保存"}
                 </button>
                 <button
                   type="button"

@@ -21,7 +21,7 @@ export const EventCard = ({
   title,
   daysLeft,
   detail,
-  buttonText = "投票へ",
+  buttonText,
   onButtonClick,
   isFinished = false,
   href,
@@ -62,7 +62,7 @@ export const EventCard = ({
           }}
         >
           <span className="block text-xs font-bold text-slate-600 mb-1">
-            投票締切まで
+            {buttonText === "投稿する" ? "投稿締切まで" : buttonText === "投票する" ? "投票締切まで" : "開催まで"}
             <br />
             あと
           </span>
