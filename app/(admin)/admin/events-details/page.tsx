@@ -423,44 +423,144 @@ function EventsDetailsContent() {
                 </div>
               </th>
               <th className="w-[27.777%]">
-                <div
-                  className="flex justify-center items-center cursor-pointer"
+                <button
+                  type="button"
+                  className={`flex justify-center items-center cursor-pointer ${sortKey === "evaluations_status" ? "sorted" : ""}`}
                   onClick={() => handleSort("evaluations_status")}
+                  aria-label={`ステータスで${sortKey === "evaluations_status" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "evaluations_status"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                  ステータス
+                  <span className="sort-icon">
+                    {sortKey === "evaluations_status" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
               <th className="w-[11.111%]">
-                <div
-                  className="flex items-center justify-start cursor-pointer"
+                <button
+                  type="button"
+                  className={`flex items-center justify-start cursor-pointer ${sortKey === "id" ? "sorted" : ""}`}
                   onClick={() => handleSort("id")}
+                  aria-label={`IDで${sortKey === "id" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "id"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ID<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                  ID
+                  <span className="sort-icon">
+                    {sortKey === "id" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
               <th className="w-[27.777%]">
-                <div
-                  className="flex items-center cursor-pointer"
+                <button
+                  type="button"
+                  className={`flex items-center cursor-pointer ${sortKey === "book_title" ? "sorted" : ""}`}
                   onClick={() => handleSort("book_title")}
+                  aria-label={`書籍タイトルで${sortKey === "book_title" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "book_title"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  書籍タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                  書籍タイトル
+                  <span className="sort-icon">
+                    {sortKey === "book_title" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
               <th className="w-1/6">
-                <div
-                  className="flex items-center cursor-pointer"
+                <button
+                  type="button"
+                  className={`flex items-center cursor-pointer ${sortKey === "nickname" ? "sorted" : ""}`}
                   onClick={() => handleSort("nickname")}
+                  aria-label={`ニックネームで${sortKey === "nickname" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "nickname"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                  ニックネーム
+                  <span className="sort-icon">
+                    {sortKey === "nickname" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
               <th className="w-[11.111%]">
-                <div
-                  className="flex items-center cursor-pointer"
+                <button
+                  type="button"
+                  className={`flex items-center cursor-pointer ${sortKey === "evaluations_count" ? "sorted" : ""}`}
                   onClick={() => handleSort("evaluations_count")}
+                  aria-label={`投票数で${sortKey === "evaluations_count" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "evaluations_count"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  投票数<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                  投票数
+                  <span className="sort-icon">
+                    {sortKey === "evaluations_count" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
               <th className="w-[5.555%]">
                 {/* <Icon icon='fe:arrow-up'></Icon> */}
