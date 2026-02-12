@@ -176,7 +176,6 @@ export default function MyPage() {
     label: string;
   }[] = [
     { key: "all" as const, label: "全て" },
-    { key: 4, label: "下書き" },
     { key: 0, label: "審査前" },
     { key: "passed", label: "審査通過" },
   ];
@@ -228,7 +227,7 @@ export default function MyPage() {
         bookReviewId: review.id,
         title: review.book_title,
         status: REVIEW_STATUS_MAP[4].label,
-        evaluations_status: 4,
+        evaluations_status: review.evaluations_status,
         badgeType: REVIEW_STATUS_MAP[4].badgeType,
         excerpt: stripHtmlTags(review.review),
         buttonText: "編集する",
