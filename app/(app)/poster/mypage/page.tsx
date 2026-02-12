@@ -382,34 +382,7 @@ export default function MyPage() {
                 {userData?.nickName || "ゲストさん"}
               </div>
             </div>
-            <div className="mt-3 hidden md:flex justify-center">
-              {/* <Link href="/">
-                <div
-                  className="flex items-center px-2 rounded shadow-md h-10 w-full max-w-md md:w-64"
-                  style={{
-                    backgroundColor: "var(--color-bg)",
-                    border: "1px solid var(--color-main)",
-                  }}
-                >
-                  <Image
-                    src="/layout/new_logo.png"
-                    alt="logo"
-                    width={32}
-                    height={32}
-                    className="ml-2"
-                  />
-                  <span
-                    className="font-bold ml-2 whitespace-nowrap"
-                    style={{ color: "var(--color-main)" }}
-                  >
-                    象と花ファンサイトへ
-                    <span className="ml-2" aria-hidden="true">
-                      &gt;
-                    </span>
-                  </span>
-                </div>
-              </Link> */}
-            </div>
+            <div className="mt-3 hidden md:flex justify-center" />
           </div>
 
           <div
@@ -449,16 +422,6 @@ export default function MyPage() {
         </div>
 
         <div className="mb-1 block md:hidden">
-          {/* <Link
-            href="/"
-            className="inline-block mt-6 ml-1 font-bold text-sky-500"
-            aria-label="ファンサイトのトップページへ移動"
-          >
-            <span className="mr-1" aria-hidden="true">
-              &lt;
-            </span>{" "}
-            ファンサイトはこちら
-          </Link> */}
           <Link href="/">
             <div
               className="flex items-center px-2 rounded shadow-md my-10 md:hidden"
