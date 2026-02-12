@@ -8,6 +8,7 @@ import {
   USER_STATUS,
   USER_STATUS_LABELS,
 } from "@/lib/constants/userStatus";
+import { formatAddress } from "@/lib/formatAddress";
 
 interface UserDetailModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ interface UserDetail {
   email: string;
   age: number | null;
   address: string | null;
+  sub_address?: string | null;
   user_status: number;
   bookReviews: BookReview[];
 }
@@ -218,7 +220,7 @@ export default function UserDetailModal({
               </span>
             </p>
             <p>{userDetail.age ? `${userDetail.age}代` : "-"}</p>
-            <p>{userDetail.address || "-"}</p>
+            <p>{formatAddress(userDetail.address, userDetail.sub_address)}</p>
           </div>
         ) : (
           <div className="text-center py-4">

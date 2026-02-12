@@ -22,9 +22,7 @@ export async function GET() {
       include: {
         message: true,
       },
-      orderBy: {
-        created_at: "desc",
-      },
+      orderBy: [{ created_at: "desc" }, { id: "asc" }],
     });
     return NextResponse.json(userMessages);
   } catch (error) {

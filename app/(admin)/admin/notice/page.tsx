@@ -314,7 +314,7 @@ export default function Page() {
   return (
     <main className="notice-container">
       <div className="flex justify-end mr-8">
-      {/*---------------------------
+        {/*---------------------------
             お知らせ登録ボタン
             ---------------------------*/}
         <AdminButton
@@ -327,7 +327,7 @@ export default function Page() {
       {/*---------------------------
                 検索ボックス
                ---------------------------*/}
-      <details className="px-5 pt-3 pb-3 mx-8 my-6 search-accordion" open>
+      <details className="px-5 pt-3 pb-3 mx-8 my-6 search-accordion">
         <summary className="flex items-center justify-between">
           <p>検索ボックス</p>
           <Icon
@@ -419,7 +419,10 @@ export default function Page() {
                 ステータス変更ボタン
                ---------------------------*/}
           <div className="grid grid-flow-row mt-3">
-            <p className="px-5">現在表示中の{selectedTab === "notice" ? "お知らせ" : "寄贈"}のステータス</p>
+            <p className="px-5">
+              現在表示中の{selectedTab === "notice" ? "お知らせ" : "寄贈"}
+              のステータス
+            </p>
             <div className="flex items-center justify-center px-3 status-wrapper py-1 mt-2">
               {statusButtons.map((btn) => {
                 const isActive = selectedStatus === btn.id;
@@ -455,21 +458,57 @@ export default function Page() {
               <th className="py-2 pl-6 ">
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "public_flag" ? "sorted" : ""}`}
                   onClick={() => handleSort("public_flag")}
                   aria-label={`ステータスで${sortBy === "public_flag" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "public_flag"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
+                  ステータス
+                  <span className="sort-icon">
+                    {sortBy === "public_flag" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th className="w-2/7">
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "title" ? "sorted" : ""}`}
                   onClick={() => handleSort("title")}
                   aria-label={`タイトルで${sortBy === "title" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "title"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
+                  タイトル
+                  <span className="sort-icon">
+                    {sortBy === "title" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th className="w-2/7">
@@ -478,11 +517,29 @@ export default function Page() {
               <th className="w-1/4">
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "public_date" ? "sorted" : ""}`}
                   onClick={() => handleSort("public_date")}
                   aria-label={`公開期間で${sortBy === "public_date" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "public_date"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  公開期間<Icon icon="uil:arrow" rotate={1}></Icon>
+                  公開期間
+                  <span className="sort-icon">
+                    {sortBy === "public_date" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th className="w-20">

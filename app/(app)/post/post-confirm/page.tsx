@@ -123,8 +123,9 @@ export default function PostConfirmPage() {
         return;
       }
 
-      const isDraftStatus = data.draft_flg === true;
-      console.log(isDraftStatus);
+      // 受け取るフィールド名の違いに対応する (draft_flg or draft_flag)
+      const isDraftStatus = data.draft_flg === true || data.draft_flag === true;
+      console.log("isDraftStatus:", isDraftStatus);
 
       const res = await fetch(`/api/book-reviews/mypage/edit`, {
         method: "PUT",
@@ -136,6 +137,13 @@ export default function PostConfirmPage() {
 
       if (!res.ok) {
         alert("書評の編集に失敗しました。時間をおいて再度お試しください。");
+        return;
+      }
+
+      // 編集モードならマイページへ戻す（マイページから編集したときの遷移確実化）
+      if (data.mode === "edit") {
+        sessionStorage.removeItem("bookReviewDraft");
+        router.push("/poster/mypage");
         return;
       }
 
