@@ -6,7 +6,7 @@
   color: var(--color-admin-sub);
 }
 .back-btn,
-.register-btn {
+.register-term-btn {
   font-size: var(--font-size-h1);
   box-shadow: none;
 }

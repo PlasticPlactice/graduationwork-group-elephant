@@ -20,7 +20,7 @@ export default function Page() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [mode, setMode] = useState<"datetime" | "immediate">("datetime");
+  const [mode, setMode] = useState<"datetime" | "immediate">("immediate");
   const [dateTimeValue, setDateTimeValue] = useState<string>(
     getNowDatetimeLocal(),
   );
@@ -187,18 +187,7 @@ export default function Page() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-center gap-4 mt-6 text-xl">
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  name="apply"
-                  id="register-datetime"
-                  checked={mode === "datetime"}
-                  onChange={() => setMode("datetime")}
-                  disabled={isLoading}
-                />
-                <label htmlFor="register-datetime">日時予約適用</label>
-              </div>
+            <div className="flex justify-start gap-4 mt-6 text-xl">
               <div className="flex items-center">
                 <input
                   type="radio"
@@ -213,8 +202,17 @@ export default function Page() {
                 />
                 <label htmlFor="register-immediate">即時適用</label>
               </div>
-            </div>
-            <div className="flex justify-center mt-6">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  name="apply"
+                  id="register-datetime"
+                  checked={mode === "datetime"}
+                  onChange={() => setMode("datetime")}
+                  disabled={isLoading}
+                />
+                <label htmlFor="register-datetime">日時予約適用</label>
+              </div>
               <input
                 type="datetime-local"
                 className="datetime-input"
@@ -264,7 +262,7 @@ export default function Page() {
             </div>
           )}
         </div>
-        <div className="mt-6 flex gap-5 justify-end">
+        <div className="mt-6 flex gap-5">
           <AdminButton
             label="戻る"
             className="back-btn"
@@ -274,7 +272,7 @@ export default function Page() {
           <AdminButton
             label={isLoading ? "登録中..." : "登録"}
             type="submit"
-            className="register-btn"
+            className="register-term-btn"
             disabled={isLoading}
           />
         </div>
