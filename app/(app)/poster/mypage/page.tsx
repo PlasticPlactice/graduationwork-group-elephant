@@ -254,6 +254,7 @@ export default function MyPage() {
     useState<ReviewFilterTab>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(3);
 
   const filteredReviews = uiReviews.filter((review) => {
     if (activeFilterTab === "all") return true;
@@ -261,6 +262,12 @@ export default function MyPage() {
       return [1, 2, 3].includes(review.evaluations_status);
     return review.evaluations_status === activeFilterTab;
   });
+
+  useEffect(() => {
+    setDisplayLimit(3);
+  }, [activeFilterTab]);
+
+  const visibleReviews = filteredReviews.slice(0, displayLimit);
 
   const handleDeleteAccount = async () => {
     if (isDeleting) return;
@@ -543,7 +550,7 @@ export default function MyPage() {
             </ul>
 
             <div className="flex flex-col gap-3">
-              {filteredReviews.map((review, reviewIndex) => (
+              {visibleReviews.map((review, reviewIndex) => (
                 <div
                   key={reviewIndex}
                   className="border rounded-lg p-4 bg-white border-gray-500"
@@ -603,6 +610,23 @@ export default function MyPage() {
                   </div>
                 </div>
               ))}
+
+              {filteredReviews.length > 3 && (
+                <button
+                  onClick={() => {
+                    // もし今が「全件表示」なら3に戻し、そうでなければ全件にする
+                    if (displayLimit >= filteredReviews.length) {
+                      setDisplayLimit(3);
+                    } else {
+                      setDisplayLimit(filteredReviews.length);
+                    }
+                  }}
+                  className="py-3 mt-4 text-slate-600 font-bold"
+                >
+                  {/* 表示数によってテキストを切り替え（三項演算子） */}
+                  {displayLimit >= filteredReviews.length ? "閉じる" : `すべて表示する (全${filteredReviews.length}件)`}
+                </button>
+              )}
             </div>
             {/* プロフィール関連のリンク */}
             <div className="max-w-2xl mx-auto my-10">
