@@ -498,7 +498,10 @@ export default function Page() {
                   <td className="">{user.address}</td>
                   <td
                     className="pr-[110px]"
-                    style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}
+                    style={{
+                      textAlign: "right",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
                   >
                     {user.reviewCount}
                   </td>
