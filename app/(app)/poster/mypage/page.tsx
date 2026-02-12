@@ -660,7 +660,7 @@ export default function MyPage() {
                     <button
                       type="button"
                       disabled
-                      className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200 text-slate-400 cursor-not-allowed"
+                      className={Styles.mypage__linkButton}
                       aria-label="退会"
                       aria-disabled={true}
                       style={{ color: "var(--color-main)" }}
@@ -671,7 +671,7 @@ export default function MyPage() {
                     <button
                       type="button"
                       onClick={() => setShowDeleteModal(true)}
-                      className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                      className={Styles.mypage__linkButton}
                       aria-label="退会"
                       style={{ color: "var(--color-main)" }}
                     >
