@@ -25,7 +25,8 @@ export function middleware(request: NextRequest) {
       (pathname.startsWith("/post") && !pathname.startsWith("/poster")) ||
       (pathname.startsWith("/poster") &&
         pathname !== "/poster/login" &&
-        pathname !== "/poster/create")
+        pathname !== "/poster/create" &&
+        !pathname.startsWith("/poster/create-complete"))
     ) {
       const signInUrl = new URL("/poster/login", request.url);
       signInUrl.searchParams.set("callbackUrl", pathname);
