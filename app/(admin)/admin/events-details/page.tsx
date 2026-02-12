@@ -157,8 +157,8 @@ function EventsDetailsContent() {
     setSelectedReviewId(null);
   };
 
-  const handlePreview = () => {
-    router.push("/admin/print-preview");
+  const handlePreview = (reviewId: number) => {
+    router.push(`/admin/print-preview?reviewId=${reviewId}`);
   };
 
   const getReviewText = (html: string) => {
@@ -450,7 +450,8 @@ function EventsDetailsContent() {
                   </span>
                 </button>
               </th>
-              <th className="w-[11.111%]">
+
+              <th className="w-[10%]">
                 <button
                   type="button"
                   className={`flex items-center justify-start cursor-pointer ${sortKey === "id" ? "sorted" : ""}`}
@@ -506,7 +507,8 @@ function EventsDetailsContent() {
                   </span>
                 </button>
               </th>
-              <th className="w-1/6">
+
+              <th className="w-[17.777%]">
                 <button
                   type="button"
                   className={`flex items-center cursor-pointer ${sortKey === "nickname" ? "sorted" : ""}`}
@@ -663,7 +665,7 @@ function EventsDetailsContent() {
                               icon="material-symbols:print"
                               iconPosition="left"
                               className="print-preview-btn w-auto"
-                              onClick={handlePreview}
+                              onClick={() => handlePreview(row.id)}
                             />
                           </div>
                         </section>

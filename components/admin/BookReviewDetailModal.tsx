@@ -114,7 +114,8 @@ export default function BookReviewDetailModal({
     editor?.chain().focus().setColor(color).run();
 
   const handlePreview = () => {
-    router.push("/admin/print-preview");
+    if (!reviewId) return;
+    router.push(`/admin/print-preview?reviewId=${reviewId}`);
   };
 
   const handleSendMessage = async () => {
