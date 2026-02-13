@@ -92,7 +92,11 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type }),
       });
-      if (!res.ok) throw new Error("API Error");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error("Vote API error", res.status, data);
+        throw new Error((data as { message?: string }).message || "API Error");
+      }
     };
 
     // ボタンのスタイル定義
