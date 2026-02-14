@@ -161,7 +161,7 @@ export default function EventRegisterModal({
               <p className="event-detail-text text-sm">
                 イベントの開催期間を決定します
               </p>
-              <div className="flex justify-between items-center">
+              <div className="flex gap-15 items-center">
                 <Textbox
                   id="register-event-start-datetime"
                   name="event-start-datetime"
