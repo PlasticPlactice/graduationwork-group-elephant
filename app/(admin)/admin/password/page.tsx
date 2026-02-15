@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DEMO_MODE } from "@/lib/constants/demoMode";
@@ -11,23 +12,24 @@ export default function PasswordChangePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleChangePassword = async () => {
-    setError("");
-    setSuccess("");
+    // clear previous UI handled by toasts
 
     // バリデーション
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("すべてのフィールドを入力してください");
+      addToast({
+        type: "error",
+        message: "すべてのフィールドを入力してください",
+      });
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("新しいパスワードが一致しません");
+      addToast({ type: "error", message: "新しいパスワードが一致しません" });
       return;
     }
 
@@ -35,9 +37,11 @@ export default function PasswordChangePage() {
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
 
     if (!passwordComplexityRegex.test(newPassword)) {
-      setError(
-        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください",
-      );
+      addToast({
+        type: "error",
+        message:
+          "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください",
+      });
       return;
     }
 
@@ -59,17 +63,26 @@ export default function PasswordChangePage() {
       const data = await res.json();
 
       if (res.ok) {
-        setSuccess("パスワードが正常に変更されました");
+        addToast({
+          type: "success",
+          message: "パスワードが正常に変更されました",
+        });
         // 2秒後にホームページへ遷移
         setTimeout(() => {
           router.push("/admin/home");
         }, REDIRECT_DELAY_MS);
       } else {
-        setError(data.message || "パスワード変更に失敗しました");
+        addToast({
+          type: "error",
+          message: data.message || "パスワード変更に失敗しました",
+        });
       }
     } catch (error) {
       console.error("Password change error:", error);
-      setError("エラーが発生しました。もう一度お試しください");
+      addToast({
+        type: "error",
+        message: "エラーが発生しました。もう一度お試しください",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -88,19 +101,7 @@ export default function PasswordChangePage() {
           className="bg-white rounded-lg p-6 border-2"
           style={{ borderColor: "var(--color-sub)" }}
         >
-          {/* エラーメッセージ */}
-          {error && (
-            <div className="mb-4 p-3 bg-rose-100 border border-rose-500 text-rose-700 rounded">
-              {error}
-            </div>
-          )}
-
-          {/* 成功メッセージ */}
-          {success && (
-            <div className="mb-4 p-3 bg-green-100 border border-green-500 text-green-700 rounded">
-              {success}
-            </div>
-          )}
+          {/* エラーメッセージはトーストで表示します */}
 
           {/* 現在のパスワード入力フィールド */}
           <div className="mb-6">

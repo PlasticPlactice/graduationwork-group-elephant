@@ -2,6 +2,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import AdminButton from "@/components/ui/admin-button";
 import Textbox from "@/components/ui/admin-textbox";
 import "@/styles/admin/index.css";
@@ -11,12 +12,12 @@ export default function Page() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    // clear previous UI handled by toasts
     setLoading(true);
 
     const result = await signIn("admin", {
@@ -30,9 +31,11 @@ export default function Page() {
     if (result?.ok) {
       router.push("/admin/home");
     } else {
-      setError(
-        "ログインに失敗しました。メールアドレスとパスワードを確認してください。"
-      );
+      addToast({
+        type: "error",
+        message:
+          "ログインに失敗しました。メールアドレスとパスワードを確認してください。",
+      });
     }
   };
 
@@ -44,9 +47,7 @@ export default function Page() {
       >
         <h1 className="text-center">ログイン</h1>
 
-        {error && (
-          <div className="text-red-600 text-center mb-4 text-sm">{error}</div>
-        )}
+        {/* エラーはトーストで表示します */}
 
         <label className="block w-3/4 mx-auto text-left">メールアドレス</label>
         <div className="text-center mb-4">
