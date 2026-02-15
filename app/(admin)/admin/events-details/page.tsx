@@ -10,6 +10,7 @@ import AllMessageSendModal from "@/components/admin/AllMessageSendModal";
 import BookReviewDetailModal from "@/components/admin/BookReviewDetailModal";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
+import { useToast } from "@/contexts/ToastContext";
 import { REVIEW_STATUS_LABELS } from "@/lib/constants/reviewStatus";
 
 // APIから取得するデータの型定義
@@ -26,6 +27,7 @@ interface ReviewData {
 }
 
 function EventsDetailsContent() {
+  const { addToast } = useToast();
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [filteredReviews, setFilteredReviews] = useState<ReviewData[]>([]);
   const [openRows, setOpenRows] = useState<number[]>([]);
@@ -133,16 +135,25 @@ function EventsDetailsContent() {
   }, [isStatusEditModalOpen]);
 
   const handleStatusEdit = () => {
-    if (selectedRowIds.length === 0) return alert("データが選択されていません");
+    if (selectedRowIds.length === 0) {
+      addToast({ type: "error", message: "データが選択されていません" });
+      return;
+    }
     setIsStatusEditModalOpen(true);
   };
   const handleCsvOutput = () => {
     // 選択されたデータがない場合はアラートを表示
-    if (selectedRowIds.length === 0) return alert("データが選択されていません");
+    if (selectedRowIds.length === 0) {
+      addToast({ type: "error", message: "データが選択されていません" });
+      return;
+    }
     setIsCsvOutputModalOpen(true);
   };
   const handleAllMessageSend = () => {
-    if (selectedRowIds.length === 0) return alert("データが選択されていません");
+    if (selectedRowIds.length === 0) {
+      addToast({ type: "error", message: "データが選択されていません" });
+      return;
+    }
     setIsAllMessageSendModalOpen(true);
   };
   const handleBookReviewDetail = (reviewId: number) => {
