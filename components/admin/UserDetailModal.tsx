@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import "@/styles/admin/users.css";
 import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
@@ -52,7 +53,7 @@ export default function UserDetailModal({
   const [displayCount, setDisplayCount] = useState<number | "all">(2);
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>("");
+  const { addToast } = useToast();
   const [sortBy, setSortBy] = useState<string>("event_title");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
@@ -79,7 +80,6 @@ export default function UserDetailModal({
     if (isOpen && userId) {
       const fetchUserDetail = async () => {
         setIsLoading(true);
-        setError("");
         try {
           const response = await fetch(`/api/admin/users/${userId}`);
           if (!response.ok) throw new Error("Failed to fetch user detail");
@@ -88,7 +88,10 @@ export default function UserDetailModal({
         } catch (error) {
           console.error("Error fetching user detail:", error);
           setUserDetail(null);
-          setError("ユーザー情報の取得に失敗しました。");
+          addToast({
+            type: "error",
+            message: "ユーザー情報の取得に失敗しました。",
+          });
         } finally {
           setIsLoading(false);
         }
@@ -99,7 +102,6 @@ export default function UserDetailModal({
       setUserDetail(null);
       setOpenRows([]);
       setDisplayCount(2);
-      setError("");
     }
   }, [isOpen, userId]);
 
@@ -208,8 +210,6 @@ export default function UserDetailModal({
         </div>
         {isLoading ? (
           <div className="text-center py-4">読み込み中...</div>
-        ) : error ? (
-          <div className="text-center py-4 text-red-600">{error}</div>
         ) : userDetail ? (
           <div className="text-2xl grid grid-cols-5 px-6 text-center font-bold">
             <p>{userDetail.account_id}</p>

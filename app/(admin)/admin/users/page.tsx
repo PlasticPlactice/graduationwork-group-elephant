@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
 import "@/styles/admin/users.css";
@@ -34,6 +35,7 @@ interface ApiResponse {
 }
 
 export default function Page() {
+  const { addToast } = useToast();
   const [isUserExitModalOpen, setIsUserExitModalOpen] = useState(false);
   const [isUserDetailModalOpen, setIsUserDetailModalOpen] = useState(false);
   const [exitUserId, setExitUserId] = useState<number | null>(null);
@@ -45,7 +47,6 @@ export default function Page() {
   const [sortBy, setSortBy] = useState<string>("account_id");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // 検索フォームのstate
   const [searchForm, setSearchForm] = useState({
@@ -95,12 +96,14 @@ export default function Page() {
         setUsers(data.users);
         setTotalPages(data.totalPages);
         setCurrentPage(page);
-        setErrorMessage("");
       } catch (error) {
         console.error("Error fetching users:", error);
         setUsers([]);
         setTotalPages(0);
-        setErrorMessage("ユーザー情報の取得に失敗しました。");
+        addToast({
+          type: "error",
+          message: "ユーザー情報の取得に失敗しました。",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -368,11 +371,7 @@ export default function Page() {
       {/*---------------------------
                 ユーザー一覧
             ---------------------------*/}
-      {errorMessage && (
-        <div className="mx-8 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          {errorMessage}
-        </div>
-      )}
+      {/* 通知はトーストで表示します */}
       <div className="mx-8 mt-8">
         <table className="w-full user-table">
           <colgroup>
