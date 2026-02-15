@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { useEffect, useMemo, useState, Suspense } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import NoticeDisableModal from "@/components/admin/NoticeDisableModal";
 import NoticeDeleteModal from "@/components/admin/NoticeDeleteModal";
 import { normalizeFilePath, isImageFile } from "@/lib/pathUtils";
@@ -49,6 +50,7 @@ const getStatusLabel = (pub: boolean, draft: boolean): string => {
 };
 
 function DetailNoticeContent() {
+  const { addToast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -110,8 +112,13 @@ function DetailNoticeContent() {
         const dataPath = file?.data_path;
         if (!dataPath) return null;
         const path = normalizeFilePath(dataPath);
-        const isImage = isImageFile(name) || (file?.type ?? "").startsWith("image/");
-        return { kind: isImage ? "image" as const : "file" as const, src: path, name };
+        const isImage =
+          isImageFile(name) || (file?.type ?? "").startsWith("image/");
+        return {
+          kind: isImage ? ("image" as const) : ("file" as const),
+          src: path,
+          name,
+        };
       })
       .filter((p): p is Attachment => p !== null);
   }, [notification]);
@@ -148,15 +155,18 @@ function DetailNoticeContent() {
 
       if (!res.ok) {
         const error = await res.json();
-        alert(error.message || "削除に失敗しました");
+        addToast({
+          type: "error",
+          message: error.message || "削除に失敗しました",
+        });
         return;
       }
 
-      alert("お知らせを削除しました");
+      addToast({ type: "success", message: "お知らせを削除しました" });
       router.push("/admin/notice");
     } catch (err) {
       console.error("Delete error:", err);
-      alert("削除に失敗しました");
+      addToast({ type: "error", message: "削除に失敗しました" });
     } finally {
       setIsDeleting(false);
       setIsDeleteModalOpen(false);
@@ -205,10 +215,19 @@ function DetailNoticeContent() {
           ? { ...prev, public_flag: newPublicFlag, draft_flag: newDraftFlag }
           : prev,
       );
+      addToast({
+        type: "success",
+        message: newPublicFlag
+          ? "お知らせを公開しました。"
+          : "お知らせを非公開にしました。",
+      });
       setIsNoticeDisableModalOpen(false);
     } catch (error) {
       console.error("Failed to toggle notification:", error);
-      alert("お知らせの公開/非公開の切り替えに失敗しました。");
+      addToast({
+        type: "error",
+        message: "お知らせの公開/非公開の切り替えに失敗しました。",
+      });
     }
   };
 
