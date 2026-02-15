@@ -3,12 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type Params = {
-  params: {
-    id: string;
-  };
-};
-
 // 閲覧者の書評閲覧用のAPI
 export async function GET(
   req: Request,
@@ -50,7 +44,7 @@ export async function GET(
     }
 
     return NextResponse.json(reviews);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to fetch review" },
       { status: 500 },

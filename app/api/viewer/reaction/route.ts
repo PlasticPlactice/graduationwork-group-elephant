@@ -9,7 +9,7 @@ export async function GET() {
     });
 
     return NextResponse.json(reviews);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to fetch reviews" },
       { status: 500 },
@@ -20,7 +20,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { user_id, book_review_id, reaction_id } = body;
+    const { book_review_id, reaction_id } = body;
 
     const bookReviewId = Number(body.book_review_id);
     const reactionId = Number(body.reaction_id);
