@@ -35,7 +35,7 @@ export async function GET() {
     });
 
     return NextResponse.json(reviews);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to fetch reviews" },
       { status: 500 },
@@ -147,7 +147,7 @@ export async function DELETE(req: Request) {
     });
 
     return NextResponse.json({ message: "Deleted successfully" });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to delete review" },
       { status: 500 },

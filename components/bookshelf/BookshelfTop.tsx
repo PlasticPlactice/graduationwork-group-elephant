@@ -21,7 +21,7 @@ import {
   type ScatterEntry,
 } from "@/components/bookshelf/ScatterArea";
 import Modal from "@/app/(app)/Modal";
-import "@/components/bookshelf/BookReviewModal.module.css"
+import "@/components/bookshelf/BookReviewModal.module.css";
 
 const MOBILE_MAX_BOOKS_PER_SHELF = 8;
 const DESKTOP_MAX_BOOKS_PER_SHELF = 15;
@@ -248,7 +248,6 @@ export function BookshelfTop({
   eventStatus = 3,
   eventTitle = "文庫Xイベント",
 }: Props) {
-  const shelfTopRef = useRef<HTMLDivElement | null>(null);
   const scatterTopRef = useRef<HTMLDivElement | null>(null);
   const shelfAreaRef = useRef<HTMLDivElement | null>(null);
   const scatterAreaRef = useRef<HTMLDivElement | null>(null);
@@ -638,7 +637,9 @@ export function BookshelfTop({
     <>
       <div className="mb-6 flex flex-col items-center gap-3 text-center px-4">
         <div className="flex items-center justify-center gap-2">
-          <h1 className="text-2xl font-bold text-slate-900 event-head">{eventTitle}</h1>
+          <h1 className="text-2xl font-bold text-slate-900 event-head">
+            {eventTitle}
+          </h1>
           <button
             type="button"
             onClick={() => setIsEventInfoOpen(true)}
