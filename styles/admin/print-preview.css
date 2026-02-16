@@ -61,14 +61,16 @@
 #book-review {
   grid-area: review;
   margin: 0;
-  padding: 14px 18px 0;
+  padding: 12px 8px 0;
   justify-self: center;
   align-self: start;
-  width: 90%;
+  width: 100%;
   border: none;
   border-radius: 0;
   background-color: transparent;
-  line-height: 1.75;
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
 }
 
 #reviewer-section {
@@ -360,5 +362,11 @@
 
   #reviewer-section {
     border-right: 1px solid rgba(15, 23, 42, 0.18);
+  }
+
+  #book-review {
+    padding: 10px 6px 0;
+    font-size: 13px;
+    line-height: 1.45;
   }
 }

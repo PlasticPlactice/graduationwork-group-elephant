@@ -350,10 +350,6 @@ function PrintPreviewContent() {
               <p id="reviewer-introduction">
                 {review?.self_introduction ?? "自己紹介データがありません。"}
               </p>
-              <p className="mt-3">書籍: {review?.book_title ?? "-"}</p>
-              <p>著者: {review?.author ?? "-"}</p>
-              <p>出版社: {review?.publishers ?? "-"}</p>
-              <p>ISBN: {review?.isbn ?? "-"}</p>
             </div>
           </div>
         </section>
