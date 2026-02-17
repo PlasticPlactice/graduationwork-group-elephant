@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
 
 // 選択された書評データの型定義（エクスポートして他でも再利用可能に）
@@ -69,7 +70,12 @@ export default function AllMessageSendModal({
         className="modal-content bg-white rounded-lg w-9/12 max-w-8xl max-h-[90vh] flex flex-col p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="modal-head text-center">一括メッセージ送信</h2>
+        <div className="flex justify-between items-center pb-3">
+          <h2 className="modal-head text-2xl font-bold">一括メッセージ送信</h2>
+          <button onClick={onClose} className="close-btn text-black">
+            <Icon icon="mdi:close" width={24} className="text-black" />
+          </button>
+        </div>
         <h3 className="modal-sub-head mt-3">メッセージを送信する書評</h3>
 
         <div className="border p-3 overflow-auto h-64 mb-5">
