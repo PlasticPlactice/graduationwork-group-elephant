@@ -68,13 +68,14 @@ export function EventProgressBar({
     "閲覧期間",
     "終了",
   ];
+  const iconWidth = variant === "compact" ? "w-5" : "w-10";
 
   return (
     <div className={containerClassName}>
       {/* 矢印アイコン行 */}
       <div className={`flex justify-between ${width} m-auto`}>
         {statusIndices.map((index) => (
-          <p key={`arrow-${index}`} className="w-10">
+          <p key={`arrow-${index}`} className={iconWidth}>
             {isArrowVisible(index, status) ? (
               <Icon
                 icon="bxs:up-arrow"
@@ -94,7 +95,7 @@ export function EventProgressBar({
       {/* 円アイコン行 */}
       <div className={`flex justify-between ${width} m-auto`}>
         {statusIndices.map((index) => (
-          <p key={`circle-${index}`} className="w-10">
+          <p key={`circle-${index}`} className={iconWidth}>
             <Icon
               icon="material-symbols:circle"
               className={getEventCircleClassName(index, status)}
@@ -106,7 +107,7 @@ export function EventProgressBar({
       {/* プログレスバー */}
       <div className="flex justify-center mt-2">
         <progress
-          max={200}
+          max={280}
           value={getEventProgressValue(status, variant)}
           className={progressClassName}
         ></progress>

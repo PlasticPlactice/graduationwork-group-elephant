@@ -400,7 +400,7 @@ export default function Page() {
           <button
             onClick={() => setSelectedTab("notice")}
             className={`pb-3 mr-7 text-h1 notice-tab-link ${
-              selectedTab === "notice" ? "active" : ""
+              selectedTab === "notice" ? "notice-active" : ""
             }`}
           >
             お知らせ
@@ -408,7 +408,7 @@ export default function Page() {
           <button
             onClick={() => setSelectedTab("donation")}
             className={`pb-3 notice-tab-link ${
-              selectedTab === "donation" ? "active" : ""
+              selectedTab === "donation" ? "notice-active" : ""
             }`}
           >
             寄贈
@@ -423,7 +423,7 @@ export default function Page() {
               現在表示中の{selectedTab === "notice" ? "お知らせ" : "寄贈"}
               のステータス
             </p>
-            <div className="flex items-center justify-center px-3 status-wrapper py-1 mt-2">
+            <div className="flex items-center justify-center gap-2 status-wrapper mt-2">
               {statusButtons.map((btn) => {
                 const isActive = selectedStatus === btn.id;
                 return (
@@ -432,7 +432,7 @@ export default function Page() {
                     onClick={() =>
                       setSelectedStatus(btn.id as typeof selectedStatus)
                     } // 型アサーションを追加
-                    className={`mx-2 px-2 rounded status-toggle ${
+                    className={`px-2 rounded status-toggle ${
                       isActive ? "active" : ""
                     }`}
                   >

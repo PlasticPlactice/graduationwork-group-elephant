@@ -61,7 +61,7 @@ export default function Page() {
             {eventData.map((event) => (
               <div
                 key={event.id}
-                className=" py-4 m-auto text-center event-container mb-4"
+                className=" py-4 px-4 m-auto text-center event-container mb-4"
               >
                 <div className="mx-auto flex items-center justify-between w-4/5">
                   <p className="font-bold event-name">{event.title}</p>
@@ -75,8 +75,8 @@ export default function Page() {
                   <EventProgressBar
                     status={event.status}
                     variant="compact"
-                    width="w-2/3"
-                    progressClassName="w-4/5"
+                    width="w-3/4"
+                    progressClassName="w-full h-0.5"
                   />
                 </div>
                 <button

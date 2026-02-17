@@ -344,7 +344,7 @@ export default function UserDetailModal({
                       <tr key={`${row.id}-details`} className="details-row">
                         <td colSpan={4} className="details-content">
                           <div className="p-4 flex">
-                            <section className="w-[57.142%]">
+                            <section className="w-full">
                               <h3 className="font-bold mb-2 ml-4">書評本文</h3>
                               <div className="book-review-section w-auto h-84 ml-4 p-2">
                                 <p

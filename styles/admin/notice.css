@@ -1,4 +1,4 @@
-﻿/* 繝｡繧､繝ｳ繧ｳ繝ｳ繝・リ */
+﻿/* メインコンテナ */
 .notice-container {
   background-color: var(--color-bg);
   color: var(--color-text);
@@ -12,7 +12,7 @@ summary {
   list-style-type: none;
   font-size: 20px;
 }
-/* 讀懃ｴ｢繝懊ャ繧ｯ繧ｹ繧ｨ繝ｪ繧｢ */
+/* 検索ボックスエリア */
 .search-area {
   border: 1px solid #8b8b8b;
   border-radius: var(--control-radius);
@@ -21,9 +21,8 @@ summary {
 details[open] .icon {
   transform: rotate(180deg);
 }
-/* 蜈･蜉帙お繝ｪ繧｢縺ｮ蟷・ｪｿ謨ｴ (繧ｿ繧､繝医Ν繝ｻ蜈ｬ髢区悄髢・ */
 
-/* 繝・く繧ｹ繝医・繝・け繧ｹ縺ｮ鬮倥＆繝ｻ蟷・ｼｷ蛻ｶ荳頑嶌縺・*/
+/* テキストボックスの高さ上書き*/
 .custom-input {
   width: 35rem;
   height: 2.5rem;
@@ -34,26 +33,26 @@ details[open] .icon {
   width: 100%;
 }
 
-/* 讀懃ｴ｢繝懊ち繝ｳ */
+/* 検索ボタン */
 .search-btn {
   width: 20rem;
   height: 2.5rem;
 }
 
-/* 縺顔衍繧峨○逋ｻ骭ｲ繝懊ち繝ｳ */
+/* お知らせ登録ボタン */
 .register-btn {
   width: 20%;
   font-size: var(--page-padding-lg);
   height: 3.5rem;
 }
 
-/* 繧ｹ繝・・繧ｿ繧ｹ螟画峩繝懊ち繝ｳ縺ｮ繝ｩ繝・ヱ繝ｼ */
+/* ステータス変更セクション */
 .status-wrapper {
   background-color: var(--color-bg);
   border-radius: var(--control-radius);
 }
 
-/* 繧ｹ繝・・繧ｿ繧ｹ螟画峩繝懊ち繝ｳ・亥・騾夲ｼ・*/
+/* ステータス変更ボタン・*/
 .status-toggle {
   border: 1px solid var(--color-admin-sub);
   background-color: var(--color-bg);
@@ -61,13 +60,13 @@ details[open] .icon {
   transition: all 0.2s ease;
 }
 
-/* 繧ｹ繝・・繧ｿ繧ｹ螟画峩繝懊ち繝ｳ・磯∈謚樔ｸｭ・・*/
+/* ステータス変更ボタン選択中*/
 .status-toggle.active {
   background-color: var(--color-main);
   color: var(--color-bg);
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md逶ｸ蠖・*/
+    0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md*/
 }
 
 .tab {
@@ -82,7 +81,7 @@ details[open] .icon {
   border-radius: 0px;
   font-size: 20px;
 }
-.notice-tab-link.active {
+.notice-tab-link.notice-active {
   border-bottom-color: var(--color-main);
 }
 .notice-tab {
@@ -194,7 +193,7 @@ details[open] .icon {
   transform: scale(0.98);
 }
 
-/* 繝・・繝悶Ν繝倥ャ繝繝ｼ縺ｮ繧ｽ繝ｼ繝医・繧ｿ繝ｳ縺九ｉ蠖ｱ繧帝勁蜴ｻ */
+/* 見出しのソートボタンから影を削除 */
 .table-head button {
   box-shadow: none !important;
 }
