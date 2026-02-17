@@ -148,7 +148,7 @@ export default function EventRegisterModal({
                 name="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full custom-input"
+                className="w-full event-custom-input"
                 style={{ backgroundColor: "#F9FAFB" }}
                 placeholder="イベントのタイトルを入力"
               />
