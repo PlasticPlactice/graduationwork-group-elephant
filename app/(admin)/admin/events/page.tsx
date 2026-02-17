@@ -275,7 +275,7 @@ export default function Page() {
           <EventProgressBar
             status={now.status}
             variant="full"
-            width="w-2/3"
+            width="w-3/4"
             progressClassName="w-full h-0.5"
           />
 

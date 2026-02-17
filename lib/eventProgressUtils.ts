@@ -13,20 +13,20 @@ export const getEventProgressValue = (
 
   const progressMaps: Record<"compact" | "full", Record<number, number>> = {
     compact: {
-      0: 24,
-      1: 55,
-      2: 86,
-      3: 117,
-      4: 148,
-      5: 179,
+      0: 40,
+      1: 80,
+      2: 120,
+      3: 160,
+      4: 200,
+      5: 240,
     },
     full: {
-      0: 37,
-      1: 62,
-      2: 87,
-      3: 113,
-      4: 138,
-      5: 163,
+      0: 40,
+      1: 80,
+      2: 120,
+      3: 160,
+      4: 200,
+      5: 240,
     },
   };
 

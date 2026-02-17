@@ -280,7 +280,7 @@ export default function EventEditModal({
               <EventProgressBar
                 status={currentStatus ?? 0}
                 variant="full"
-                width="w-4/5"
+                width="w-3/4"
                 progressClassName="w-full h-0.5"
               />
             </div>
