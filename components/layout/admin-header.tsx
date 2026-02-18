@@ -90,7 +90,7 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="w-full bg-white border-b border-gray-100">
+    <header className="w-full bg-white border-b border-gray-100 admin-header">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 md:px-6">
         <Link
           href="/admin/home"

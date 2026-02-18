@@ -16,6 +16,8 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className="antialiased min-h-screen flex flex-col">
+        {/* Hide non-admin global header when rendering admin pages */}
+        <style>{`header:not(.admin-header){display:none !important}`}</style>
         <Providers>
           <AdminLayoutClient>{children}</AdminLayoutClient>
         </Providers>
