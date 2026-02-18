@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { AfterLoginHeader } from "@/components/layout/after-login-header";
-import { Providers } from "@/app/providers";
 import { PostLayoutClient } from "./post-layout-client";
 
 export const metadata: Metadata = {
@@ -22,9 +21,7 @@ export default function PostLayout({
       >
         <AfterLoginHeader />
         <main className="flex-1">
-          <Providers>
-            <PostLayoutClient>{children}</PostLayoutClient>
-          </Providers>
+          <PostLayoutClient>{children}</PostLayoutClient>
         </main>
       </body>
     </html>

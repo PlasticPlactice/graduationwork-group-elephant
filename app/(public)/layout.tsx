@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import { Providers } from "@/app/providers";
 import "@/styles/globals.css";
 export const metadata: Metadata = {
   title: "象と花プロジェクト",
@@ -19,9 +18,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className="antialiased min-h-screen flex flex-col">
         <Header />
-        <main className="flex-1">
-          <Providers>{children}</Providers>
-        </main>
+        <main className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>
