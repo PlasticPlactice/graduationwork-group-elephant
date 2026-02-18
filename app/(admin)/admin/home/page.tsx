@@ -1,6 +1,7 @@
 ﻿"use client";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import { Icon } from "@iconify/react";
 import { EventProgressBar } from "@/components/ui/EventProgressBar";
 import { formatDateTime } from "@/lib/dateUtils";
@@ -17,6 +18,7 @@ type EventItem = {
 export default function Page() {
   const router = useRouter();
   const [eventData, setEventData] = useState<EventItem[]>([]);
+  const { addToast } = useToast();
 
   const handleDetail = () => {
     router.push("/admin/events");
@@ -46,6 +48,7 @@ export default function Page() {
         setEventData(sortedData);
       } catch (err) {
         console.error("Failed to fetch events:", err);
+        addToast({ type: "error", message: "イベント一覧の取得に失敗しました" });
       }
     };
 

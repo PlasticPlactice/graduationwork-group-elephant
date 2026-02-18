@@ -7,11 +7,13 @@ import "@/styles/admin/terms.css";
 import AdminButton from "@/components/ui/admin-button";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
 import TermApplyModal from "@/components/admin/TermApplyModal";
 
 export default function Page() {
     const router = useRouter();
     const [isTermApplyModalOpen, setIsTermApplyModalOpen] = useState(false);
+    const { addToast } = useToast();
     const terms = [
     // 最新順に表示
         {
@@ -56,6 +58,7 @@ export default function Page() {
     
     const handleRegister = () => {
         router.push("/admin/register-term");
+        addToast({ type: "info", message: "利用規約登録ページへ移動します" });
     };
 
     const handleDetail = () => {
@@ -64,6 +67,7 @@ export default function Page() {
 
     const openTermApplyModal = () => {
         setIsTermApplyModalOpen(true);
+        addToast({ type: "info", message: "利用規約適用予約を開きます" });
     };
     const closeTermApplyModal = () => {
         setIsTermApplyModalOpen(false);
