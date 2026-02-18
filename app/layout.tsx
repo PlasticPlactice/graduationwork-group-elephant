@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { Providers } from "@/app/providers";
-import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
   title: "象と花プロジェクト",
@@ -22,7 +21,6 @@ export default function RootLayout({
         <main className="flex-1">
           <Providers>{children}</Providers>
         </main>
-        <Footer />
       </body>
     </html>
   );
