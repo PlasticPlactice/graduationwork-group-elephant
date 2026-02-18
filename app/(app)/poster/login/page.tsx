@@ -3,17 +3,14 @@
 import loginModule from "@/styles/app/login.module.css";
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [accountId, setAccountId] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,10 +27,16 @@ export default function LoginPage() {
       const result = await signIn("user", {
         account_id: accountId,
         password: password,
-        redirect: false,
+        redirect: true,
+        callbackUrl: "/poster/mypage",
       });
 
-      if (result?.error) {
+      // 型ガード: result がオブジェクトで error プロパティを持つ場合
+      function isSignInResponse(obj: unknown): obj is { error?: string } {
+        return typeof obj === "object" && obj !== null && "error" in obj;
+      }
+
+      if (isSignInResponse(result) && result.error) {
         let errorMessage = "ログインに失敗しました。"; // デフォルトのエラーメッセージ
 
         // バックエンドからの特定のエラーメッセージをユーザーフレンドリーなメッセージに変換
@@ -56,8 +59,6 @@ export default function LoginPage() {
         }
         setError(errorMessage);
         setIsLoading(false);
-      } else if (result?.ok) {
-        router.push("/poster/mypage");
       }
     } catch (error) {
       console.error("Login error:", error);
