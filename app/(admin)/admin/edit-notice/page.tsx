@@ -86,10 +86,10 @@ function EditNoticeContent() {
   // アップロードファイル関連
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
-  const [existingThumbnailFileId, setExistingThumbnailFileId] = useState<
+  const [_existingThumbnailFileId, _setExistingThumbnailFileId] = useState<
     number | null
   >(null);
-  const [existingThumbnailPath, setExistingThumbnailPath] = useState<
+  const [_existingThumbnailPath, _setExistingThumbnailPath] = useState<
     string | null
   >(null);
   const [existingMainImagePath, setExistingMainImagePath] = useState<

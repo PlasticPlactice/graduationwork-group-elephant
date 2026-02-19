@@ -317,8 +317,8 @@ export default function Page() {
     try {
       // 1. ファイルアップロード
       const uploadedAttachmentIds: number[] = [];
-      let uploadedThumbnailId: number | null = null;
-      let uploadedThumbnailPath: string | null = null;
+      let _uploadedThumbnailId: number | null = null;
+      let _uploadedThumbnailPath: string | null = null;
       const totalFiles = (thumbnailFile ? 1 : 0) + attachedFiles.length;
       let uploadedCount = 0;
 
