@@ -321,7 +321,7 @@ export function BookshelfTop({
   useEffect(() => {
     // データ取得の実行
     fetchReactionData();
-  }, []);
+  }, [fetchReactionData]);
 
   useEffect(() => {
     // Cookieからデータを取得する
@@ -553,7 +553,7 @@ export function BookshelfTop({
       setVotedBookId(bookId);
       return true;
     },
-    [votedBookId, canVote],
+    [votedBookId, canVote, addToast],
   );
 
   const handleCloseReview = useCallback(() => {
@@ -606,6 +606,7 @@ export function BookshelfTop({
     modalState,
     moveScatterBookToShelf,
     tutorialStep,
+    addToast,
   ]);
 
   const scrollToScatter = useCallback(() => {

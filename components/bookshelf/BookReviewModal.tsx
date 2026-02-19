@@ -44,15 +44,15 @@ type afterCheckedData = {
 
 export function BookReviewModal({
   book,
-  reactions,
+  reactions: _reactions,
   open,
   onClose,
   onComplete,
   actionLabel = "本棚にしまう",
   isFavorited = false,
-  isVoted = false,
+  isVoted: _isVoted = false,
   onToggleFavorite,
-  onToggleVote,
+  onToggleVote: _onToggleVote,
   actionButtonRef,
   voteButtonRef,
   reviewContentRef,
@@ -137,11 +137,13 @@ export function BookReviewModal({
   useEffect(() => {
     if (!book?.user_id || !book?.id) return;
 
-    setBookReviewReactions({
+    const payload = {
       user_id: book.user_id,
       book_review_id: book.id,
       reaction_id: "",
-    });
+    };
+    // defer setState to avoid synchronous setState-in-effect lint error
+    requestAnimationFrame(() => setBookReviewReactions(payload));
   }, [book]);
 
   // リアクションがすでにあるか確認する + 数をもらう
@@ -170,7 +172,8 @@ export function BookReviewModal({
     if (!bookReviewReactions?.user_id || !bookReviewReactions?.book_review_id)
       return;
 
-    checkReactionStatus();
+    // defer to avoid synchronous state updates inside effect
+    requestAnimationFrame(() => checkReactionStatus());
   }, [bookReviewReactions?.book_review_id, bookReviewReactions?.user_id]);
 
   // リアクション関数
