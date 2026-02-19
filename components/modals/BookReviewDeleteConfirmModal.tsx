@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Styles from "@/styles/app/poster.module.css";
 import modalStyles from "@/styles/app/modal.module.css";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
 
 interface BookReviewDeleteConfirmModalProps {
   open: boolean;
@@ -17,6 +18,7 @@ export const BookReviewDeleteConfirmModal: React.FC<
   BookReviewDeleteConfirmModalProps
 > = ({ open, onClose, bookReviewId }) => {
   const router = useRouter();
+  const { addToast } = useToast();
   const modalRef = useRef<HTMLDivElement>(null);
   const confirmBtnRef = useRef<HTMLButtonElement>(null);
   // ESCキーで閉じる
@@ -68,13 +70,21 @@ export const BookReviewDeleteConfirmModal: React.FC<
       });
 
       if (!res.ok) {
-        alert("書評の削除に失敗しました。時間をおいて再度お試しください。");
+        addToast({
+          type: "error",
+          message: "書評の削除に失敗しました。時間をおいて再度お試しください。",
+        });
         return;
       }
 
+      addToast({ type: "success", message: "書評を削除しました" });
       router.push("/poster/mypage");
     } catch (error) {
       console.error("Error deleting book review:", error);
+      addToast({
+        type: "error",
+        message: "書評の削除に失敗しました。時間をおいて再度お試しください。",
+      });
     }
   };
 

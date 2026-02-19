@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { BookPattern } from "@/components/bookshelf/BookPattern";
 import type { PatternType } from "@/components/bookshelf/bookData";
+import { useToast } from "@/contexts/ToastContext";
 
 import Styles from "@/styles/app/poster.module.css";
 
@@ -41,6 +42,7 @@ const normalizePattern = (pattern: string): PatternType => {
 
 export default function PostConfirmPage() {
   const router = useRouter();
+  const { addToast } = useToast();
   const [data] = useState<BookReviewData | null>(() => {
     if (typeof window === "undefined") return null;
     const raw = sessionStorage.getItem("bookReviewDraft");
@@ -60,7 +62,7 @@ export default function PostConfirmPage() {
     try {
       // データの存在確認
       if (!data) {
-        alert("書評データが見つかりません。");
+        addToast({ type: "error", message: "書評データが見つかりません。" });
         return;
       }
 
@@ -91,7 +93,10 @@ export default function PostConfirmPage() {
       });
 
       if (missingFields.length > 0) {
-        alert(`必須項目が不足しています: ${missingFields.join(", ")}`);
+        addToast({
+          type: "error",
+          message: `必須項目が不足しています: ${missingFields.join(", ")}`,
+        });
         console.error("Missing fields:", missingFields);
         return;
       }
@@ -107,7 +112,10 @@ export default function PostConfirmPage() {
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         console.error("[Register] API Error:", errorData);
-        alert(`登録に失敗しました。${errorData.message || ""}`);
+        addToast({
+          type: "error",
+          message: `登録に失敗しました。${errorData.message || ""}`,
+        });
         return;
       }
 
@@ -117,10 +125,18 @@ export default function PostConfirmPage() {
         sessionStorage.setItem("eventId", String(data.event_id));
       }
 
+      // 公開フラグに応じたメッセージ
+      if (!data.draft_flag && data.public_flag) {
+        addToast({ type: "success", message: "投稿を公開しました" });
+      } else if (data.draft_flag) {
+        addToast({ type: "success", message: "下書きを作成しました" });
+      } else {
+        addToast({ type: "success", message: "投稿を作成しました" });
+      }
       router.push("/post/post-complete");
     } catch (e) {
       console.error("[Register] Error:", e);
-      alert("通信に失敗しました。");
+      addToast({ type: "error", message: "通信に失敗しました。" });
     }
   };
 
@@ -128,7 +144,7 @@ export default function PostConfirmPage() {
   const updateBookReview = async () => {
     try {
       if (!data) {
-        alert("書評データが見つかりません。");
+        addToast({ type: "error", message: "書評データが見つかりません。" });
         return;
       }
 
@@ -145,27 +161,43 @@ export default function PostConfirmPage() {
       });
 
       if (!res.ok) {
-        alert("書評の編集に失敗しました。時間をおいて再度お試しください。");
+        addToast({
+          type: "error",
+          message: "書評の編集に失敗しました。時間をおいて再度お試しください。",
+        });
         return;
       }
 
       // 編集モードならマイページへ戻す（マイページから編集したときの遷移確実化）
       if (data.mode === "edit") {
         sessionStorage.removeItem("bookReviewDraft");
+        addToast({ type: "success", message: "投稿を更新しました" });
         router.push("/poster/mypage");
         return;
       }
 
-      // 下書き状態か？
+      // 下書き状態か？ 公開フラグに応じてメッセージを分ける
       if (isDraftStatus) {
         sessionStorage.removeItem("bookReviewDraft");
+        addToast({ type: "success", message: "下書きを更新しました" });
         router.push("/poster/mypage");
-      } else if (data.event_id) {
-        sessionStorage.setItem("eventId", String(data.event_id));
-        router.push("/post/post-complete");
+      } else {
+        // 公開/非公開の切替があれば明示的に通知
+        if (data.public_flag) {
+          addToast({ type: "success", message: "投稿を公開しました" });
+        } else {
+          addToast({ type: "success", message: "投稿を非公開にしました" });
+        }
+        if (data.event_id) {
+          sessionStorage.setItem("eventId", String(data.event_id));
+          router.push("/post/post-complete");
+        } else {
+          router.push("/poster/mypage");
+        }
       }
     } catch (error) {
       console.error("Error editing book review:", error);
+      addToast({ type: "error", message: "書評の編集に失敗しました。" });
     }
   };
 

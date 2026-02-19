@@ -14,6 +14,7 @@ import {
 import type { CSSProperties } from "react";
 import { preparePostConfirm } from "./actions";
 import { useActionState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 // tiptapのimport
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -53,6 +54,7 @@ export default function PostPage() {
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const [_state, formAction] = useActionState(preparePostConfirm, null);
+  const { addToast } = useToast();
   const [bookData, setBookData] = useState({
     isbn: "",
     title: "",
@@ -278,14 +280,18 @@ export default function PostPage() {
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         console.error("[Draft Register] API Error:", errorData);
-        alert(`下書き保存に失敗しました。${errorData.message || ""}`);
+        addToast({
+          type: "error",
+          message: `下書き保存に失敗しました。${errorData.message || ""}`,
+        });
         return;
       }
 
+      addToast({ type: "success", message: "下書きを保存しました" });
       router.push("/poster/mypage");
     } catch (e) {
       console.error("[Draft Register] Error:", e);
-      alert("通信に失敗しました。");
+      addToast({ type: "error", message: "通信に失敗しました。" });
     }
   };
 
