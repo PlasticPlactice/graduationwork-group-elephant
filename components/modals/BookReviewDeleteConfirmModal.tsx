@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 interface BookReviewDeleteConfirmModalProps {
   open: boolean;
   onClose: () => void;
-  bookReviewId?: string;
+  bookReviewId?: string | number;
 }
 
 export const BookReviewDeleteConfirmModal: React.FC<
