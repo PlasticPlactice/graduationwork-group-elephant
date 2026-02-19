@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
 import { DEMO_MODE } from "@/lib/constants/demoMode";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
@@ -50,6 +51,7 @@ interface BookReviewData {
 
 export default function MyPage() {
   const router = useRouter();
+  const { addToast } = useToast();
 
   // 各モーダルの表示フラグ
   const [showModal, setShowModal] = useState(false);
@@ -287,10 +289,10 @@ export default function MyPage() {
         await signOut({ callbackUrl: "/" });
       } else {
         const data = await res.json();
-        alert(
+        const msg =
           data.message ||
-            "退会処理に失敗しました。時間をおいて再度お試しください。",
-        );
+          "退会処理に失敗しました。時間をおいて再度お試しください。";
+        addToast({ type: "error", message: msg });
         setIsDeleting(false);
       }
     } catch (error) {
@@ -490,7 +492,9 @@ export default function MyPage() {
                 <h2 className="font-bold text-slate-900">あなたの書評</h2>
                 <div className="w-24 h-px bg-black" />
               </div>
-              <div className={`text-sm mt-1 mx-10 font-bold ${Styles.mainColor}`}>
+              <div
+                className={`text-sm mt-1 mx-10 font-bold ${Styles.mainColor}`}
+              >
                 ※運営による審査（1次審査）が開始されるまで編集が可能です。
               </div>
             </div>
@@ -550,12 +554,14 @@ export default function MyPage() {
               ))}
             </ul>
 
-            <div ref={listTopRef} className={`flex flex-col gap-3 pb-2 ${
+            <div
+              ref={listTopRef}
+              className={`flex flex-col gap-3 pb-2 ${
                 displayLimit > 3 ? "max-h-[600px] overflow-y-auto pr-2" : ""
               }`}
               style={{
-                scrollbarWidth: 'thin',
-                scrollBehavior: 'smooth'
+                scrollbarWidth: "thin",
+                scrollBehavior: "smooth",
               }}
             >
               {visibleReviews.map((review, reviewIndex) => (
@@ -625,18 +631,25 @@ export default function MyPage() {
                     // もし今が「全件表示」なら3に戻し、そうでなければ全件にする
                     if (displayLimit >= filteredReviews.length) {
                       setDisplayLimit(3);
-                      listTopRef.current?.scrollIntoView({ behavior: "smooth" });
+                      listTopRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                      });
                     } else {
                       setDisplayLimit(filteredReviews.length);
                       setTimeout(() => {
-                        listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        listTopRef.current?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        });
                       }, 50);
                     }
                   }}
                   className="py-3 mt-4 mb-3 text-slate-600 font-bold"
                 >
                   {/* 表示数によってテキストを切り替え（三項演算子） */}
-                  {displayLimit >= filteredReviews.length ? "閉じる" : `すべて表示する (全${filteredReviews.length}件)`}
+                  {displayLimit >= filteredReviews.length
+                    ? "閉じる"
+                    : `すべて表示する (全${filteredReviews.length}件)`}
                 </button>
               )}
             </div>

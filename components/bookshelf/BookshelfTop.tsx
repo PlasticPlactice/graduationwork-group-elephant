@@ -7,7 +7,7 @@ import {
   useEffect,
   useRef,
   useState,
-  useMemo, // ★追加
+  useMemo,
   type RefObject,
 } from "react";
 
@@ -22,6 +22,7 @@ import {
 } from "@/components/bookshelf/ScatterArea";
 import Modal from "@/app/(app)/Modal";
 import "@/components/bookshelf/BookReviewModal.module.css";
+import { useToast } from "@/contexts/ToastContext";
 
 const MOBILE_MAX_BOOKS_PER_SHELF = 8;
 const DESKTOP_MAX_BOOKS_PER_SHELF = 15;
@@ -284,6 +285,7 @@ export function BookshelfTop({
   const [isScatterView, setIsScatterView] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [reactions, setReactions] = useState<Reactions[]>([]);
+  const { addToast } = useToast();
 
   useEffect(() => {
     const seenEventInfo = window.localStorage.getItem(EVENT_INFO_STORAGE_KEY);
@@ -535,11 +537,17 @@ export function BookshelfTop({
   const toggleVote = useCallback(
     (bookId: string) => {
       if (!canVote) {
-        window.alert("このイベントの投票期間は終了しました");
+        addToast({
+          type: "error",
+          message: "このイベントの投票期間は終了しました",
+        });
         return false;
       }
       if (votedBookId !== null) {
-        window.alert("本日の投票は終了しました。明日また投票してください。");
+        addToast({
+          type: "error",
+          message: "本日の投票は終了しました。明日また投票してください。",
+        });
         return false;
       }
       setVotedBookId(bookId);
@@ -583,7 +591,7 @@ export function BookshelfTop({
       (shelf) => shelf.length < maxBooksPerShelf,
     );
     if (!hasSpace) {
-      window.alert("本棚に空きがありません。");
+      addToast({ type: "error", message: "本棚に空きがありません。" });
       return;
     }
     moveScatterBookToShelf(modalState.book.id);

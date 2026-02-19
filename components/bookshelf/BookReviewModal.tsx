@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useEffect, useRef, type CSSProperties, type Ref } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import type {
   Book,
   Reactions,
@@ -59,6 +60,7 @@ export function BookReviewModal({
   canVote = true,
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const { addToast } = useToast();
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const [bookReviewReactions, setBookReviewReactions] =
@@ -188,11 +190,11 @@ export function BookReviewModal({
       });
 
       if (!res.ok) {
-        alert("登録に失敗しました。");
+        addToast({ type: "error", message: "登録に失敗しました。" });
         return;
       }
     } catch (e) {
-      alert("通信に失敗しました。");
+      addToast({ type: "error", message: "通信に失敗しました。" });
     }
 
     // カウント＋データが入っているか確認する関数を実行し、情報を更新する

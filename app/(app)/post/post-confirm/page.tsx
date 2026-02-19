@@ -203,7 +203,7 @@ export default function PostConfirmPage() {
 
   const handleSubmit = () => {
     if (!data) {
-      alert("書評データが見つかりません。");
+      addToast({ type: "error", message: "書評データが見つかりません。" });
       return;
     }
 

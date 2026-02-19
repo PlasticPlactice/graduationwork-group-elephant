@@ -220,7 +220,10 @@ export default function PostPage() {
   // 書評確認画面へデータを送る
   const handleConfirm = () => {
     if (!editor) {
-      alert("エディターが初期化されていません。");
+      addToast({
+        type: "error",
+        message: "エディターが初期化されていません。",
+      });
       return;
     }
 
@@ -229,12 +232,12 @@ export default function PostPage() {
 
     // review フィールドとその他の必須フィールドを検証
     if (!currentHtml || currentHtml.trim() === "<p></p>") {
-      alert("書評を入力してください。");
+      addToast({ type: "error", message: "書評を入力してください。" });
       return;
     }
 
     if (!form.isbn) {
-      alert("本の情報が不足しています。");
+      addToast({ type: "error", message: "本の情報が不足しています。" });
       return;
     }
 
@@ -245,7 +248,7 @@ export default function PostPage() {
       !form.gender ||
       !form.self_introduction
     ) {
-      alert("プロフィール情報が不完全です。");
+      addToast({ type: "error", message: "プロフィール情報が不完全です。" });
       return;
     }
 

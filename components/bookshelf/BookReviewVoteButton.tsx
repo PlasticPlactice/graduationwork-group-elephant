@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef, useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import { parseCookies, setCookie, destroyCookie } from "nookies";
 
 const getVoteCookieKey = (eventId: string) => `voted_event_${eventId}`;
@@ -15,6 +16,7 @@ type Props = {
 const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
   ({ reviewId, eventId, onVoteChange, disabled = false }, ref) => {
     const cookieKey = getVoteCookieKey(eventId);
+    const { addToast } = useToast();
 
     // Cookieを見て「投票済み」かどうかの判定
     const cookies = parseCookies();
@@ -30,7 +32,10 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
 
       // パターン1: 浮気防止
       if (storedReviewId && storedReviewId !== reviewId) {
-        alert("本日は既に他の書評に投票済みです...");
+        addToast({
+          type: "error",
+          message: "本日は既に他の書評に投票済みです...",
+        });
         return;
       }
 
@@ -46,7 +51,10 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
         } catch {
           setIsVoted(true); // エラーなら元に戻す
           if (onVoteChange) onVoteChange(true, eventId);
-          alert("通信エラー: 取り消しに失敗しました");
+          addToast({
+            type: "error",
+            message: "通信エラー: 取り消しに失敗しました",
+          });
         }
 
         return;
@@ -69,7 +77,10 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
           setIsVoted(false); // エラーなら元に戻す
           if (onVoteChange) onVoteChange(false, eventId);
           destroyCookie(null, cookieKey, { path: "/" });
-          alert("通信エラー: 投票に失敗しました");
+          addToast({
+            type: "error",
+            message: "通信エラー: 投票に失敗しました",
+          });
         }
       }
 
