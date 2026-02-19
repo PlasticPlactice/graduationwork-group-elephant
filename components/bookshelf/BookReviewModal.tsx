@@ -44,15 +44,12 @@ type afterCheckedData = {
 
 export function BookReviewModal({
   book,
-  reactions: _reactions,
   open,
   onClose,
   onComplete,
   actionLabel = "本棚にしまう",
   isFavorited = false,
-  isVoted: _isVoted = false,
   onToggleFavorite,
-  onToggleVote: _onToggleVote,
   actionButtonRef,
   voteButtonRef,
   reviewContentRef,
@@ -146,35 +143,29 @@ export function BookReviewModal({
     requestAnimationFrame(() => setBookReviewReactions(payload));
   }, [book]);
 
-  // リアクションがすでにあるか確認する + 数をもらう
-  const checkReactionStatus = async () => {
-    const newReactionsData = {
-      ...bookReviewReactions,
-    };
-
-    try {
-      const res = await fetch("/api/viewer/reaction/status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newReactionsData),
-      });
-
-      const apiResponse = await res.json();
-
-      setAfterCheckedData(apiResponse);
-    } catch (e) {
-      console.error("通信に失敗しました。");
-    }
-  };
-
   // bookReviewReactionsにデータが入ったのを確認したらリアクションの数を取得してもらう
   useEffect(() => {
     if (!bookReviewReactions?.user_id || !bookReviewReactions?.book_review_id)
       return;
 
     // defer to avoid synchronous state updates inside effect
-    requestAnimationFrame(() => checkReactionStatus());
-  }, [bookReviewReactions?.book_review_id, bookReviewReactions?.user_id]);
+    requestAnimationFrame(async () => {
+      const newReactionsData = { ...bookReviewReactions };
+      try {
+        const res = await fetch("/api/viewer/reaction/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newReactionsData),
+        });
+
+        const apiResponse = await res.json();
+
+        setAfterCheckedData(apiResponse);
+      } catch {
+        console.error("通信に失敗しました。");
+      }
+    });
+  }, [bookReviewReactions]);
 
   // リアクション関数
   const createReaction = async (reaction_id: string) => {
@@ -196,7 +187,7 @@ export function BookReviewModal({
         addToast({ type: "error", message: "登録に失敗しました。" });
         return;
       }
-    } catch (e) {
+    } catch {
       addToast({ type: "error", message: "通信に失敗しました。" });
     }
 
@@ -208,8 +199,9 @@ export function BookReviewModal({
         body: JSON.stringify(newReactionsData),
       });
 
-      const afterCheckedData = await res.json();
-    } catch (e) {
+      const newAfterCheckedData = await res.json();
+      setAfterCheckedData(newAfterCheckedData);
+    } catch {
       console.error("通信に失敗しました。");
     }
   };
@@ -257,7 +249,7 @@ export function BookReviewModal({
     try {
       await createReaction(clickedReactionId);
       // ※もしここでエラーが出たら、Stateを元に戻す処理を入れるとさらに完璧
-    } catch (error) {
+    } catch {
       console.error("保存に失敗しました");
       // エラーが出たらリロードさせるなどの対処
     }

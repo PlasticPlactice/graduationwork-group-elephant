@@ -86,12 +86,6 @@ function EditNoticeContent() {
   // アップロードファイル関連
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
-  const [_existingThumbnailFileId, _setExistingThumbnailFileId] = useState<
-    number | null
-  >(null);
-  const [_existingThumbnailPath, _setExistingThumbnailPath] = useState<
-    string | null
-  >(null);
   const [existingMainImagePath, setExistingMainImagePath] = useState<
     string | null
   >(null);
@@ -244,10 +238,10 @@ function EditNoticeContent() {
   ) => {
     const file = e.target.files?.[0];
     if (!file) {
-      // ファイルが選択されない場合、既存のサムネイルに戻す
-      if (existingThumbnailPath) {
+      // ファイルが選択されない場合、既存のサムネイル（main image）に戻す
+      if (existingMainImagePath) {
         setThumbnailFile(null);
-        setThumbnailPreview(existingThumbnailPath);
+        setThumbnailPreview(existingMainImagePath);
       } else {
         setThumbnailFile(null);
         setThumbnailPreview(null);
@@ -371,7 +365,10 @@ function EditNoticeContent() {
         );
       }
       const uploadedFile = await res.json();
-      addToast({ type: "success", message: `ファイルをアップロードしました: ${uploadedFile.data_path}` });
+      addToast({
+        type: "success",
+        message: `ファイルをアップロードしました: ${uploadedFile.data_path}`,
+      });
       return { id: uploadedFile.id, data_path: uploadedFile.data_path };
     } catch (error: unknown) {
       const errorMessage =
@@ -452,7 +449,6 @@ function EditNoticeContent() {
         (preview) => preview.file,
       );
       const totalFiles = (thumbnailFile ? 1 : 0) + filesNeedingUpload.length;
-      let _uploadedThumbnailId: number | null = null;
       let _uploadedThumbnailPath: string | null = null;
       const uploadedAttachmentIds: number[] = [];
       let uploadedCount = 0;
@@ -470,8 +466,8 @@ function EditNoticeContent() {
           setExistingMainImagePath(result.data_path);
         }
         uploadedCount++;
-      } else if (existingThumbnailPath) {
-        // 既存のサムネイルを保持する場合、ここで処理
+      } else if (existingMainImagePath) {
+        // 既存のサムネイル（main image）を保持する場合、ここで処理
       }
 
       for (const preview of attachedFilePreviews) {

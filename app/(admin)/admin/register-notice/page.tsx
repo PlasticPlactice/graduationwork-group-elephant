@@ -229,7 +229,10 @@ export default function Page() {
         );
       }
       const uploadedFile = await res.json();
-      addToast({ type: "success", message: `ファイルをアップロードしました: ${uploadedFile.data_path}` });
+      addToast({
+        type: "success",
+        message: `ファイルをアップロードしました: ${uploadedFile.data_path}`,
+      });
       return { id: uploadedFile.id, data_path: uploadedFile.data_path };
     } catch (error: unknown) {
       const errorMessage =
@@ -317,7 +320,6 @@ export default function Page() {
     try {
       // 1. ファイルアップロード
       const uploadedAttachmentIds: number[] = [];
-      let _uploadedThumbnailId: number | null = null;
       let _uploadedThumbnailPath: string | null = null;
       const totalFiles = (thumbnailFile ? 1 : 0) + attachedFiles.length;
       let uploadedCount = 0;
@@ -326,7 +328,6 @@ export default function Page() {
         setUploadProgress(Math.round(((uploadedCount / totalFiles) * 100) / 2)); // アップロード進捗は50%まで
         const result = await uploadFile(thumbnailFile);
         if (result !== null) {
-          _uploadedThumbnailId = result.id;
           _uploadedThumbnailPath = result.data_path;
         }
         uploadedCount++;

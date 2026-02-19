@@ -7,13 +7,7 @@ import GenericError from "@/components/error/GenericError";
  * アプリ一般（app）用のエラー画面
  * ユーザ向けダッシュボード・トップへのリンクを提示
  */
-export default function AppErrorPage({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+export default function AppErrorPage({ reset }: { reset: () => void }) {
   return (
     <GenericError
       title="エラーが発生しました"

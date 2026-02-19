@@ -3,7 +3,7 @@
 import Styles from "@/styles/app/poster.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+// Link removed as unused
 import {
   useState,
   useEffect,

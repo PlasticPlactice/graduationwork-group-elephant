@@ -230,6 +230,7 @@ export default function Page() {
       searchTitle,
       searchDateFrom,
       searchDateTo,
+      addToast,
     ],
   );
 
@@ -259,7 +260,6 @@ export default function Page() {
       searchForm.publicDateTo,
     );
   };
-
   const handleResetSearch = () => {
     setSearchForm({
       title: "",
@@ -290,12 +290,13 @@ export default function Page() {
   // useEffects
   // ---------------------------
   useEffect(() => {
-    fetchNotifications(undefined, searchTitle, searchDateFrom, searchDateTo);
+    fetchNotifications();
   }, [
     selectedTab,
     selectedStatus,
     sortBy,
     sortOrder,
+    fetchNotifications,
     searchTitle,
     searchDateFrom,
     searchDateTo,
@@ -304,7 +305,7 @@ export default function Page() {
   // ページ変更時
   useEffect(() => {
     fetchNotifications(currentPage, searchTitle, searchDateFrom, searchDateTo);
-  }, [currentPage]);
+  }, [currentPage, fetchNotifications]);
 
   // ---------------------------
   // UIレンダリング

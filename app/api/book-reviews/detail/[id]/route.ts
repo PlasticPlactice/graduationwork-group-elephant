@@ -4,12 +4,6 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import type { BookReviewDetail } from "@/lib/types/bookReview";
 
-type Params = {
-  params: {
-    id: string;
-  };
-};
-
 // 書評一つだけ取得
 export async function GET(
   req: Request,
@@ -53,7 +47,7 @@ export async function GET(
     }
 
     return NextResponse.json(review);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to fetch review" },
       { status: 500 },

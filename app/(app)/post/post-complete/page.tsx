@@ -18,63 +18,23 @@ type EventItem = {
   second_voting_start_period: string;
   second_voting_end_period?: string;
 };
-type EventItemView = {
-  id: number;
-  title: string;
-  status: number;
-  first_voting_start_period: string;
-  second_voting_start_period: string;
-  end_period: string;
-};
-
 export default function PostCompletePage() {
-  const [eventId, setEventId] = useState<string | null>(() =>
+  const [eventId] = useState<string | null>(() =>
     typeof window !== "undefined" ? sessionStorage.getItem("eventId") : null,
   );
   const [eventData, setEventData] = useState<EventItem[]>([]);
-
-  const toView = (item: EventItem): EventItemView => ({
-    id: item.id,
-    title: item.title,
-    status: item.status,
-    first_voting_start_period: item.first_voting_start_period
-      ? formatDate(new Date(item.first_voting_start_period))
-      : "",
-    second_voting_start_period: item.second_voting_start_period
-      ? formatDate(new Date(item.second_voting_start_period))
-      : "",
-    end_period: item.end_period ? formatDate(new Date(item.end_period)) : "",
-  });
-
-  const fetchEventById = async (eventId: number) => {
-    try {
-      const res = await fetch(`/api/events?id=${eventId}`);
-      if (!res.ok) {
-        console.error("events fetch failed", await res.text());
-        return;
-      }
-      const data: EventItem[] = await res.json();
-
-      const viewData = data.map(toView);
-
-      setEventData(viewData);
-    } catch (err) {
-      console.error("Failed to fetch events:", err);
-    }
-  };
-
-  const formatDate = (date: Date) => {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
-    return `${y}年${m}月${d}日`;
-  };
 
   useEffect(() => {
     if (!eventId) return;
     let mounted = true;
 
     (async () => {
+      const formatDate = (date: Date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}年${m}月${d}日`;
+      };
       try {
         const res = await fetch(`/api/events?id=${Number(eventId)}`);
         if (!res.ok) {
@@ -82,7 +42,20 @@ export default function PostCompletePage() {
           return;
         }
         const data: EventItem[] = await res.json();
-        const viewData = data.map(toView);
+        const viewData = data.map((item) => ({
+          id: item.id,
+          title: item.title,
+          status: item.status,
+          first_voting_start_period: item.first_voting_start_period
+            ? formatDate(new Date(item.first_voting_start_period))
+            : "",
+          second_voting_start_period: item.second_voting_start_period
+            ? formatDate(new Date(item.second_voting_start_period))
+            : "",
+          end_period: item.end_period
+            ? formatDate(new Date(item.end_period))
+            : "",
+        }));
         if (mounted) setEventData(viewData);
       } catch (err) {
         console.error("Failed to fetch events:", err);

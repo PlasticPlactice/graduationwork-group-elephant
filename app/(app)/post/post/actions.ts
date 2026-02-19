@@ -1,8 +1,5 @@
 "use server";
 
-export async function preparePostConfirm(
-  _prevState: unknown,
-  _formData: FormData,
-) {
+export async function preparePostConfirm() {
   // redirect("/post/post-confirm");
 }

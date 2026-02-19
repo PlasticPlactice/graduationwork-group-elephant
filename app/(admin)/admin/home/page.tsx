@@ -48,7 +48,10 @@ export default function Page() {
         setEventData(sortedData);
       } catch (err) {
         console.error("Failed to fetch events:", err);
-        addToast({ type: "error", message: "イベント一覧の取得に失敗しました" });
+        addToast({
+          type: "error",
+          message: "イベント一覧の取得に失敗しました",
+        });
       }
     };
 

@@ -19,7 +19,7 @@ export default function NotFound({
   function handleBack() {
     try {
       router.back();
-    } catch (e) {
+    } catch {
       router.push("/");
     }
   }

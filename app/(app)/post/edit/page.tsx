@@ -156,7 +156,7 @@ export default function PostPage() {
       }
 
       router.push("/poster/mypage");
-    } catch (e) {
+    } catch {
       addToast({ type: "error", message: "通信に失敗しました。" });
     }
   };

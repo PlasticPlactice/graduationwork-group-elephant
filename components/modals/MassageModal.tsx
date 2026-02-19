@@ -23,7 +23,6 @@ interface MassageModalProps {
 export const MassageModal: React.FC<MassageModalProps> = ({
   open,
   onClose,
-  userName: _userName,
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
