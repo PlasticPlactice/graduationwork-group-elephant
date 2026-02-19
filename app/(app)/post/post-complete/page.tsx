@@ -27,10 +27,9 @@ type EventItemView = {
   end_period: string;
 };
 
-
 export default function PostCompletePage() {
   const [eventId, setEventId] = useState<string | null>(() =>
-    typeof window !== "undefined" ? sessionStorage.getItem("eventId") : null
+    typeof window !== "undefined" ? sessionStorage.getItem("eventId") : null,
   );
   const [eventData, setEventData] = useState<EventItem[]>([]);
 
@@ -44,9 +43,7 @@ export default function PostCompletePage() {
     second_voting_start_period: item.second_voting_start_period
       ? formatDate(new Date(item.second_voting_start_period))
       : "",
-    end_period: item.end_period
-      ? formatDate(new Date(item.end_period))
-      : "",
+    end_period: item.end_period ? formatDate(new Date(item.end_period)) : "",
   });
 
   const fetchEventById = async (eventId: number) => {
@@ -119,7 +116,9 @@ export default function PostCompletePage() {
           <div className="mt-4">
             <div className="flex gap-7 justify-between">
               <p className={`${Styles.text16px}`}>１次審査開始</p>
-              <p className={`font-bold text-blue-500`}>{eventData[0]?.first_voting_start_period}</p>
+              <p className={`font-bold text-blue-500`}>
+                {eventData[0]?.first_voting_start_period}
+              </p>
             </div>
             <p className={`${Styles.text12px} ${Styles.subColor}`}>
               運営が１次審査を行います。
@@ -128,7 +127,9 @@ export default function PostCompletePage() {
           <div className="mt-4">
             <div className="flex gap-7 justify-between">
               <p className={`${Styles.text16px}`}>２次審査開始</p>
-              <p className={`font-bold`}>{eventData[0]?.second_voting_start_period}</p>
+              <p className={`font-bold`}>
+                {eventData[0]?.second_voting_start_period}
+              </p>
             </div>
             <p className={`${Styles.text12px} ${Styles.subColor}`}>
               ユーザーの皆さんが２次審査を行います。
