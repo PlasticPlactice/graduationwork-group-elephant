@@ -53,7 +53,7 @@ export default function Page() {
     };
 
     void fetchEvents();
-  }, []);
+  }, [addToast]);
 
   return (
     <main className="home-main">
