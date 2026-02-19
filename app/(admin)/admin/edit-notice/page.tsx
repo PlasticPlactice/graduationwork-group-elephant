@@ -461,7 +461,6 @@ function EditNoticeContent() {
         }
         const result = await uploadFile(thumbnailFile);
         if (result !== null) {
-          _uploadedThumbnailId = result.id;
           _uploadedThumbnailPath = result.data_path;
           setExistingMainImagePath(result.data_path);
         }
