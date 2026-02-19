@@ -29,7 +29,9 @@ type EventItemView = {
 
 
 export default function PostCompletePage() {
-  const [eventId, setEventId] = useState<string | null>(null);
+  const [eventId, setEventId] = useState<string | null>(() =>
+    typeof window !== "undefined" ? sessionStorage.getItem("eventId") : null
+  );
   const [eventData, setEventData] = useState<EventItem[]>([]);
 
   const toView = (item: EventItem): EventItemView => ({
@@ -72,12 +74,28 @@ export default function PostCompletePage() {
   };
 
   useEffect(() => {
-    setEventId(sessionStorage.getItem("eventId"));
-  }, [])
+    if (!eventId) return;
+    let mounted = true;
 
-  useEffect(() => {
-    fetchEventById(Number(eventId))
-  }, [eventId])
+    (async () => {
+      try {
+        const res = await fetch(`/api/events?id=${Number(eventId)}`);
+        if (!res.ok) {
+          console.error("events fetch failed", await res.text());
+          return;
+        }
+        const data: EventItem[] = await res.json();
+        const viewData = data.map(toView);
+        if (mounted) setEventData(viewData);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [eventId]);
 
   return (
     <div className={`${Styles.posterContainer}`}>
