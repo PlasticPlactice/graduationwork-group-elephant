@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useToast } from "@/contexts/ToastContext";
 
 import Styles from "@/styles/app/poster.module.css";
 import modalStyles from "@/styles/app/modal.module.css";
@@ -44,6 +45,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const { addToast } = useToast();
 
   // 初期値のセット
   useEffect(() => {
@@ -128,7 +130,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
         throw new Error(message);
       }
 
-      alert("プロフィールを更新しました");
+      addToast({ type: "success", message: "プロフィールを更新しました" });
       if (onUpdate) {
         onUpdate();
       }
@@ -137,7 +139,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       console.error(error);
       const fallbackMessage =
         error instanceof Error ? error.message : "エラーが発生しました。";
-      alert(fallbackMessage);
+      addToast({ type: "error", message: fallbackMessage });
     } finally {
       setIsSubmitting(false);
     }

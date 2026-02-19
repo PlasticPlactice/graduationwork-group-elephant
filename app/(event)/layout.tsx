@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { EventHeader } from "@/components/layout/event-header";
 import { Footer } from "@/components/layout/footer";
-import { Providers } from "@/app/providers";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -18,9 +17,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className="antialiased min-h-screen flex flex-col bg-white">
         <EventHeader />
-        <main className="flex-1">
-          <Providers>{children}</Providers>
-        </main>
+        <main className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

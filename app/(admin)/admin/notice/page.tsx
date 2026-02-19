@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import Textbox from "@/components/ui/admin-textbox";
 import "@/styles/admin/notice.css";
 import { Icon } from "@iconify/react";
@@ -30,6 +31,7 @@ interface ApiResponse {
 }
 
 export default function Page() {
+  const { addToast } = useToast();
   const router = useRouter();
 
   // ---------------------------
@@ -39,7 +41,6 @@ export default function Page() {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [sortBy, setSortBy] = useState<string>("public_date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // デフォルトを降順に
@@ -134,11 +135,14 @@ export default function Page() {
 
       if (!res.ok) {
         const error = await res.json();
-        alert(error.message || "削除に失敗しました");
+        addToast({
+          type: "error",
+          message: error.message || "削除に失敗しました",
+        });
         return;
       }
 
-      alert("お知らせを削除しました");
+      addToast({ type: "success", message: "お知らせを削除しました" });
       // 一覧を再取得
       await fetchNotifications(
         currentPage,
@@ -148,7 +152,7 @@ export default function Page() {
       );
     } catch (err) {
       console.error("Delete error:", err);
-      alert("削除に失敗しました");
+      addToast({ type: "error", message: "削除に失敗しました" });
     } finally {
       setIsDeleting(false);
       closeDeleteModal();
@@ -166,7 +170,6 @@ export default function Page() {
       dateTo: string = searchDateTo,
     ) => {
       setIsLoading(true);
-      setErrorMessage("");
       try {
         const params = new URLSearchParams();
         params.append("page", page.toString());
@@ -210,7 +213,10 @@ export default function Page() {
         console.error("Error fetching notifications:", error);
         setNotifications([]);
         setTotalPages(0);
-        setErrorMessage("お知らせ情報の取得に失敗しました。");
+        addToast({
+          type: "error",
+          message: "お知らせ情報の取得に失敗しました。",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -445,11 +451,7 @@ export default function Page() {
         </div>
       </div>
 
-      {errorMessage && (
-        <div className="mx-8 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          {errorMessage}
-        </div>
-      )}
+      {/* 通知はトーストで表示します */}
 
       <div className="mx-8 mt-5">
         <table className="w-full notice-table">

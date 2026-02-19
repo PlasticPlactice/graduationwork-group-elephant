@@ -2,6 +2,7 @@
 import AdminButton from "@/components/ui/admin-button";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import "@/styles/admin/events.css";
 import { Icon } from "@iconify/react";
 import EventRegisterModal from "@/components/admin/EventRegisterModal";
@@ -25,6 +26,7 @@ type EventItem = {
 };
 
 export default function Page() {
+  const { addToast } = useToast();
   const router = useRouter();
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -35,7 +37,6 @@ export default function Page() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
-  const [deleteErrorMessage, setDeleteErrorMessage] = useState("");
   const [canDelete, setCanDelete] = useState(true);
 
   // fetchEvents: イベントデータを取得する関数
@@ -127,9 +128,16 @@ export default function Page() {
           e.id === id ? { ...e, public_flag: updated.public_flag } : e,
         ),
       );
+      // 成功時のフィードバック
+      addToast({
+        type: "success",
+        message: updated.public_flag
+          ? "イベントを公開しました。"
+          : "イベントを非公開にしました。",
+      });
     } catch (err) {
       console.error("Failed to update public_flag:", err);
-      alert("公開設定の更新に失敗しました。");
+      addToast({ type: "error", message: "公開設定の更新に失敗しました。" });
       // 失敗時はページをリロードしてサーバーと同期
       router.refresh();
     } finally {
@@ -178,7 +186,6 @@ export default function Page() {
   const handleDelete = (id: number) => {
     setDeleteTargetId(id);
     setCanDelete(true);
-    setDeleteErrorMessage("");
     setIsDeleteModalOpen(true);
   };
 
@@ -186,7 +193,6 @@ export default function Page() {
     setIsDeleteModalOpen(false);
     setDeleteTargetId(null);
     setCanDelete(true);
-    setDeleteErrorMessage("");
   };
 
   const confirmDelete = async () => {
@@ -203,23 +209,29 @@ export default function Page() {
         // APIが開催中のチェックでエラーを返した場合
         if (data.canDelete === false) {
           setCanDelete(false);
-          setDeleteErrorMessage(data.message || "イベントが開催中です。");
+          addToast({
+            type: "warning",
+            message: data.message || "イベントが開催中です。",
+          });
           setIsDeleting(false);
           return;
         }
-        alert(data.message || "削除に失敗しました");
+        addToast({
+          type: "error",
+          message: data.message || "削除に失敗しました",
+        });
         setIsDeleting(false);
         closeDeleteModal();
         return;
       }
 
-      alert("イベントを削除しました");
+      addToast({ type: "success", message: "イベントを削除しました" });
       // イベント一覧を再取得
       await fetchEvents();
       closeDeleteModal();
     } catch (err) {
       console.error("Delete error:", err);
-      alert("削除に失敗しました");
+      addToast({ type: "error", message: "削除に失敗しました" });
       closeDeleteModal();
     } finally {
       setIsDeleting(false);
@@ -480,7 +492,6 @@ export default function Page() {
         onConfirm={confirmDelete}
         isDeleting={isDeleting}
         canDelete={canDelete}
-        errorMessage={deleteErrorMessage}
       />
     </main>
   );

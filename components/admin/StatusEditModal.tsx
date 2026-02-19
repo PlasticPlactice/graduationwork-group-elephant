@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
-import {
-  REVIEW_STATUS,
-  REVIEW_STATUS_LABELS,
-} from "@/lib/constants/reviewStatus";
+import { useToast } from "@/contexts/ToastContext";
+import { REVIEW_STATUS_LABELS } from "@/lib/constants/reviewStatus";
 
 // 選択された書評データの型定義
 export interface StatusTargetReview {
@@ -30,17 +28,13 @@ export default function StatusEditModal({
   onStatusUpdated,
 }: StatusEditModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addToast } = useToast();
 
   if (!isOpen) return null;
 
   // ステータスラベルの変換ヘルパー
   const getStatusLabel = (status: number) =>
     REVIEW_STATUS_LABELS[status] ?? "-";
-
-  const currentStatusDisplay =
-    selectedReviews.length > 0
-      ? getStatusLabel(selectedReviews[0].status)
-      : "-";
 
   const handleIncrement = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,12 +55,19 @@ export default function StatusEditModal({
         throw new Error("ステータス更新に失敗しました");
       }
 
-      alert("選択した書評を1段階上に更新しました。（対象ユーザーへ通知が送信されます）");
+      addToast({
+        type: "success",
+        message:
+          "選択した書評を1段階上に更新しました。（対象ユーザーへ通知が送信されます）",
+      });
       if (onStatusUpdated) onStatusUpdated();
       onClose();
     } catch (error) {
       console.error("Failed to update status:", error);
-      alert("更新に失敗しました。もう一度お試しください。");
+      addToast({
+        type: "error",
+        message: "更新に失敗しました。もう一度お試しください。",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -113,7 +114,6 @@ export default function StatusEditModal({
         </div>
 
         <form onSubmit={handleIncrement} className="m-auto w-1/4">
-
           <AdminButton
             label={isSubmitting ? "変更中..." : "ステータスを更新する"}
             type="submit"

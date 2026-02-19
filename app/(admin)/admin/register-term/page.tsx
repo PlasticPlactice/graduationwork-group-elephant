@@ -1,11 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
 import { useRouter } from "next/navigation";
 import "@/styles/admin/register-term.css";
 
 export default function Page() {
+  const { addToast } = useToast();
   const router = useRouter();
   const getNowDatetimeLocal = () => {
     const now = new Date();
@@ -46,7 +48,10 @@ export default function Page() {
       file.type === "application/pdf" ||
       file.name.toLowerCase().endsWith(".pdf");
     if (!isPdf) {
-      alert("PDFファイルのみアップロードできます");
+      addToast({
+        type: "error",
+        message: "PDFファイルのみアップロードできます",
+      });
       e.currentTarget.value = "";
       setPreviewUrl(null);
       setSelectedFileName(null);
@@ -80,7 +85,7 @@ export default function Page() {
     e.preventDefault();
 
     if (!selectedFile || !selectedFileName) {
-      alert("ファイルを選択してください");
+      addToast({ type: "error", message: "ファイルを選択してください" });
       return;
     }
 
@@ -99,15 +104,18 @@ export default function Page() {
 
       if (!response.ok) {
         const error = await response.json();
-        alert(error.message || "利用規約の登録に失敗しました");
+        addToast({
+          type: "error",
+          message: error.message || "利用規約の登録に失敗しました",
+        });
         return;
       }
 
-      alert("利用規約を登録しました");
+      addToast({ type: "success", message: "利用規約を登録しました" });
       router.push("/admin/detail-term");
     } catch (error) {
       console.error("Error:", error);
-      alert("利用規約の登録に失敗しました");
+      addToast({ type: "error", message: "利用規約の登録に失敗しました" });
     } finally {
       setIsLoading(false);
     }

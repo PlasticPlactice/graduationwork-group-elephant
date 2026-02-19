@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { DEMO_MODE } from "@/lib/constants/demoMode";
+import { useToast } from "@/contexts/ToastContext";
 
 function PasswordResetContent() {
   const searchParams = useSearchParams();
@@ -14,6 +15,7 @@ function PasswordResetContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+  const { addToast } = useToast();
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,12 +23,16 @@ function PasswordResetContent() {
 
     // バリデーション
     if (!newPassword || !confirmPassword) {
-      setMessage("すべてのフィールドを入力してください。");
+        const msg = "すべてのフィールドを入力してください。";
+        setMessage(msg);
+        addToast({ type: "error", message: msg });
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setMessage("新しいパスワードが一致しません。");
+        const msg = "新しいパスワードが一致しません。";
+        setMessage(msg);
+        addToast({ type: "error", message: msg });
       return;
     }
 
@@ -34,14 +40,17 @@ function PasswordResetContent() {
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
 
     if (!passwordComplexityRegex.test(newPassword)) {
-      setMessage(
-        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください。",
-      );
+      const msg =
+        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください。";
+      setMessage(msg);
+      addToast({ type: "error", message: msg });
       return;
     }
 
     if (!token) {
-      setMessage("無効なリセットリンクです。もう一度手続きを始めてください。");
+      const msg = "無効なリセットリンクです。もう一度手続きを始めてください。";
+      setMessage(msg);
+      addToast({ type: "error", message: msg });
       return;
     }
 
@@ -64,21 +73,31 @@ function PasswordResetContent() {
 
       if (res.ok) {
         setIsSuccess(true);
-        setMessage(data.message + " ログイン画面からログインしてください。");
+        const successMsg = data.message + " ログイン画面からログインしてください。";
+        setMessage(successMsg);
+        addToast({ type: "success", message: successMsg });
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        setMessage(data.message || "パスワード変更に失敗しました。");
+        const errMsg = data.message || "パスワード変更に失敗しました。";
+        setMessage(errMsg);
+        addToast({ type: "error", message: errMsg });
       }
     } catch (error) {
       console.error("Password reset error:", error);
-      setMessage(
-        "パスワード変更に失敗しました。リセットリンクが期限切れの可能性があります。",
-      );
+      const errMsg =
+        "パスワード変更に失敗しました。リセットリンクが期限切れの可能性があります。";
+      setMessage(errMsg);
+      addToast({ type: "error", message: errMsg });
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!token) return;
+    // no-op: token presence handled in render; keep for future side-effects
+  }, [token]);
 
   if (!token) {
     return (

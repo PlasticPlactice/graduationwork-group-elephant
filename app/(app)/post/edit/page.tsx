@@ -1,10 +1,10 @@
 "use client";
 
 import Styles from "@/styles/app/poster.module.css";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { useSession } from "next-auth/react";
 // tiptapのimport
-import { EditorContent, parseIndentedBlocks, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BubbleMenu } from "@tiptap/extension-bubble-menu";
 import Color from "@tiptap/extension-color";
@@ -19,8 +19,7 @@ import { BookReviewDeleteConfirmModal } from "@/components/modals/BookReviewDele
 export default function PostPage() {
   const router = useRouter();
 
-  const { data: session, status } = useSession();
-  const userId = (session?.user as { id?: string })?.id;
+  useSession();
 
   // HTML送信用
   const [html, setHtml] = useState("");
@@ -31,11 +30,24 @@ export default function PostPage() {
   const [boldActive, setBoldActive] = useState(false);
   const [italicActive, setItalicActive] = useState(false);
   const [underlineActive, setUnderlineActive] = useState(false);
-  const [colorActive, setColorActive] = useState<string>("#000000");
 
-  const [state, formAction] = useActionState(preparePostConfirm, null);
-  const [bookReviewData, setBookReviewData] = useState<any>(null);
-  const [isDraft, setIsDraft] = useState(false);
+  const [, formAction] = useActionState(preparePostConfirm, null);
+
+  interface BookReviewData {
+    id: number;
+    draft_flag?: boolean;
+    review?: string;
+    color?: string;
+    pattern?: string;
+    pattern_color?: string;
+    book_title?: string;
+    author?: string;
+  }
+
+  const [bookReviewData, setBookReviewData] = useState<BookReviewData | null>(
+    null,
+  );
+  const isDraft = bookReviewData?.draft_flag === true;
 
   const [form, setForm] = useState<{
     bookReview_id: number | null;
@@ -53,23 +65,6 @@ export default function PostPage() {
     pattern_color: "#FFFFFF",
     evaluations_status: 0,
     draft_flag: false,
-  });
-  const [draftForm, setDraftForm] = useState<{
-    bookReview_id: number | null;
-    review: string;
-    color: string;
-    pattern: string;
-    pattern_color: string;
-    evaluations_status: number;
-    draft_flag: boolean
-  }>({
-    bookReview_id: null,
-    review: "",
-    color: "#FFFFFF",
-    pattern: "dot",
-    pattern_color: "#FFFFFF",
-    evaluations_status: 0,
-    draft_flag: true
   });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -103,40 +98,7 @@ export default function PostPage() {
   ];
 
   // 指定したIDの書評データを取得
-  const fetchBookReviewDataById = useCallback(async (bookReviewId: number) => {
-    try {
-      const res = await fetch(`/api/book-reviews/detail/${bookReviewId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setBookReviewData(data);
-      }
-    } catch (error) {
-      console.error("Failed to Fetch book review detail data");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!bookReviewData) return;
-
-    // 下書きかどうかの判定
-    if (bookReviewData.draft_flag === true) {
-      setIsDraft(true)
-    }
-
-    setForm((prev) => ({
-      ...prev,
-      bookReview_id: bookReviewData.id,
-      review: bookReviewData.review,
-      color: bookReviewData.color,
-      pattern: bookReviewData.pattern,
-      pattern_color: bookReviewData.pattern_color,
-    }));
-  }, [bookReviewData]);
+  // 書評データ取得は下の effect 内で行い、取得後に state を更新します。
 
   // データ取得の実行
   useEffect(() => {
@@ -149,12 +111,36 @@ export default function PostPage() {
     const bookReviewId =
       typeof parsed === "number" ? parsed : parsed.bookReviewId;
 
-    fetchBookReviewDataById(bookReviewId);
-  }, [fetchBookReviewDataById]);
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/book-reviews/detail/${bookReviewId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setBookReviewData(data);
+          setForm((prev) => ({
+            ...prev,
+            bookReview_id: data.id ?? null,
+            review: data.review ?? "",
+            color: data.color ?? "#FFFFFF",
+            pattern: data.pattern ?? "dot",
+            pattern_color: data.pattern_color ?? "#FFFFFF",
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to Fetch book review detail data", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // 下書き登録用
   const registerBookReviewDraft = async (payload: typeof form) => {
-
     try {
       const res = await fetch("/api/book-reviews/mypage/edit", {
         method: "PUT",
@@ -177,10 +163,8 @@ export default function PostPage() {
   const handleDraftConfirm = () => {
     const nextForm = {
       ...form,
-      draft_flag: true
+      draft_flag: true,
     };
-
-    setDraftForm(nextForm); 
 
     registerBookReviewDraft({
       ...nextForm,
@@ -211,7 +195,7 @@ export default function PostPage() {
     ],
     content: "",
     onUpdate({ editor }) {
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
         review: editor.getHTML(),
       }));
@@ -220,7 +204,7 @@ export default function PostPage() {
 
   // 色が選択された時
   const onChangePatternColor = (patternColor: string) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       patternColor,
     }));
@@ -228,7 +212,7 @@ export default function PostPage() {
 
   // パターンが選択された時
   const onChangePattern = (pattern: string) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       pattern,
     }));
@@ -236,7 +220,7 @@ export default function PostPage() {
 
   // 本の色が選択された時
   const onChangeBookColor = (color: string) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       color,
     }));
@@ -260,16 +244,11 @@ export default function PostPage() {
     editor.chain().focus().toggleUnderline().run();
     setUnderlineActive((prev) => !prev);
   };
-  // colorボタンの状態管理
-  const handleColorClick = (color: string) => {
-    if (!editor) return;
-
-    editor.chain().focus().setColor(color).run();
-    setColorActive(color);
-  };
+  // colorボタンの状態管理 (inline handler を使用しているため関数は不要)
 
   // form送信時にHTMLをセット
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e?: FormEvent) => {
+    e?.preventDefault();
     if (!editor) return;
     setHtml(editor.getHTML());
   };
@@ -280,6 +259,7 @@ export default function PostPage() {
     if (!bookReviewData) return;
     if (initializedRef.current) return;
 
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
     setBookColor(bookReviewData.color || "#FFFFFF");
     setPatternColor(bookReviewData.pattern_color || "#FFFFFF");
     setPattern(bookReviewData.pattern || "dot");
@@ -332,7 +312,7 @@ export default function PostPage() {
   }, [editor, bookReviewData]);
 
   const handleConfirm = () => {
-    const draft = sessionStorage.setItem(
+    sessionStorage.setItem(
       "bookReviewDraft",
       JSON.stringify({
         mode: "edit",
@@ -419,12 +399,14 @@ export default function PostPage() {
                   <div>
                     <p>文字色</p>
                     <div className="w-20 items-center">
-                    <input 
-                      type="color"
-                      onChange={(e) => editor?.chain().focus().setColor(e.target.value).run()}
-                      className={`w-full h-8 rounded border cursor-pointer ${Styles.ColorPicker}`}
-                    />
-                  </div>
+                      <input
+                        type="color"
+                        onChange={(e) =>
+                          editor?.chain().focus().setColor(e.target.value).run()
+                        }
+                        className={`w-full h-8 rounded border cursor-pointer ${Styles.ColorPicker}`}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -1,11 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
 import "@/styles/admin/edit-term.css";
 
 export default function Page() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { addToast } = useToast();
   const [previewName, setPreviewName] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,7 +29,10 @@ export default function Page() {
       file.type === "application/pdf" ||
       file.name.toLowerCase().endsWith(".pdf");
     if (!isPdf) {
-      alert("PDFファイルのみアップロードできます");
+      addToast({
+        type: "error",
+        message: "PDFファイルのみアップロードできます",
+      });
       e.currentTarget.value = "";
       setPreviewUrl(null);
       setPreviewName(null);

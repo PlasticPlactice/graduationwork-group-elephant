@@ -5,6 +5,7 @@ import Textbox from "@/components/ui/admin-textbox";
 import { EventProgressBar } from "@/components/ui/EventProgressBar";
 import "@/styles/admin/events.css";
 import { useEffect, useState, startTransition } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import { validateEventDates } from "@/lib/validateEventDates";
 import { toDateTimeLocalValue, toISOStringFromLocal } from "@/lib/dateUtils";
 
@@ -46,7 +47,7 @@ export default function EventEditModal({
   const [publicFlag, setPublicFlag] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<number | null>(null);
   const [nextStatus, setNextStatus] = useState<number>(0);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (isOpen && event) {
@@ -63,7 +64,6 @@ export default function EventEditModal({
         const initStatus = Number(event.status ?? 0);
         setCurrentStatus(initStatus);
         setNextStatus(initStatus);
-        setErrorMessage("");
       });
     }
   }, [isOpen, event]);
@@ -84,7 +84,7 @@ export default function EventEditModal({
     });
     if (err) {
       const message = Array.isArray(err) ? err.join("。\n") : String(err);
-      setErrorMessage(message);
+      addToast({ type: "error", message });
       return;
     }
 
@@ -112,7 +112,10 @@ export default function EventEditModal({
       if (!res.ok) {
         const errorText = await res.text();
         console.error("update failed", errorText);
-        setErrorMessage("更新に失敗しました: " + (errorText || res.statusText));
+        addToast({
+          type: "error",
+          message: "更新に失敗しました: " + (errorText || res.statusText),
+        });
         return;
       }
 
@@ -123,9 +126,11 @@ export default function EventEditModal({
       onClose();
     } catch (err) {
       console.error(err);
-      setErrorMessage(
-        "イベントの更新処理中に通信エラーが発生しました。時間をかけてもう一度お試しください。解決しない場合は管理者にお問い合わせください。",
-      );
+      addToast({
+        type: "error",
+        message:
+          "イベントの更新処理中に通信エラーが発生しました。時間をかけてもう一度お試しください。解決しない場合は管理者にお問い合わせください。",
+      });
     }
   };
 
@@ -146,23 +151,7 @@ export default function EventEditModal({
         </div>
 
         <div className="modal-scroll-area overflow-y-auto p-3">
-          {errorMessage && (
-            <div
-              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-              role="alert"
-            >
-              <strong className="font-bold">エラー:</strong>
-              <span className="block sm:inline ml-2">{errorMessage}</span>
-              <button
-                type="button"
-                className="absolute top-0 right-0 px-4 py-3 hover:bg-red-200 rounded transition-colors"
-                onClick={() => setErrorMessage("")}
-                aria-label="閉じる"
-              >
-                <span className="text-2xl">&times;</span>
-              </button>
-            </div>
-          )}
+          {/* エラーメッセージはトーストで表示します */}
 
           <form onSubmit={handleSubmit} className="p-3">
             <div className="my-4">

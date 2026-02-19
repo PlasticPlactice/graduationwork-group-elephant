@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { AfterLoginHeader } from "@/components/layout/after-login-header";
-import { Providers } from "@/app/providers";
 import { PosterLayoutClient } from "./poster-layout-client";
 
 export const metadata: Metadata = {
@@ -24,9 +23,7 @@ export default function RootLayout({
       >
         <AfterLoginHeader />
         <main className="flex-1">
-          <Providers>
-            <PosterLayoutClient>{children}</PosterLayoutClient>
-          </Providers>
+          <PosterLayoutClient>{children}</PosterLayoutClient>
         </main>
       </body>
     </html>

@@ -2,6 +2,7 @@ import "@/styles/admin/users.css";
 import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
 import { useEffect, useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import {
   USER_STATUS_CLASS,
   USER_STATUS_LABELS,
@@ -36,6 +37,7 @@ export default function UserExitModal({
   const [reason, setReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (!isOpen || !userId) {
@@ -62,7 +64,10 @@ export default function UserExitModal({
         });
       } catch (err) {
         console.error(err);
-        setError("ユーザー情報の取得に失敗しました。");
+        addToast({
+          type: "error",
+          message: "ユーザー情報の取得に失敗しました。",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -101,11 +106,13 @@ export default function UserExitModal({
       onWithdrawSuccess();
     } catch (err) {
       console.error(err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "アカウント停止処理に失敗しました。",
-      );
+      addToast({
+        type: "error",
+        message:
+          err instanceof Error
+            ? err.message
+            : "アカウント停止処理に失敗しました。",
+      });
     } finally {
       setIsSubmitting(false);
     }

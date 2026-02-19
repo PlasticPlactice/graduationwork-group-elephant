@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import "@/styles/admin/detail-term.css";
 import AdminButton from "@/components/ui/admin-button";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
 
 type Term = {
   id: number;
@@ -21,7 +22,7 @@ export default function Page() {
   const [currentTerm, setCurrentTerm] = useState<Term | null>(null);
   const [scheduledTerm, setScheduledTerm] = useState<Term | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { addToast } = useToast();
 
   useEffect(() => {
     const fetchTerms = async () => {
@@ -44,12 +45,10 @@ export default function Page() {
         setCurrentTerm(current || null);
         setScheduledTerm(scheduled || null);
         setSelectedTerm(current || scheduled || null);
-        setError(null);
+        // 成功時はトースト不要（以前のバナーは削除）
       } catch (err) {
         console.error("Error:", err);
-        setError(
-          err instanceof Error ? err.message : "利用規約の取得に失敗しました",
-        );
+        addToast({ type: "error", message: "利用規約の取得に失敗しました。" });
       } finally {
         setIsLoading(false);
       }
@@ -57,7 +56,6 @@ export default function Page() {
 
     fetchTerms();
   }, []);
-
 
   const handleRegister = () => {
     router.push("/admin/register-term");
@@ -81,13 +79,10 @@ export default function Page() {
           label="利用規約登録"
           className="resiter-btn"
           onClick={handleRegister}
-          />
+        />
       </div>
       {isLoading && <p className="text-center mt-8">読み込み中...</p>}
-      {error && (
-        <p className="text-center mt-8 text-red-600">エラー: {error}</p>
-      )}
-      {!isLoading && !error && (currentTerm || scheduledTerm) && (
+      {!isLoading && (currentTerm || scheduledTerm) && (
         <div className="my-4 flex justify-center">
           <div className="w-full max-w-6xl flex flex-col gap-8">
             {/* 現在適用中の利用規約 */}
@@ -111,7 +106,10 @@ export default function Page() {
                       className="upload-preview w-28 h-28 flex items-center justify-center text-xs text-gray-400 border-2 border-dashed rounded overflow-hidden cursor-pointer hover:bg-gray-50"
                       role="button"
                       aria-label="プレビューを開く"
-                      onClick={() => window.open(currentTerm.data_path, "_blank")}                    >
+                      onClick={() =>
+                        window.open(currentTerm.data_path, "_blank")
+                      }
+                    >
                       <span>{currentTerm.file_name}</span>
                     </div>
                   </div>
@@ -144,7 +142,9 @@ export default function Page() {
                       className="upload-preview w-28 h-28 flex items-center justify-center text-xs text-gray-400 border-2 border-dashed rounded overflow-hidden cursor-pointer hover:bg-gray-50"
                       role="button"
                       aria-label="プレビューを開く"
-                      onClick={() => window.open(scheduledTerm.data_path, "_blank")}
+                      onClick={() =>
+                        window.open(scheduledTerm.data_path, "_blank")
+                      }
                     >
                       <span>{scheduledTerm.file_name}</span>
                     </div>
@@ -155,7 +155,7 @@ export default function Page() {
           </div>
         </div>
       )}
-      {!isLoading && !error && !currentTerm && !scheduledTerm && (
+      {!isLoading && !currentTerm && !scheduledTerm && (
         <p className="text-center mt-8">利用規約が登録されていません</p>
       )}
     </main>

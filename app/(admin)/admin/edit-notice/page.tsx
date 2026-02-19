@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, Suspense, useRef } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
@@ -44,6 +45,7 @@ type RemoteNotificationFile = {
 };
 
 function EditNoticeContent() {
+  const { addToast } = useToast();
   const router = useRouter();
   const mainRef = useRef<HTMLElement | null>(null);
   const searchParams = useSearchParams();
@@ -98,13 +100,11 @@ function EditNoticeContent() {
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [successMessage, setSuccessMessage] = useState<string>("");
 
   // 初期データを取得
   useEffect(() => {
     if (notificationId === null) {
-      setErrorMessage("お知らせIDが正しくありません。");
+      addToast({ type: "error", message: "お知らせIDが正しくありません。" });
       return;
     }
 
@@ -196,11 +196,13 @@ function EditNoticeContent() {
           setAttachedFilePreviews(previews);
         }
       } catch (error) {
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "お知らせの取得中にエラーが発生しました。",
-        );
+        addToast({
+          type: "error",
+          message:
+            error instanceof Error
+              ? error.message
+              : "お知らせの取得中にエラーが発生しました。",
+        });
       }
     };
 
@@ -218,12 +220,6 @@ function EditNoticeContent() {
       editor?.destroy();
     };
   }, [editor]);
-
-  useEffect(() => {
-    if (errorMessage) {
-      mainRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, [errorMessage]);
 
   // ツールバー操作
   const toggleBold = () => editor?.chain().focus().toggleBold().run();
@@ -263,14 +259,20 @@ function EditNoticeContent() {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
     if (!allowedTypes.includes(file.type)) {
-      alert(
-        "画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます。",
-      );
+      addToast({
+        type: "error",
+        message:
+          "画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます。",
+      });
       e.target.value = "";
       return;
     }
     if (file.size > maxSize) {
-      alert("ファイルサイズが大きすぎます。10MB以下の画像を選択してください。");
+      addToast({
+        type: "error",
+        message:
+          "ファイルサイズが大きすぎます。10MB以下の画像を選択してください。",
+      });
       e.target.value = "";
       return;
     }
@@ -290,15 +292,17 @@ function EditNoticeContent() {
 
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      alert(
-        "ファイルサイズが大きすぎます。10MB以下のファイルを選択してください。",
-      );
+      addToast({
+        type: "error",
+        message:
+          "ファイルサイズが大きすぎます。10MB以下のファイルを選択してください。",
+      });
       return;
     }
 
     // 最大4件まで
     if (attachedFilePreviews.length >= 6) {
-      alert("添付ファイルは最大6つまでです。");
+      addToast({ type: "error", message: "添付ファイルは最大6つまでです。" });
       return;
     }
 
@@ -373,9 +377,10 @@ function EditNoticeContent() {
         error instanceof Error
           ? error.message
           : "ファイルのアップロード中に不明なエラーが発生しました。";
-      setErrorMessage(
-        `ファイルのアップロード中にエラーが発生しました: ${errorMessage}`,
-      );
+      addToast({
+        type: "error",
+        message: `ファイルのアップロード中にエラーが発生しました: ${errorMessage}`,
+      });
       return null;
     }
   };
@@ -387,39 +392,40 @@ function EditNoticeContent() {
   ) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrorMessage("");
-    setSuccessMessage("");
     setUploadProgress(0);
 
     if (notificationId === null) {
-      setErrorMessage("お知らせIDが正しくありません。");
+      addToast({ type: "error", message: "お知らせIDが正しくありません。" });
       setIsLoading(false);
       return;
     }
 
     // バリデーション: タイトル
     if (!title.trim() && !saveAsDraft) {
-      setErrorMessage("タイトルを入力してください。");
+      addToast({ type: "error", message: "タイトルを入力してください。" });
       setIsLoading(false);
       return;
     }
 
     if (title.length > 100) {
-      setErrorMessage("タイトルは100文字以内で入力してください。");
+      addToast({
+        type: "error",
+        message: "タイトルは100文字以内で入力してください。",
+      });
       setIsLoading(false);
       return;
     }
 
     // バリデーション: 詳細
     if (!editor?.getText().trim() && !saveAsDraft) {
-      setErrorMessage("お知らせ詳細を入力してください。");
+      addToast({ type: "error", message: "お知らせ詳細を入力してください。" });
       setIsLoading(false);
       return;
     }
 
     // 公開開始日時のバリデーション
     if (!saveAsDraft && !publicDateStart) {
-      setErrorMessage("公開開始日時を選択してください。");
+      addToast({ type: "error", message: "公開開始日時を選択してください。" });
       setIsLoading(false);
       return;
     }
@@ -430,9 +436,10 @@ function EditNoticeContent() {
       const endDate = parseISO(publicDateEnd);
 
       if (endDate <= startDate) {
-        setErrorMessage(
-          "公開終了日時は公開開始日時より後の日時を選択してください。",
-        );
+        addToast({
+          type: "error",
+          message: "公開終了日時は公開開始日時より後の日時を選択してください。",
+        });
         setIsLoading(false);
         return;
       }
@@ -534,7 +541,7 @@ function EditNoticeContent() {
       }
 
       setUploadProgress(100);
-      setSuccessMessage("お知らせを更新しました。");
+      addToast({ type: "success", message: "お知らせを更新しました。" });
 
       // 2秒後にリダイレクト
       setTimeout(() => {
@@ -545,9 +552,10 @@ function EditNoticeContent() {
         error instanceof Error
           ? error.message
           : "お知らせの更新中に不明なエラーが発生しました。";
-      setErrorMessage(
-        errorMessage || "お知らせの更新中にエラーが発生しました。",
-      );
+      addToast({
+        type: "error",
+        message: errorMessage || "お知らせの更新中にエラーが発生しました。",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -569,32 +577,7 @@ function EditNoticeContent() {
   return (
     <main className="p-6" ref={mainRef}>
       <h1 className="text-2xl font-bold mb-6">お知らせ編集</h1>
-      {errorMessage && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <strong className="font-bold">エラー:</strong>
-          <span className="block sm:inline ml-8">{errorMessage}</span>
-          <button
-            type="button"
-            className="absolute top-0 right-0 px-4 py-3 hover:bg-red-200 rounded transition-colors"
-            onClick={() => setErrorMessage("")}
-            aria-label="閉じる"
-          >
-            <span className="text-2xl">&times;</span>
-          </button>
-        </div>
-      )}
-      {successMessage && (
-        <div
-          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <strong className="font-bold">成功:</strong>
-          <span className="block sm:inline ml-2">{successMessage}</span>
-        </div>
-      )}
+      {/* 通知はトーストで表示します */}
       {isLoading && uploadProgress > 0 && uploadProgress < 100 && (
         <div className="mb-4">
           <div className="flex justify-between mb-1">

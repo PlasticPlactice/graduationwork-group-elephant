@@ -43,7 +43,7 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
 
         try {
           await updateVoteCount(reviewId, "decrement");
-        } catch (error) {
+        } catch {
           setIsVoted(true); // エラーなら元に戻す
           if (onVoteChange) onVoteChange(true, eventId);
           alert("通信エラー: 取り消しに失敗しました");
@@ -65,7 +65,7 @@ const BookReviewVoteButton = forwardRef<HTMLButtonElement, Props>(
 
         try {
           await updateVoteCount(reviewId, "increment");
-        } catch (error) {
+        } catch {
           setIsVoted(false); // エラーなら元に戻す
           if (onVoteChange) onVoteChange(false, eventId);
           destroyCookie(null, cookieKey, { path: "/" });

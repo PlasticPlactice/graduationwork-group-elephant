@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import Styles from "@/styles/app/poster.module.css";
@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 interface BookReviewDeleteConfirmModalProps {
   open: boolean;
   onClose: () => void;
-  bookReviewId?: string;
+  bookReviewId?: string | number;
 }
 
 export const BookReviewDeleteConfirmModal: React.FC<

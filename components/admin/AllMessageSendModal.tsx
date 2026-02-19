@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
+import { useToast } from "@/contexts/ToastContext";
 
 // 選択された書評データの型定義（エクスポートして他でも再利用可能に）
 export interface MessageTargetReview {
@@ -24,13 +25,17 @@ export default function AllMessageSendModal({
 }: AllMessageSendModalProps) {
   const [messageBody, setMessageBody] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const { addToast } = useToast();
 
   if (!isOpen) return null;
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!messageBody.trim()) {
-      alert("メッセージを入力してください。");
+      addToast({
+        type: "warning",
+        message: "メッセージを入力してください。",
+      });
       return;
     }
 
@@ -50,12 +55,18 @@ export default function AllMessageSendModal({
         throw new Error("送信に失敗しました");
       }
 
-      alert("メッセージを送信しました。");
+      addToast({
+        type: "success",
+        message: "メッセージを送信しました。",
+      });
       setMessageBody("");
       onClose();
     } catch (error) {
       console.error("Failed to send message:", error);
-      alert("エラーが発生しました。もう一度お試しください。");
+      addToast({
+        type: "error",
+        message: "エラーが発生しました。もう一度お試しください。",
+      });
     } finally {
       setIsSending(false);
     }

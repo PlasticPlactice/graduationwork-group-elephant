@@ -1,7 +1,14 @@
 "use client";
 
 import "@/styles/admin/print-preview.css";
-import { Suspense, useEffect, useMemo, useState, type CSSProperties } from "react";
+import {
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+} from "react";
+import { useToast } from "@/contexts/ToastContext";
 import { useSearchParams } from "next/navigation";
 
 type PreviewReview = {
@@ -152,6 +159,7 @@ const applyFontColorToHtml = (html: string, color: string) => {
 };
 
 function PrintPreviewContent() {
+  const { addToast } = useToast();
   const searchParams = useSearchParams();
   const reviewId = searchParams.get("reviewId");
 
@@ -159,12 +167,12 @@ function PrintPreviewContent() {
     "main" | "pattern" | "font"
   >("main");
   const [selectedMainColor, setSelectedMainColor] = useState<string>("#FFFFFF");
-  const [selectedPatternColor, setSelectedPatternColor] = useState<string>("#FFFFFF");
+  const [selectedPatternColor, setSelectedPatternColor] =
+    useState<string>("#FFFFFF");
   const [selectedFontColor, setSelectedFontColor] = useState<string>("#000000");
   const [review, setReview] = useState<PreviewReview | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState("");
 
   const selectableColors = useMemo(
     () => [
@@ -200,7 +208,6 @@ function PrintPreviewContent() {
     if (!reviewId || !review) return;
 
     setIsSaving(true);
-    setError("");
     try {
       const coloredReviewHtml = applyFontColorToHtml(
         review.review ?? "",
@@ -237,9 +244,11 @@ function PrintPreviewContent() {
           : prev,
       );
     } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "デザイン設定の保存に失敗しました。",
-      );
+      addToast({
+        type: "error",
+        message:
+          e instanceof Error ? e.message : "デザイン設定の保存に失敗しました。",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -248,7 +257,7 @@ function PrintPreviewContent() {
   useEffect(() => {
     if (!reviewId) {
       setReview(null);
-      setError("レビューIDが指定されていません。");
+      addToast({ type: "error", message: "レビューIDが指定されていません。" });
       return;
     }
 
@@ -256,7 +265,6 @@ function PrintPreviewContent() {
 
     const fetchReview = async () => {
       setIsLoading(true);
-      setError("");
       try {
         const res = await fetch(`/api/admin/reviews/${reviewId}`);
         if (!res.ok) {
@@ -271,9 +279,11 @@ function PrintPreviewContent() {
       } catch (e) {
         if (mounted) {
           setReview(null);
-          setError(
-            e instanceof Error ? e.message : "レビューの取得に失敗しました。",
-          );
+          addToast({
+            type: "error",
+            message:
+              e instanceof Error ? e.message : "レビューの取得に失敗しました。",
+          });
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -287,8 +297,14 @@ function PrintPreviewContent() {
     };
   }, [reviewId]);
 
-  const reviewText = useMemo(() => stripHtml(review?.review ?? ""), [review?.review]);
-  const normalizedPattern = useMemo(() => normalizePattern(review?.pattern), [review?.pattern]);
+  const reviewText = useMemo(
+    () => stripHtml(review?.review ?? ""),
+    [review?.review],
+  );
+  const normalizedPattern = useMemo(
+    () => normalizePattern(review?.pattern),
+    [review?.pattern],
+  );
   const patternPreviewStyle = useMemo(
     () => toPatternPreviewStyle(review?.pattern, selectedPatternColor),
     [review?.pattern, selectedPatternColor],
@@ -339,14 +355,14 @@ function PrintPreviewContent() {
             <p id="book-review" style={{ color: selectedFontColor }}>
               {isLoading
                 ? "読み込み中..."
-                : error
-                  ? error
-                  : reviewText || "書評データがありません。"}
+                : reviewText || "書評データがありません。"}
             </p>
 
             <div id="reviewer-section">
               <p>【評者】{review?.nickname ?? "-"}</p>
-              <p id="number">No. {review ? String(review.id).padStart(3, "0") : "---"}</p>
+              <p id="number">
+                No. {review ? String(review.id).padStart(3, "0") : "---"}
+              </p>
               <p id="reviewer-introduction">
                 {review?.self_introduction ?? "自己紹介データがありません。"}
               </p>
@@ -371,7 +387,8 @@ function PrintPreviewContent() {
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") setActiveDesignTarget("main");
+              if (e.key === "Enter" || e.key === " ")
+                setActiveDesignTarget("main");
             }}
             style={{
               border:
@@ -391,7 +408,10 @@ function PrintPreviewContent() {
 
           <h3 className="design-sub-head font-bold">柄</h3>
           <div className="flex items-center gap-1 mb-4">
-            <p className="pattern-pick rounded-full" style={patternPreviewStyle} />
+            <p
+              className="pattern-pick rounded-full"
+              style={patternPreviewStyle}
+            />
             <p className="main-color-text">{normalizedPattern.label}</p>
           </div>
 
@@ -402,7 +422,8 @@ function PrintPreviewContent() {
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") setActiveDesignTarget("pattern");
+              if (e.key === "Enter" || e.key === " ")
+                setActiveDesignTarget("pattern");
             }}
             style={{
               border:
@@ -417,7 +438,9 @@ function PrintPreviewContent() {
               className="pattern-color-pick rounded-full"
               style={{ backgroundColor: selectedPatternColor || "#ffffff" }}
             />
-            <p className="main-color-text">{toColorLabel(selectedPatternColor)}</p>
+            <p className="main-color-text">
+              {toColorLabel(selectedPatternColor)}
+            </p>
           </div>
 
           <h3 className="design-sub-head font-bold">フォントカラー</h3>
@@ -427,7 +450,8 @@ function PrintPreviewContent() {
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") setActiveDesignTarget("font");
+              if (e.key === "Enter" || e.key === " ")
+                setActiveDesignTarget("font");
             }}
             style={{
               border:
@@ -470,7 +494,11 @@ function PrintPreviewContent() {
           </div>
 
           <div className="design-action-row">
-            <button className="applicable-btn" onClick={handleApply} disabled={isSaving}>
+            <button
+              className="applicable-btn"
+              onClick={handleApply}
+              disabled={isSaving}
+            >
               {isSaving ? "保存中..." : "適用"}
             </button>
           </div>
@@ -482,7 +510,9 @@ function PrintPreviewContent() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<main className="print-preview-page">読み込み中...</main>}>
+    <Suspense
+      fallback={<main className="print-preview-page">読み込み中...</main>}
+    >
       <PrintPreviewContent />
     </Suspense>
   );
