@@ -207,7 +207,7 @@ function EditNoticeContent() {
     };
 
     fetchNotification();
-  }, [notificationId, editor]);
+  }, [notificationId, editor, addToast]);
 
   // エディタのHTMLを同期
   useEffect(() => {
