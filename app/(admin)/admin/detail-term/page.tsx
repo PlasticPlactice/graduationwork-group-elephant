@@ -18,7 +18,7 @@ type Term = {
 
 export default function Page() {
   const router = useRouter();
-  const [selectedTerm, setSelectedTerm] = useState<Term | null>(null);
+  const [_selectedTerm, setSelectedTerm] = useState<Term | null>(null);
   const [currentTerm, setCurrentTerm] = useState<Term | null>(null);
   const [scheduledTerm, setScheduledTerm] = useState<Term | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,7 +55,7 @@ export default function Page() {
     };
 
     fetchTerms();
-  }, []);
+  }, [addToast]);
 
   const handleRegister = () => {
     router.push("/admin/register-term");
