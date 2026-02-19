@@ -452,8 +452,8 @@ function EditNoticeContent() {
         (preview) => preview.file,
       );
       const totalFiles = (thumbnailFile ? 1 : 0) + filesNeedingUpload.length;
-      let uploadedThumbnailId: number | null = null;
-      let uploadedThumbnailPath: string | null = null;
+      let _uploadedThumbnailId: number | null = null;
+      let _uploadedThumbnailPath: string | null = null;
       const uploadedAttachmentIds: number[] = [];
       let uploadedCount = 0;
 
@@ -465,10 +465,9 @@ function EditNoticeContent() {
         }
         const result = await uploadFile(thumbnailFile);
         if (result !== null) {
-          uploadedThumbnailId = result.id;
-          uploadedThumbnailPath = result.data_path;
+          _uploadedThumbnailId = result.id;
+          _uploadedThumbnailPath = result.data_path;
           setExistingMainImagePath(result.data_path);
-          console.log("Uploaded new thumbnail with ID:", result.id);
         }
         uploadedCount++;
       } else if (existingThumbnailPath) {
@@ -521,7 +520,7 @@ function EditNoticeContent() {
           : null,
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
-        main_image_path: uploadedThumbnailPath ?? existingMainImagePath,
+        main_image_path: _uploadedThumbnailPath ?? existingMainImagePath,
         fileIds: finalFileIds,
       };
 

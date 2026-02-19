@@ -326,8 +326,8 @@ export default function Page() {
         setUploadProgress(Math.round(((uploadedCount / totalFiles) * 100) / 2)); // アップロード進捗は50%まで
         const result = await uploadFile(thumbnailFile);
         if (result !== null) {
-          uploadedThumbnailId = result.id;
-          uploadedThumbnailPath = result.data_path;
+          _uploadedThumbnailId = result.id;
+          _uploadedThumbnailPath = result.data_path;
         }
         uploadedCount++;
       }
@@ -361,7 +361,7 @@ export default function Page() {
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
         fileIds: finalFileIds,
-        main_image_path: uploadedThumbnailPath ?? null,
+        main_image_path: _uploadedThumbnailPath ?? null,
       };
 
       const res = await fetch("/api/admin/notifications", {
