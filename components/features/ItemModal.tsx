@@ -102,7 +102,7 @@ export const ItemModal = ({ item, onClose }: ItemModalProps) => {
                         flexDirection: "column",
                         alignItems: "center",
                         justifyContent: "center",
-                        backgroundColor: "#f3f4f6",
+                        backgroundColor: "#ffffff",
                         borderRadius: "8px",
                         textDecoration: "none",
                         color: "var(--color-main)",
