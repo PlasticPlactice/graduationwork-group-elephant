@@ -1,11 +1,17 @@
 import { redirect } from "next/navigation";
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams?: { error?: string };
+  searchParams?: Promise<{ error?: string }> | { error?: string };
 }) {
-  const error = searchParams?.error ?? "";
+  // `searchParams` may be a Promise in some Next.js streaming scenarios — unwrap safely
+  const params =
+    typeof (searchParams as Promise<{ error?: string }>)?.then === "function"
+      ? await (searchParams as Promise<{ error?: string }>)
+      : (searchParams as { error?: string } | undefined);
+
+  const error = params?.error ?? "";
   const target = `/poster/login${error ? `?error=${encodeURIComponent(error)}` : ""}`;
   redirect(target);
 }
