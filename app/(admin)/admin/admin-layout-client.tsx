@@ -13,9 +13,13 @@ export default function AdminLayoutClient({
   const isAdminTop = pathname === "/admin";
 
   // 管理者ロールの認証確認（セッション切れなら /admin へリダイレクト）
+  // パスワードリセット関連ページは未認証でもアクセス可能にする
+  const skipAuth = pathname.startsWith("/admin/password");
+
   useRequireAuth({
     requiredRole: "admin",
     redirectUrlIfUnauthenticated: "/admin",
+    skipAuth,
   });
 
   return (
