@@ -1,4 +1,4 @@
-/* メインコンテナ */
+﻿/* メインコンテナ */
 .notice-container {
   background-color: var(--color-bg);
   color: var(--color-text);
@@ -21,9 +21,8 @@ summary {
 details[open] .icon {
   transform: rotate(180deg);
 }
-/* 入力エリアの幅調整 (タイトル・公開期間) */
 
-/* テキストボックスの高さ・幅強制上書き */
+/* テキストボックスの高さ上書き*/
 .custom-input {
   width: 35rem;
   height: 2.5rem;
@@ -47,28 +46,27 @@ details[open] .icon {
   height: 3.5rem;
 }
 
-/* ステータス変更ボタンのラッパー */
+/* ステータス変更セクション */
 .status-wrapper {
-  background-color: var(--color-input-bg);
+  background-color: var(--color-bg);
   border-radius: var(--control-radius);
 }
 
-/* ステータス変更ボタン（共通） */
+/* ステータス変更ボタン・*/
 .status-toggle {
-  border: 1px solid var(--color-bg);
-  font-size: var(--page-padding-lg);
-  background-color: transparent;
-  color: white;
+  border: 1px solid var(--color-admin-sub);
+  background-color: var(--color-bg);
+  color: var(--color-admin-sub);
   transition: all 0.2s ease;
 }
 
-/* ステータス変更ボタン（選択中） */
+/* ステータス変更ボタン選択中*/
 .status-toggle.active {
-  background-color: var(--color-bg);
-  color: var(--color-input-bg);
+  background-color: var(--color-main);
+  color: var(--color-bg);
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md相当 */
+    0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md*/
 }
 
 .tab {
@@ -83,7 +81,7 @@ details[open] .icon {
   border-radius: 0px;
   font-size: 20px;
 }
-.notice-tab-link.active {
+.notice-tab-link.notice-active {
   border-bottom-color: var(--color-main);
 }
 .notice-tab {
@@ -101,6 +99,15 @@ details[open] .icon {
 .notice-table th,
 .notice-table td {
   border-bottom: 1px solid var(--color-input-bg);
+  text-align: left;
+  padding-left: 0.75rem;
+}
+.notice-table th:first-child {
+  min-width: 9rem;
+  white-space: nowrap;
+}
+.notice-table th:first-child button {
+  white-space: nowrap;
 }
 .notice-tr {
   border-bottom: 1px solid var(--color-input-bg);
@@ -108,6 +115,31 @@ details[open] .icon {
 .notice-content {
   color: var(--color-input-bg);
 }
+
+/* ヘッダーのソートアイコン強調（アイコンのみ目立たせる） */
+.notice-table th button .sort-icon {
+  margin-left: 0.5rem;
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+  color: rgba(255, 255, 255, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notice-table th button .sort-icon svg,
+.notice-table th button .sort-icon > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.notice-table th button.sorted .sort-icon {
+  color: #ffd54f;
+  transform: translateY(-1px) scale(1.4);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
 .status {
   border-radius: var(--control-radius);
 }
@@ -124,10 +156,44 @@ details[open] .icon {
   color: var(--color-text);
 }
 .notice-record:hover {
-  background-color: var(--color-input-text);
+  background-color: rgba(54, 168, 177, 0.08);
+}
+.delete-btn {
+  background-color: var(--color-bg);
+  box-shadow: none;
+  color: var(--color-main);
+}
+.delete-btn:hover {
+  background-color: rgba(54, 168, 177, 0.08);
+}
+.notice-delete-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  color: var(--color-main);
+  background-color: var(--color-bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.1s ease;
 }
 
-/* テーブルヘッダーのソートボタンから影を除去 */
+.notice-delete-btn:hover {
+  background-color: rgba(54, 168, 177, 0.08);
+  border-color: rgba(54, 168, 177, 0.35);
+  color: var(--color-main);
+}
+
+.notice-delete-btn:active {
+  transform: scale(0.98);
+}
+
+/* 見出しのソートボタンから影を削除 */
 .table-head button {
   box-shadow: none !important;
 }
@@ -152,5 +218,17 @@ details[open] .icon {
   color: var(--color-bg);
 }
 .page-arrow {
-  color: var(--color-admin-sub);
+  color: var(--color-bg);
+}
+
+/* モーダル */
+.notice-delete-modal {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-btn-common {
+  border: 1px solid var(--color-main);
+}
+.modal-btn-common:hover {
+  background-color: var(--color-bg);
+  color: var(--color-main);
 }

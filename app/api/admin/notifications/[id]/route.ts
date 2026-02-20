@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { requireAdminAuth } from "@/lib/api/authMiddleware";
+
+export const runtime = "nodejs";
 import { Prisma } from "@prisma/client";
 
 type RouteContext = {
@@ -26,17 +27,13 @@ const normalizeId = (
  * 管理者用: 特定のお知らせの詳細を取得する
  */
 export async function GET(req: NextRequest, context: RouteContext) {
-  const session = (await getServerSession(authOptions)) as {
-    user?: { id?: string; role?: string };
-  } | null;
-  const user = session?.user;
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   const params = await context.params;
   const rawId = normalizeId(params?.id, req.nextUrl.pathname);
-
-  // 認証チェック
-  if (!user?.id || user.role !== "admin") {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   try {
     const notificationId = Number(rawId);
@@ -83,17 +80,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
  * 管理者用: 特定のお知らせを更新する
  */
 export async function PUT(req: NextRequest, context: RouteContext) {
-  const session = (await getServerSession(authOptions)) as {
-    user?: { id?: string; role?: string };
-  } | null;
-  const user = session?.user;
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   const params = await context.params;
   const rawId = normalizeId(params?.id, req.nextUrl.pathname);
-
-  // 認証チェック
-  if (!user?.id || user.role !== "admin") {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   try {
     const notificationId = Number(rawId);
@@ -114,6 +107,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       public_end_date,
       notification_type,
       draft_flag,
+      main_image_path,
       fileIds, // 追加: 添付ファイルのID配列
     } = body;
 
@@ -207,6 +201,8 @@ export async function PUT(req: NextRequest, context: RouteContext) {
           public_end_date: public_end_date ? new Date(public_end_date) : null,
           notification_type: notificationTypeInt,
           draft_flag: draft_flag ?? true,
+          // API層でデフォルト画像を設定（未指定時は /top/image.png）
+          main_image_path: main_image_path ?? "/top/image.png",
           updated_at: new Date(),
         };
 
@@ -255,17 +251,13 @@ export async function PUT(req: NextRequest, context: RouteContext) {
  * 管理者用: 特定のお知らせを削除する (ソフトデリート)
  */
 export async function DELETE(req: NextRequest, context: RouteContext) {
-  const session = (await getServerSession(authOptions)) as {
-    user?: { id?: string; role?: string };
-  } | null;
-  const user = session?.user;
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   const params = await context.params;
   const rawId = normalizeId(params?.id, req.nextUrl.pathname);
-
-  // 認証チェック
-  if (!user?.id || user.role !== "admin") {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   try {
     const notificationId = Number(rawId);

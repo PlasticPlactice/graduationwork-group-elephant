@@ -1,0 +1,18 @@
+"use client";
+
+import React from "react";
+import GenericError from "@/components/error/GenericError";
+
+/**
+ * 公開サイト（public）用のエラー画面
+ * ユーザ向けに戻る・トップページへのリンクを提示
+ */
+export default function PublicErrorPage({ reset }: { reset: () => void }) {
+  return (
+    <GenericError
+      title="エラーが発生しました"
+      message="問題が発生しました。必要に応じて管理者にお問い合わせください。"
+      onRetry={reset}
+    />
+  );
+}

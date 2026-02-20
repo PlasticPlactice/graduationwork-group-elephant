@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense, useRef } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
@@ -36,21 +37,22 @@ type UploadPreview =
 type RemoteNotificationFile = {
   file?: {
     id?: number;
+    data_path?: string;
     original_filename?: string;
     name?: string;
-    data_path?: string;
     type?: string;
-  };
+  } | null;
 };
 
 function EditNoticeContent() {
+  const { addToast } = useToast();
   const router = useRouter();
+  const mainRef = useRef<HTMLElement | null>(null);
+
   const searchParams = useSearchParams();
-  const notificationIdParam = searchParams.get("id");
-  const notificationIdRaw =
-    Array.isArray(notificationIdParam) && notificationIdParam.length > 0
-      ? notificationIdParam[0]
-      : notificationIdParam;
+  const notificationIdParam =
+    searchParams?.get("notificationId") ?? searchParams?.get("id");
+  const notificationIdRaw = notificationIdParam;
   const notificationId =
     notificationIdRaw && !Number.isNaN(Number(notificationIdRaw))
       ? Number(notificationIdRaw)
@@ -83,10 +85,7 @@ function EditNoticeContent() {
   // アップロードファイル関連
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
-  const [existingThumbnailFileId, setExistingThumbnailFileId] = useState<
-    number | null
-  >(null);
-  const [existingThumbnailPath, setExistingThumbnailPath] = useState<
+  const [existingMainImagePath, setExistingMainImagePath] = useState<
     string | null
   >(null);
   const [attachedFilePreviews, setAttachedFilePreviews] = useState<
@@ -94,13 +93,11 @@ function EditNoticeContent() {
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [successMessage, setSuccessMessage] = useState<string>("");
 
   // 初期データを取得
   useEffect(() => {
     if (notificationId === null) {
-      setErrorMessage("お知らせIDが正しくありません。");
+      addToast({ type: "error", message: "お知らせIDが正しくありません。" });
       return;
     }
 
@@ -144,69 +141,66 @@ function EditNoticeContent() {
           editor?.commands.setContent(data.detail);
         }
 
-        // 添付ファイルを処理
+        // main_image_path を取得してサムネイルとして設定
+        if (data.main_image_path) {
+          setExistingMainImagePath(data.main_image_path);
+          const path = data.main_image_path.startsWith("/")
+            ? data.main_image_path
+            : `/${data.main_image_path}`;
+          setThumbnailPreview(path);
+          // 注: メイン画像は notificationFiles には含まれないため、fileId は設定しない
+        }
+
+        // 添付ファイルを処理（notificationFiles にはメイン画像は含まれない）
         if (data.notificationFiles && data.notificationFiles.length > 0) {
-          // 最初のファイルをサムネイルとして扱う
-          const firstFile = data.notificationFiles[0];
-          if (firstFile?.file?.data_path) {
-            const path = firstFile.file.data_path.startsWith("/")
-              ? firstFile.file.data_path
-              : `/${firstFile.file.data_path}`;
-            setExistingThumbnailFileId(firstFile.file.id ?? null);
-            setExistingThumbnailPath(path);
-            setThumbnailPreview(path);
-          }
+          const previews: UploadPreview[] = data.notificationFiles.map(
+            (nf: RemoteNotificationFile) => {
+              const fileName =
+                nf.file?.original_filename || nf.file?.name || "ファイル";
+              const dataPath = nf.file?.data_path;
+              const fullPath = dataPath?.startsWith("/")
+                ? dataPath
+                : `/${dataPath}`;
+              const isImage =
+                nf.file?.type?.startsWith("image/") ||
+                fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
 
-          // 2番目以降のファイルを添付ファイルとして表示
-          const remainingFiles = data.notificationFiles.slice(1);
-          if (remainingFiles.length > 0) {
-            const previews: UploadPreview[] = remainingFiles.map(
-              (nf: RemoteNotificationFile) => {
-                const fileName =
-                  nf.file?.original_filename || nf.file?.name || "ファイル";
-                const dataPath = nf.file?.data_path;
-                const fullPath = dataPath?.startsWith("/")
-                  ? dataPath
-                  : `/${dataPath}`;
-                const isImage =
-                  nf.file?.type?.startsWith("image/") ||
-                  fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-
-                if (isImage && fullPath) {
-                  return {
-                    kind: "image" as const,
-                    src: fullPath,
-                    name: fileName,
-                    file: undefined,
-                    fileId: nf.file?.id,
-                    mimeType: nf.file?.type,
-                  };
-                } else {
-                  return {
-                    kind: "file" as const,
-                    name: fileName,
-                    file: undefined,
-                    fileId: nf.file?.id,
-                    mimeType: nf.file?.type,
-                    src: fullPath,
-                  };
-                }
-              },
-            );
-            setAttachedFilePreviews(previews);
-          }
+              if (isImage && fullPath) {
+                return {
+                  kind: "image" as const,
+                  src: fullPath,
+                  name: fileName,
+                  file: undefined,
+                  fileId: nf.file?.id,
+                  mimeType: nf.file?.type,
+                };
+              } else {
+                return {
+                  kind: "file" as const,
+                  name: fileName,
+                  file: undefined,
+                  fileId: nf.file?.id,
+                  mimeType: nf.file?.type,
+                  src: fullPath,
+                };
+              }
+            },
+          );
+          setAttachedFilePreviews(previews);
         }
       } catch (error) {
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "お知らせの取得中にエラーが発生しました。",
-        );
+        addToast({
+          type: "error",
+          message:
+            error instanceof Error
+              ? error.message
+              : "お知らせの取得中にエラーが発生しました。",
+        });
       }
     };
 
     fetchNotification();
-  }, [notificationId, editor]);
+  }, [notificationId, editor, addToast]);
 
   // エディタのHTMLを同期
   useEffect(() => {
@@ -243,10 +237,10 @@ function EditNoticeContent() {
   ) => {
     const file = e.target.files?.[0];
     if (!file) {
-      // ファイルが選択されない場合、既存のサムネイルに戻す
-      if (existingThumbnailPath) {
+      // ファイルが選択されない場合、既存のサムネイル（main image）に戻す
+      if (existingMainImagePath) {
         setThumbnailFile(null);
-        setThumbnailPreview(existingThumbnailPath);
+        setThumbnailPreview(existingMainImagePath);
       } else {
         setThumbnailFile(null);
         setThumbnailPreview(null);
@@ -258,14 +252,20 @@ function EditNoticeContent() {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
     if (!allowedTypes.includes(file.type)) {
-      alert(
-        "画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます。",
-      );
+      addToast({
+        type: "error",
+        message:
+          "画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます。",
+      });
       e.target.value = "";
       return;
     }
     if (file.size > maxSize) {
-      alert("ファイルサイズが大きすぎます。10MB以下の画像を選択してください。");
+      addToast({
+        type: "error",
+        message:
+          "ファイルサイズが大きすぎます。10MB以下の画像を選択してください。",
+      });
       e.target.value = "";
       return;
     }
@@ -285,15 +285,17 @@ function EditNoticeContent() {
 
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      alert(
-        "ファイルサイズが大きすぎます。10MB以下のファイルを選択してください。",
-      );
+      addToast({
+        type: "error",
+        message:
+          "ファイルサイズが大きすぎます。10MB以下のファイルを選択してください。",
+      });
       return;
     }
 
     // 最大4件まで
     if (attachedFilePreviews.length >= 6) {
-      alert("添付ファイルは最大6つまでです。");
+      addToast({ type: "error", message: "添付ファイルは最大6つまでです。" });
       return;
     }
 
@@ -341,7 +343,9 @@ function EditNoticeContent() {
   };
 
   // ファイルアップロード共通関数
-  const uploadFile = async (file: File): Promise<number | null> => {
+  const uploadFile = async (
+    file: File,
+  ): Promise<{ id: number; data_path: string } | null> => {
     const formData = new FormData();
     formData.append("file", file);
 
@@ -360,15 +364,16 @@ function EditNoticeContent() {
         );
       }
       const uploadedFile = await res.json();
-      return uploadedFile.id;
+      return { id: uploadedFile.id, data_path: uploadedFile.data_path };
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
           ? error.message
           : "ファイルのアップロード中に不明なエラーが発生しました。";
-      setErrorMessage(
-        `ファイルのアップロード中にエラーが発生しました: ${errorMessage}`,
-      );
+      addToast({
+        type: "error",
+        message: `ファイルのアップロード中にエラーが発生しました: ${errorMessage}`,
+      });
       return null;
     }
   };
@@ -380,39 +385,40 @@ function EditNoticeContent() {
   ) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrorMessage("");
-    setSuccessMessage("");
     setUploadProgress(0);
 
     if (notificationId === null) {
-      setErrorMessage("お知らせIDが正しくありません。");
+      addToast({ type: "error", message: "お知らせIDが正しくありません。" });
       setIsLoading(false);
       return;
     }
 
     // バリデーション: タイトル
     if (!title.trim() && !saveAsDraft) {
-      setErrorMessage("タイトルを入力してください。");
+      addToast({ type: "error", message: "タイトルを入力してください。" });
       setIsLoading(false);
       return;
     }
 
     if (title.length > 100) {
-      setErrorMessage("タイトルは100文字以内で入力してください。");
+      addToast({
+        type: "error",
+        message: "タイトルは100文字以内で入力してください。",
+      });
       setIsLoading(false);
       return;
     }
 
     // バリデーション: 詳細
     if (!editor?.getText().trim() && !saveAsDraft) {
-      setErrorMessage("お知らせ詳細を入力してください。");
+      addToast({ type: "error", message: "お知らせ詳細を入力してください。" });
       setIsLoading(false);
       return;
     }
 
     // 公開開始日時のバリデーション
     if (!saveAsDraft && !publicDateStart) {
-      setErrorMessage("公開開始日時を選択してください。");
+      addToast({ type: "error", message: "公開開始日時を選択してください。" });
       setIsLoading(false);
       return;
     }
@@ -423,9 +429,10 @@ function EditNoticeContent() {
       const endDate = parseISO(publicDateEnd);
 
       if (endDate <= startDate) {
-        setErrorMessage(
-          "公開終了日時は公開開始日時より後の日時を選択してください。",
-        );
+        addToast({
+          type: "error",
+          message: "公開終了日時は公開開始日時より後の日時を選択してください。",
+        });
         setIsLoading(false);
         return;
       }
@@ -437,7 +444,7 @@ function EditNoticeContent() {
         (preview) => preview.file,
       );
       const totalFiles = (thumbnailFile ? 1 : 0) + filesNeedingUpload.length;
-      let uploadedThumbnailId: number | null = null;
+      let _uploadedThumbnailPath: string | null = null;
       const uploadedAttachmentIds: number[] = [];
       let uploadedCount = 0;
 
@@ -447,14 +454,14 @@ function EditNoticeContent() {
             Math.round(((uploadedCount / totalFiles) * 100) / 2),
           );
         }
-        const fileId = await uploadFile(thumbnailFile);
-        if (fileId !== null) {
-          uploadedThumbnailId = fileId;
-          console.log("Uploaded new thumbnail with ID:", fileId);
+        const result = await uploadFile(thumbnailFile);
+        if (result !== null) {
+          _uploadedThumbnailPath = result.data_path;
+          setExistingMainImagePath(result.data_path);
         }
         uploadedCount++;
-      } else if (existingThumbnailPath) {
-        // 既存のサムネイルを保持する場合、ここで処理
+      } else if (existingMainImagePath) {
+        // 既存のサムネイル（main image）を保持する場合、ここで処理
       }
 
       for (const preview of attachedFilePreviews) {
@@ -464,8 +471,8 @@ function EditNoticeContent() {
             Math.round(((uploadedCount / totalFiles) * 100) / 2),
           );
         }
-        const fileId = await uploadFile(preview.file);
-        if (fileId !== null) uploadedAttachmentIds.push(fileId);
+        const result = await uploadFile(preview.file);
+        if (result !== null) uploadedAttachmentIds.push(result.id);
         uploadedCount++;
       }
 
@@ -484,15 +491,8 @@ function EditNoticeContent() {
         }
       }
 
-      // サムネイル: 新規があればそれを先頭に、なければ既存IDを先頭に置く
-      const finalFileIds: number[] = [];
-      if (thumbnailFile && uploadedThumbnailId !== null) {
-        finalFileIds.push(uploadedThumbnailId);
-      } else if (existingThumbnailFileId !== null) {
-        finalFileIds.push(existingThumbnailFileId);
-      }
-
-      finalFileIds.push(...attachmentFileIds);
+      // メイン画像は main_image_path で管理、添付ファイルのみを fileIds に含める
+      const finalFileIds: number[] = [...attachmentFileIds];
 
       // 2. お知らせ更新API呼び出し
       setUploadProgress(75);
@@ -510,6 +510,7 @@ function EditNoticeContent() {
           : null,
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
+        main_image_path: _uploadedThumbnailPath ?? existingMainImagePath,
         fileIds: finalFileIds,
       };
 
@@ -530,7 +531,7 @@ function EditNoticeContent() {
       }
 
       setUploadProgress(100);
-      setSuccessMessage("お知らせを更新しました。");
+      addToast({ type: "success", message: "お知らせを更新しました。" });
 
       // 2秒後にリダイレクト
       setTimeout(() => {
@@ -541,9 +542,10 @@ function EditNoticeContent() {
         error instanceof Error
           ? error.message
           : "お知らせの更新中に不明なエラーが発生しました。";
-      setErrorMessage(
-        errorMessage || "お知らせの更新中にエラーが発生しました。",
-      );
+      addToast({
+        type: "error",
+        message: errorMessage || "お知らせの更新中にエラーが発生しました。",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -563,34 +565,9 @@ function EditNoticeContent() {
   }, [modalIndex]);
 
   return (
-    <main className="p-6">
+    <main className="p-6" ref={mainRef}>
       <h1 className="text-2xl font-bold mb-6">お知らせ編集</h1>
-      {errorMessage && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <strong className="font-bold">エラー:</strong>
-          <span className="block sm:inline ml-8">{errorMessage}</span>
-          <button
-            type="button"
-            className="absolute top-0 right-0 px-4 py-3 hover:bg-red-200 rounded transition-colors"
-            onClick={() => setErrorMessage("")}
-            aria-label="閉じる"
-          >
-            <span className="text-2xl">&times;</span>
-          </button>
-        </div>
-      )}
-      {successMessage && (
-        <div
-          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <strong className="font-bold">成功:</strong>
-          <span className="block sm:inline ml-2">{successMessage}</span>
-        </div>
-      )}
+      {/* 通知はトーストで表示します */}
       {isLoading && uploadProgress > 0 && uploadProgress < 100 && (
         <div className="mb-4">
           <div className="flex justify-between mb-1">
@@ -615,7 +592,7 @@ function EditNoticeContent() {
             style={{ width: "100%", height: "100%" }}
           >
             <input
-              id="thumbnail"
+              id="edit-thumbnail"
               type="file"
               name="thumbnailFile"
               className="thumbnail-btn"
@@ -633,7 +610,7 @@ function EditNoticeContent() {
               />
             )}
             <label
-              htmlFor="thumbnail"
+              htmlFor="edit-thumbnail"
               className="thumbnail-label inline-block px-3 py-2 cursor-pointer"
             >
               {thumbnailPreview ? "サムネイルを変更" : "サムネイルを選択"}
@@ -641,7 +618,9 @@ function EditNoticeContent() {
           </div>
         </section>
 
-        <label htmlFor="title" className="block mt-5 mb-1">タイトル<span className="required">*</span></label>
+        <label htmlFor="title" className="block mt-5 mb-1">
+          タイトル<span className="required">*</span>
+        </label>
         <Textbox
           type="text"
           className="title w-full mb-5"
@@ -657,12 +636,12 @@ function EditNoticeContent() {
                 type="radio"
                 className="notice-radio"
                 name="notification-type"
-                id="notice"
+                id="edit-notice-type"
                 value="notice"
                 checked={notificationType === "notice"}
                 onChange={() => setNotificationType("notice")}
               />
-              <label htmlFor="notice" className="radio-label">
+              <label htmlFor="edit-notice-type" className="radio-label">
                 お知らせ
               </label>
             </div>
@@ -671,12 +650,12 @@ function EditNoticeContent() {
                 type="radio"
                 className="notice-radio"
                 name="notification-type"
-                id="donation"
+                id="edit-donation-type"
                 value="donation"
                 checked={notificationType === "donation"}
                 onChange={() => setNotificationType("donation")}
               />
-              <label htmlFor="donation" className="radio-label">
+              <label htmlFor="edit-donation-type" className="radio-label">
                 寄贈
               </label>
             </div>
@@ -687,12 +666,12 @@ function EditNoticeContent() {
                   type="radio"
                   className="notice-radio"
                   name="publish-status"
-                  id="publish"
+                  id="edit-publish"
                   value="public"
                   checked={isPublic}
                   onChange={() => setIsPublic(true)}
                 />
-                <label htmlFor="publish" className="radio-label">
+                <label htmlFor="edit-publish" className="radio-label">
                   公開
                 </label>
               </div>
@@ -701,12 +680,12 @@ function EditNoticeContent() {
                   type="radio"
                   className="notice-radio"
                   name="publish-status"
-                  id="private"
+                  id="edit-private"
                   value="private"
                   checked={!isPublic}
                   onChange={() => setIsPublic(false)}
                 />
-                <label htmlFor="private" className="radio-label">
+                <label htmlFor="edit-private" className="radio-label">
                   非公開
                 </label>
               </div>
@@ -714,7 +693,9 @@ function EditNoticeContent() {
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="w-38">公開期間<span className="required">*</span></label>
+            <label className="w-38">
+              公開期間<span className="required">*</span>
+            </label>
             <Textbox
               type="datetime-local"
               placeholder="公開開始"
@@ -736,7 +717,9 @@ function EditNoticeContent() {
           </div>
         </div>
         {/* ツールバー */}
-        <label htmlFor="title" className="block mt-5 mb-1">本文<span className="required">*</span></label>
+        <label htmlFor="title" className="block mt-5 mb-1">
+          本文<span className="required">*</span>
+        </label>
         <div className="flex items-center gap-2 design-container py-2 pl-3">
           {/* 太字 */}
           <button
@@ -806,12 +789,12 @@ function EditNoticeContent() {
         </div>
 
         {/* 添付画像・ファイル */}
-        <label htmlFor="upload" className="block mt-4">
+        <label htmlFor="edit-upload" className="block mt-4">
           添付画像・ファイル
         </label>
         <div className="flex items-center gap-10">
           <input
-            id="upload"
+            id="edit-upload"
             type="file"
             name="attachedFile"
             className="upload-btn"
@@ -819,7 +802,7 @@ function EditNoticeContent() {
             multiple={false}
           />
           <label
-            htmlFor="upload"
+            htmlFor="edit-upload"
             className="upload-label inline-block h-fit px-3 py-2 cursor-pointer"
           >
             添付する画像・ファイルを選択
@@ -848,14 +831,30 @@ function EditNoticeContent() {
                     unoptimized
                   />
                 ) : (
-                  <div className="flex items-center justify-center text-xs p-2 break-words w-full h-full rounded">
-                    <span className="truncate">{preview.name}</span>
+                  <div
+                    className="flex items-center justify-center text-xs p-2 break-words w-full h-full rounded"
+                    style={{ backgroundColor: "#ffffff" }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      style={{ width: "36px", height: "36px" }}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                      />
+                    </svg>
                   </div>
                 )}
                 <button
                   type="button"
                   aria-label="プレビューを削除"
-                  className="absolute -top-2 -right-2 rounded w-6 h-6 flex items-center justify-center transition-colors"
+                  className="absolute -top-2 -right-2 rounded w-10 h-10 flex items-center justify-center transition-colors"
                   style={{
                     backgroundColor: "transparent",
                     boxShadow: "none",
@@ -866,7 +865,7 @@ function EditNoticeContent() {
                     removeAttachedFilePreview(i);
                   }}
                 >
-                  &times;
+                  <span className="text-3xl">&times;</span>
                 </button>
               </div>
             ))}

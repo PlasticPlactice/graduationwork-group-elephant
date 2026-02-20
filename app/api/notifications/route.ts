@@ -5,9 +5,10 @@ import {
   NotificationType,
   NotificationTypeValue,
 } from "@/lib/types/notification";
+import { toAbsoluteUrl, isPdfFile } from "@/lib/pathUtils";
 
 // 1ページあたりの表示件数
-const ITEMS_PER_PAGE = 4;
+const ITEMS_PER_PAGE = 8;
 
 // 許可される通知タイプの値
 const VALID_NOTIFICATION_TYPES: readonly NotificationTypeValue[] = [
@@ -56,6 +57,8 @@ export async function GET(req: NextRequest) {
       public_flag: true,
       deleted_flag: false,
       draft_flag: false,
+      // 公開開始日時の確認：public_dateが現在時刻以前の場合のみ表示
+      public_date: { lte: now },
       // 公開終了日時の確認：public_end_dateが設定されていない、または現在時刻以降の場合のみ表示
       OR: [{ public_end_date: null }, { public_end_date: { gt: now } }],
     };
@@ -73,6 +76,7 @@ export async function GET(req: NextRequest) {
         title: true,
         detail: true,
         public_date: true,
+        main_image_path: true,
         notificationFiles: {
           where: {
             deleted_flag: false,
@@ -85,22 +89,27 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      orderBy: {
-        public_date: "desc",
-      },
+      orderBy: [{ public_date: "desc" }, { id: "asc" }],
       skip: (page - 1) * ITEMS_PER_PAGE,
       take: ITEMS_PER_PAGE,
     });
 
     // NotificationItem 形式に変換
     const items: NotificationItem[] = notifications.map((notification) => {
+      // メイン画像の特定：DB の main_image_path を優先し、なければデフォルト
+      const image = notification.main_image_path
+        ? toAbsoluteUrl(notification.main_image_path)
+        : "/top/image.png";
+
+      // PDF ファイルを探す（notificationFiles にはメイン画像は含まれない）
       const pdfFile = notification.notificationFiles.find((nf) =>
-        nf.file.data_path.toLowerCase().endsWith(".pdf"),
+        isPdfFile(nf.file.data_path),
       );
 
+      // 添付ファイル（notificationFiles にはメイン画像は含まれないため、そのまま使用）
       const attachments = notification.notificationFiles.map((nf) => ({
         name: nf.file.name,
-        url: nf.file.data_path,
+        url: toAbsoluteUrl(nf.file.data_path),
       }));
 
       return {
@@ -108,11 +117,8 @@ export async function GET(req: NextRequest) {
         date: notification.public_date.toISOString().split("T")[0],
         title: notification.title,
         content: notification.detail || undefined,
-        image:
-          notification.notificationFiles.length > 0
-            ? notification.notificationFiles[0].file.data_path
-            : "/top/image.png",
-        pdfUrl: pdfFile ? pdfFile.file.data_path : undefined,
+        image,
+        pdfUrl: pdfFile ? toAbsoluteUrl(pdfFile.file.data_path) : undefined,
         attachments,
       };
     });

@@ -6,9 +6,11 @@ import { toBookCardDTO } from "@/lib/mappers";
 export async function getPublicBookReviews(eventId: number) {
   const rawData = await prisma.bookReview.findMany({
     include: { user: true },
-    where: { 
-        public_flag: true,
-        event_id: eventId
+    where: {
+      public_flag: true,
+      evaluations_status: 1,
+      deleted_flag: false,
+      event_id: eventId,
     },
     orderBy: { created_at: "desc" },
   });

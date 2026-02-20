@@ -1,5 +1,7 @@
 import { updateExpiredNotifications } from "./updateNotificationStatus";
 import { updateTermsSchedule } from "./updateTermsSchedule";
+import { updateEventStatus } from "./updateEventStatus";
+import { updateExpiredEvents } from "./updateExpiredEvents";
 import { logBatchInfo, logBatchSuccess, logBatchError } from "./logger";
 
 let cronTaskStarted = false;
@@ -19,6 +21,8 @@ export async function startNotificationScheduler() {
     logBatchInfo("アプリケーション起動時のバッチ処理を実行します");
     await updateExpiredNotifications();
     await updateTermsSchedule();
+    await updateEventStatus();
+    await updateExpiredEvents();
 
     // その後、定期的に実行（毎時間0分）
     // 形式: '0 * * * *' = 毎時間0分、'*/15 * * * *' = 15分ごと
@@ -29,6 +33,8 @@ export async function startNotificationScheduler() {
         try {
           await updateExpiredNotifications();
           await updateTermsSchedule();
+          await updateEventStatus();
+          await updateExpiredEvents();
         } catch (error) {
           logBatchError(
             `スケジュール実行中にエラーが発生しました: ${error instanceof Error ? error.message : String(error)}`,

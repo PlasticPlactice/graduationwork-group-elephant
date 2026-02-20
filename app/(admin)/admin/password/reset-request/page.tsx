@@ -2,11 +2,14 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { DEMO_MODE } from "@/lib/constants/demoMode";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function PasswordResetRequestPage() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const { addToast } = useToast();
 
   const handleSendReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,13 +29,18 @@ export default function PasswordResetRequestPage() {
 
       if (res.ok) {
         setMessage(data.message);
+        addToast({ type: "success", message: data.message || "リセットリンクを送信しました。" });
         setEmail("");
       } else {
-        setMessage(data.message || "エラーが発生しました。もう一度お試しください。");
+        setMessage(
+          data.message || "エラーが発生しました。もう一度お試しください。",
+        );
+        addToast({ type: "error", message: data.message || "エラーが発生しました。もう一度お試しください。" });
       }
     } catch (error) {
       console.error("Password reset request error:", error);
       setMessage("エラーが発生しました。もう一度お試しください。");
+      addToast({ type: "error", message: "エラーが発生しました。もう一度お試しください。" });
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +95,7 @@ export default function PasswordResetRequestPage() {
             <div className="flex flex-col gap-3">
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || DEMO_MODE}
                 className="w-full bg-blue-600 text-white px-4 py-3 rounded-md font-bold text-center hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "送信中..." : "リセットリンクを送信"}

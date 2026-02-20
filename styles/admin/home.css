@@ -1,11 +1,47 @@
-.home-main {
+﻿・ｿ.home-main {
   background-color: var(--color-bg);
   color: var(--color-text);
 }
 
+
+.home-sections {
+  display: grid;
+  gap: 32px;
+  align-items: stretch;
+  max-width: 1100px;
+  margin: 20px auto 0;
+  padding: 0 6px 24px;
+}
+
+.home-events,
+.home-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.home-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+}
+
+@media (min-width: 1024px) {
+  .home-sections {
+    grid-template-columns: minmax(0, 6.5fr) minmax(0, 3.5fr);
+  }
+
+  .home-actions {
+    grid-template-columns: 1fr;
+    margin-top: 0;
+  }
+}
 .event-scroll-content {
-  max-height: 227px; /* 高さを調整してください */
+  max-height: 490px; /* 2闔会ｽｶ邵ｺ蠕娯ｳ郢ｧ蠕鯉ｼ樒ｸｺ・ｫ髫穂ｹ昶斡郢ｧ遏ｩ・ｫ蛟･・・ｹｧ蝣､・｢・ｺ闖ｫ繝ｻ*/
+  min-height: 490px;
+  flex: 1 1 auto;
   overflow-y: auto;
+  margin-top: 20px;
   border: 2px solid var(--color-main);
   background-color: #fff;
   border-radius: var(--control-radius);
@@ -15,6 +51,18 @@
   font-size: var(--font-size-h1);
   margin: 0;
   font-weight: bold;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.home-events .event-title,
+.home-actions .event-title {
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+.home-actions .event-title {
+  margin-top: 16px;
 }
 
 .event-container {
@@ -24,7 +72,7 @@
 }
 
 .event-name {
-  font-size: 27px;
+  font-size: 20px;
   color: var(--color-text);
 }
 
@@ -34,12 +82,23 @@
 }
 
 .up-arrow {
-    color: var(--color-main);
+    color: var(--color-admin-ban-background);
     /* margin: 0 0 0 30.4rem; */
 }
-.event-condition-circle-now {
+.event-condition-circle-past {
+  color: var(--color-main);
+  margin: auto;
+}
+.event-condition-label-past{
     color: var(--color-main);
+}
+.event-condition-circle-now {
+    color: var(--color-admin-ban-background);
     margin: auto;
+}
+.event-condition-label-now {
+    color: var(--color-admin-ban-background);
+    font-weight: bold;
 }
 .event-condition-circle-future {
     color: var(--color-admin-sub);
@@ -47,24 +106,24 @@
 }
 
 progress {
-  -webkit-appearance: none; /* -webkit- 用: プログレスバーのスタイルをリセット */
-  -moz-appearance: none;    /* -moz- 用: プログレスバーのスタイルをリセット */
-  background-color: var(--color-admin-sub); /* -moz- 用: プログレスバーの背景色 */
+  -webkit-appearance: none; /* -webkit- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ驛｢・ｧ繝ｻ・ｹ驛｢・ｧ繝ｻ・ｿ驛｢・ｧ繝ｻ・､驛｢譎｢・ｽ・ｫ驛｢・ｧ陋幢ｽｵ・取㏍・ｹ・ｧ繝ｻ・ｻ驛｢譏ｴ繝ｻ郢晢ｽｨ */
+  -moz-appearance: none;    /* -moz- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ驛｢・ｧ繝ｻ・ｹ驛｢・ｧ繝ｻ・ｿ驛｢・ｧ繝ｻ・､驛｢譎｢・ｽ・ｫ驛｢・ｧ陋幢ｽｵ・取㏍・ｹ・ｧ繝ｻ・ｻ驛｢譏ｴ繝ｻ郢晢ｽｨ */
+  background-color: var(--color-admin-sub); /* -moz- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ鬮｢・ｭ隴ｴ・ｧ陷搾ｽｹ雎ｼ・ｶ繝ｻ・ｲ */
   border: none;
   height: 3px;
 }
 ::-webkit-progress-bar {
-  background-color: var(--color-admin-sub); /* -webkit- 用: プログレスバーの背景色 */
+  background-color: var(--color-admin-sub); /* -webkit- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ鬮｢・ｭ隴ｴ・ｧ陷搾ｽｹ雎ｼ・ｶ繝ｻ・ｲ */
 }
 ::-webkit-progress-value {
-  background-color: var(--color-main); /* -webkit- 用: プログレスバーの進捗部分色 */
+  background-color: var(--color-main); /* -webkit- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ鬯ｨ・ｾ繝ｻ・ｲ髫ｰ螳｣譁｡・主､雁ｴ慕ｹ晢ｽｻ霑夲ｽ｡ */
 }
 ::-moz-progress-bar {
-  background-color: var(--color-main); /* -moz- 用: プログレスバーの進捗部分色 */
+  background-color: var(--color-main); /* -moz- 鬨ｾ蛹・ｽｽ・ｨ: 驛｢譎丞ｹｲ・取ｺｽ・ｹ・ｧ繝ｻ・ｰ驛｢譎｢・ｽ・ｬ驛｢・ｧ繝ｻ・ｹ驛｢譎√・郢晢ｽｻ驍ｵ・ｺ繝ｻ・ｮ鬯ｨ・ｾ繝ｻ・ｲ髫ｰ螳｣譁｡・主､雁ｴ慕ｹ晢ｽｻ霑夲ｽ｡ */
 }
 
 .event-date {
-  font-size: var(--font-size-h1);
+  font-size: 16px;
 }
 .event-date-now{
   color: var(--color-main);
@@ -89,8 +148,14 @@ progress {
 }
 .admin-card:hover{
   background-color: var(--color-main);
+  color: var(--color-bg);
 }
-
+.admin-card:hover .card-title {
+  color: var(--color-bg);
+}
+.admin-card:hover .card-description {
+  color: var(--color-bg);
+}
 .admin-icon {
   background-color: var(--color-main);
   color: var(--color-bg);
@@ -105,3 +170,8 @@ progress {
   color: var(--color-input-bg);
   font-size: var(--font-size-small);
 }
+
+
+
+
+

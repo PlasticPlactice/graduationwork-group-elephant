@@ -23,12 +23,12 @@
   height: 40px;
   border-radius: 50%;
   background-color: var(--color-bg);
-  color: var(--color-sub);
+  color: var(--color-main);
   box-shadow: none;
 }
 
 .pagination-arrow:hover {
-  color: var(--color-text);
+  color: var(--color-main);
 }
 
 .pagination-arrow span {

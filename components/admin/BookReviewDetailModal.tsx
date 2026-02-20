@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
+import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 import "@/styles/admin/events.css";
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -9,6 +11,7 @@ import { TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import AdminButton from "@/components/ui/admin-button";
 import { REVIEW_STATUS_LABELS } from "@/lib/constants/reviewStatus";
+import { formatAddress } from "@/lib/formatAddress";
 
 interface BookReviewDetailModalProps {
   isOpen: boolean;
@@ -22,6 +25,7 @@ interface BookReviewDetail {
   nickname: string;
   age: number;
   address: string;
+  sub_address?: string | null;
   evaluations_status: number;
   evaluations_count: number;
   review: string;
@@ -32,13 +36,13 @@ export default function BookReviewDetailModal({
   onClose,
   reviewId,
 }: BookReviewDetailModalProps) {
+  const router = useRouter();
+  const { addToast } = useToast();
   const [detail, setDetail] = useState<BookReviewDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [sendError, setSendError] = useState("");
-  const [sendSuccess, setSendSuccess] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   // Tiptapエディタ
   const editor = useEditor({
     extensions: [
@@ -56,19 +60,16 @@ export default function BookReviewDetailModal({
   useEffect(() => {
     if (!isOpen || !reviewId) {
       setDetail(null);
-      setError("");
       setIsLoading(false);
       setMessage("");
       setIsSending(false);
-      setSendError("");
-      setSendSuccess("");
+      setIsSaving(false);
       return;
     }
 
     let isMounted = true;
     const fetchDetail = async () => {
       setIsLoading(true);
-      setError("");
       try {
         const res = await fetch(`/api/admin/reviews/${reviewId}`);
         if (!res.ok) throw new Error("Failed to fetch review detail");
@@ -80,7 +81,10 @@ export default function BookReviewDetailModal({
         console.error("Error fetching review detail:", err);
         if (isMounted) {
           setDetail(null);
-          setError("書評詳細の取得に失敗しました。");
+          addToast({
+            type: "error",
+            message: "書評詳細の取得に失敗しました。",
+          });
         }
       } finally {
         if (isMounted) {
@@ -93,7 +97,7 @@ export default function BookReviewDetailModal({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, reviewId]);
+  }, [isOpen, reviewId, addToast]);
 
   useEffect(() => {
     if (!editor) return;
@@ -107,19 +111,21 @@ export default function BookReviewDetailModal({
   const applyColor = (color: string) =>
     editor?.chain().focus().setColor(color).run();
 
+  const handlePreview = () => {
+    if (!reviewId) return;
+    router.push(`/admin/print-preview?reviewId=${reviewId}`);
+  };
+
   const handleSendMessage = async () => {
     if (!reviewId) return;
 
     const trimmed = message.trim();
     if (!trimmed) {
-      setSendError("メッセージを入力してください。");
-      setSendSuccess("");
+      addToast({ type: "warning", message: "メッセージを入力してください。" });
       return;
     }
 
     setIsSending(true);
-    setSendError("");
-    setSendSuccess("");
     try {
       const res = await fetch("/api/admin/messages/send", {
         method: "POST",
@@ -134,17 +140,65 @@ export default function BookReviewDetailModal({
 
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        setSendError(data?.error ?? "メッセージ送信に失敗しました。");
+        addToast({
+          type: "error",
+          message: data?.error ?? "メッセージ送信に失敗しました。",
+        });
         return;
       }
 
-      setSendSuccess("メッセージを送信しました。");
+      addToast({ type: "success", message: "メッセージを送信しました。" });
       setMessage("");
     } catch (err) {
       console.error("Error sending message:", err);
-      setSendError("メッセージ送信に失敗しました。");
+      addToast({ type: "error", message: "メッセージ送信に失敗しました。" });
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleSaveReview = async () => {
+    if (!reviewId || !editor) return;
+
+    const trimmedText = editor.getText().trim();
+    if (!trimmedText) {
+      addToast({ type: "error", message: "書評本文を入力してください。" });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/admin/reviews/${reviewId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          review: editor.getHTML(),
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        addToast({
+          type: "error",
+          message: data?.error ?? "更新に失敗しました。",
+        });
+        return;
+      }
+
+      addToast({ type: "success", message: "書評本文を保存しました。" });
+      router.refresh();
+      onClose();
+    } catch (err) {
+      console.error("Error updating review:", err);
+      addToast({
+        type: "error",
+        message:
+          "書評本文の更新中に通信エラーが発生しました。時間をおいて再度お試しください。",
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -169,7 +223,6 @@ export default function BookReviewDetailModal({
             {isLoading && (
               <p className="px-3 py-2 text-sm text-gray-600">読み込み中...</p>
             )}
-            {error && <p className="px-3 py-2 text-sm text-red-600">{error}</p>}
             {/* ツールバー */}
             <div className="flex items-center gap-2 design-container py-2 pl-3">
               {/* 太字 */}
@@ -255,7 +308,7 @@ export default function BookReviewDetailModal({
               </div>
               <div className="my-2 grid grid-cols-2">
                 <p>所在地</p>
-                <p>{detail?.address ?? "-"}</p>
+                <p>{formatAddress(detail?.address, detail?.sub_address)}</p>
               </div>
               <div className="my-2 grid grid-cols-2">
                 <p>ステータス</p>
@@ -280,12 +333,7 @@ export default function BookReviewDetailModal({
               onClick={handleSendMessage}
               disabled={isSending || !reviewId}
             />
-            {sendError && (
-              <p className="mt-2 text-sm text-red-600">{sendError}</p>
-            )}
-            {sendSuccess && (
-              <p className="mt-2 text-sm text-green-600">{sendSuccess}</p>
-            )}
+            {/* 成功・失敗はトーストで表示するため、インラインメッセージは削除 */}
             <div className="flex justify-between items-center my-5">
               {/* いいね */}
               <div className="flex items-center gap-1">
@@ -300,7 +348,7 @@ export default function BookReviewDetailModal({
                 </p>
               </div>
               <div>
-                <button className="preview-btn">
+                <button className="preview-btn" onClick={handlePreview}>
                   <span className="font-lg">印刷プレビュー</span>
                 </button>
               </div>
@@ -309,6 +357,8 @@ export default function BookReviewDetailModal({
               type="submit"
               className="w-full save-btn"
               label="確定して保存"
+              onClick={handleSaveReview}
+              disabled={isSaving || !reviewId || !editor}
             />
           </section>
         </div>

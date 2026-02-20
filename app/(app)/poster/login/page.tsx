@@ -3,17 +3,42 @@
 import loginModule from "@/styles/app/login.module.css";
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [accountId, setAccountId] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
+  useEffect(() => {
+    const paramError =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("error")
+        : null;
+    if (!paramError) return;
+
+    let errorMessage = "ログインに失敗しました。";
+    switch (paramError) {
+      case "DeletedUser":
+        errorMessage = "このアカウントは存在しません。";
+        break;
+      case "WithdrawnUser":
+        errorMessage = "このアカウントは退会済みです。";
+        break;
+      case "BannedUser":
+        errorMessage = "このアカウントは利用停止されています。";
+        break;
+      case "CredentialsSignin":
+        errorMessage = "アカウントIDまたはパスワードが正しくありません。";
+        break;
+      default:
+        errorMessage = `ログインに失敗しました: ${paramError}`;
+        break;
+    }
+    // Avoid synchronous setState inside useEffect to prevent cascading renders
+    setTimeout(() => setError(errorMessage), 0);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,10 +55,16 @@ export default function LoginPage() {
       const result = await signIn("user", {
         account_id: accountId,
         password: password,
-        redirect: false,
+        redirect: true,
+        callbackUrl: "/poster/mypage",
       });
 
-      if (result?.error) {
+      // 型ガード: result がオブジェクトで error プロパティを持つ場合
+      function isSignInResponse(obj: unknown): obj is { error?: string } {
+        return typeof obj === "object" && obj !== null && "error" in obj;
+      }
+
+      if (isSignInResponse(result) && result.error) {
         let errorMessage = "ログインに失敗しました。"; // デフォルトのエラーメッセージ
 
         // バックエンドからの特定のエラーメッセージをユーザーフレンドリーなメッセージに変換
@@ -56,8 +87,6 @@ export default function LoginPage() {
         }
         setError(errorMessage);
         setIsLoading(false);
-      } else if (result?.ok) {
-        router.push("/poster/mypage");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -67,13 +96,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <div className={`mb-2 ${Styles.posterContainer}`}>
-        <div className="my-8">
+    <div className={`${loginModule.loginTheme} ${loginModule.loginPage}`}>
+      <div
+        className={`mb-2 ${Styles.posterContainer} ${loginModule.loginCard}`}
+      >
+        <div className="mt-4 mb-6 lg:mt-2 lg:mb-4">
           <Image
-            src="/layout/logo.png"
+            src="/layout/new_logo.png"
             alt="logo"
-            width={177}
+            width={120}
             height={120}
             className="mx-auto"
           />
@@ -114,7 +145,7 @@ export default function LoginPage() {
               />
             </div>
           </div>
-          <div className="mb-24">
+          <div className="mb-10 lg:mb-8">
             <label
               htmlFor="password"
               className={`font-bold ml-0.5 ${Styles.text16px}`}

@@ -1,18 +1,7 @@
-import { BookshelfTop } from "@/components/bookshelf/BookshelfTop";
-import { getPublicBookReviews } from "@/lib/bookData";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function BookshelfDetailPage() {
-
-
-  const bookReviews = await getPublicBookReviews(1);
-
-  return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="py-6">
-        <BookshelfTop reviews={bookReviews}/>
-      </div>
-    </div>
-  );
+export default function BookshelfIndexPage() {
+  redirect("/posts/bookshelf/1");
 }

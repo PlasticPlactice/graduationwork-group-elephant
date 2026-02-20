@@ -1,12 +1,84 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import "@/styles/admin/header.css";
+import Image from "next/image";
 
 export function AdminHeader() {
   const [openMenu, setOpenMenu] = useState(false);
+  const pathname = usePathname();
+
+  const breadcrumbs = useMemo(() => {
+    if (!pathname.startsWith("/admin")) return [];
+
+    const labels: Record<string, string> = {
+      "/admin": "管理者トップ",
+      "/admin/home": "ホーム",
+      "/admin/notice": "お知らせ管理",
+      "/admin/register-notice": "お知らせ登録",
+      "/admin/edit-notice": "お知らせ編集",
+      "/admin/detail-notice": "お知らせ詳細",
+      "/admin/events": "イベント管理",
+      "/admin/events-details": "イベント詳細",
+      "/admin/users": "ユーザー管理",
+      // "/admin/terms": "利用規約管理",
+      "/admin/register-term": "利用規約登録",
+      "/admin/edit-term": "利用規約編集",
+      "/admin/detail-term": "利用規約詳細",
+      "/admin/password": "パスワード変更",
+      "/admin/password/reset": "パスワード再設定",
+      "/admin/password/reset-request": "パスワード再設定申請",
+      "/admin/print-preview": "印刷プレビュー",
+    };
+
+    if (pathname === "/admin/print-preview") {
+      return [
+        { label: "管理者トップ", href: "/admin/home" },
+        { label: "イベント管理", href: "/admin/events" },
+        { label: "イベント詳細", href: "/admin/events-details" },
+        { label: "印刷プレビュー", href: "/admin/print-preview" },
+      ];
+    }
+
+    const parentByPath: Record<string, string> = {
+      "/admin/events-details": "/admin/events",
+      "/admin/register-notice": "/admin/notice",
+      "/admin/edit-notice": "/admin/notice",
+      "/admin/detail-notice": "/admin/notice",
+      "/admin/register-term": "/admin/detail-term",
+      "/admin/edit-term": "/admin/detail-term",
+      "/admin/detail-term": "",
+      "/admin/password/reset": "/admin/password",
+      "/admin/password/reset-request": "/admin/password",
+    };
+
+    const segments = pathname.split("/").filter(Boolean);
+    if (segments.length === 0) return [];
+
+    const items: { label: string; href: string }[] = [];
+    items.push({ label: "管理者トップ", href: "/admin/home" });
+
+    let current = "/admin";
+    for (let i = 1; i < segments.length; i += 1) {
+      current += `/${segments[i]}`;
+      const label = labels[current] ?? segments[i];
+      items.push({ label, href: current });
+    }
+
+    const parentPath = parentByPath[pathname];
+    if (parentPath) {
+      const parentLabel = labels[parentPath] ?? parentPath.split("/").pop() ?? "";
+      const exists = items.some((item) => item.href === parentPath);
+      if (!exists) {
+        items.splice(1, 0, { label: parentLabel, href: parentPath });
+      }
+    }
+
+    return items;
+  }, [pathname]);
 
   const handleMenuToggle = (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -14,20 +86,55 @@ export function AdminHeader() {
   };
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/admin/login" });
+    await signOut({ callbackUrl: "/admin" });
   };
 
   return (
-    <header className="w-full bg-white border-b border-gray-100">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 md:px-6">
+    <header className="w-full bg-white border-b border-gray-100 admin-header">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 md:px-6">
         <Link
           href="/admin/home"
-          className="flex items-center hover:opacity-80 transition-opacity"
+          className="flex items-center hover:opacity-80 transition-opacity shrink-0"
         >
-          ホーム
+          <Image
+            src="/layout/new_logo.png"
+            alt="Admin Logo"
+            width={70}
+            height={70}
+          />
         </Link>
 
-        <div className="flex items-center">
+        <nav
+          aria-label="breadcrumb"
+          className="flex-1 px-2 hidden sm:block"
+        >
+          <ol className="flex flex-wrap items-center justify-center gap-2 text-sm text-slate-500">
+            {breadcrumbs.map((item, index) => {
+              const isLast = index === breadcrumbs.length - 1;
+              return (
+                <li key={`${item.href}-${index}`} className="flex items-center gap-2">
+                  {index > 0 ? (
+                    <span className="text-slate-300">/</span>
+                  ) : null}
+                  {isLast ? (
+                    <span className="font-semibold text-slate-700">
+                      {item.label}
+                    </span>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className="hover:text-slate-700 transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+
+        <div className="flex items-center shrink-0">
           <button
             onClick={handleMenuToggle}
             aria-label={openMenu ? "Close menu" : "Open menu"}
@@ -123,11 +230,11 @@ export function AdminHeader() {
 
               <li>
                 <Link
-                  href="/admin/notice"
+                  href="/admin/detail-term"
                   onClick={() => setOpenMenu(false)}
                   className="group relative block rounded-md px-4 py-3 text-left text-lg font-bold text-gray-800 hover:opacity-90 focus:outline-none"
                 >
-                  寄贈情報管理
+                  利用規約管理
                 </Link>
               </li>
 

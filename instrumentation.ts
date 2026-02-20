@@ -2,17 +2,28 @@
  * Instrumentation: Next.js アプリケーション初期化時に実行される
  * バッチスケジューラーを起動する
  *
+ * 本番環境（NODE_ENV=production）ではnode-cronを無効化し、
+ * 代わりに Xサーバーの crontab + /api/batch エンドポイントで実行します
+ *
  * 参考: https://nextjs.org/docs/app/building-your-application/optimizing/instrumentation
  */
 
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     try {
-      // お知らせスケジューラーを起動（起動時即実行＋定期実行）
-      // 動的importでNode-only モジュールが Edge ランタイムに混入するのを防ぐ
-      const { startNotificationScheduler } =
-        await import("@/src/batch/scheduler");
-      await startNotificationScheduler();
+      // 開発環境のみ node-cron でスケジューラーを起動
+      // 本番環境では crontab + /api/batch で実行するため無効化
+      if (process.env.NODE_ENV !== "production") {
+        // お知らせスケジューラーを起動（起動時即実行＋定期実行）
+        // 動的importでNode-only モジュールが Edge ランタイムに混入するのを防ぐ
+        const { startNotificationScheduler } =
+          await import("@/src/batch/scheduler");
+        await startNotificationScheduler();
+      } else {
+        console.log(
+          "本番環境: node-cron は無効です。crontab + /api/batch を使用してください",
+        );
+      }
     } catch (error) {
       console.error("Failed to start notification scheduler:", error);
       // スケジューラー起動失敗してもアプリケーションは継続

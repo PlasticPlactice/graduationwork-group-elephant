@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "象と花プロジェクトのファンサイトです。",
   icons: {
     icon: "/favicon.ico",
-  }
+  },
 };
 export default function RootLayout({
   children,

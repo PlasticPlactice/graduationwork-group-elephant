@@ -1,27 +1,63 @@
-.required{
+.required {
   color: #ff0000;
 }
 .register-btn {
-  width: 15rem;
+  width: auto !important;
+  min-width: 12rem;
+  padding: 0.75rem 2rem;
+  font-size: var(--page-padding-lg);
+  height: auto;
+  border: 1px solid var(--color-main);
+}
+.events-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
+  margin: 1rem auto;
+  padding: 0 16px;
+}
+.events-header .events-headline {
+  margin: 0;
+}
+.events-header .register-btn {
+  justify-self: end;
+  margin: 0;
+}
+.events-header-spacer {
+  width: 100%;
+}
+.events-headline {
+  font-size: var(--font-size-h1);
+  margin: 1.5rem 0 1.5rem 0;
+}
+.event-title {
+  width: auto;
   font-size: var(--page-padding-lg);
 }
-.events-headline{
-    font-size: var(--font-size-h1);
-    margin: 1.5rem 0 1.5rem 0;
+.now-event-section {
+  border: 1px solid var(--color-main);
+  border-radius: var(--control-radius);
 }
-.event-title{
-    width: 10rem;
-    font-size: var(--page-padding-lg);
-}
-.now-event-section{
-    border: 1px solid var(--color-main);
-    border-radius: var(--control-radius);
-}
-.end-event-section{
+.end-event-section {
   border: none;
 }
-.event-title-section{
-    border-bottom: 1px solid var(--color-admin-sub);
+.event-title-section {
+  border-bottom: 1px solid var(--color-admin-sub);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.event-title-section > .flex:first-child {
+  flex: 1 1 420px;
+  min-width: 0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.event-title-section > .flex:last-child {
+  flex: 0 0 auto;
 }
 
 /* 1. トグルボタン全体のコンテナ */
@@ -47,8 +83,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #9CA3AF; /* OFFの状態の色（画像のようなグレー） */
-  transition: .4s;
+  background-color: #9ca3af; /* OFFの状態の色（画像のようなグレー） */
+  transition: 0.4s;
   border-radius: 34px; /* 角を丸くする */
 }
 
@@ -61,62 +97,91 @@
   left: 0.2rem; /* 左端からの位置 */
   bottom: 0.25rem; /* 下端からの位置 */
   background-color: white; /* ツマミの色 */
-  transition: .4s;
+  transition: 0.4s;
   border-radius: 50%; /* 完全な円にする */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* ツマミに影をつける */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* ツマミに影をつける */
 }
 
 /* 5. チェックされた時 (ONの状態) のトラックのスタイル変更 */
 input:checked + .slider {
-  background-color: #2196F3; /* ONの状態の色 (例: 青) */
+  background-color: #2196f3; /* ONの状態の色 (例: 青) */
 }
 
 /* 6. チェックされた時 (ONの状態) のツマミの位置変更 */
 input:checked + .slider:before {
   /* スイッチの幅 (60px) - ツマミの幅 (26px) - 左右のパディング (4px*2) = 26px の移動 */
-  transform: translateX(3rem); 
+  transform: translateX(3rem);
 }
-
 
 .now-event-condition {
-    color: #868884;
+  color: #868884;
 }
 .up-arrow {
-    color: var(--color-main);
-    /* margin: 0 0 0 30.4rem; */
+  color: var(--color-admin-ban-background);
+  /* margin: 0 0 0 30.4rem; */
+}
+.event-condition-circle-past {
+  color: var(--color-main);
+  margin: auto;
+}
+.event-condition-label-past {
+  color: var(--color-main);
 }
 .event-condition-circle-now {
-    color: var(--color-main);
-    margin: auto;
+  color: var(--color-admin-ban-background);
+  margin: auto;
 }
 .event-condition-circle-future {
-    color: var(--color-admin-sub);
-    margin: auto;
+  color: var(--color-admin-sub);
+  margin: auto;
+}
+.event-condition-label-now {
+  color: var(--color-admin-ban-background);
+  font-weight: bold;
 }
 
 progress {
   -webkit-appearance: none; /* プログレスバーのスタイルをリセット */
   -moz-appearance: none; /* プログレスバーのスタイルをリセット */
-  background-color: var(--color-admin-sub); /* プログレスバーの背景色/-moz- 用 */
+  background-color: var(
+    --color-admin-sub
+  ); /* プログレスバーの背景色/-moz- 用 */
 }
 ::-webkit-progress-bar {
-  background-color: var(--color-admin-sub); /* プログレスバーの背景色/-webkit- 用 */
+  background-color: var(
+    --color-admin-sub
+  ); /* プログレスバーの背景色/-webkit- 用 */
 }
 ::-webkit-progress-value {
-  background-color: var(--color-main); /* プログレスバーの進捗部分色/-webkit- 用 */
+  background-color: var(
+    --color-main
+  ); /* プログレスバーの進捗部分色/-webkit- 用 */
 }
 ::-moz-progress-bar {
   background-color: var(--color-main); /* プログレスバーの進捗部分色/-moz- 用 */
 }
 
-.event-data-headline {
-  font-size: var(--font-size-h1);
+.edit_btn {
+  width: 5rem;
+  border: 1px solid var(--color-main);
+  padding: 0;
+  box-shadow: none;
+}
+.delete-conf-btn {
+  background-color: var(--color-warning) !important;
+  width: 5rem;
+  border: 1px solid var(--color-warning);
+  padding: 0;
+  box-shadow: none;
+}
+.delete-conf-btn:hover {
+  background-color: var(--color-bg) !important;
+  color: var(--color-warning) !important;
+  border: 1px solid var(--color-warning) !important;
 }
 
-.edit_btn {
-  width: 7.5rem;
+.event-data-headline {
   font-size: var(--font-size-h1);
-  height: 2.5rem;
 }
 
 .schedule-table {
@@ -129,7 +194,7 @@ progress {
 .row {
   display: flex;
   border: 1px solid var(--color-main);
-  margin: 0 0 0.1rem 0;
+  margin: 0 0 0.3rem 0;
 }
 
 .row:last-child {
@@ -137,8 +202,8 @@ progress {
 }
 
 .label {
-  width: 20rem;              /* 左カラム固定幅（画像に合わせて調整） */
-  background: var(--color-main);       /* ピンク背景 */
+  width: 20rem; /* 左カラム固定幅（画像に合わせて調整） */
+  background: var(--color-main); /* ピンク背景 */
   color: #fff;
   /* padding: 1rem; */
   border-right: 1px solid var(--color-main);
@@ -154,9 +219,8 @@ progress {
 }
 
 .large {
-  height: 5rem;             /* 備考欄の縦長を再現 */
+  min-height: 5rem; /* 備考欄の縦長を再現 */
   border-bottom: 1px solid var(--color-main);
-
 }
 
 details {
@@ -170,12 +234,12 @@ summary {
   font-size: var(--font-size-h1);
 }
 .summary_title p {
-  color: #8A8A8A;
+  color: #8a8a8a;
 }
 details[open] .icon {
   transform: rotate(180deg);
 }
-.detail-btn{
+.detail-btn {
   font-size: var(--font-size-h1);
   width: 10rem;
   font-weight: bold;
@@ -197,22 +261,32 @@ details[open] .icon {
   flex: 1;
 }
 .reg-modal,
-.review-modal{
+.review-modal {
   background-color: rgba(0, 0, 0, 0.4);
 }
-.close-btn{
+.close-btn {
   background-color: var(--color-bg);
   box-shadow: none;
 }
-.custom-input{
+.event-custom-input {
   border: 1px solid var(--color-admin-sub);
 }
-.datetime-input{
+.datetime-input {
   width: 40%;
   border: 1px solid var(--color-admin-sub);
 }
-.event-detail-text{
-  font-size:0.8rem;
+.datetime-input-start,
+.datetime-input-end {
+  width: 30%;
+  border: 1px solid var(--color-admin-sub);
+}
+.datetime-input-post,
+.datetime-input-vote {
+  width: 30%;
+  border: 1px solid var(--color-admin-sub);
+}
+.event-detail-text {
+  font-size: 0.8rem;
   color: var(--color-admin-sub);
 }
 /* レンジスライダーのスタイル */
@@ -259,43 +333,51 @@ textarea#remarks {
   padding: 0.75rem;
   border: 1px solid var(--color-admin-sub);
   border-radius: 4px;
-  background-color: #F9FAFB;
+  background-color: #f9fafb;
   resize: vertical;
 }
 
-.cancel-btn{
+.cancel-btn {
   border: 1px solid var(--color-main);
   background-color: var(--color-bg);
   color: var(--color-main);
   font-size: var(--font-size-h1);
   box-shadow: none;
-  padding:0 2rem 0 2rem;
+  padding: 0 2rem 0 2rem;
 }
-.cancel-btn:hover{
+.cancel-btn:hover {
   border: 1px solid var(--color-main);
   background-color: var(--color-main);
   color: var(--color-bg);
 }
-.reg-form-btn{
+.reg-form-btn {
   border: none;
-  background-color: #16A34A;
+  background-color: #16a34a;
   color: var(--color-bg);
   font-size: var(--font-size-h1);
-  padding:0 3rem 0 3rem;
+  padding: 0 3rem 0 3rem;
 }
-.reg-form-btn:hover{
+.reg-form-btn:hover {
   background-color: var(--color-bg);
-  color: #16A34A;
-  border:1px solid #16A34A;
+  color: #16a34a;
+  border: 1px solid #16a34a;
+}
+/* イベント削除モーダル */
+.event-delete-modal {
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
-/* 編集モーダル */
-.now-status{
-  font-size: var(--font-size-h1);
-  color: #31AD7C;
-  background-color: #AAE991;
+/* 登録モーダル */
+#register-event-remarks {
+  height: 5rem;
 }
-.next-status{
+/* 編集モーダル */
+.now-status {
+  font-size: var(--font-size-h1);
+  color: #31ad7c;
+  background-color: #aae991;
+}
+.next-status {
   border: 1px solid var(--color-admin-sub);
 }
 
@@ -316,23 +398,23 @@ textarea#remarks {
   height: fit-content;
   width: 2.5rem;
 }
-#message-area{
+#message-area {
   height: 7rem;
 }
 #message-area::placeholder {
   font-size: 0.8rem; /* または希望の文字サイズ */
 }
 .message-btn,
-.save-btn{
+.save-btn {
   height: 2.5rem;
 }
-.good-btn{
+.good-btn {
   color: var(--color-warning);
 }
-.good-num{
+.good-num {
   color: var(--color-warning);
 }
-.preview-btn{
+.preview-btn {
   color: var(--color-text);
   background-color: var(--color-bg);
   border: 1px solid var(--color-text);

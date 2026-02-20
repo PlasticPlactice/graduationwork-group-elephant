@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
 import "@/styles/admin/users.css";
@@ -10,6 +11,8 @@ import {
   USER_STATUS_LABELS,
   USER_STATUS_CLASS,
 } from "@/lib/constants/userStatus";
+import { prefecturesList, iwateMunicipalities } from "@/lib/addressData";
+import { formatAddress } from "@/lib/formatAddress";
 
 interface User {
   id: number;
@@ -17,6 +20,7 @@ interface User {
   nickname: string;
   age: number;
   address: string;
+  sub_address?: string | null;
   status: number;
   reviewCount: number;
   deletedFlag: boolean;
@@ -31,6 +35,7 @@ interface ApiResponse {
 }
 
 export default function Page() {
+  const { addToast } = useToast();
   const [isUserExitModalOpen, setIsUserExitModalOpen] = useState(false);
   const [isUserDetailModalOpen, setIsUserDetailModalOpen] = useState(false);
   const [exitUserId, setExitUserId] = useState<number | null>(null);
@@ -42,7 +47,6 @@ export default function Page() {
   const [sortBy, setSortBy] = useState<string>("account_id");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // 検索フォームのstate
   const [searchForm, setSearchForm] = useState({
@@ -92,17 +96,19 @@ export default function Page() {
         setUsers(data.users);
         setTotalPages(data.totalPages);
         setCurrentPage(page);
-        setErrorMessage("");
       } catch (error) {
         console.error("Error fetching users:", error);
         setUsers([]);
         setTotalPages(0);
-        setErrorMessage("ユーザー情報の取得に失敗しました。");
+        addToast({
+          type: "error",
+          message: "ユーザー情報の取得に失敗しました。",
+        });
       } finally {
         setIsLoading(false);
       }
     },
-    [sortBy, sortOrder, searchForm],
+    [sortBy, sortOrder, searchForm, addToast],
   );
 
   // 入力値の変更を処理
@@ -113,6 +119,8 @@ export default function Page() {
     setSearchForm((prev) => ({
       ...prev,
       [name]: value,
+      // 都道府県が変更されて岩手県でない場合は市町村をクリア
+      ...(name === "prefecture" && value !== "岩手県" ? { city: "" } : {}),
     }));
   };
 
@@ -173,14 +181,12 @@ export default function Page() {
     return () => {
       window.clearTimeout(timeoutId);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortBy, sortOrder]);
+  }, [sortBy, sortOrder, fetchUsers, currentPage]);
 
   // 初期ロード
   useEffect(() => {
     fetchUsers(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchUsers]);
 
   const handleUserDetail = (userId: number) => {
     setSelectedUserId(userId);
@@ -283,7 +289,9 @@ export default function Page() {
               </div>
             </div>
             <div>
-              <label htmlFor="prefecture">居住地</label>
+              <label htmlFor="prefecture">
+                居住地　※岩手県の場合、市区町村を選択可
+              </label>
               <div className="flex">
                 <select
                   name="prefecture"
@@ -293,61 +301,31 @@ export default function Page() {
                   id="prefecture"
                 >
                   <option value="">都道府県</option>
-                  <option value="北海道">北海道</option>
-                  <option value="青森県">青森県</option>
-                  <option value="岩手県">岩手県</option>
-                  <option value="宮城県">宮城県</option>
-                  <option value="秋田県">秋田県</option>
-                  <option value="山形県">山形県</option>
-                  <option value="福島県">福島県</option>
-                  <option value="茨城県">茨城県</option>
-                  <option value="栃木県">栃木県</option>
-                  <option value="群馬県">群馬県</option>
-                  <option value="埼玉県">埼玉県</option>
-                  <option value="千葉県">千葉県</option>
-                  <option value="東京都">東京都</option>
-                  <option value="神奈川県">神奈川県</option>
-                  <option value="新潟県">新潟県</option>
-                  <option value="富山県">富山県</option>
-                  <option value="石川県">石川県</option>
-                  <option value="福井県">福井県</option>
-                  <option value="山梨県">山梨県</option>
-                  <option value="長野県">長野県</option>
-                  <option value="岐阜県">岐阜県</option>
-                  <option value="静岡県">静岡県</option>
-                  <option value="愛知県">愛知県</option>
-                  <option value="三重県">三重県</option>
-                  <option value="滋賀県">滋賀県</option>
-                  <option value="京都府">京都府</option>
-                  <option value="大阪府">大阪府</option>
-                  <option value="兵庫県">兵庫県</option>
-                  <option value="奈良県">奈良県</option>
-                  <option value="和歌山県">和歌山県</option>
-                  <option value="鳥取県">鳥取県</option>
-                  <option value="島根県">島根県</option>
-                  <option value="岡山県">岡山県</option>
-                  <option value="広島県">広島県</option>
-                  <option value="山口県">山口県</option>
-                  <option value="徳島県">徳島県</option>
-                  <option value="香川県">香川県</option>
-                  <option value="愛媛県">愛媛県</option>
-                  <option value="高知県">高知県</option>
-                  <option value="福岡県">福岡県</option>
-                  <option value="佐賀県">佐賀県</option>
-                  <option value="長崎県">長崎県</option>
-                  <option value="熊本県">熊本県</option>
-                  <option value="大分県">大分県</option>
-                  <option value="宮崎県">宮崎県</option>
-                  <option value="鹿児島県">鹿児島県</option>
-                  <option value="沖縄県">沖縄県</option>
+                  {prefecturesList.map((pref) => (
+                    <option key={pref} value={pref}>
+                      {pref}
+                    </option>
+                  ))}
                 </select>
-                <Textbox
+                {/* 市町村は常にプルダウンだが、都道府県が岩手県でない場合は無効化する */}
+                <select
                   name="city"
                   value={searchForm.city}
                   onChange={handleInputChange}
                   className="city-input mr-6"
-                  placeholder="市町村"
-                />
+                  disabled={searchForm.prefecture !== "岩手県"}
+                >
+                  <option value="">
+                    {searchForm.prefecture === "岩手県"
+                      ? "市区町村"
+                      : "市区町村"}
+                  </option>
+                  {iwateMunicipalities.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div>
@@ -391,77 +369,186 @@ export default function Page() {
       {/*---------------------------
                 ユーザー一覧
             ---------------------------*/}
-      {errorMessage && (
-        <div className="mx-8 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          {errorMessage}
-        </div>
-      )}
+      {/* 通知はトーストで表示します */}
       <div className="mx-8 mt-8">
         <table className="w-full user-table">
           <colgroup>
-            <col className="w-1" />
-            <col className="w-10" />
-            <col className="w-10" />
-            <col className="w-10" />
-            <col className="w-10" />
-            <col className="w-10" />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "30%" }} />
+            <col style={{ width: "10%" }} />
+            <col style={{ width: "18%" }} />
+            <col style={{ width: "14%" }} />
           </colgroup>
           <thead className="table-head">
             <tr>
               <th className="py-2 pl-10 w-[15%]">
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "user_status" ? "sorted" : ""}`}
                   onClick={() => handleSort("user_status")}
                   aria-label={`ステータスで${sortBy === "user_status" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "user_status"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
+                  ステータス
+                  <span className="sort-icon">
+                    {sortBy === "user_status" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "account_id" ? "sorted" : ""}`}
                   onClick={() => handleSort("account_id")}
                   aria-label={`IDで${sortBy === "account_id" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "account_id"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ID<Icon icon="uil:arrow" rotate={1}></Icon>
+                  ID
+                  <span className="sort-icon">
+                    {sortBy === "account_id" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "nickname" ? "sorted" : ""}`}
                   onClick={() => handleSort("nickname")}
                   aria-label={`ニックネームで${sortBy === "nickname" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "nickname"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
+                  ニックネーム
+                  <span className="sort-icon">
+                    {sortBy === "nickname" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "age" ? "sorted" : ""}`}
                   onClick={() => handleSort("age")}
                   aria-label={`年代で${sortBy === "age" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "age"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  年代<Icon icon="uil:arrow" rotate={1}></Icon>
+                  年代
+                  <span className="sort-icon">
+                    {sortBy === "age" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "address" ? "sorted" : ""}`}
                   onClick={() => handleSort("address")}
                   aria-label={`居住地で${sortBy === "address" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "address"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  居住地<Icon icon="uil:arrow" rotate={1}></Icon>
+                  居住地
+                  <span className="sort-icon">
+                    {sortBy === "address" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th>
-                <div className="flex items-center">
-                  投稿数<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                <button
+                  type="button"
+                  className={`flex items-center cursor-pointer ${sortBy === "reviewCount" ? "sorted" : ""}`}
+                  onClick={() => handleSort("reviewCount")}
+                  aria-label={`投稿数で${sortBy === "reviewCount" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "reviewCount"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  投稿数
+                  <span className="sort-icon">
+                    {sortBy === "reviewCount" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
             </tr>
           </thead>
@@ -494,9 +581,19 @@ export default function Page() {
                   </td>
                   <td className="">{user.account_id}</td>
                   <td className="">{user.nickname}</td>
-                  <td className="">{user.age}</td>
-                  <td className="">{user.address}</td>
-                  <td className="">{user.reviewCount}</td>
+                  <td className="">{user.age}代</td>
+                  <td className="">
+                    {formatAddress(user.address, user.sub_address)}
+                  </td>
+                  <td
+                    className="pr-[110px]"
+                    style={{
+                      textAlign: "right",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    {user.reviewCount}
+                  </td>
                 </tr>
               ))
             )}

@@ -6,7 +6,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { useEffect, useMemo, useState, Suspense } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import NoticeDisableModal from "@/components/admin/NoticeDisableModal";
+import NoticeDeleteModal from "@/components/admin/NoticeDeleteModal";
+import { normalizeFilePath, isImageFile } from "@/lib/pathUtils";
 
 type ApiFile = {
   id?: number;
@@ -30,6 +33,7 @@ type ApiNotification = {
   public_end_date?: string | null;
   notification_type: number;
   draft_flag: boolean;
+  main_image_path?: string | null;
   notificationFiles: ApiNotificationFile[];
 };
 
@@ -45,12 +49,8 @@ const getStatusLabel = (pub: boolean, draft: boolean): string => {
   return "非公開";
 };
 
-const safePath = (p?: string | null): string | undefined => {
-  if (!p) return undefined;
-  return p.startsWith("/") ? p : `/${p}`;
-};
-
 function DetailNoticeContent() {
+  const { addToast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -61,6 +61,8 @@ function DetailNoticeContent() {
   const [modalIndex, setModalIndex] = useState<number | null>(null);
   const [isNoticeDisableModalOpen, setIsNoticeDisableModalOpen] =
     useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const closeModal = () => setModalIndex(null);
   const openPreview = (index: number) => setModalIndex(index);
@@ -92,23 +94,33 @@ function DetailNoticeContent() {
   }, [id]);
 
   const thumbnailSrc = useMemo(() => {
-    const file = notification?.notificationFiles?.[0]?.file;
-    return safePath(file?.data_path ?? null);
+    // main_image_path をサムネイルとして表示
+    const mp = notification?.main_image_path;
+    if (!mp) return undefined;
+    // 完全URLの場合はそのまま返す
+    if (mp.startsWith("http://") || mp.startsWith("https://")) return mp;
+    // 相対パスの場合は正規化
+    return normalizeFilePath(mp);
   }, [notification]);
 
   const attachments: Attachment[] = useMemo(() => {
-    const remaining = notification?.notificationFiles?.slice(1) ?? [];
-    return remaining
+    // notificationFiles にはメイン画像が含まれないため、そのまま使用
+    return (notification?.notificationFiles ?? [])
       .map((nf) => {
         const file = nf.file;
         const name = file?.original_filename || file?.name || "ファイル";
-        const path = safePath(file?.data_path ?? null);
+        const dataPath = file?.data_path;
+        if (!dataPath) return null;
+        const path = normalizeFilePath(dataPath);
         const isImage =
-          (file?.type ?? "").startsWith("image/") ||
-          /\.(jpg|jpeg|png|gif|webp)$/i.test(name);
-        return { kind: isImage ? "image" : "file", src: path, name };
+          isImageFile(name) || (file?.type ?? "").startsWith("image/");
+        return {
+          kind: isImage ? ("image" as const) : ("file" as const),
+          src: path,
+          name,
+        };
       })
-      .filter((p): p is Attachment => Boolean(p.src));
+      .filter((p): p is Attachment => p !== null);
   }, [notification]);
 
   const handleEdit = () => {
@@ -124,6 +136,41 @@ function DetailNoticeContent() {
   };
   const closeNoticeDisableModal = () => {
     setIsNoticeDisableModalOpen(false);
+  };
+
+  const handleDelete = () => {
+    setIsDeleteModalOpen(true);
+  };
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const confirmDelete = async () => {
+    if (!notification) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/notifications/${notification.id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        addToast({
+          type: "error",
+          message: error.message || "削除に失敗しました",
+        });
+        return;
+      }
+
+      addToast({ type: "success", message: "お知らせを削除しました" });
+      router.push("/admin/notice");
+    } catch (err) {
+      console.error("Delete error:", err);
+      addToast({ type: "error", message: "削除に失敗しました" });
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+    }
   };
 
   const confirmToggle = async () => {
@@ -168,10 +215,19 @@ function DetailNoticeContent() {
           ? { ...prev, public_flag: newPublicFlag, draft_flag: newDraftFlag }
           : prev,
       );
+      addToast({
+        type: "success",
+        message: newPublicFlag
+          ? "お知らせを公開しました。"
+          : "お知らせを非公開にしました。",
+      });
       setIsNoticeDisableModalOpen(false);
     } catch (error) {
       console.error("Failed to toggle notification:", error);
-      alert("お知らせの公開/非公開の切り替えに失敗しました。");
+      addToast({
+        type: "error",
+        message: "お知らせの公開/非公開の切り替えに失敗しました。",
+      });
     }
   };
 
@@ -181,21 +237,21 @@ function DetailNoticeContent() {
 
   return (
     <main className="p-6">
-      {/* サムネイル */}
-      <section className="thumbnail-container" style={{ height: "200px" }}>
-        <div
-          className="thumbnail-inner flex justify-center relative"
-          style={{ width: "100%", height: "100%" }}
-        >
-          {thumbnailSrc && (
+      {/* サムネイル（`main_image_path` が設定されている場合のみ表示） */}
+      {thumbnailSrc ? (
+        <section className="thumbnail-container" style={{ height: "200px" }}>
+          <div
+            className="thumbnail-inner flex justify-center relative"
+            style={{ width: "100%", height: "100%" }}
+          >
             <img
               src={thumbnailSrc}
               alt="サムネイル"
               className="thumbnail-preview w-full"
             />
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : null}
 
       {/* タイトル */}
       <h1 className="notice-title font-bold">{notification?.title ?? ""}</h1>
@@ -231,52 +287,89 @@ function DetailNoticeContent() {
       {attachments.length > 0 && (
         <>
           <p className="img-file">添付画像・ファイル</p>
-          <div className="flex flex-wrap">
-            {attachments.map((att, idx) => (
-              <div
-                key={idx}
-                className="relative overflow-hidden upload-preview w-1/4"
+          <div className="flex justify-between flex-wrap">
+            <div className="flex flex-wrap gap-4 mb-6">
+              {attachments.map((att, idx) => (
+                <div
+                  key={idx}
+                  className="relative overflow-hidden upload-preview w-1/4"
+                >
+                  {att.kind === "image" ? (
+                    <img
+                      src={att.src}
+                      onClick={() => openPreview(idx)}
+                      alt={att.name}
+                      className="img-border w-full h-full object-cover h-20 flex items-center justify-center text-sm text-black"
+                    />
+                  ) : (
+                    <div
+                      className="img-border w-full h-20 flex items-center justify-center text-sm text-black"
+                      style={{
+                        backgroundColor: "#ffffff",
+                        border: "1px solid var(--color-border)",
+                        color: "var(--color-main)",
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        style={{ width: "48px", height: "48px" }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {/* 操作ボタン */}
+            <div className="btn-group flex items-center gap-4">
+              <button onClick={handleEdit} className="edit-btn">
+                編集する
+              </button>
+              <button
+                className={
+                  notification?.public_flag ? "not-public-btn" : "public-btn"
+                }
+                onClick={handleNoticeDisable}
               >
-                {att.kind === "image" ? (
-                  <img
-                    src={att.src}
-                    onClick={() => openPreview(idx)}
-                    alt={att.name}
-                    className="img-border w-full h-full object-cover h-20 flex items-center justify-center text-sm text-black"
-                  />
-                ) : (
-                  <div className="img-border w-full h-20 flex items-center justify-center text-sm text-black">
-                    {att.name}
-                  </div>
-                )}
-              </div>
-            ))}
+                {notification?.public_flag ? "非公開にする" : "公開する"}
+              </button>
+              <button onClick={handleDelete} className="delete-conf-btn">
+                削除する
+              </button>
+            </div>
           </div>
         </>
       )}
-
-      {/* 操作ボタン */}
-      <div className="btn-group flex items-center mt-6">
-        <button
-          className={
-            notification?.public_flag ? "not-public-btn" : "public-btn"
-          }
-          onClick={handleNoticeDisable}
-        >
-          {notification?.public_flag ? "非公開にする" : "公開する"}
-        </button>
-        <div className="ml-auto flex gap-2">
-          <button
-            className="close-btn"
-            onClick={() => router.push("/admin/notice")}
-          >
-            閉じる
-          </button>
-          <button onClick={handleEdit} className="edit-btn">
-            編集する
-          </button>
-        </div>
-      </div>
+      {/* 添付画像・ファイルがないとき */}
+      {attachments.length === 0 && (
+        <>
+          <div className="btn-group flex justify-end items-center gap-4">
+            <button onClick={handleEdit} className="edit-btn">
+              編集する
+            </button>
+            <button
+              className={
+                notification?.public_flag ? "not-public-btn" : "public-btn"
+              }
+              onClick={handleNoticeDisable}
+            >
+              {notification?.public_flag ? "非公開にする" : "公開する"}
+            </button>
+            <button onClick={handleDelete} className="delete-conf-btn">
+              削除する
+            </button>
+          </div>
+        </>
+      )}
 
       {/* プレビューモーダル */}
       {modalIndex !== null &&
@@ -317,6 +410,12 @@ function DetailNoticeContent() {
         onClose={closeNoticeDisableModal}
         onConfirm={confirmToggle}
         isPublic={notification?.public_flag ?? false}
+      />
+      <NoticeDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        isDeleting={isDeleting}
       />
     </main>
   );

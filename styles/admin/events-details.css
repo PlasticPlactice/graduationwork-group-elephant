@@ -4,7 +4,7 @@
   color: var(--color-text);
 }
 
-details{
+details {
   border: 1px solid var(--color-main);
   border-radius: var(--control-radius);
 }
@@ -18,7 +18,7 @@ summary::-webkit-details-marker {
 
 /* 検索ボックスエリア */
 .search-area {
-  border: 1px solid #8B8B8B;
+  border: 1px solid #8b8b8b;
   border-radius: var(--control-radius);
 }
 
@@ -33,7 +33,7 @@ summary::-webkit-details-marker {
 }
 
 .custom-input-full {
-  height: 2.5rem ;
+  height: 2.5rem;
   width: 100%;
 }
 
@@ -43,14 +43,14 @@ summary::-webkit-details-marker {
   height: 2.5rem;
 }
 
-.all-select{
-    background-color: #F9FAFB;
+.all-select {
+  background-color: #f9fafb;
 }
-.choice-btn{
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    box-shadow: none;
-    border: 1px solid var(--color-admin-sub);
+.choice-btn {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: none;
+  border: 1px solid var(--color-admin-sub);
 }
 
 .table-head {
@@ -64,15 +64,24 @@ summary::-webkit-details-marker {
   width: 100%;
 }
 .event-table th,
-.event-table td{
+.event-table td {
   border-bottom: 1px solid var(--color-input-bg);
   word-break: break-word;
   box-sizing: border-box;
 }
-.head-check{
+/* テーブルヘッダー内のボタンは通常のボタンスタイルを無効化（影や背景を消す） */
+.event-table th button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+.head-check {
   width: 1.5rem;
   height: 1.5rem;
-  border: 1px solid #6A8CA4;
+  border: 1px solid #6a8ca4;
   border-radius: 2px;
 }
 summary {
@@ -81,17 +90,20 @@ summary {
 details[open] .icon {
   transform: rotate(180deg);
 }
-.title-text{
-  color: var(--color-main);
-  border-bottom: 1px solid var(--color-main);
-  cursor: pointer
+.title-text {
+  color: var(--color-admin-link);
+  border-bottom: 1px solid var(--color-admin-link);
+  cursor: pointer;
 }
-.status-text{
-  color: #1E40AF;
-  background-color: #DBEAFE;
+.status-text {
+  color: #1e40af;
+  background-color: #dbeafe;
   border-radius: var(--control-radius);
+  display: inline-block;
+  min-width: 8rem;
+  text-align: center;
 }
-.accordion-toggle{
+.accordion-toggle {
   background-color: var(--color-bg);
   box-shadow: none;
   color: var(--color-text);
@@ -102,10 +114,10 @@ details[open] .icon {
   box-sizing: border-box;
 }
 /* アコーディオンの中 */
-.details-content h3{
+.details-content h3 {
   font-size: var(--font-size-h1);
 }
-.book-review-section{
+.book-review-section {
   overflow-y: auto;
   border: 1px solid var(--color-main);
   border-radius: var(--control-radius);
@@ -113,96 +125,120 @@ details[open] .icon {
   max-height: 21rem; /* 必要に応じて調整 */
 }
 .book-review-section p {
-    line-height: 1.8;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
-.book-data{
-  border-bottom: 1px solid #A0B7C7;
+.book-data {
+  border-bottom: 1px solid #a0b7c7;
   margin: 0 0 0.5rem 0;
 }
-.book-head{
-  color: #A0B7C7;
+.book-head {
+  color: #a0b7c7;
 }
-.book-content{
+.book-content {
   font-size: 20px;
   margin: 0 0 0.6rem 0;
 }
-.print-preview-btn{
+.review-edit-btn {
+  box-shadow: none;
+}
+.print-preview-btn {
   box-shadow: none;
 }
 
-.page-section{
+.page-section {
   gap: 1rem;
-
 }
-.page-section .page-number{
+.page-section .page-number {
   font-size: var(--font-size-h1);
   background-color: var(--color-bg);
   border-radius: var(--control-radius);
   color: var(--color-admin-sub);
 }
-.page-section .page-number:hover{
+.page-section .page-number:hover {
   font-size: var(--font-size-h1);
   background-color: var(--color-main);
   border-radius: var(--control-radius);
   color: var(--color-bg);
 }
-.page-section .page-number.active{
+.page-section .page-number.active {
   background-color: var(--color-main);
   color: var(--color-bg);
 }
-.page-arrow{
-  color: var(--color-admin-sub);
+.page-arrow {
+  color: var(--color-bg);
 }
 
 /* モーダル */
-.status-edit-modal{
+.status-edit-modal {
   background-color: rgba(0, 0, 0, 0.4);
 }
-.modal-head{
+.modal-head {
   font-size: var(--font-size-h1);
 }
-.status-table{
+.status-table {
   overflow-y: auto;
-
 }
 .status-table th,
-.status-table td{
+.status-table td {
   border-bottom: 1px solid var(--color-input-bg);
 }
-.modal-sub-head{
+.modal-sub-head {
   font-size: var(--font-size-h1);
 }
-.status-table th{
+.status-table th {
   font-size: var(--font-size-h1);
 }
-.status-record td{
+.status-record td {
   font-size: var(--font-size-h1);
 }
-.status-book-section{
+.status-book-section {
   overflow-y: auto;
 }
 
-.now-status-head{
+.now-status-head {
   font-size: var(--font-size-base);
 }
-.now-status-text{
+.now-status-text {
   font-size: 20px;
-  color: #1E40AF;
-  background-color: #DBEAFE;
+  color: #1e40af;
+  background-color: #dbeafe;
 }
-#dummy_text{
+#dummy_text {
   color: var(--color-bg);
 }
-.status-arrow{
+.status-arrow {
   color: var(--color-admin-sub);
 }
 
-.all-message-area{
+.all-message-area {
   border: 1px solid var(--color-admin-sub);
   height: 10rem;
 }
-.all-message-area::placeholder{
+.all-message-area::placeholder {
   color: var(--color-admin-sub);
+}
+/* ヘッダーのソートアイコン強調（アイコンのみ目立たせる） */
+.event-table th button .sort-icon {
+  margin-left: 0.5rem;
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+  color: rgba(255, 255, 255, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-table th button .sort-icon svg,
+.event-table th button .sort-icon > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.event-table th button.sorted .sort-icon {
+  color: #ffd54f;
+  transform: translateY(-1px) scale(1.4);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
 }

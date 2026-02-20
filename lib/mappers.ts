@@ -15,6 +15,7 @@ export const toBookCardDTO = (data: BookReviewWithUser): Book => {
   return {
     id: data.id.toString(),
     user_id: data.user_id.toString(),
+    event_id: data.event_id?.toString(),
     review: data.review,
     pattern: safePattern(data.pattern),
     baseColor: data.color,

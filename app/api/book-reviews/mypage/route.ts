@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import {
+  calculateEventStatus,
+  EVENT_STATUS,
+} from "@/lib/constants/eventStatus";
 
 // mypage向け - 指定したユーザIDの書評をすべて取得
 export async function GET() {
@@ -10,7 +14,7 @@ export async function GET() {
       user?: { id?: string };
     } | null;
 
-    const userId = Number((session as any)?.user?.id);
+    const userId = Number(session?.user?.id);
 
     console.log("Fetching reviews for user ID:", userId);
 
@@ -27,13 +31,11 @@ export async function GET() {
         user_id: userId,
         deleted_flag: false,
       },
-      orderBy: {
-        created_at: "desc",
-      },
+      orderBy: [{ created_at: "desc" }, { id: "asc" }],
     });
 
     return NextResponse.json(reviews);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to fetch reviews" },
       { status: 500 },
@@ -48,6 +50,36 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+
+    if (body.event_id) {
+      const eventExists = await prisma.event.findUnique({
+        where: { id: Number(body.event_id) },
+      });
+      if (!eventExists) {
+        return NextResponse.json(
+          { message: `Event with id ${body.event_id} not found` },
+          { status: 400 },
+        );
+      }
+
+      const status = calculateEventStatus({
+        start_period: eventExists.start_period,
+        end_period: eventExists.end_period,
+        first_voting_start_period: eventExists.first_voting_start_period,
+        first_voting_end_period: eventExists.first_voting_end_period,
+        second_voting_start_period: eventExists.second_voting_start_period,
+        second_voting_end_period: eventExists.second_voting_end_period,
+      });
+      if (status !== EVENT_STATUS.POSTING) {
+        return NextResponse.json(
+          {
+            message:
+              "現在は書評投稿期間ではありません。投稿は投稿期間中のみ可能です。",
+          },
+          { status: 400 },
+        );
+      }
+    }
 
     const review = await prisma.bookReview.create({
       data: {
@@ -115,7 +147,7 @@ export async function DELETE(req: Request) {
     });
 
     return NextResponse.json({ message: "Deleted successfully" });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to delete review" },
       { status: 500 },

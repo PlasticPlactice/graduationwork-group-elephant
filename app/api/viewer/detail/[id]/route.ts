@@ -1,21 +1,13 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+// removed unused auth imports
 import { prisma } from "@/lib/prisma";
-
-type Params = {
-  params: {
-    id: string;
-  };
-};
 
 // 書評一つだけ取得
 export async function GET(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-
     const { params } = context;
     const { id } = await params;
 
@@ -24,7 +16,7 @@ export async function GET(
     if (Number.isNaN(bookReviewId)) {
       return NextResponse.json(
         { message: "Invalid review id" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -37,15 +29,15 @@ export async function GET(
     if (!review) {
       return NextResponse.json(
         { message: "Review not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json(review);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to fetch review" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

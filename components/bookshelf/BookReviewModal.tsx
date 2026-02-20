@@ -2,16 +2,21 @@
 
 import { useState } from "react";
 import { useEffect, useRef, type CSSProperties, type Ref } from "react";
-import type { Book, Reactions, BookReviewReactions } from "@/components/bookshelf/bookData";
+import { useToast } from "@/contexts/ToastContext";
+import type {
+  Book,
+  Reactions,
+  BookReviewReactions,
+} from "@/components/bookshelf/bookData";
 import BookReviewVoteButton from "./BookReviewVoteButton";
 import styles from "@/components/bookshelf/BookReviewModal.module.css";
 
 const REACTION_TYPES = [
-  { id: "1", label: "いいね" },
-  { id: "2", label: "感動" },
-  { id: "3", label: "学び" },
-  { id: "4", label: "共感" },
-]
+  { id: "1", label: "いいね", icon_path: "/icons/loveReaction.png" },
+  { id: "2", label: "幸せ", icon_path: "/icons/happyReaction.png" },
+  { id: "3", label: "悲しみ", icon_path: "/icons/sadReaction.png" },
+  { id: "4", label: "怒り", icon_path: "/icons/angryReaction.png" },
+];
 
 type BookReviewModalProps = {
   book?: Book | null;
@@ -26,35 +31,40 @@ type BookReviewModalProps = {
   onToggleVote?: () => void;
   actionButtonRef?: Ref<HTMLButtonElement>;
   voteButtonRef?: Ref<HTMLButtonElement>;
-  onVoteChange?: (isVoted: boolean) => void;
+  reviewContentRef?: Ref<HTMLDivElement>;
+  onVoteChange?: (isVoted: boolean, eventId: string) => void;
+  canVote?: boolean;
 };
 
 type afterCheckedData = {
   reaction_id: number;
   count: number;
   is_reacted: boolean;
-}
+};
 
 export function BookReviewModal({
   book,
-  reactions,
   open,
   onClose,
   onComplete,
   actionLabel = "本棚にしまう",
   isFavorited = false,
-  isVoted = false,
   onToggleFavorite,
-  onToggleVote,
   actionButtonRef,
   voteButtonRef,
-  onVoteChange
+  reviewContentRef,
+  onVoteChange,
+  canVote = true,
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const { addToast } = useToast();
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
-  const [bookReviewReactions, setBookReviewReactions] = useState<BookReviewReactions | null>(null);
-  const [afterCheckedData, setAfterCheckedData] = useState<afterCheckedData[]>([]);
+  const [bookReviewReactions, setBookReviewReactions] =
+    useState<BookReviewReactions | null>(null);
+  const [afterCheckedData, setAfterCheckedData] = useState<afterCheckedData[]>(
+    [],
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -82,14 +92,14 @@ export function BookReviewModal({
         const selectors =
           'a[href], area[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex]:not([tabindex="-1"]), [contenteditable]';
         const nodes = Array.from(
-          container.querySelectorAll<HTMLElement>(selectors)
+          container.querySelectorAll<HTMLElement>(selectors),
         ).filter(
-          (el) => el.offsetParent !== null || el === closeButtonRef.current
+          (el) => el.offsetParent !== null || el === closeButtonRef.current,
         );
         if (nodes.length === 0) return;
 
         const currentIndex = nodes.indexOf(
-          document.activeElement as HTMLElement
+          document.activeElement as HTMLElement,
         );
         const lastIndex = nodes.length - 1;
 
@@ -117,95 +127,94 @@ export function BookReviewModal({
     };
   }, [open, onClose]);
 
-  const favoriteButtonClass = `flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
+  const favoriteButtonClass = `flex h-20 w-20 mr-2 flex-shrink-0 items-center justify-center rounded-full border-2 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-100 appearance-none !bg-transparent !shadow-none !p-0 !border-yellow-300 ${
     isFavorited ? "!text-yellow-400" : "!text-gray-400"
   }`;
 
   useEffect(() => {
     if (!book?.user_id || !book?.id) return;
 
-    setBookReviewReactions({
+    const payload = {
       user_id: book.user_id,
       book_review_id: book.id,
       reaction_id: "",
-    });
-  }, [book]);
-
-  // リアクションがすでにあるか確認する + 数をもらう
-  const checkReactionStatus = async () => {
-    const newReactionsData = {
-      ...bookReviewReactions,
     };
-
-    try {
-      const res = await fetch("http://localhost:3000/api/viewer/reaction/status", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(newReactionsData)
-      });
-
-      const apiResponse = await res.json();
-
-      setAfterCheckedData(apiResponse)
-    } catch(e) {
-      console.error("通信に失敗しました。");
-    }
-  }
+    // defer setState to avoid synchronous setState-in-effect lint error
+    requestAnimationFrame(() => setBookReviewReactions(payload));
+  }, [book]);
 
   // bookReviewReactionsにデータが入ったのを確認したらリアクションの数を取得してもらう
   useEffect(() => {
-    if(!bookReviewReactions?.user_id || !bookReviewReactions?.book_review_id ) return;
+    if (!bookReviewReactions?.user_id || !bookReviewReactions?.book_review_id)
+      return;
 
-    checkReactionStatus();
-  }, [bookReviewReactions?.book_review_id, bookReviewReactions?.user_id]);
+    // defer to avoid synchronous state updates inside effect
+    requestAnimationFrame(async () => {
+      const newReactionsData = { ...bookReviewReactions };
+      try {
+        const res = await fetch("/api/viewer/reaction/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newReactionsData),
+        });
 
+        const apiResponse = await res.json();
+
+        setAfterCheckedData(apiResponse);
+      } catch {
+        console.error("通信に失敗しました。");
+      }
+    });
+  }, [bookReviewReactions]);
 
   // リアクション関数
   const createReaction = async (reaction_id: string) => {
     const newReactionsData = {
       ...bookReviewReactions,
-      reaction_id: reaction_id
+      reaction_id: reaction_id,
     };
 
     setBookReviewReactions(newReactionsData);
 
     try {
-      const res = await fetch("http://localhost:3000/api/viewer/reaction", {
+      const res = await fetch("/api/viewer/reaction", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newReactionsData),
       });
 
-      if(!res.ok) {
-        alert("登録に失敗しました。");
+      if (!res.ok) {
+        addToast({ type: "error", message: "登録に失敗しました。" });
         return;
       }
-
-    } catch(e) {
-      alert("通信に失敗しました。")
+    } catch {
+      addToast({ type: "error", message: "通信に失敗しました。" });
     }
 
     // カウント＋データが入っているか確認する関数を実行し、情報を更新する
     try {
-      const res = await fetch("http://localhost:3000/api/viewer/reaction/status", {
+      const res = await fetch("/api/viewer/reaction/status", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(newReactionsData)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReactionsData),
       });
 
-      const afterCheckedData = await res.json();
-    } catch(e) {
+      const newAfterCheckedData = await res.json();
+      setAfterCheckedData(newAfterCheckedData);
+    } catch {
       console.error("通信に失敗しました。");
     }
-
   };
 
-  const handleReactionClick = async (clickedReactionId: string) => { // IDを受け取る
-  
+  const handleReactionClick = async (clickedReactionId: string) => {
+    // IDを受け取る
+
     // ★重要: ここでAPIを待たずに、見た目だけ先に更新しちゃう！(Optimistic Update)
     setAfterCheckedData((prevData) => {
       // データの中に、今回押したIDがあるか探す
-      const exists = prevData.find(d => String(d.reaction_id) === String(clickedReactionId));
+      const exists = prevData.find(
+        (d) => String(d.reaction_id) === String(clickedReactionId),
+      );
 
       if (exists) {
         // ■ パターンA: すでにデータがある場合 (カウントを増減させる)
@@ -216,7 +225,7 @@ export function BookReviewModal({
               ...d,
               is_reacted: nextIsReacted,
               // 押したら +1, 取り消したら -1
-              count: nextIsReacted ? d.count + 1 : d.count - 1, 
+              count: nextIsReacted ? d.count + 1 : d.count - 1,
             };
           }
           return d; // 他のIDはそのまま
@@ -228,8 +237,8 @@ export function BookReviewModal({
           {
             reaction_id: Number(clickedReactionId), // 文字か数字か型に合わせてね
             count: 1,
-            is_reacted: true
-          }
+            is_reacted: true,
+          },
         ];
       }
     });
@@ -238,9 +247,9 @@ export function BookReviewModal({
 
     // 裏側でAPIを叩く（DB更新）
     try {
-      await createReaction(clickedReactionId); 
+      await createReaction(clickedReactionId);
       // ※もしここでエラーが出たら、Stateを元に戻す処理を入れるとさらに完璧
-    } catch (error) {
+    } catch {
       console.error("保存に失敗しました");
       // エラーが出たらリロードさせるなどの対処
     }
@@ -270,40 +279,56 @@ export function BookReviewModal({
         onClick={(event) => event.stopPropagation()}
         tabIndex={-1}
       >
-        <div className="relative z-10 flex h-full flex-col">
-          <div 
-            dangerouslySetInnerHTML={{ __html: book.review ?? "書評が登録されていません"}}
-            className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6"
-          >
-          </div>
+        <div className={styles.bookOpen} style={coverStyle}>
+          <div className={styles.bookOpenCover} aria-hidden="true" />
+          <div className={styles.bookOpenEdge} aria-hidden="true" />
+          <div className={styles.bookOpenContent}>
+            <div className="relative z-10 flex h-full flex-col">
+              <div
+                ref={reviewContentRef}
+                dangerouslySetInnerHTML={{
+                  __html: book.review ?? "書評が登録されていません",
+                }}
+                className="flex-1 overflow-y-auto rounded-2xl bg-white/90 px-4 py-6 text-base leading-relaxed text-slate-800 sm:px-6"
+              ></div>
               <div className="mt-6 flex flex-col gap-4">
-                <div className="flex justify-center gap-5">
+                <div className="flex justify-center gap-4 w-full mr-2 ">
                   {REACTION_TYPES.map((type) => {
-                    
-                    const targetData = afterCheckedData?.find((r) => String(r.reaction_id) === String(type.id));
+                    const targetData = afterCheckedData?.find(
+                      (r) => String(r.reaction_id) === String(type.id),
+                    );
 
                     const count = targetData ? targetData.count : 0;
-                    const isReacted = targetData ? targetData.is_reacted : false;
+                    const isReacted = targetData
+                      ? targetData.is_reacted
+                      : false;
 
                     return (
                       <button
                         key={type.id}
                         className={`${styles.reactionButton} ${isReacted ? styles.active : ""}`}
                         onClick={() => {
-                          handleReactionClick(type.id)
+                          handleReactionClick(type.id);
                         }}
                       >
-                        <span className={`${styles.icon}`}>{type.label}:</span>
-                        <span className={`${styles.count}`}>{count}</span>
+                        <img
+                          src={type.icon_path}
+                          alt="リアクション画像"
+                          width={25}
+                          height={25}
+                        />
+                        <span className={`font-bold ml-2`}>{count}</span>
                       </button>
-                    )
+                    );
                   })}
                 </div>
                 <div className="flex items-center gap-3">
                   <BookReviewVoteButton
-                      reviewId={`${book.id}`}
-                      ref={voteButtonRef}
-                      onVoteChange={onVoteChange}
+                    reviewId={`${book.id}`}
+                    eventId={`${book.event_id}`}
+                    ref={voteButtonRef}
+                    onVoteChange={onVoteChange}
+                    disabled={!canVote}
                   />
                   <button
                     type="button"
@@ -313,15 +338,13 @@ export function BookReviewModal({
                     className={favoriteButtonClass}
                     aria-pressed={isFavorited}
                     aria-label={
-                      isFavorited
-                        ? "ブックマーク済み"
-                        : "ブックマークに追加"
+                      isFavorited ? "ブックマーク済み" : "ブックマークに追加"
                     }
                     style={{ borderColor: "#f6e05e" }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 sm:h-9 sm:w-9"
+                      className="h-8 w-8 sm:h-9 sm:w-9"
                       fill={isFavorited ? "currentColor" : "none"}
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -336,17 +359,21 @@ export function BookReviewModal({
                   </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={onComplete}
-                  ref={actionButtonRef}
-                  className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
-                >
-                  {actionLabel}
-                </button>
+                <div className="mx-4 mb-4">
+                  <button
+                    type="button"
+                    onClick={onComplete}
+                    ref={actionButtonRef}
+                    className="w-full rounded-full bg-gray-900 px-4 py-3 text-center text-sm font-semibold text-white shadow transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-gray-400/40"
+                  >
+                    {actionLabel}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
   );
 }

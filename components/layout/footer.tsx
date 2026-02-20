@@ -15,10 +15,10 @@ export function Footer() {
         {/* メインロゴ */}
         <div className="mx-auto w-full max-w-[560px]">
           <Image
-            src="/layout/logo.png"
+            src="/layout/new_logo.png"
             alt="プロジェクトロゴ"
-            width={840}
-            height={420}
+            width={210}
+            height={210}
             className="object-contain mx-auto"
             priority
           />

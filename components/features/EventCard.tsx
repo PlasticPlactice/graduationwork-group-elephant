@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import "@/styles/components/event-card.css";
 
 type EventCardProps = {
+  eventId: string;
   title: string;
   daysLeft: number | string;
   detail?: string | null;
@@ -16,17 +17,20 @@ type EventCardProps = {
 };
 
 export const EventCard = ({
+  eventId,
   title,
   daysLeft,
   detail,
-  buttonText = "投票へ",
+  buttonText,
   onButtonClick,
   isFinished = false,
-  href = "/posts/bookshelf",
+  href,
   buttonBackgroundColor,
   buttonBorderColor,
   buttonTextColor,
 }: EventCardProps) => {
+  const eventHref = `${href}/${eventId}`;
+
   // daysLeftが数値なら「日」をつける、それ以外（"終了"など）ならそのまま
   const timerDisplay =
     typeof daysLeft === "number" ? `${daysLeft}日` : daysLeft;
@@ -58,7 +62,7 @@ export const EventCard = ({
           }}
         >
           <span className="block text-xs font-bold text-slate-600 mb-1">
-            投票終了まで
+            {buttonText === "投稿する" ? "投稿締切まで" : buttonText === "投票する" ? "投票締切まで" : "開催まで"}
             <br />
             あと
           </span>
@@ -77,7 +81,7 @@ export const EventCard = ({
           // 内部リンクは next/link を使い、外部リンクは通常のアンカーで開く
           href.startsWith("http") ? (
             <a
-              href={href}
+              href={eventHref}
               className="w-full inline-block font-bold py-3 text-center rounded"
               style={{
                 backgroundColor:
@@ -97,7 +101,7 @@ export const EventCard = ({
             </a>
           ) : (
             <Button
-              href={href}
+              href={eventHref}
               className="w-full font-bold py-3 rounded"
               style={{
                 backgroundColor:

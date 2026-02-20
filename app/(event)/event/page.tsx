@@ -1,91 +1,172 @@
 ﻿"use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/features/EventCard";
 import { Pagination } from "@/components/ui/pagination";
+import { useSearchParams } from "next/navigation";
 
-export default function EventPage() {
-  // 仮のイベントデータ（例として3件）
-  const activeEventList = [
-    {
-      title: "第4回 文庫Xイベント",
-      daysLeft: 10,
-      description: "投票期間中です！投票してみましょう。",
-      buttonText: "投票する",
-      href: "/event/vote/4",
-      isFinished: false,
-    },
-  ];
+interface EventData {
+  id: number;
+  title: string;
+  detail: string;
+  status: number;
+  second_voting_end_period: string;
+}
 
-  const endEventList = [
-    {
-      title: "第3回 文庫Xイベント",
-      daysLeft: "終了",
-      description: "入選作品が決定しました。確認してみましょう。",
-      buttonText: "確認する",
-      href: "/event/result/3",
-      isFinished: true,
-    },
-    {
-      title: "第2回 文庫Xイベント",
-      daysLeft: "終了",
-      description: "次回イベントもお楽しみに！",
-      buttonText: "詳細を見る",
-      href: "/event/result/2",
-      isFinished: true,
-    },
-    {
-      title: "第1回 文庫Xイベント",
-      daysLeft: "終了",
-      description: "次回イベントもお楽しみに！",
-      buttonText: "詳細を見る",
-      href: "/event/result/1",
-      isFinished: true,
-    },
-  ];
+function EventPageInner() {
+  const searchParams = useSearchParams();
+  const currentPageRaw = Number(searchParams?.get("page") ?? "1");
+  const currentPage =
+    Number.isFinite(currentPageRaw) && currentPageRaw > 0
+      ? Math.floor(currentPageRaw)
+      : 1;
+
+  const [activeEventList, setActiveEventList] = useState<
+    Array<{
+      id: number;
+      title: string;
+      daysLeft: number;
+      description: string;
+      buttonText: string;
+      href: string;
+      isFinished: boolean;
+    }>
+  >([]);
+
+  const [endEventList, setEndEventList] = useState<
+    Array<{
+      id: number;
+      title: string;
+      daysLeft: string;
+      description: string;
+      buttonText: string;
+      href: string;
+      isFinished: boolean;
+    }>
+  >([]);
+
+  // 投票締切までの日数を計算
+  const daysUntilDate = (dateString: string): number => {
+    const now = new Date();
+    const target = new Date(dateString);
+
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const targetStart = new Date(
+      target.getFullYear(),
+      target.getMonth(),
+      target.getDate(),
+    );
+
+    const diffMs = targetStart.getTime() - todayStart.getTime();
+    return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+  };
+
+  // DBからイベントデータを取得
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        // 投票期間（ステータス3）のイベントを取得
+        const votingRes = await fetch("/api/events?status=3");
+        const votingData: EventData[] = votingRes.ok
+          ? await votingRes.json()
+          : [];
+
+        // 閲覧期間・終了（ステータス4,5）のイベントを取得
+        const viewingRes = await fetch("/api/events?status=4,5");
+        const viewingData: EventData[] = viewingRes.ok
+          ? await viewingRes.json()
+          : [];
+
+        // 投票期間イベントを整形
+        const activeEvents = votingData.map((event) => ({
+          id: event.id,
+          title: event.title,
+          daysLeft: daysUntilDate(event.second_voting_end_period),
+          description: event.detail || "投票期間中です！投票してみましょう。",
+          buttonText: "投票する",
+          href: `/posts/bookshelf`,
+          isFinished: false,
+        }));
+
+        // 閲覧期間イベントを整形
+        const endedEvents = viewingData.map((event) => ({
+          id: event.id,
+          title: event.title,
+          daysLeft: "終了",
+          description:
+            event.detail || "投票が終了しました。結果を確認してみましょう。",
+          buttonText: "結果を確認する",
+          href: `/posts/bookshelf`,
+          isFinished: true,
+        }));
+
+        setActiveEventList(activeEvents);
+        setEndEventList(endedEvents);
+      } catch (error) {
+        console.error("イベントデータの取得に失敗しました:", error);
+      }
+    };
+
+    void fetchEvents();
+  }, []);
+
+  const itemsPerPage = 6;
+  const totalPages = Math.max(1, Math.ceil(endEventList.length / itemsPerPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * itemsPerPage;
+  const pagedEndEventList = endEventList.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
 
   return (
-    <div className="min-h-screen bg-white pt-6">
-      <div className="container mx-auto px-2 max-w-2xl">
+    <div className="min-h-screen bg-white pt-6 pb-16">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         {/* ファンサイトへ戻るボタンを追加 */}
-        <div className="mb-12">
+        <div className="mb-12 flex justify-center lg:justify-start">
           <Button
             href="/"
-            className="w-full bg-white border font-bold h-auto rounded-lg shadow hover:bg-slate-50 transition-colors"
-            style={{ padding: "12px 0" }}
+            className="w-full lg:w-auto bg-white border font-bold h-auto rounded-lg shadow hover:bg-slate-50 transition-colors py-3 px-6"
           >
             象と花ファンサイトへ
           </Button>
         </div>
 
-        <h2 className="text-center text-2xl font-bold mb-10 text-slate-900">
+        <h2 className="text-center lg:text-left text-2xl font-bold mb-10 text-slate-900">
           現在開催中のイベント
         </h2>
 
-        <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center">
           {activeEventList.map((event, idx) => (
-            <EventCard
-              key={idx}
-              title={event.title}
-              daysLeft={event.daysLeft}
-              detail={event.description}
-              buttonText={event.buttonText}
-              href={event.href}
-              isFinished={event.isFinished}
-            />
+            <div key={idx} className="w-full max-w-xl">
+              <EventCard
+                eventId={String(event.id)}
+                title={event.title}
+                daysLeft={event.daysLeft}
+                detail={event.description}
+                buttonText={event.buttonText}
+                href={event.href}
+                isFinished={event.isFinished}
+              />
+            </div>
           ))}
         </div>
 
-        <h2 className="text-center text-2xl font-bold my-10 text-slate-900">
+        <h2 className="text-center lg:text-left text-2xl font-bold my-10 text-slate-900">
           過去のイベント
         </h2>
 
-        <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           {/* イベントカードをループで表示 */}
-          {endEventList.map((event, idx) => (
+          {pagedEndEventList.map((event, idx) => (
             <EventCard
               key={idx}
+              eventId={String(event.id)}
               title={event.title}
               daysLeft={event.daysLeft}
               detail={event.description}
@@ -97,10 +178,16 @@ export default function EventPage() {
         </div>
 
         {/* ページネーション */}
-        <Suspense fallback={null}>
-          <Pagination totalPages={3} currentPage={1} />
-        </Suspense>
+        <Pagination totalPages={totalPages} currentPage={safeCurrentPage} />
       </div>
     </div>
+  );
+}
+
+export default function EventPage() {
+  return (
+    <Suspense fallback={null}>
+      <EventPageInner />
+    </Suspense>
   );
 }

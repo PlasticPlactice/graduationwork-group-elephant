@@ -3,25 +3,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type Params = {
-  params: {
-    id: string;
-  };
-};
-
 // 閲覧者の書評閲覧用のAPI
 export async function GET(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const { params } = context;
@@ -32,7 +23,7 @@ export async function GET(
     if (Number.isNaN(eventId)) {
       return NextResponse.json(
         { message: "Invalid review id" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -42,23 +33,21 @@ export async function GET(
         public_flag: true,
         deleted_flag: false,
       },
-      orderBy: {
-        created_at: "desc",
-      },
+      orderBy: [{ created_at: "desc" }, { id: "asc" }],
     });
 
     if (!reviews) {
       return NextResponse.json(
         { message: "Review not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json(reviews);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to fetch review" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

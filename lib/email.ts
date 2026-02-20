@@ -1,13 +1,25 @@
 import nodemailer from "nodemailer";
 
+// 環境変数のフォールバック対応: SMTP_* が無ければ MAIL_* を参照する
+const smtpHost =
+  process.env.SMTP_HOST || process.env.MAIL_HOST || "smtp.gmail.com";
+const smtpPort = parseInt(
+  process.env.SMTP_PORT || process.env.MAIL_PORT || "587",
+);
+const smtpSecure =
+  process.env.SMTP_SECURE === "true" || process.env.MAIL_ENCRYPTION === "ssl";
+const smtpUser =
+  process.env.SMTP_USER || process.env.MAIL_USERNAME || process.env.MAIL_USER;
+const smtpPass = process.env.SMTP_PASSWORD || process.env.MAIL_PASSWORD;
+
 // メール送信設定
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: process.env.SMTP_SECURE === "true", // true for 465, false for other ports
+  host: smtpHost,
+  port: smtpPort,
+  secure: smtpSecure,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
+    user: smtpUser,
+    pass: smtpPass,
   },
 });
 
@@ -18,7 +30,7 @@ const transporter = nodemailer.createTransport({
  */
 export async function sendPasswordResetEmail(
   to: string,
-  resetLink: string
+  resetLink: string,
 ): Promise<void> {
   const mailOptions = {
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
@@ -75,9 +87,5 @@ ${resetLink}
  * メール送信の設定を検証
  */
 export function isEmailConfigured(): boolean {
-  return !!(
-    process.env.SMTP_HOST &&
-    process.env.SMTP_USER &&
-    process.env.SMTP_PASSWORD
-  );
+  return !!(smtpHost && smtpUser && smtpPass);
 }

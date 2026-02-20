@@ -17,13 +17,12 @@ interface Message {
 interface MassageModalProps {
   open: boolean;
   onClose: () => void;
-  userName: string;
+  userName?: string;
 }
 
 export const MassageModal: React.FC<MassageModalProps> = ({
   open,
   onClose,
-  userName,
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);

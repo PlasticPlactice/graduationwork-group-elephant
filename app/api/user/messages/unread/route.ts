@@ -4,8 +4,10 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { Session } from "next-auth";
 
+export const runtime = "nodejs";
+
 export async function GET() {
-  const session = await getServerSession(authOptions) as Session | null;
+  const session = (await getServerSession(authOptions)) as Session | null;
   const user = session?.user as { id: string } | undefined;
 
   if (!user?.id) {

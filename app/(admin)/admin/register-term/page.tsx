@@ -1,11 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
 import { useRouter } from "next/navigation";
 import "@/styles/admin/register-term.css";
 
 export default function Page() {
+  const { addToast } = useToast();
   const router = useRouter();
   const getNowDatetimeLocal = () => {
     const now = new Date();
@@ -19,8 +21,7 @@ export default function Page() {
   };
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [mode, setMode] = useState<"datetime" | "immediate">("datetime");
+  const [mode, setMode] = useState<"datetime" | "immediate">("immediate");
   const [dateTimeValue, setDateTimeValue] = useState<string>(
     getNowDatetimeLocal(),
   );
@@ -47,7 +48,10 @@ export default function Page() {
       file.type === "application/pdf" ||
       file.name.toLowerCase().endsWith(".pdf");
     if (!isPdf) {
-      alert("PDFファイルのみアップロードできます");
+      addToast({
+        type: "error",
+        message: "PDFファイルのみアップロードできます",
+      });
       e.currentTarget.value = "";
       setPreviewUrl(null);
       setSelectedFileName(null);
@@ -75,14 +79,13 @@ export default function Page() {
     if (input) {
       input.value = "";
     }
-    setIsModalOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedFile || !selectedFileName) {
-      alert("ファイルを選択してください");
+      addToast({ type: "error", message: "ファイルを選択してください" });
       return;
     }
 
@@ -101,15 +104,18 @@ export default function Page() {
 
       if (!response.ok) {
         const error = await response.json();
-        alert(error.message || "利用規約の登録に失敗しました");
+        addToast({
+          type: "error",
+          message: error.message || "利用規約の登録に失敗しました",
+        });
         return;
       }
 
-      alert("利用規約を登録しました");
+      addToast({ type: "success", message: "利用規約を登録しました" });
       router.push("/admin/detail-term");
     } catch (error) {
       console.error("Error:", error);
-      alert("利用規約の登録に失敗しました");
+      addToast({ type: "error", message: "利用規約の登録に失敗しました" });
     } finally {
       setIsLoading(false);
     }
@@ -119,21 +125,12 @@ export default function Page() {
     router.push("/admin/detail-term");
   };
 
-  useEffect(() => {
-    if (!isModalOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsModalOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [isModalOpen]);
-
   return (
     <main className="p-6">
       <h1 className="text-2xl font-bold mb-6">利用規約登録</h1>
       <form onSubmit={handleSubmit}>
         <div className="my-4">
-          <label htmlFor="pdf-upload" className="text-xl block">
+          <label htmlFor="register-pdf-upload" className="text-xl block">
             PDFアップロード
           </label>
           <p className="detail-text text-sm">
@@ -143,32 +140,50 @@ export default function Page() {
             <div className="w-full flex items-start gap-6">
               <Textbox
                 type="file"
-                id="pdf-upload"
+                id="register-pdf-upload"
                 name="pdf-upload"
                 accept=".pdf,application/pdf"
                 onChange={handleFileChange}
-                className="w-full custom-input"
+                className="w-full"
                 style={{ backgroundColor: "#F9FAFB" }}
                 disabled={isLoading}
               />
               <div className="w-28 h-28 flex-shrink-0">
                 <div className="relative w-28 h-28">
                   <div
-                    className="upload-preview w-28 h-28 flex items-center justify-center text-xs text-gray-400 border-2 border-dashed rounded overflow-hidden"
+                    className="upload-preview w-28 h-28 flex items-center justify-center text-xs border-2 border-solid rounded overflow-hidden"
                     role="button"
                     aria-label={
-                      previewUrl ? "プレビューを開く" : "ファイル未選択"
+                      previewUrl ? "新しいタブで開く" : "ファイル未選択"
                     }
                     onClick={() => {
-                      if (previewUrl) setIsModalOpen(true);
+                      if (previewUrl) window.open(previewUrl, "_blank");
+                    }}
+                    style={{
+                      backgroundColor: "#ffffff",
+                      color: "var(--color-main)",
+                      borderColor: "#000000",
                     }}
                   >
                     {previewUrl ? (
-                      <div className="w-full h-full flex items-center justify-center text-sm text-gray-800 break-words px-1">
-                        {selectedFileName ?? "選択済み"}
-                      </div>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        style={{ width: "36px", height: "36px" }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                        />
+                      </svg>
                     ) : (
-                      <div className="text-center px-1">未選択</div>
+                      <div className="text-center px-1 text-gray-400">
+                        未選択
+                      </div>
                     )}
                   </div>
                   {previewUrl && (
@@ -187,23 +202,12 @@ export default function Page() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-center gap-4 mt-6 text-xl">
+            <div className="flex justify-start gap-4 mt-6 text-xl">
               <div className="flex items-center">
                 <input
                   type="radio"
                   name="apply"
-                  id="datetime"
-                  checked={mode === "datetime"}
-                  onChange={() => setMode("datetime")}
-                  disabled={isLoading}
-                />
-                <label htmlFor="datetime">日時予約適用</label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  name="apply"
-                  id="immediate"
+                  id="register-immediate"
                   checked={mode === "immediate"}
                   onChange={() => {
                     setMode("immediate");
@@ -211,10 +215,19 @@ export default function Page() {
                   }}
                   disabled={isLoading}
                 />
-                <label htmlFor="immediate">即時適用</label>
+                <label htmlFor="register-immediate">即時適用</label>
               </div>
-            </div>
-            <div className="flex justify-center mt-6">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  name="apply"
+                  id="register-datetime"
+                  checked={mode === "datetime"}
+                  onChange={() => setMode("datetime")}
+                  disabled={isLoading}
+                />
+                <label htmlFor="register-datetime">日時予約適用</label>
+              </div>
               <input
                 type="datetime-local"
                 className="datetime-input"
@@ -224,47 +237,8 @@ export default function Page() {
               />
             </div>
           </div>
-          {/* PDFモーダル */}
-          {isModalOpen && previewUrl && (
-            <div
-              className="upload-modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-              onClick={() => setIsModalOpen(false)}
-            >
-              <div
-                className="bg-white rounded p-4 overflow-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex justify-between items-start gap-4">
-                  <h3 className="text-lg font-medium">プレビュー</h3>
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="close-btn text-2xl px-2 hover:bg-gray-100 rounded"
-                    aria-label="閉じる"
-                  >
-                    &times;
-                  </button>
-                </div>
-                <div className="p-4">
-                  <object
-                    data={previewUrl}
-                    type="application/pdf"
-                    // className="w-full"
-                    style={{ maxHeight: "70vh", minHeight: "60vh" }}
-                  >
-                    <p className="text-sm text-gray-600">
-                      PDFプレビューを表示できません。ダウンロードしてください。
-                    </p>
-                  </object>
-
-                  <p className="font-medium mt-4">ファイル名</p>
-                  <p className="mt-2 break-words">{selectedFileName}</p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
-        <div className="mt-6 flex gap-5 justify-end">
+        <div className="mt-6 flex gap-5">
           <AdminButton
             label="戻る"
             className="back-btn"
@@ -274,7 +248,7 @@ export default function Page() {
           <AdminButton
             label={isLoading ? "登録中..." : "登録"}
             type="submit"
-            className="register-btn"
+            className="register-term-btn"
             disabled={isLoading}
           />
         </div>

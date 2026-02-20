@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { requireAdminAuth } from "@/lib/api/authMiddleware";
+
+export const runtime = "nodejs";
 import { Prisma } from "@prisma/client";
 
 const PAGE_SIZE = 10;
@@ -11,13 +12,9 @@ const PAGE_SIZE = 10;
  * 管理者用: お知らせ一覧を取得する (検索, ソート, ページネーション対応)
  */
 export async function GET(req: NextRequest) {
-  const session = (await getServerSession(authOptions)) as {
-    user?: { id?: string; role?: string };
-  } | null;
-  const user = session?.user;
-
-  if (!user?.id || user.role !== "admin") {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
   }
 
   try {
@@ -99,9 +96,7 @@ export async function GET(req: NextRequest) {
     const [notifications, total] = await prisma.$transaction([
       prisma.notification.findMany({
         where,
-        orderBy: {
-          [finalSortBy]: finalSortOrder,
-        },
+        orderBy: [{ [finalSortBy]: finalSortOrder }, { id: "asc" }],
         skip: (page - 1) * PAGE_SIZE,
         take: PAGE_SIZE,
       }),
@@ -128,15 +123,12 @@ export async function GET(req: NextRequest) {
  * 管理者用: 新しいお知らせを作成する
  */
 export async function POST(req: NextRequest) {
-  const session = (await getServerSession(authOptions)) as {
-    user?: { id?: string; role?: string };
-  } | null;
-  const user = session?.user;
-
-  // 認証チェック
-  if (!user?.id || user.role !== "admin") {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
   }
+
+  const { user } = authResult;
 
   try {
     const body = await req.json();
@@ -148,6 +140,7 @@ export async function POST(req: NextRequest) {
       public_end_date,
       notification_type,
       draft_flag,
+      main_image_path,
       fileIds, // 追加: 添付ファイルのID配列
     } = body;
 
@@ -161,7 +154,7 @@ export async function POST(req: NextRequest) {
 
     const newNotification = await prisma.notification.create({
       data: {
-        admin_id: parseInt(user.id),
+        admin_id: parseInt(user.id!),
         title,
         detail,
         public_flag: public_flag ?? false,
@@ -169,6 +162,8 @@ export async function POST(req: NextRequest) {
         public_end_date: public_end_date ? new Date(public_end_date) : null,
         notification_type: parseInt(notification_type),
         draft_flag: draft_flag ?? true,
+        // API層でデフォルト画像を設定（未指定時は /top/image.png）
+        main_image_path: main_image_path ?? "/top/image.png",
         notificationFiles: {
           create:
             fileIds?.map((fileId: number, index: number) => ({

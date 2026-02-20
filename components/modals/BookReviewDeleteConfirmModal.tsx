@@ -1,24 +1,24 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import Styles from "@/styles/app/poster.module.css";
 import modalStyles from "@/styles/app/modal.module.css";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
 
 interface BookReviewDeleteConfirmModalProps {
-    open: boolean;
-    onClose: () => void;
-    bookReviewId?: string;
+  open: boolean;
+  onClose: () => void;
+  bookReviewId?: string | number;
 }
 
-export const BookReviewDeleteConfirmModal: React.FC<BookReviewDeleteConfirmModalProps> = ({
-  open,
-  onClose,
-  bookReviewId
-}) => {
+export const BookReviewDeleteConfirmModal: React.FC<
+  BookReviewDeleteConfirmModalProps
+> = ({ open, onClose, bookReviewId }) => {
   const router = useRouter();
+  const { addToast } = useToast();
   const modalRef = useRef<HTMLDivElement>(null);
   const confirmBtnRef = useRef<HTMLButtonElement>(null);
   // ESCキーで閉じる
@@ -57,29 +57,36 @@ export const BookReviewDeleteConfirmModal: React.FC<BookReviewDeleteConfirmModal
   };
 
   // DELETE処理関数
-    const deleteBookReview = async () => {
-      try {
-        const res = await fetch(`http://localhost:3000/api/book-reviews/mypage`, {
-          method: "DELETE",
-          headers: {
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-              id: bookReviewId,
-          }),
-        })
-  
-        if (!res.ok) {
-            alert("書評の削除に失敗しました。時間をおいて再度お試しください。");
-            return;
-        }
+  const deleteBookReview = async () => {
+    try {
+      const res = await fetch(`/api/book-reviews/mypage`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: bookReviewId,
+        }),
+      });
 
-        router.push('/poster/mypage');
-  
-      } catch (error) {
-        console.error("Error deleting book review:", error);
+      if (!res.ok) {
+        addToast({
+          type: "error",
+          message: "書評の削除に失敗しました。時間をおいて再度お試しください。",
+        });
+        return;
       }
+
+      addToast({ type: "success", message: "書評を削除しました" });
+      router.push("/poster/mypage");
+    } catch (error) {
+      console.error("Error deleting book review:", error);
+      addToast({
+        type: "error",
+        message: "書評の削除に失敗しました。時間をおいて再度お試しください。",
+      });
     }
+  };
 
   return (
     <AnimatePresence>
@@ -108,11 +115,27 @@ export const BookReviewDeleteConfirmModal: React.FC<BookReviewDeleteConfirmModal
             }
           >
             {/* 中身をかく */}
-            <p className={`text-center text-red-400 font-bold ${Styles.text24px}`}>本当に削除しますか？</p>
-            <p className="text-center my-4">削除された書評データを復元することはできません。</p>
+            <p
+              className={`text-center text-red-400 font-bold ${Styles.text24px}`}
+            >
+              本当に削除しますか？
+            </p>
+            <p className="text-center my-4">
+              削除された書評データを復元することはできません。
+            </p>
 
-            <button onClick={() => deleteBookReview()} className={`w-full mb-3 font-bold`}>削除する</button>
-            <button onClick={() => onClose()} className={`w-full ${Styles.barcodeScan__backButton}`}>キャンセル</button>
+            <button
+              onClick={() => deleteBookReview()}
+              className={`w-full mb-3 font-bold`}
+            >
+              削除する
+            </button>
+            <button
+              onClick={() => onClose()}
+              className={`w-full ${Styles.barcodeScan__backButton}`}
+            >
+              キャンセル
+            </button>
           </motion.div>
         </motion.div>
       )}

@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import Textbox from "@/components/ui/admin-textbox";
-import AdminButton from "@/components/ui/admin-button";
 import "@/styles/admin/notice.css";
 import { Icon } from "@iconify/react";
+import AdminButton from "@/components/ui/admin-button";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
+import NoticeDeleteModal from "@/components/admin/NoticeDeleteModal";
 
 // APIレスポンスの型定義
 interface Notification {
@@ -29,6 +31,7 @@ interface ApiResponse {
 }
 
 export default function Page() {
+  const { addToast } = useToast();
   const router = useRouter();
 
   // ---------------------------
@@ -38,7 +41,6 @@ export default function Page() {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [sortBy, setSortBy] = useState<string>("public_date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // デフォルトを降順に
@@ -48,6 +50,10 @@ export default function Page() {
     publicDateFrom: "", // 現APIは未対応
     publicDateTo: "", // 現APIは未対応
   });
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
   // 検索ボタン押下時に確定する検索キーワード（入力中の文字では自動検索しない）
   const [searchTitle, setSearchTitle] = useState<string>("");
   // 検索ボタン押下時に確定する公開日範囲
@@ -108,6 +114,51 @@ export default function Page() {
     router.push("/admin/register-notice");
   };
 
+  const handleDeleteClick = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation(); // 行クリックイベントの伝播を防止
+    setDeleteTargetId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeleteTargetId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/notifications/${deleteTargetId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        addToast({
+          type: "error",
+          message: error.message || "削除に失敗しました",
+        });
+        return;
+      }
+
+      addToast({ type: "success", message: "お知らせを削除しました" });
+      // 一覧を再取得
+      await fetchNotifications(
+        currentPage,
+        searchTitle,
+        searchDateFrom,
+        searchDateTo,
+      );
+    } catch (err) {
+      console.error("Delete error:", err);
+      addToast({ type: "error", message: "削除に失敗しました" });
+    } finally {
+      setIsDeleting(false);
+      closeDeleteModal();
+    }
+  };
+
   // ---------------------------
   // データ取得ロジック
   // ---------------------------
@@ -119,7 +170,6 @@ export default function Page() {
       dateTo: string = searchDateTo,
     ) => {
       setIsLoading(true);
-      setErrorMessage("");
       try {
         const params = new URLSearchParams();
         params.append("page", page.toString());
@@ -163,7 +213,10 @@ export default function Page() {
         console.error("Error fetching notifications:", error);
         setNotifications([]);
         setTotalPages(0);
-        setErrorMessage("お知らせ情報の取得に失敗しました。");
+        addToast({
+          type: "error",
+          message: "お知らせ情報の取得に失敗しました。",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -177,6 +230,7 @@ export default function Page() {
       searchTitle,
       searchDateFrom,
       searchDateTo,
+      addToast,
     ],
   );
 
@@ -206,7 +260,6 @@ export default function Page() {
       searchForm.publicDateTo,
     );
   };
-
   const handleResetSearch = () => {
     setSearchForm({
       title: "",
@@ -237,28 +290,22 @@ export default function Page() {
   // useEffects
   // ---------------------------
   useEffect(() => {
-    fetchNotifications(undefined, searchTitle, searchDateFrom, searchDateTo);
+    fetchNotifications();
   }, [
     selectedTab,
     selectedStatus,
     sortBy,
     sortOrder,
+    fetchNotifications,
     searchTitle,
     searchDateFrom,
     searchDateTo,
-    fetchNotifications,
   ]); // フィルター・ソート変更時
 
   // ページ変更時
   useEffect(() => {
     fetchNotifications(currentPage, searchTitle, searchDateFrom, searchDateTo);
-  }, [
-    currentPage,
-    searchTitle,
-    searchDateFrom,
-    searchDateTo,
-    fetchNotifications,
-  ]);
+  }, [currentPage, fetchNotifications]);
 
   // ---------------------------
   // UIレンダリング
@@ -273,19 +320,21 @@ export default function Page() {
 
   return (
     <main className="notice-container">
-      {/*---------------------------
+      <div className="flex justify-end mr-8">
+        {/*---------------------------
             お知らせ登録ボタン
             ---------------------------*/}
-      <AdminButton
-        label="お知らせ登録"
-        type="button"
-        className="register-btn ml-8 mt-5"
-        onClick={handleRegister}
-      />
+        <AdminButton
+          label="お知らせ登録"
+          type="button"
+          className="register-btn mt-5"
+          onClick={handleRegister}
+        />
+      </div>
       {/*---------------------------
                 検索ボックス
                ---------------------------*/}
-      <details className="px-5 pt-3 pb-3 mx-8 my-6 search-accordion" open>
+      <details className="px-5 pt-3 pb-3 mx-8 my-6 search-accordion">
         <summary className="flex items-center justify-between">
           <p>検索ボックス</p>
           <Icon
@@ -358,7 +407,7 @@ export default function Page() {
           <button
             onClick={() => setSelectedTab("notice")}
             className={`pb-3 mr-7 text-h1 notice-tab-link ${
-              selectedTab === "notice" ? "active" : ""
+              selectedTab === "notice" ? "notice-active" : ""
             }`}
           >
             お知らせ
@@ -366,7 +415,7 @@ export default function Page() {
           <button
             onClick={() => setSelectedTab("donation")}
             className={`pb-3 notice-tab-link ${
-              selectedTab === "donation" ? "active" : ""
+              selectedTab === "donation" ? "notice-active" : ""
             }`}
           >
             寄贈
@@ -376,32 +425,34 @@ export default function Page() {
           {/*---------------------------
                 ステータス変更ボタン
                ---------------------------*/}
-          <div className="flex items-center justify-center px-3 status-wrapper py-1 mt-5">
-            {statusButtons.map((btn) => {
-              const isActive = selectedStatus === btn.id;
-              return (
-                <button
-                  key={btn.id}
-                  onClick={() =>
-                    setSelectedStatus(btn.id as typeof selectedStatus)
-                  } // 型アサーションを追加
-                  className={`mx-2 px-2 py-1 rounded status-toggle ${
-                    isActive ? "active" : ""
-                  }`}
-                >
-                  {btn.label}
-                </button>
-              );
-            })}
+          <div className="grid grid-flow-row mt-3">
+            <p className="px-5">
+              現在表示中の{selectedTab === "notice" ? "お知らせ" : "寄贈"}
+              のステータス
+            </p>
+            <div className="flex items-center justify-center gap-2 status-wrapper mt-2">
+              {statusButtons.map((btn) => {
+                const isActive = selectedStatus === btn.id;
+                return (
+                  <button
+                    key={btn.id}
+                    onClick={() =>
+                      setSelectedStatus(btn.id as typeof selectedStatus)
+                    } // 型アサーションを追加
+                    className={`px-2 rounded status-toggle ${
+                      isActive ? "active" : ""
+                    }`}
+                  >
+                    <span className="text-xl">{btn.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
-      {errorMessage && (
-        <div className="mx-8 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          {errorMessage}
-        </div>
-      )}
+      {/* 通知はトーストで表示します */}
 
       <div className="mx-8 mt-5">
         <table className="w-full notice-table">
@@ -410,21 +461,57 @@ export default function Page() {
               <th className="py-2 pl-6 ">
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "public_flag" ? "sorted" : ""}`}
                   onClick={() => handleSort("public_flag")}
                   aria-label={`ステータスで${sortBy === "public_flag" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "public_flag"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
+                  ステータス
+                  <span className="sort-icon">
+                    {sortBy === "public_flag" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th className="w-2/7">
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "title" ? "sorted" : ""}`}
                   onClick={() => handleSort("title")}
                   aria-label={`タイトルで${sortBy === "title" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "title"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
+                  タイトル
+                  <span className="sort-icon">
+                    {sortBy === "title" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
               </th>
               <th className="w-2/7">
@@ -433,12 +520,33 @@ export default function Page() {
               <th className="w-1/4">
                 <button
                   type="button"
-                  className="flex items-center cursor-pointer"
+                  className={`flex items-center cursor-pointer ${sortBy === "public_date" ? "sorted" : ""}`}
                   onClick={() => handleSort("public_date")}
                   aria-label={`公開期間で${sortBy === "public_date" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortBy === "public_date"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
                 >
-                  公開期間<Icon icon="uil:arrow" rotate={1}></Icon>
+                  公開期間
+                  <span className="sort-icon">
+                    {sortBy === "public_date" ? (
+                      sortOrder === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
                 </button>
+              </th>
+              <th className="w-20">
+                <div className="flex items-center justify-center">操作</div>
               </th>
             </tr>
           </thead>
@@ -459,12 +567,15 @@ export default function Page() {
                     <td className="py-4">
                       <div className="bg-gray-200 rounded w-32 h-6 mx-auto"></div>
                     </td>
+                    <td className="py-4">
+                      <div className="bg-gray-200 rounded w-8 h-6 mx-auto"></div>
+                    </td>
                   </tr>
                 ))}
               </>
             ) : notifications.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center py-4">
+                <td colSpan={5} className="text-center py-4">
                   お知らせが見つかりません
                 </td>
               </tr>
@@ -486,7 +597,7 @@ export default function Page() {
                   <td>
                     <span
                       className={
-                        "ml-3 py-1 px-9 " +
+                        "ml-2 py-1 px-9 " +
                         getStatusClass(notice.public_flag, notice.draft_flag)
                       }
                     >
@@ -509,6 +620,18 @@ export default function Page() {
                         )}
                       </p>
                       <Icon icon="weui:arrow-filled" width={15}></Icon>
+                    </div>
+                  </td>
+                  <td onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-center">
+                      <button
+                        onClick={(e) => handleDeleteClick(e, notice.id)}
+                        className="delete-btn text-red-600 hover:text-red-800 transition-colors p-2"
+                        title="削除"
+                        aria-label="削除"
+                      >
+                        <Icon icon="mdi:delete" id="delete-icon" width={20} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -595,6 +718,14 @@ export default function Page() {
           ></Icon>
         </button>
       </div>
+
+      {/* 削除モーダル */}
+      <NoticeDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        isDeleting={isDeleting}
+      />
     </main>
   );
 }

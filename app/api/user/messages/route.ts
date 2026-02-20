@@ -4,7 +4,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { Session } from "next-auth";
 
-export async function GET(req: Request) {
+export const runtime = "nodejs";
+
+export async function GET() {
   const session = await getServerSession(authOptions);
   const user = (session as Session | null)?.user as { id: string } | undefined;
 
@@ -20,9 +22,7 @@ export async function GET(req: Request) {
       include: {
         message: true,
       },
-      orderBy: {
-        created_at: "desc",
-      },
+      orderBy: [{ created_at: "desc" }, { id: "asc" }],
     });
     return NextResponse.json(userMessages);
   } catch (error) {

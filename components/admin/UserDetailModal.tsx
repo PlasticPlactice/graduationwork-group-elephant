@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import "@/styles/admin/users.css";
 import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
@@ -8,6 +9,7 @@ import {
   USER_STATUS,
   USER_STATUS_LABELS,
 } from "@/lib/constants/userStatus";
+import { formatAddress } from "@/lib/formatAddress";
 
 interface UserDetailModalProps {
   isOpen: boolean;
@@ -16,20 +18,27 @@ interface UserDetailModalProps {
   userId?: number | null;
 }
 
+interface Event {
+  id: number;
+  title: string;
+}
+
 interface BookReview {
   id: number;
   book_title: string;
-  event_name: string;
-  status: string;
+  evaluations_status: string;
   review: string;
+  event: Event | null;
 }
 
 interface UserDetail {
   id: number;
+  account_id: string;
   nickname: string;
   email: string;
   age: number | null;
   address: string | null;
+  sub_address?: string | null;
   user_status: number;
   bookReviews: BookReview[];
 }
@@ -44,13 +53,33 @@ export default function UserDetailModal({
   const [displayCount, setDisplayCount] = useState<number | "all">(2);
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>("");
+  const { addToast } = useToast();
+  const [sortBy, setSortBy] = useState<string>("event_title");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  const STATUS_CONFIG: Record<number, { label: string; className: string }> = {
+    0: {
+      label: "審査前",
+      className: "text-blue-500",
+    },
+    1: {
+      label: "審査中",
+      className: "text-green-600",
+    },
+    2: {
+      label: "当選",
+      className: "text-yellow-600",
+    },
+    3: {
+      label: "終了済み",
+      className: "text-red-400",
+    },
+  };
 
   useEffect(() => {
     if (isOpen && userId) {
       const fetchUserDetail = async () => {
         setIsLoading(true);
-        setError("");
         try {
           const response = await fetch(`/api/admin/users/${userId}`);
           if (!response.ok) throw new Error("Failed to fetch user detail");
@@ -59,7 +88,10 @@ export default function UserDetailModal({
         } catch (error) {
           console.error("Error fetching user detail:", error);
           setUserDetail(null);
-          setError("ユーザー情報の取得に失敗しました。");
+          addToast({
+            type: "error",
+            message: "ユーザー情報の取得に失敗しました。",
+          });
         } finally {
           setIsLoading(false);
         }
@@ -70,9 +102,8 @@ export default function UserDetailModal({
       setUserDetail(null);
       setOpenRows([]);
       setDisplayCount(2);
-      setError("");
     }
-  }, [isOpen, userId]);
+  }, [isOpen, userId, addToast]);
 
   const toggleRow = (id: number) => {
     setOpenRows((prev) =>
@@ -80,13 +111,61 @@ export default function UserDetailModal({
     );
   };
 
-  // 表示するデータをスライス
+  // ソート処理
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      // 同じカラムをクリックした場合は昇降順を切り替え
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // 異なるカラムをクリックした場合は昇順でリセット
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+  };
+
+  // データをソートしてから表示するデータをスライス
+  const sortedBookReviews = React.useMemo(() => {
+    if (!userDetail?.bookReviews) return [];
+
+    const sorted = [...userDetail.bookReviews].sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+
+      switch (sortBy) {
+        case "event_title":
+          aValue = a.event?.title || "";
+          bValue = b.event?.title || "";
+          break;
+        case "evaluations_status":
+          aValue = Number(a.evaluations_status);
+          bValue = Number(b.evaluations_status);
+          break;
+        case "book_title":
+          aValue = a.book_title;
+          bValue = b.book_title;
+          break;
+        default:
+          return 0;
+      }
+
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        const comparison = aValue.localeCompare(bValue, "ja");
+        return sortOrder === "asc" ? comparison : -comparison;
+      } else if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+      }
+      return 0;
+    });
+
+    return sorted;
+  }, [userDetail?.bookReviews, sortBy, sortOrder]);
+
   const displayedData =
     displayCount === "all"
-      ? userDetail?.bookReviews || []
-      : (userDetail?.bookReviews || []).slice(0, displayCount);
+      ? sortedBookReviews
+      : sortedBookReviews.slice(0, displayCount);
 
-    console.log(displayedData)
+  // displayedData is used in rendering; no debug logging
 
   const handleUserExit = () => {
     if (!userId) return;
@@ -123,7 +202,7 @@ export default function UserDetailModal({
           </button>
         </div>
         <div className="user-data-title grid grid-cols-5 px-6 text-center">
-          <p>書評ID</p>
+          <p>アカウントID</p>
           <p>ニックネーム</p>
           <p>ステータス</p>
           <p>年代</p>
@@ -131,11 +210,9 @@ export default function UserDetailModal({
         </div>
         {isLoading ? (
           <div className="text-center py-4">読み込み中...</div>
-        ) : error ? (
-          <div className="text-center py-4 text-red-600">{error}</div>
         ) : userDetail ? (
           <div className="text-2xl grid grid-cols-5 px-6 text-center font-bold">
-            <p>{String(userDetail.id).padStart(6, "0")}</p>
+            <p>{userDetail.account_id}</p>
             <p>{userDetail.nickname}</p>
             <p>
               <span className={`status-badge ${statusClass}`}>
@@ -143,7 +220,7 @@ export default function UserDetailModal({
               </span>
             </p>
             <p>{userDetail.age ? `${userDetail.age}代` : "-"}</p>
-            <p>{userDetail.address || "-"}</p>
+            <p>{formatAddress(userDetail.address, userDetail.sub_address)}</p>
           </div>
         ) : (
           <div className="text-center py-4">
@@ -155,25 +232,55 @@ export default function UserDetailModal({
           <table className="w-full event-table">
             <thead className="table-head">
               <tr>
-                <th className="w-1/5">
-                  <div className="flex items-center ml-3">
-                    ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
-                  </div>
+                <th>
+                  <button
+                    type="button"
+                    className="flex items-center ml-3 cursor-pointer"
+                    onClick={() => handleSort("event_title")}
+                    aria-label={`イベント名で${sortBy === "event_title" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  >
+                    イベント名
+                    <Icon
+                      icon="uil:arrow"
+                      rotate={
+                        sortBy === "event_title" && sortOrder === "desc" ? 3 : 1
+                      }
+                    />
+                  </button>
                 </th>
-                <th className="w-1/10">
-                  <div className="flex items-center justify-start">
-                    ID<Icon icon="uil:arrow" rotate={1}></Icon>
-                  </div>
+                <th>
+                  <button
+                    type="button"
+                    className="flex items-center ml-3 cursor-pointer"
+                    onClick={() => handleSort("evaluations_status")}
+                    aria-label={`ステータスで${sortBy === "evaluations_status" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  >
+                    ステータス
+                    <Icon
+                      icon="uil:arrow"
+                      rotate={
+                        sortBy === "evaluations_status" && sortOrder === "desc"
+                          ? 3
+                          : 1
+                      }
+                    />
+                  </button>
                 </th>
-                <th className="w-2/5">
-                  <div className="flex items-center">
-                    書籍タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
-                  </div>
-                </th>
-                <th className="w-1/5">
-                  <div className="flex items-center">
-                    イベント名<Icon icon="uil:arrow" rotate={1}></Icon>
-                  </div>
+                <th>
+                  <button
+                    type="button"
+                    className="flex items-center cursor-pointer"
+                    onClick={() => handleSort("book_title")}
+                    aria-label={`書籍タイトルで${sortBy === "book_title" && sortOrder === "asc" ? "降順" : "昇順"}にソート`}
+                  >
+                    書籍タイトル
+                    <Icon
+                      icon="uil:arrow"
+                      rotate={
+                        sortBy === "book_title" && sortOrder === "desc" ? 3 : 1
+                      }
+                    />
+                  </button>
                 </th>
                 <th>{/* <Icon icon='fe:arrow-up'></Icon> */}</th>
               </tr>
@@ -182,7 +289,7 @@ export default function UserDetailModal({
             <tbody className="border">
               {displayedData.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-4">
+                  <td colSpan={4} className="text-center py-4">
                     書評がありません
                   </td>
                 </tr>
@@ -190,19 +297,34 @@ export default function UserDetailModal({
                 displayedData.map((row) => (
                   <React.Fragment key={row.id}>
                     <tr className="table-row">
+                      <td>
+                        <span className="ml-3">{row.event?.title}</span>
+                      </td>
                       <td className="text-left">
-                        <span className="status-text font-bold py-1 px-6 ml-3">
-                          {row.status}
+                        <span className="">
+                          {(() => {
+                            const statusKey = Number(row.evaluations_status);
+                            const config = STATUS_CONFIG[statusKey];
+
+                            if (!config) return null;
+
+                            return (
+                              <div
+                                key={statusKey}
+                                className={`text-center w-1/2 ml-3 py-2 rounded-full text-sm font-bold border ${config.className}`}
+                              >
+                                {/* 当選した時だけ王冠アイコンを付ける、などの遊び心 */}
+                                {statusKey === 3}
+                                {config.label}
+                              </div>
+                            );
+                          })()}
                         </span>
                       </td>
-                      <td className="text-left">
-                        <span>{row.id}</span>
-                      </td>
                       <td>
-                        <span className="title-text">{row.book_title}</span>
-                      </td>
-                      <td>
-                        <span>{row.event_name}</span>
+                        <span className="modal-title-text">
+                          {row.book_title}
+                        </span>
                       </td>
                       <td className="text-right align-middle pr-3">
                         <button
@@ -220,12 +342,16 @@ export default function UserDetailModal({
                     </tr>
                     {openRows.includes(row.id) && (
                       <tr key={`${row.id}-details`} className="details-row">
-                        <td colSpan={5} className="details-content">
+                        <td colSpan={4} className="details-content">
                           <div className="p-4 flex">
-                            <section className="w-[57.142%]">
+                            <section className="w-full">
                               <h3 className="font-bold mb-2 ml-4">書評本文</h3>
                               <div className="book-review-section w-auto h-84 ml-4 p-2">
-                                <p dangerouslySetInnerHTML={{ __html: row.review }}></p>
+                                <p
+                                  dangerouslySetInnerHTML={{
+                                    __html: row.review,
+                                  }}
+                                ></p>
                               </div>
                             </section>
                           </div>

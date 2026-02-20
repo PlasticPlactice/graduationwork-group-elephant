@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
 import "@/styles/admin/register-notice.css";
@@ -31,7 +32,9 @@ type UploadPreview =
     };
 
 export default function Page() {
+  const { addToast } = useToast();
   const router = useRouter();
+  const mainRef = useRef<HTMLElement | null>(null);
 
   // フォームフィールドのstate
   const [title, setTitle] = useState<string>("");
@@ -66,20 +69,6 @@ export default function Page() {
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [successMessage, setSuccessMessage] = useState<string>("");
-
-  // エディタのHTMLを同期
-  useEffect(() => {
-    if (!editor) return;
-    const update = () => setDetailHtml(editor.getHTML());
-    update();
-    editor.on("update", update);
-    return () => {
-      editor.off("update", update);
-      editor?.destroy();
-    };
-  }, [editor]);
 
   // ツールバー操作
   const toggleBold = () => editor?.chain().focus().toggleBold().run();
@@ -113,14 +102,20 @@ export default function Page() {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
     if (!allowedTypes.includes(file.type)) {
-      alert(
-        "画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます。",
-      );
+      addToast({
+        type: "error",
+        message:
+          "画像ファイル（JPEG / PNG / GIF / WebP）のみアップロードできます。",
+      });
       e.target.value = "";
       return;
     }
     if (file.size > maxSize) {
-      alert("ファイルサイズが大きすぎます。10MB以下の画像を選択してください。");
+      addToast({
+        type: "error",
+        message:
+          "ファイルサイズが大きすぎます。10MB以下の画像を選択してください。",
+      });
       e.target.value = "";
       return;
     }
@@ -140,15 +135,17 @@ export default function Page() {
 
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      alert(
-        "ファイルサイズが大きすぎます。10MB以下のファイルを選択してください。",
-      );
+      addToast({
+        type: "error",
+        message:
+          "ファイルサイズが大きすぎます。10MB以下のファイルを選択してください。",
+      });
       return;
     }
 
     // 最大4件まで
     if (attachedFiles.length >= 6) {
-      alert("添付ファイルは最大6つまでです。");
+      addToast({ type: "error", message: "添付ファイルは最大6つまでです。" });
       return;
     }
 
@@ -198,7 +195,10 @@ export default function Page() {
   };
 
   // ファイルアップロード共通関数
-  const uploadFile = async (file: File): Promise<number | null> => {
+  // サーバはアップロード後に { id, data_path } を返すため、それを受け取る
+  const uploadFile = async (
+    file: File,
+  ): Promise<{ id: number; data_path: string } | null> => {
     const formData = new FormData();
     formData.append("file", file);
 
@@ -217,15 +217,16 @@ export default function Page() {
         );
       }
       const uploadedFile = await res.json();
-      return uploadedFile.id;
+      return { id: uploadedFile.id, data_path: uploadedFile.data_path };
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
           ? error.message
           : "ファイルのアップロード中に不明なエラーが発生しました。";
-      setErrorMessage(
-        `ファイルのアップロード中にエラーが発生しました: ${errorMessage}`,
-      );
+      addToast({
+        type: "error",
+        message: `ファイルのアップロード中にエラーが発生しました: ${errorMessage}`,
+      });
       return null;
     }
   };
@@ -237,33 +238,34 @@ export default function Page() {
   ) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrorMessage("");
-    setSuccessMessage("");
     setUploadProgress(0);
 
     // バリデーション: タイトル
     if (!title.trim() && !saveAsDraft) {
-      setErrorMessage("タイトルを入力してください。");
+      addToast({ type: "error", message: "タイトルを入力してください。" });
       setIsLoading(false);
       return;
     }
 
     if (title.length > 100) {
-      setErrorMessage("タイトルは100文字以内で入力してください。");
+      addToast({
+        type: "error",
+        message: "タイトルは100文字以内で入力してください。",
+      });
       setIsLoading(false);
       return;
     }
 
     // バリデーション: 詳細
     if (!editor?.getText().trim() && !saveAsDraft) {
-      setErrorMessage("お知らせ詳細を入力してください。");
+      addToast({ type: "error", message: "お知らせ詳細を入力してください。" });
       setIsLoading(false);
       return;
     }
 
     // 公開開始日時のバリデーション
     if (!saveAsDraft && !publicDateStart) {
-      setErrorMessage("公開開始日時を選択してください。");
+      addToast({ type: "error", message: "公開開始日時を選択してください。" });
       setIsLoading(false);
       return;
     }
@@ -275,7 +277,10 @@ export default function Page() {
       today.setHours(0, 0, 0, 0); // 時刻を00:00:00にリセット
 
       if (selectedDate < today) {
-        setErrorMessage("公開開始日時は本日以降の日付を選択してください。");
+        addToast({
+          type: "error",
+          message: "公開開始日時は本日以降の日付を選択してください。",
+        });
         setIsLoading(false);
         return;
       }
@@ -287,9 +292,10 @@ export default function Page() {
       const endDate = parseISO(publicDateEnd);
 
       if (endDate <= startDate) {
-        setErrorMessage(
-          "公開終了日時は公開開始日時より後の日時を選択してください。",
-        );
+        addToast({
+          type: "error",
+          message: "公開終了日時は公開開始日時より後の日時を選択してください。",
+        });
         setIsLoading(false);
         return;
       }
@@ -297,21 +303,24 @@ export default function Page() {
 
     try {
       // 1. ファイルアップロード
-      const uploadedFileIds: number[] = [];
+      const uploadedAttachmentIds: number[] = [];
+      let _uploadedThumbnailPath: string | null = null;
       const totalFiles = (thumbnailFile ? 1 : 0) + attachedFiles.length;
       let uploadedCount = 0;
 
       if (thumbnailFile) {
         setUploadProgress(Math.round(((uploadedCount / totalFiles) * 100) / 2)); // アップロード進捗は50%まで
-        const fileId = await uploadFile(thumbnailFile);
-        if (fileId !== null) uploadedFileIds.push(fileId);
+        const result = await uploadFile(thumbnailFile);
+        if (result !== null) {
+          _uploadedThumbnailPath = result.data_path;
+        }
         uploadedCount++;
       }
 
       for (const file of attachedFiles) {
         setUploadProgress(Math.round(((uploadedCount / totalFiles) * 100) / 2));
-        const fileId = await uploadFile(file);
-        if (fileId !== null) uploadedFileIds.push(fileId);
+        const resFile = await uploadFile(file);
+        if (resFile !== null) uploadedAttachmentIds.push(resFile.id);
         uploadedCount++;
       }
 
@@ -321,6 +330,9 @@ export default function Page() {
       setUploadProgress(75);
       const notificationTypeInt = notificationType === "notice" ? 0 : 1;
       const shouldPublish = !saveAsDraft && isPublic;
+      // メイン画像は main_image_path で管理、添付ファイルのみを fileIds に含める
+      const finalFileIds: number[] = [...uploadedAttachmentIds];
+
       const notificationData = {
         title: title,
         detail: detailHtml,
@@ -333,7 +345,8 @@ export default function Page() {
           : null,
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
-        fileIds: uploadedFileIds,
+        fileIds: finalFileIds,
+        main_image_path: _uploadedThumbnailPath ?? null,
       };
 
       const res = await fetch("/api/admin/notifications", {
@@ -353,9 +366,12 @@ export default function Page() {
       }
 
       setUploadProgress(100);
-      setSuccessMessage(
-        saveAsDraft ? "下書きを保存しました。" : "お知らせを登録しました。",
-      );
+      addToast({
+        type: "success",
+        message: saveAsDraft
+          ? "下書きを保存しました。"
+          : "お知らせを登録しました。",
+      });
 
       // 2秒後にリダイレクト
       setTimeout(() => {
@@ -366,9 +382,10 @@ export default function Page() {
         error instanceof Error
           ? error.message
           : "お知らせの登録中に不明なエラーが発生しました。";
-      setErrorMessage(
-        errorMessage || "お知らせの登録中にエラーが発生しました。",
-      );
+      addToast({
+        type: "error",
+        message: errorMessage || "お知らせの登録中にエラーが発生しました。",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -388,34 +405,9 @@ export default function Page() {
   }, [modalIndex]);
 
   return (
-    <main className="p-6">
+    <main className="p-6" ref={mainRef}>
       <h1 className="text-2xl font-bold mb-6">お知らせ登録</h1>
-      {errorMessage && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <strong className="font-bold">エラー:</strong>
-          <span className="block sm:inline ml-2">{errorMessage}</span>
-          <button
-            type="button"
-            className="absolute top-0 right-0 px-4 py-3 hover:bg-red-200 rounded transition-colors"
-            onClick={() => setErrorMessage("")}
-            aria-label="閉じる"
-          >
-            <span className="text-2xl">&times;</span>
-          </button>
-        </div>
-      )}
-      {successMessage && (
-        <div
-          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <strong className="font-bold">成功:</strong>
-          <span className="block sm:inline ml-2">{successMessage}</span>
-        </div>
-      )}
+      {/* 通知はトーストで表示します */}
       {isLoading && uploadProgress > 0 && uploadProgress < 100 && (
         <div className="mb-4">
           <div className="flex justify-between mb-1">
@@ -440,7 +432,7 @@ export default function Page() {
             style={{ width: "100%", height: "100%" }}
           >
             <input
-              id="thumbnail"
+              id="register-thumbnail"
               type="file"
               name="thumbnailFile"
               className="thumbnail-btn"
@@ -458,7 +450,7 @@ export default function Page() {
               />
             )}
             <label
-              htmlFor="thumbnail"
+              htmlFor="register-thumbnail"
               className="thumbnail-label inline-block px-3 py-2 cursor-pointer"
             >
               {thumbnailPreview ? "サムネイルを変更" : "サムネイルを選択"}
@@ -466,7 +458,9 @@ export default function Page() {
           </div>
         </section>
 
-        <label htmlFor="title" className="block mt-5 mb-1">タイトル<span className="required">*</span></label>
+        <label htmlFor="title" className="block mt-5 mb-1">
+          タイトル<span className="required">*</span>
+        </label>
         <Textbox
           type="text"
           className="title w-full mb-5"
@@ -482,12 +476,12 @@ export default function Page() {
                 type="radio"
                 className="notice-radio"
                 name="notification-type"
-                id="notice"
+                id="register-notice-type"
                 value="notice"
                 checked={notificationType === "notice"}
                 onChange={() => setNotificationType("notice")}
               />
-              <label htmlFor="notice" className="radio-label">
+              <label htmlFor="register-notice-type" className="radio-label">
                 お知らせ
               </label>
             </div>
@@ -496,12 +490,12 @@ export default function Page() {
                 type="radio"
                 className="notice-radio"
                 name="notification-type"
-                id="donation"
+                id="register-donation-type"
                 value="donation"
                 checked={notificationType === "donation"}
                 onChange={() => setNotificationType("donation")}
               />
-              <label htmlFor="donation" className="radio-label">
+              <label htmlFor="register-donation-type" className="radio-label">
                 寄贈
               </label>
             </div>
@@ -512,12 +506,12 @@ export default function Page() {
                   type="radio"
                   className="notice-radio"
                   name="publish-status"
-                  id="publish"
+                  id="register-publish"
                   value="public"
                   checked={isPublic}
                   onChange={() => setIsPublic(true)}
                 />
-                <label htmlFor="publish" className="radio-label">
+                <label htmlFor="register-publish" className="radio-label">
                   公開
                 </label>
               </div>
@@ -526,12 +520,12 @@ export default function Page() {
                   type="radio"
                   className="notice-radio"
                   name="publish-status"
-                  id="private"
+                  id="register-private"
                   value="private"
                   checked={!isPublic}
                   onChange={() => setIsPublic(false)}
                 />
-                <label htmlFor="private" className="radio-label">
+                <label htmlFor="register-private" className="radio-label">
                   非公開
                 </label>
               </div>
@@ -539,7 +533,9 @@ export default function Page() {
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="w-38">公開期間<span className="required">*</span></label>
+            <label className="w-38">
+              公開期間<span className="required">*</span>
+            </label>
             <Textbox
               type="datetime-local"
               placeholder="公開開始"
@@ -561,7 +557,9 @@ export default function Page() {
           </div>
         </div>
         {/* ツールバー */}
-        <label htmlFor="title" className="block mt-5 mb-1">本文<span className="required">*</span></label>
+        <label htmlFor="title" className="block mt-5 mb-1">
+          本文<span className="required">*</span>
+        </label>
         <div className="flex items-center gap-2 design-container py-2 pl-3">
           {/* 太字 */}
           <button
@@ -631,12 +629,12 @@ export default function Page() {
         </div>
 
         {/* 添付画像・ファイル */}
-        <label htmlFor="upload" className="block mt-4">
+        <label htmlFor="register-upload" className="block mt-4">
           添付画像・ファイル
         </label>
         <div className="flex items-center gap-10">
           <input
-            id="upload"
+            id="register-upload"
             type="file"
             name="attachedFile"
             className="upload-btn"
@@ -644,7 +642,7 @@ export default function Page() {
             multiple={false} // 複数選択を許可しない
           />
           <label
-            htmlFor="upload"
+            htmlFor="register-upload"
             className="upload-label inline-block h-fit px-3 py-2 cursor-pointer"
           >
             添付する画像・ファイルを選択
@@ -673,14 +671,30 @@ export default function Page() {
                     unoptimized
                   />
                 ) : (
-                  <div className="flex items-center justify-center text-xs p-2 break-words w-full h-full rounded">
-                    <span className="truncate">{preview.name}</span>
+                  <div
+                    className="flex items-center justify-center text-xs p-2 break-words w-full h-full rounded"
+                    style={{ backgroundColor: "#ffffff" }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      style={{ width: "36px", height: "36px" }}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                      />
+                    </svg>
                   </div>
                 )}
                 <button
                   type="button"
                   aria-label="プレビューを削除"
-                  className="absolute -top-2 -right-2 rounded w-6 h-6 flex items-center justify-center transition-colors"
+                  className="absolute -top-2 -right-2 rounded w-10 h-10 flex items-center justify-center transition-colors"
                   style={{
                     backgroundColor: "transparent",
                     boxShadow: "none",
@@ -691,7 +705,7 @@ export default function Page() {
                     removeAttachedFilePreview(i);
                   }}
                 >
-                  &times;
+                  <span className="text-3xl">&times;</span>
                 </button>
               </div>
             ))}

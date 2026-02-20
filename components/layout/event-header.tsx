@@ -18,7 +18,6 @@ export function EventHeader() {
         href="/poster/login"
         className="text-base font-bold transition-colors text-white"
         style={{
-          backgroundColor: "var(--color-sub)",
           color: "var(--color-white)",
           padding: "16px 12px",
          }}

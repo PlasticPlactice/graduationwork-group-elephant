@@ -1,12 +1,9 @@
-.custom-input{
-  border: 1px solid var(--color-admin-sub);
-}
 .detail-text{
   font-size:0.8rem;
   color: var(--color-admin-sub);
 }
 .back-btn,
-.register-btn {
+.register-term-btn {
   font-size: var(--font-size-h1);
   box-shadow: none;
 }

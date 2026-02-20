@@ -77,7 +77,7 @@ export const ItemModal = ({ item, onClose }: ItemModalProps) => {
             dangerouslySetInnerHTML={{ __html: item.content || "" }}
           />
 
-          {item.attachments && item.attachments.length > 1 && (
+          {item.attachments && item.attachments.length > 0 && (
             <>
               <h3 className="attachments-title">添付資料</h3>
               <div
@@ -88,7 +88,7 @@ export const ItemModal = ({ item, onClose }: ItemModalProps) => {
                   gap: "10px",
                 }}
               >
-                {item.attachments.slice(1).map((file, index) => {
+                {item.attachments.map((file, index) => {
                   const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(file.url);
                   return (
                     <a
@@ -102,7 +102,7 @@ export const ItemModal = ({ item, onClose }: ItemModalProps) => {
                         flexDirection: "column",
                         alignItems: "center",
                         justifyContent: "center",
-                        backgroundColor: "#f3f4f6",
+                        backgroundColor: "#ffffff",
                         borderRadius: "8px",
                         textDecoration: "none",
                         color: "var(--color-main)",
@@ -156,8 +156,8 @@ export const ItemModal = ({ item, onClose }: ItemModalProps) => {
             onClick={onClose}
             className="modal-footer-close-btn"
             style={{
-              backgroundColor: "var(--color-main)",
-              color: "var(--color-bg)",
+              backgroundColor: "#36A8B1",
+              color: "#ffffff",
             }}
           >
             閉じる

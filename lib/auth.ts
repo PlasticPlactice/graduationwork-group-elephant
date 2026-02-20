@@ -74,13 +74,40 @@ export const authOptions: NextAuthOptions = {
           where: { account_id: credentials.account_id },
         });
 
+        // Debug logs (temporary): do not log sensitive data like password
+        try {
+          console.info("auth:user lookup", {
+            account_id: credentials.account_id,
+            found: Boolean(user),
+            deleted_flag: user?.deleted_flag ?? null,
+            user_status: user?.user_status ?? null,
+          });
+        } catch (e) {
+          /* ignore logging errors */
+        }
+
         // ユーザーが見つからない、またはパスワードが一致しない場合はnullを返す
         // これにより、"IDが違う"のか"パスワードが違う"のかを区別させず、セキュリティを向上させる
-        if (
-          !user ||
-          !(await bcrypt.compare(credentials.password, user.password))
-        ) {
-          return null; // next-authはこれを"CredentialsSignin"エラーとしてフロントに返す
+        if (!user) {
+          return null; // user not found -> CredentialsSignin
+        }
+
+        const passwordMatch = await bcrypt.compare(
+          credentials.password,
+          user.password,
+        );
+
+        try {
+          console.info("auth:user passwordMatch", {
+            account_id: credentials.account_id,
+            passwordMatch,
+          });
+        } catch (e) {
+          /* ignore logging errors */
+        }
+
+        if (!passwordMatch) {
+          return null; // password mismatch -> CredentialsSignin
         }
 
         // --- ここから下は、IDとパスワードが正しいことが確認された後の処理 ---
@@ -128,10 +155,11 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  pages: {
+    signIn: "/poster/login",
+    error: "/auth/error",
+  },
   session: {
     strategy: "jwt",
-  },
-  pages: {
-    signIn: "/auth/login",
   },
 };

@@ -59,7 +59,7 @@ async function main() {
         nickname: `ユーザー${i}`,
         address: i % 2 === 0 ? "東京都" : "大阪府",
         sub_address: i % 2 === 0 ? "渋谷区" : "北区",
-        age: 20 + (i % 30),
+        age: ((i % 9) + 1) * 10,
         gender: (i % 2) + 1, // 1 or 2
         self_introduction: `こんにちは、ユーザー${i}です。読書が好きです。`,
         color: i % 2 === 0 ? "red" : "blue",
@@ -173,6 +173,7 @@ async function main() {
         pattern: user.pattern,
         pattern_color: user.pattern_color,
         public_flag: true,
+        draft_flag: false,
       },
     });
     reviews.push(review);

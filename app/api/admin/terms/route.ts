@@ -4,9 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import path from "path";
 import fs from "fs/promises";
+import { randomUUID } from "crypto";
 
 // ファイルアップロード設定
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB (PDFは通常大きい)
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 const ALLOWED_EXTENSIONS = [".pdf"];
 
 /**
@@ -69,7 +70,7 @@ export async function GET(req: NextRequest) {
           select: { id: true, email: true },
         },
       },
-      orderBy: { created_at: "desc" },
+      orderBy: [{ created_at: "desc" }, { id: "asc" }],
     });
 
     return NextResponse.json(terms);
@@ -147,7 +148,7 @@ export async function POST(req: NextRequest) {
     // ファイルサイズチェック
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { message: "ファイルサイズが制限を超えています (50MB)" },
+        { message: "ファイルサイズが制限を超えています (20MB)" },
         { status: 413 },
       );
     }
@@ -161,30 +162,44 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // MIMEタイプの検証
-    if (
-      file.type &&
-      file.type !== "application/pdf" &&
-      !file.name.toLowerCase().endsWith(".pdf")
-    ) {
+    // MIMEタイプの検証（セキュリティ強化）
+    if (!file.type) {
       return NextResponse.json(
-        { message: "PDFファイルとして無効です" },
+        { message: "ファイルタイプが不明です" },
         { status: 400 },
       );
     }
 
-    // ファイルシステムに保存
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    if (file.type !== "application/pdf") {
+      return NextResponse.json(
+        { message: "PDFファイルのみアップロード可能です" },
+        { status: 400 },
+      );
+    }
+
+    // ファイル内容を取得してマジックナンバー検証
+    const buffer = await file.arrayBuffer();
+    const pdfBuffer = Buffer.from(buffer);
+    const pdfMagic = pdfBuffer.slice(0, 5).toString();
+
+    if (pdfMagic !== "%PDF-") {
+      return NextResponse.json(
+        { message: "PDFファイルとして無効です（ファイル内容が不正）" },
+        { status: 400 },
+      );
+    }
+
+    // ファイルシステムに保存（環境変数で切り替え可能）
+    const uploadDir =
+      process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
     await fs.mkdir(uploadDir, { recursive: true });
 
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 10);
-    const saveFileName = `${timestamp}-${randomString}.pdf`;
+    const uuid = randomUUID();
+    const saveFileName = `${uuid}.pdf`;
     const dataPath = `/uploads/${saveFileName}`;
     const fullPath = path.join(uploadDir, saveFileName);
 
-    const buffer = await file.arrayBuffer();
-    await fs.writeFile(fullPath, Buffer.from(buffer));
+    await fs.writeFile(fullPath, pdfBuffer);
 
     // 日時の処理
     const now = new Date();

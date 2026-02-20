@@ -85,7 +85,7 @@ input[type="datetime-local"]::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-main);
+  background: var(--color-bg);
   border-radius: var(--control-radius);
 }
 .upload-preview > .relative {
@@ -128,22 +128,19 @@ input[type="datetime-local"]::before {
   box-shadow: none;
 }
 .draft-btn {
-  background-color: #2563eb;
-  color: var(--color-bg);
-}
-.draft-btn:hover {
-  background-color: var(--color-bg);
-  color: #2563eb;
-  border: 1px solid #2563eb;
+  background-color: var(--color-bg) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-text) !important;
 }
 .submit-btn {
-  background-color: #16a34a;
+  background-color: var(--color-main);
   color: var(--color-bg);
+  border: 1px solid var(--color-main);
 }
 .submit-btn:hover {
   background-color: var(--color-bg);
-  color: #16a34a;
-  border: 1px solid #16a34a;
+  color: var(--color-main);
+  border: 1px solid var(--color-main);
 }
 .remove-btn {
   height: fit-content;

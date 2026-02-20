@@ -1,10 +1,10 @@
 "use client";
 
 import Styles from "@/styles/app/poster.module.css";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { useSession } from "next-auth/react";
 // tiptapのimport
-import { EditorContent, parseIndentedBlocks, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BubbleMenu } from "@tiptap/extension-bubble-menu";
 import Color from "@tiptap/extension-color";
@@ -13,14 +13,15 @@ import CharacterCount from "@tiptap/extension-character-count";
 import { preparePostConfirm } from "./actions";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
 
 import { BookReviewDeleteConfirmModal } from "@/components/modals/BookReviewDeleteConfirmModal";
 
 export default function PostPage() {
   const router = useRouter();
+  const { addToast } = useToast();
 
-  const { data: session, status } = useSession();
-  const userId = (session?.user as { id?: string })?.id;
+  useSession();
 
   // HTML送信用
   const [html, setHtml] = useState("");
@@ -31,11 +32,24 @@ export default function PostPage() {
   const [boldActive, setBoldActive] = useState(false);
   const [italicActive, setItalicActive] = useState(false);
   const [underlineActive, setUnderlineActive] = useState(false);
-  const [colorActive, setColorActive] = useState<string>("#000000");
 
-  const [state, formAction] = useActionState(preparePostConfirm, null);
-  const [bookReviewData, setBookReviewData] = useState<any>(null);
-  const [isDraft, setIsDraft] = useState(false)
+  const [, formAction] = useActionState(preparePostConfirm, null);
+
+  interface BookReviewData {
+    id: number;
+    draft_flag?: boolean;
+    review?: string;
+    color?: string;
+    pattern?: string;
+    pattern_color?: string;
+    book_title?: string;
+    author?: string;
+  }
+
+  const [bookReviewData, setBookReviewData] = useState<BookReviewData | null>(
+    null,
+  );
+  const isDraft = bookReviewData?.draft_flag === true;
 
   const [form, setForm] = useState<{
     bookReview_id: number | null;
@@ -44,28 +58,15 @@ export default function PostPage() {
     pattern: string;
     pattern_color: string;
     evaluations_status: number;
+    draft_flag: boolean;
   }>({
     bookReview_id: null,
     review: "",
     color: "#FFFFFF",
     pattern: "dot",
     pattern_color: "#FFFFFF",
-    evaluations_status: 2,
-  });
-  const [draftForm, setDraftForm] = useState<{
-    id: number | null;
-    review: string;
-    color: string;
-    pattern: string;
-    pattern_color: string;
-    evaluations_status: number;
-  }>({
-    id: null,
-    review: "",
-    color: "#FFFFFF",
-    pattern: "dot",
-    pattern_color: "#FFFFFF",
-    evaluations_status: 1,
+    evaluations_status: 0,
+    draft_flag: false,
   });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -99,41 +100,7 @@ export default function PostPage() {
   ];
 
   // 指定したIDの書評データを取得
-  const fetchBookReviewDataById = useCallback(async (bookReviewId: number) => {
-    try {
-      const res = await fetch(`/api/book-reviews/detail/${bookReviewId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setBookReviewData(data);
-      }
-    } catch (error) {
-      console.error("Failed to Fetch book review detail data");
-    }
-  }, []);
-
-  useEffect(() => {
-    if(!bookReviewData) return;
-
-    console.log("bookReviewData" + JSON.stringify(bookReviewData))
-
-    if(bookReviewData.evaluations_status == 1) {
-      setIsDraft(true)
-    }
-
-    setDraftForm(prev => ({
-      ...prev,
-      id: bookReviewData.id,
-      review: bookReviewData.review,
-      color: bookReviewData.color,
-      pattern: bookReviewData.pattern,
-      pattern_color: bookReviewData.pattern_color,
-    }))
-  }, [bookReviewData])
+  // 書評データ取得は下の effect 内で行い、取得後に state を更新します。
 
   // データ取得の実行
   useEffect(() => {
@@ -146,44 +113,65 @@ export default function PostPage() {
     const bookReviewId =
       typeof parsed === "number" ? parsed : parsed.bookReviewId;
 
-    fetchBookReviewDataById(bookReviewId);
-  }, [fetchBookReviewDataById]);
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/book-reviews/detail/${bookReviewId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setBookReviewData(data);
+          setForm((prev) => ({
+            ...prev,
+            bookReview_id: data.id ?? null,
+            review: data.review ?? "",
+            color: data.color ?? "#FFFFFF",
+            pattern: data.pattern ?? "dot",
+            pattern_color: data.pattern_color ?? "#FFFFFF",
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to Fetch book review detail data", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // 下書き登録用
-  const registerBookReviewDraft = async (payload: typeof draftForm) => {
+  const registerBookReviewDraft = async (payload: typeof form) => {
     try {
-      const res = await fetch("http://localhost:3000/api/book-reviews/mypage/edit", {
+      const res = await fetch("/api/book-reviews/mypage/edit", {
         method: "PUT",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if(!res.ok) {
-        alert("下書きの登録に失敗しました。");
+      if (!res.ok) {
+        addToast({ type: "error", message: "下書きの登録に失敗しました。" });
         return;
       }
 
       router.push("/poster/mypage");
-    } catch(e) {
-      alert("通信に失敗しました。")
+    } catch {
+      addToast({ type: "error", message: "通信に失敗しました。" });
     }
-  }
+  };
 
   // 下書きボタン押したときの処理
   const handleDraftConfirm = () => {
     const nextForm = {
-      ...draftForm,
-      evaluations_status: 1
+      ...form,
+      draft_flag: true,
     };
-
-    console.log("nextForm" + JSON.stringify(nextForm))
-
-    setDraftForm(nextForm);
 
     registerBookReviewDraft({
       ...nextForm,
-    })
-    // router.push("/poster/mypage");
+    });
+    router.push("/poster/mypage");
   };
 
   // tiptapに関する関数
@@ -209,15 +197,36 @@ export default function PostPage() {
     ],
     content: "",
     onUpdate({ editor }) {
-      setForm({
-        ...form,
+      setForm((prev) => ({
+        ...prev,
         review: editor.getHTML(),
-        color: bookColor,
-        pattern: pattern,
-        pattern_color: patternColor,
-      });
+      }));
     },
   });
+
+  // 色が選択された時
+  const onChangePatternColor = (patternColor: string) => {
+    setForm((prev) => ({
+      ...prev,
+      patternColor,
+    }));
+  };
+
+  // パターンが選択された時
+  const onChangePattern = (pattern: string) => {
+    setForm((prev) => ({
+      ...prev,
+      pattern,
+    }));
+  };
+
+  // 本の色が選択された時
+  const onChangeBookColor = (color: string) => {
+    setForm((prev) => ({
+      ...prev,
+      color,
+    }));
+  };
 
   // boldボタンの状態管理
   const toggleBoldButton = () => {
@@ -237,16 +246,11 @@ export default function PostPage() {
     editor.chain().focus().toggleUnderline().run();
     setUnderlineActive((prev) => !prev);
   };
-  // colorボタンの状態管理
-  const handleColorClick = (color: string) => {
-    if (!editor) return;
-
-    editor.chain().focus().setColor(color).run();
-    setColorActive(color);
-  };
+  // colorボタンの状態管理 (inline handler を使用しているため関数は不要)
 
   // form送信時にHTMLをセット
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e?: FormEvent) => {
+    e?.preventDefault();
     if (!editor) return;
     setHtml(editor.getHTML());
   };
@@ -257,6 +261,7 @@ export default function PostPage() {
     if (!bookReviewData) return;
     if (initializedRef.current) return;
 
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
     setBookColor(bookReviewData.color || "#FFFFFF");
     setPatternColor(bookReviewData.pattern_color || "#FFFFFF");
     setPattern(bookReviewData.pattern || "dot");
@@ -309,7 +314,7 @@ export default function PostPage() {
   }, [editor, bookReviewData]);
 
   const handleConfirm = () => {
-    const draft = sessionStorage.setItem(
+    sessionStorage.setItem(
       "bookReviewDraft",
       JSON.stringify({
         mode: "edit",
@@ -328,13 +333,9 @@ export default function PostPage() {
         bookReviewId={bookReviewData?.id}
       />
       <div className={`${Styles.posterContainer}`}>
-        <p className={`font-bold text-center my-3 ${Styles.text24px}`}>
+        <p className={`font-bold text-center my-9 ${Styles.text24px}`}>
           書評を修正
         </p>
-        <a href="" className={`block font-bold ${Styles.subColor}`}>
-          <span>&lt;</span> マイページに戻る
-        </a>
-
         <div className="py-2 flex items-center justify-between border-t">
           <p className={`${Styles.subColor}`}>本のタイトル</p>
           <p className={`w-2/3`}>{bookReviewData?.book_title}</p>
@@ -399,28 +400,14 @@ export default function PostPage() {
                   </div>
                   <div>
                     <p>文字色</p>
-                    <div className="flex gap-2 items-center">
-                      <button
-                        type="button"
-                        onClick={() => handleColorClick("#000000")}
-                        className={`${colorActive === "#000000" ? `${Styles.activeColorButton} ${Styles.blackButton}` : Styles.inactiveButton} ${Styles.editorColorButton}`}
-                      >
-                        黒
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleColorClick("#FF0000")}
-                        className={`${colorActive === "#FF0000" ? `${Styles.activeColorButton} ${Styles.redButton}` : Styles.inactiveButton} ${Styles.editorColorButton}`}
-                      >
-                        赤
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleColorClick("#0000FF")}
-                        className={`${colorActive === "#0000FF" ? `${Styles.activeColorButton} ${Styles.blueButton}` : Styles.inactiveButton} ${Styles.editorColorButton}`}
-                      >
-                        青
-                      </button>
+                    <div className="w-20 items-center">
+                      <input
+                        type="color"
+                        onChange={(e) =>
+                          editor?.chain().focus().setColor(e.target.value).run()
+                        }
+                        className={`w-full h-8 rounded border cursor-pointer ${Styles.ColorPicker}`}
+                      />
                     </div>
                   </div>
                 </div>
@@ -453,13 +440,17 @@ export default function PostPage() {
                         type="button"
                         onClick={() => {
                           setBookColor(color.value);
+                          onChangeBookColor(color.value);
                         }}
                         style={{ backgroundColor: color.value }}
                         aria-label={color.name}
                         className={`relative w-12 h-12 rounded-full transition-all duration-200 hover:scale-110 ${Styles.colorButton}`}
                       >
                         {bookColor === color.value && (
-                          <div className="absolute inset-0 rounded-full border-4 border-white shadow-lg ring-2 ring-red-400"></div>
+                          <div
+                            className="absolute inset-0 rounded-full border-4 border-white shadow-lg"
+                            style={{ boxShadow: "0 0 0 2px var(--color-main)" }}
+                          ></div>
                         )}
                       </button>
                     ))}
@@ -474,6 +465,7 @@ export default function PostPage() {
                     type="button"
                     onClick={() => {
                       setPattern(item.value);
+                      onChangePattern(item.value);
                     }}
                     style={{
                       backgroundImage: `url(${item.bg})`,
@@ -486,7 +478,8 @@ export default function PostPage() {
                   >
                     {pattern === item.value && (
                       <div
-                        className={`absolute inset-0.5 rounded-sm border-4 border-white shadow-lg ring-4 ring-red-400 ${Styles.patternButton}`}
+                        className="absolute inset-0.5 rounded-sm border-4 border-white shadow-lg"
+                        style={{ boxShadow: "0 0 0 2px var(--color-main)" }}
                       ></div>
                     )}
                   </button>
@@ -505,13 +498,17 @@ export default function PostPage() {
                         type="button"
                         onClick={() => {
                           setPatternColor(color.value);
+                          onChangePatternColor(color.value);
                         }}
                         style={{ backgroundColor: color.value }}
                         aria-label={color.name}
                         className={`relative w-12 h-12 rounded-full transition-all duration-200 hover:scale-110 ${Styles.colorButton}`}
                       >
                         {patternColor === color.value && (
-                          <div className="absolute inset-0 rounded-full border-4 border-white shadow-lg ring-2 ring-red-400"></div>
+                          <div
+                            className="absolute inset-0 rounded-full border-4 border-white shadow-lg"
+                            style={{ boxShadow: "0 0 0 2px var(--color-main)" }}
+                          ></div>
                         )}
                       </button>
                     ))}

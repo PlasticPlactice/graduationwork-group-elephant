@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import "@/styles/admin/detail-term.css";
 import AdminButton from "@/components/ui/admin-button";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
 
 type Term = {
   id: number;
@@ -17,12 +18,11 @@ type Term = {
 
 export default function Page() {
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTerm, setSelectedTerm] = useState<Term | null>(null);
+  // selectedTerm state removed — not used in UI
   const [currentTerm, setCurrentTerm] = useState<Term | null>(null);
   const [scheduledTerm, setScheduledTerm] = useState<Term | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { addToast } = useToast();
 
   useEffect(() => {
     const fetchTerms = async () => {
@@ -44,24 +44,17 @@ export default function Page() {
 
         setCurrentTerm(current || null);
         setScheduledTerm(scheduled || null);
-        setSelectedTerm(current || scheduled || null);
-        setError(null);
+        // 成功時はトースト不要（以前のバナーは削除）
       } catch (err) {
         console.error("Error:", err);
-        setError(
-          err instanceof Error ? err.message : "利用規約の取得に失敗しました",
-        );
+        addToast({ type: "error", message: "利用規約の取得に失敗しました。" });
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchTerms();
-  }, []);
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  }, [addToast]);
 
   const handleRegister = () => {
     router.push("/admin/register-term");
@@ -80,16 +73,15 @@ export default function Page() {
 
   return (
     <main className="p-6">
-      <AdminButton
-        label="利用規約登録"
-        className="resiter-btn"
-        onClick={handleRegister}
-      />
+      <div className="flex justify-end">
+        <AdminButton
+          label="利用規約登録"
+          className="resiter-btn"
+          onClick={handleRegister}
+        />
+      </div>
       {isLoading && <p className="text-center mt-8">読み込み中...</p>}
-      {error && (
-        <p className="text-center mt-8 text-red-600">エラー: {error}</p>
-      )}
-      {!isLoading && !error && (currentTerm || scheduledTerm) && (
+      {!isLoading && (currentTerm || scheduledTerm) && (
         <div className="my-4 flex justify-center">
           <div className="w-full max-w-6xl flex flex-col gap-8">
             {/* 現在適用中の利用規約 */}
@@ -110,15 +102,32 @@ export default function Page() {
                 <div className="ml-10 w-28 h-28 flex-shrink-0">
                   <div className="relative w-28 h-28">
                     <div
-                      className="upload-preview w-28 h-28 flex items-center justify-center text-xs text-gray-400 border-2 border-dashed rounded overflow-hidden cursor-pointer hover:bg-gray-50"
+                      className="upload-preview w-28 h-28 flex items-center justify-center text-xs border-2 border-solid rounded overflow-hidden cursor-pointer"
                       role="button"
                       aria-label="プレビューを開く"
-                      onClick={() => {
-                        setSelectedTerm(currentTerm);
-                        setIsModalOpen(true);
+                      onClick={() =>
+                        window.open(currentTerm.data_path, "_blank")
+                      }
+                      style={{
+                        backgroundColor: "#ffffff",
+                        color: "var(--color-main)",
+                        borderColor: "#000000",
                       }}
                     >
-                      <span>{currentTerm.file_name}</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        style={{ width: "36px", height: "36px" }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                        />
+                      </svg>
                     </div>
                   </div>
                 </div>
@@ -147,15 +156,32 @@ export default function Page() {
                 <div className="ml-10 w-28 h-28 flex-shrink-0">
                   <div className="relative w-28 h-28">
                     <div
-                      className="upload-preview w-28 h-28 flex items-center justify-center text-xs text-gray-400 border-2 border-dashed rounded overflow-hidden cursor-pointer hover:bg-gray-50"
+                      className="upload-preview w-28 h-28 flex items-center justify-center text-xs border-2 border-solid rounded overflow-hidden cursor-pointer"
                       role="button"
                       aria-label="プレビューを開く"
-                      onClick={() => {
-                        setSelectedTerm(scheduledTerm);
-                        setIsModalOpen(true);
+                      onClick={() =>
+                        window.open(scheduledTerm.data_path, "_blank")
+                      }
+                      style={{
+                        backgroundColor: "#ffffff",
+                        color: "var(--color-main)",
+                        borderColor: "#000000",
                       }}
                     >
-                      <span>{scheduledTerm.file_name}</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        style={{ width: "36px", height: "36px" }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                        />
+                      </svg>
                     </div>
                   </div>
                 </div>
@@ -164,46 +190,8 @@ export default function Page() {
           </div>
         </div>
       )}
-      {!isLoading && !error && !currentTerm && !scheduledTerm && (
+      {!isLoading && !currentTerm && !scheduledTerm && (
         <p className="text-center mt-8">利用規約が登録されていません</p>
-      )}
-      {/* PDFモーダル */}
-      {isModalOpen && selectedTerm && (
-        <div
-          className="upload-modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={handleCloseModal}
-        >
-          <div
-            className="bg-white rounded p-4 overflow-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-start gap-4">
-              <h3 className="text-lg font-medium">プレビュー</h3>
-              <button
-                type="button"
-                onClick={handleCloseModal}
-                className="close-btn text-2xl px-2 hover:bg-gray-100 rounded"
-                aria-label="閉じる"
-              >
-                &times;
-              </button>
-            </div>
-            <div className="p-4">
-              <object
-                data={selectedTerm.data_path}
-                type="application/pdf"
-                style={{ maxHeight: "70vh", minHeight: "60vh" }}
-              >
-                <p className="text-sm text-gray-600">
-                  PDFプレビューを表示できません。ダウンロードしてください。
-                </p>
-              </object>
-
-              <p className="font-medium mt-4">ファイル名</p>
-              <p className="mt-2 break-words">{selectedTerm.file_name}</p>
-            </div>
-          </div>
-        </div>
       )}
     </main>
   );

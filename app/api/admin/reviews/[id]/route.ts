@@ -1,21 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import type { Session } from "next-auth";
+import { requireAdminAuth } from "@/lib/api/authMiddleware";
+
+export const runtime = "nodejs";
 
 export async function GET(
   req: Request,
   context: { params: Promise<{ id: string }> },
 ) {
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
   try {
-    const session = (await getServerSession(authOptions)) as Session | null;
-    const user = session?.user as { id: string; role: string } | undefined;
-
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { id } = await context.params;
     const reviewId = Number(id);
 
@@ -31,9 +29,16 @@ export async function GET(
       select: {
         id: true,
         book_title: true,
+        author: true,
+        publishers: true,
+        isbn: true,
         nickname: true,
         age: true,
         address: true,
+        self_introduction: true,
+        color: true,
+        pattern: true,
+        pattern_color: true,
         evaluations_status: true,
         evaluations_count: true,
         review: true,
@@ -47,6 +52,98 @@ export async function GET(
     return NextResponse.json(review);
   } catch (error) {
     console.error("Failed to fetch review detail:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(
+  req: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  const authResult = await requireAdminAuth();
+  if (authResult instanceof NextResponse) {
+    return authResult;
+  }
+
+  try {
+    const { id } = await context.params;
+    const reviewId = Number(id);
+
+    if (Number.isNaN(reviewId)) {
+      return NextResponse.json({ error: "Invalid review id" }, { status: 400 });
+    }
+
+    const body = await req.json().catch(() => null);
+    const review = body?.review;
+    const color = body?.color;
+    const pattern = body?.pattern;
+    const patternColor = body?.pattern_color;
+
+    const hasReview = review !== undefined;
+    const hasColor = color !== undefined;
+    const hasPattern = pattern !== undefined;
+    const hasPatternColor = patternColor !== undefined;
+
+    if (!hasReview && !hasColor && !hasPattern && !hasPatternColor) {
+      return NextResponse.json(
+        { error: "No updatable fields provided" },
+        { status: 400 },
+      );
+    }
+    if (hasReview && typeof review !== "string") {
+      return NextResponse.json(
+        { error: "Invalid review body" },
+        { status: 400 },
+      );
+    }
+    if (hasColor && typeof color !== "string") {
+      return NextResponse.json(
+        { error: "Invalid color" },
+        { status: 400 },
+      );
+    }
+    if (hasPattern && typeof pattern !== "string") {
+      return NextResponse.json(
+        { error: "Invalid pattern" },
+        { status: 400 },
+      );
+    }
+    if (hasPatternColor && typeof patternColor !== "string") {
+      return NextResponse.json(
+        { error: "Invalid pattern_color" },
+        { status: 400 },
+      );
+    }
+
+    const existing = await prisma.bookReview.findFirst({
+      where: {
+        id: reviewId,
+        deleted_flag: false,
+      },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Review not found" }, { status: 404 });
+    }
+
+    const updated = await prisma.bookReview.update({
+      where: { id: reviewId },
+      data: {
+        ...(hasReview ? { review } : {}),
+        ...(hasColor ? { color } : {}),
+        ...(hasPattern ? { pattern } : {}),
+        ...(hasPatternColor ? { pattern_color: patternColor } : {}),
+      },
+      select: { id: true, review: true, color: true, pattern: true, pattern_color: true },
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Failed to update review detail:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },

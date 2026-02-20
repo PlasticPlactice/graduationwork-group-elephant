@@ -2,10 +2,13 @@ import "@/styles/admin/users.css";
 import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
 import { useEffect, useState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import {
   USER_STATUS_CLASS,
   USER_STATUS_LABELS,
 } from "@/lib/constants/userStatus";
+import { DEMO_MODE } from "@/lib/constants/demoMode";
+import { formatAddress } from "@/lib/formatAddress";
 
 interface UserExitModalProps {
   isOpen: boolean;
@@ -15,10 +18,11 @@ interface UserExitModalProps {
 }
 
 interface ExitUser {
-  id: number;
+  account_id: string | number;
   nickname: string;
   age: number | null;
   address: string | null;
+  sub_address?: string | null;
   user_status: number;
 }
 
@@ -33,6 +37,7 @@ export default function UserExitModal({
   const [reason, setReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (!isOpen || !userId) {
@@ -50,22 +55,26 @@ export default function UserExitModal({
         if (!res.ok) throw new Error("Failed to fetch user");
         const data = await res.json();
         setUser({
-          id: data.id,
+          account_id: data.account_id,
           nickname: data.nickname,
           age: data.age,
           address: data.address,
+          sub_address: data.sub_address,
           user_status: data.user_status,
         });
       } catch (err) {
         console.error(err);
-        setError("ユーザー情報の取得に失敗しました。");
+        addToast({
+          type: "error",
+          message: "ユーザー情報の取得に失敗しました。",
+        });
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchUser();
-  }, [isOpen, userId]);
+  }, [isOpen, userId, addToast]);
 
   const handleWithdraw = async () => {
     if (!userId) {
@@ -97,11 +106,13 @@ export default function UserExitModal({
       onWithdrawSuccess();
     } catch (err) {
       console.error(err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "アカウント停止処理に失敗しました。",
-      );
+      addToast({
+        type: "error",
+        message:
+          err instanceof Error
+            ? err.message
+            : "アカウント停止処理に失敗しました。",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -147,7 +158,7 @@ export default function UserExitModal({
             <p className="col-span-5 text-base font-normal">読み込み中...</p>
           ) : user ? (
             <>
-              <p>{String(user.id).padStart(6, "0")}</p>
+              <p>{String(user.account_id).padStart(6, "0")}</p>
               <p>{user.nickname}</p>
               <p>
                 <span className={`status-badge ${statusClass}`}>
@@ -155,7 +166,7 @@ export default function UserExitModal({
                 </span>
               </p>
               <p>{user.age ? `${user.age}代` : "-"}</p>
-              <p>{user.address || "-"}</p>
+              <p>{formatAddress(user.address, user.sub_address)}</p>
             </>
           ) : (
             <p className="col-span-5 text-base font-normal">
@@ -192,7 +203,7 @@ export default function UserExitModal({
             label={isSubmitting ? "処理中..." : "アカウント停止"}
             className="exit-decision-btn exit-modal-common"
             onClick={handleWithdraw}
-            disabled={isSubmitting || !user}
+            disabled={isSubmitting || !user || DEMO_MODE}
           />
         </div>
       </div>

@@ -3,6 +3,9 @@
   background-color: var(--color-bg);
   color: var(--color-text);
 }
+.search-area{
+  border: 1px solid var(--color-main);
+}
 details {
   border: 1px solid var(--color-main);
   border-radius: var(--control-radius);
@@ -46,6 +49,8 @@ details[open] .icon {
 
 .user-table {
   border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
 }
 .table-head {
   background-color: var(--color-main);
@@ -56,6 +61,8 @@ details[open] .icon {
 .user-table th,
 .user-table td {
   border-bottom: 1px solid var(--color-input-bg);
+  text-align: left;
+  padding-left: 0.75rem;
 }
 
 .user-table th button {
@@ -101,7 +108,7 @@ details[open] .icon {
   padding-right: 1.9rem;
 }
 .users-record:hover {
-  background-color: var(--color-input-text);
+  background-color: rgba(54, 168, 177, 0.08);
 }
 
 .page-section {
@@ -124,7 +131,7 @@ details[open] .icon {
   color: var(--color-bg);
 }
 .page-arrow {
-  color: var(--color-admin-sub);
+  color: var(--color-bg);
 }
 
 /* モーダル */
@@ -142,6 +149,11 @@ details[open] .icon {
 .close-btn {
   background-color: var(--color-bg);
   box-shadow: none;
+}
+.close-btn:hover {
+  background-color: var(--color-bg);
+  box-shadow: none;
+  border: none;
 }
 .user-data-title {
   color: var(--color-sub);
@@ -170,6 +182,19 @@ details[open] .icon {
   word-break: break-word;
   box-sizing: border-box;
 }
+
+.event-table th button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
+.event-table th button:focus {
+  outline: none;
+}
 .head-check {
   width: 1.5rem;
   height: 1.5rem;
@@ -182,9 +207,8 @@ summary {
 details[open] .icon {
   transform: rotate(180deg);
 }
-.title-text {
-  color: var(--color-main);
-  border-bottom: 1px solid var(--color-main);
+.modal-title-text {
+  color: var(--color-text);
 }
 .status-text {
   color: #1e40af;
@@ -235,11 +259,18 @@ details[open] .icon {
   box-shadow: none;
 }
 .exit-btn {
-  width: 10rem;
+  width: 13rem;
   height: 2.5rem;
   font-size: 1.5rem;
   box-shadow: none;
   padding: 1.5rem 0;
+  background-color: var(--color-warning) !important;
+  border: 1px solid var(--color-warning) !important;
+}
+.exit-btn:hover {
+  background-color: var(--color-bg) !important;
+  color: var(--color-warning) !important;
+  border: 1px solid var(--color-warning) !important;
 }
 
 /* 退会モーダル */
@@ -261,4 +292,38 @@ details[open] .icon {
   background-color: var(--color-bg);
   color: var(--color-admin-sub);
   border: 1px solid var(--color-admin-sub);
+}
+.exit-decision-btn {
+  background-color: var(--color-warning) !important;
+  color: var(--color-bg) !important;
+  border: 1px solid var(--color-warning) !important;
+}
+.exit-decision-btn:hover {
+  background-color: var(--color-bg) !important;
+  color: var(--color-warning) !important;
+  border: 1px solid var(--color-warning) !important;
+}
+
+/* ヘッダーのソートアイコン強調（アイコンのみ目立たせる） */
+.user-table th button .sort-icon {
+  margin-left: 0.5rem;
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+  color: rgba(255, 255, 255, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-table th button .sort-icon svg,
+.user-table th button .sort-icon > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.user-table th button.sorted .sort-icon {
+  color: #ffd54f;
+  transform: translateY(-1px) scale(1.4);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
 }

@@ -3,13 +3,14 @@ import Textbox from "@/components/ui/admin-textbox";
 import AdminButton from "@/components/ui/admin-button";
 import "@/styles/admin/events-details.css";
 import { Icon } from "@iconify/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import StatusEditModal from "@/components/admin/StatusEditModal";
 import CsvOutputModal from "@/components/admin/CsvOutputModal";
 import AllMessageSendModal from "@/components/admin/AllMessageSendModal";
 import BookReviewDetailModal from "@/components/admin/BookReviewDetailModal";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
+import { useToast } from "@/contexts/ToastContext";
 import { REVIEW_STATUS_LABELS } from "@/lib/constants/reviewStatus";
 
 // APIから取得するデータの型定義
@@ -25,13 +26,31 @@ interface ReviewData {
   isbn: string;
 }
 
-export default function Page() {
+function EventsDetailsContent() {
+  const { addToast } = useToast();
   const [reviews, setReviews] = useState<ReviewData[]>([]);
+  const [filteredReviews, setFilteredReviews] = useState<ReviewData[]>([]);
   const [openRows, setOpenRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [displayCount, setDisplayCount] = useState<number | "all">(10);
   const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]); // 選択された行IDを管理
   const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
+
+  // ソート条件
+  const [sortKey, setSortKey] = useState<
+    | "evaluations_status"
+    | "id"
+    | "book_title"
+    | "nickname"
+    | "evaluations_count"
+    | null
+  >(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  // 検索条件
+  const [searchTitle, setSearchTitle] = useState<string>("");
+  const [searchNickname, setSearchNickname] = useState<string>("");
+  const [searchStatus, setSearchStatus] = useState<string>("");
 
   const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
   const [isCsvOutputModalOpen, setIsCsvOutputModalOpen] = useState(false);
@@ -41,15 +60,22 @@ export default function Page() {
     useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // データ取得
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch("/api/admin/reviews");
+        const eventId = searchParams.get("eventId");
+        const url =
+          eventId !== null
+            ? `/api/admin/reviews?eventId=${eventId}`
+            : "/api/admin/reviews";
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           setReviews(data);
+          setFilteredReviews(data);
         } else {
           console.error("Failed to fetch reviews");
         }
@@ -58,7 +84,7 @@ export default function Page() {
       }
     };
     fetchReviews();
-  }, []);
+  }, [searchParams]);
 
   const toggleRow = (id: number) => {
     setOpenRows((prev) =>
@@ -82,6 +108,18 @@ export default function Page() {
     );
   };
 
+  // 一括選択ボタンのハンドラ（トグル動作）
+  const handleBulkSelect = () => {
+    if (
+      selectedRowIds.length === displayedData.length &&
+      displayedData.length > 0
+    ) {
+      setSelectedRowIds([]);
+    } else {
+      setSelectedRowIds(displayedData.map((row) => row.id));
+    }
+  };
+
   // モーダルが開いている時に背景のスクロールを防ぐ
   useEffect(() => {
     if (isStatusEditModalOpen) {
@@ -97,15 +135,25 @@ export default function Page() {
   }, [isStatusEditModalOpen]);
 
   const handleStatusEdit = () => {
-    if (selectedRowIds.length === 0) return alert("データが選択されていません");
+    if (selectedRowIds.length === 0) {
+      addToast({ type: "error", message: "データが選択されていません" });
+      return;
+    }
     setIsStatusEditModalOpen(true);
   };
   const handleCsvOutput = () => {
-    // CSV出力は今回は表示中のデータを対象とする（要件に応じて選択データのみに変更も可）
+    // 選択されたデータがない場合はアラートを表示
+    if (selectedRowIds.length === 0) {
+      addToast({ type: "error", message: "データが選択されていません" });
+      return;
+    }
     setIsCsvOutputModalOpen(true);
   };
   const handleAllMessageSend = () => {
-    if (selectedRowIds.length === 0) return alert("データが選択されていません");
+    if (selectedRowIds.length === 0) {
+      addToast({ type: "error", message: "データが選択されていません" });
+      return;
+    }
     setIsAllMessageSendModalOpen(true);
   };
   const handleBookReviewDetail = (reviewId: number) => {
@@ -120,16 +168,113 @@ export default function Page() {
     setSelectedReviewId(null);
   };
 
-  const handlePreview = () => {
-    router.push("/admin/print-preview");
+  const handlePreview = (reviewId: number) => {
+    router.push(`/admin/print-preview?reviewId=${reviewId}`);
   };
 
-  // 表示するデータをスライス
+  const getReviewText = (html: string) => {
+    if (!html) return "";
+    if (typeof window === "undefined") return html.replace(/<[^>]+>/g, "");
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent ?? "";
+  };
+
+  // 検索処理
+  const handleSearch = () => {
+    let filtered = reviews;
+
+    // 書籍タイトルで絞り込み
+    if (searchTitle.trim()) {
+      filtered = filtered.filter((review) =>
+        review.book_title.toLowerCase().includes(searchTitle.toLowerCase()),
+      );
+    }
+
+    // ニックネームで絞り込み
+    if (searchNickname.trim()) {
+      filtered = filtered.filter((review) =>
+        review.nickname.toLowerCase().includes(searchNickname.toLowerCase()),
+      );
+    }
+
+    // ステータスで絞り込み
+    if (searchStatus) {
+      const statusMap: { [key: string]: number } = {
+        評価前: 0,
+        一次通過: 1,
+        二次通過: 2,
+        三次通過: 3,
+        不採用: 4,
+      };
+      const statusValue = statusMap[searchStatus];
+      if (statusValue !== undefined) {
+        filtered = filtered.filter(
+          (review) => review.evaluations_status === statusValue,
+        );
+      }
+    }
+
+    setFilteredReviews(filtered);
+    setSelectedRowIds([]); // 検索時に選択をクリア
+  };
+
+  // 検索条件のリセット
+  const handleResetSearch = () => {
+    setSearchTitle("");
+    setSearchNickname("");
+    setSearchStatus("");
+    setFilteredReviews(reviews);
+    setSelectedRowIds([]);
+  };
+
+  const handleSort = (
+    key:
+      | "evaluations_status"
+      | "id"
+      | "book_title"
+      | "nickname"
+      | "evaluations_count",
+  ) => {
+    if (sortKey === key) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedReviews = [...filteredReviews].sort((a, b) => {
+    if (!sortKey) return 0;
+    const direction = sortDirection === "asc" ? 1 : -1;
+    const aValue = a[sortKey];
+    const bValue = b[sortKey];
+
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return (aValue - bValue) * direction;
+    }
+
+    return String(aValue).localeCompare(String(bValue), "ja") * direction;
+  });
+
+  // 総ページ数を計算
+  const totalPages =
+    displayCount === "all"
+      ? 1
+      : Math.ceil(sortedReviews.length / (displayCount as number));
+
+  // 表示するデータをスライス（ページネーション対応）
   const displayedData =
-    displayCount === "all" ? reviews : reviews.slice(0, displayCount);
+    displayCount === "all"
+      ? sortedReviews
+      : sortedReviews.slice(
+          (currentPage - 1) * (displayCount as number),
+          currentPage * (displayCount as number),
+        );
 
   // 選択されたデータを取得
-  const selectedData = reviews.filter((row) => selectedRowIds.includes(row.id));
+  const selectedData = filteredReviews.filter((row) =>
+    selectedRowIds.includes(row.id),
+  );
 
   // StatusEditModal用にデータを整形（ステータスを数値に変換）
   const statusTargetReviews = selectedData.map((row) => ({
@@ -164,7 +309,13 @@ export default function Page() {
 
         <div className="">
           <label htmlFor="title_box">書籍タイトル</label>
-          <Textbox size="lg" className="custom-input-full" id="title_box" />
+          <Textbox
+            size="lg"
+            className="custom-input-full"
+            id="title_box"
+            value={searchTitle}
+            onChange={(e) => setSearchTitle(e.target.value)}
+          />
         </div>
         <div className="">
           <label htmlFor="nickname_box">ニックネーム</label>
@@ -172,6 +323,8 @@ export default function Page() {
             className="custom-input-full"
             type="text"
             id="nickname_box"
+            value={searchNickname}
+            onChange={(e) => setSearchNickname(e.target.value)}
           />
         </div>
 
@@ -179,21 +332,37 @@ export default function Page() {
           <label htmlFor="status" className="block">
             ステータス
           </label>
-          <select className="input-group" id="status">
+          <select
+            className="input-group"
+            id="status"
+            value={searchStatus}
+            onChange={(e) => setSearchStatus(e.target.value)}
+          >
+            <option value="">すべて</option>
             <option value="評価前">評価前</option>
             <option value="一次通過">一次通過</option>
             <option value="二次通過">二次通過</option>
             <option value="三次通過">三次通過</option>
+            <option value="不採用">不採用</option>
           </select>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-3">
           <AdminButton
             label="検索"
-            type="submit"
+            type="button"
             icon="mdi:search"
             iconPosition="left"
             className="mt-5 search-btn"
+            onClick={handleSearch}
+          />
+          <AdminButton
+            label="リセット"
+            type="button"
+            icon="mdi:refresh"
+            iconPosition="left"
+            className="mt-5 search-btn"
+            onClick={handleResetSearch}
           />
         </div>
       </details>
@@ -208,6 +377,7 @@ export default function Page() {
             onChange={(e) => {
               const value = e.target.value;
               setDisplayCount(value === "all" ? "all" : Number(value));
+              setCurrentPage(1); // 表示数変更時にページをリセット
             }}
           >
             <option value="10">10</option>
@@ -217,7 +387,9 @@ export default function Page() {
             <option value="30">30</option>
             <option value="all">全件表示</option>
           </select>
-          <button className="choice-btn font-bold">一括選択</button>
+          <button className="choice-btn font-bold" onClick={handleBulkSelect}>
+            一括選択
+          </button>
         </div>
 
         <div className="flex justify-end mx-8 gap-3">
@@ -262,29 +434,146 @@ export default function Page() {
                 </div>
               </th>
               <th className="w-[27.777%]">
-                <div className="flex justify-center items-center">
-                  ステータス<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                <button
+                  type="button"
+                  className={`flex justify-center items-center cursor-pointer ${sortKey === "evaluations_status" ? "sorted" : ""}`}
+                  onClick={() => handleSort("evaluations_status")}
+                  aria-label={`ステータスで${sortKey === "evaluations_status" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "evaluations_status"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  ステータス
+                  <span className="sort-icon">
+                    {sortKey === "evaluations_status" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
-              <th className="w-[11.111%]">
-                <div className="flex items-center justify-start">
-                  ID<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+
+              <th className="w-[10%]">
+                <button
+                  type="button"
+                  className={`flex items-center justify-start cursor-pointer ${sortKey === "id" ? "sorted" : ""}`}
+                  onClick={() => handleSort("id")}
+                  aria-label={`IDで${sortKey === "id" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "id"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  ID
+                  <span className="sort-icon">
+                    {sortKey === "id" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
               <th className="w-[27.777%]">
-                <div className="flex items-center">
-                  書籍タイトル<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                <button
+                  type="button"
+                  className={`flex items-center cursor-pointer ${sortKey === "book_title" ? "sorted" : ""}`}
+                  onClick={() => handleSort("book_title")}
+                  aria-label={`書籍タイトルで${sortKey === "book_title" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "book_title"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  書籍タイトル
+                  <span className="sort-icon">
+                    {sortKey === "book_title" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
-              <th className="w-1/6">
-                <div className="flex items-center">
-                  ニックネーム<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+
+              <th className="w-[17.777%]">
+                <button
+                  type="button"
+                  className={`flex items-center cursor-pointer ${sortKey === "nickname" ? "sorted" : ""}`}
+                  onClick={() => handleSort("nickname")}
+                  aria-label={`ニックネームで${sortKey === "nickname" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "nickname"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  ニックネーム
+                  <span className="sort-icon">
+                    {sortKey === "nickname" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
               <th className="w-[11.111%]">
-                <div className="flex items-center">
-                  投票数<Icon icon="uil:arrow" rotate={1}></Icon>
-                </div>
+                <button
+                  type="button"
+                  className={`flex items-center cursor-pointer ${sortKey === "evaluations_count" ? "sorted" : ""}`}
+                  onClick={() => handleSort("evaluations_count")}
+                  aria-label={`投票数で${sortKey === "evaluations_count" && sortDirection === "asc" ? "降順" : "昇順"}にソート`}
+                  aria-sort={
+                    sortKey === "evaluations_count"
+                      ? sortDirection === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  投票数
+                  <span className="sort-icon">
+                    {sortKey === "evaluations_count" ? (
+                      sortDirection === "asc" ? (
+                        <Icon icon="uil:angle-up" width={18} />
+                      ) : (
+                        <Icon icon="uil:angle-down" width={18} />
+                      )
+                    ) : (
+                      <Icon icon="uil:sort" width={18} />
+                    )}
+                  </span>
+                </button>
               </th>
               <th className="w-[5.555%]">
                 {/* <Icon icon='fe:arrow-up'></Icon> */}
@@ -318,7 +607,13 @@ export default function Page() {
                   <td>
                     <span>{row.nickname}</span>
                   </td>
-                  <td>
+                  <td
+                    style={{
+                      textAlign: "right",
+                      fontVariantNumeric: "tabular-nums",
+                      paddingRight: "100px",
+                    }}
+                  >
                     <span>{row.evaluations_count}</span>
                   </td>
                   <td>
@@ -341,7 +636,9 @@ export default function Page() {
                         <section className="w-4/7">
                           <h3 className="font-bold mb-2 ml-4">書評本文</h3>
                           <div className="book-review-section w-auto h-84 ml-4 p-2">
-                            <p className="whitespace-pre-wrap">{row.review}</p>
+                            <p className="whitespace-pre-wrap">
+                              {getReviewText(row.review)}
+                            </p>
                           </div>
                         </section>
 
@@ -368,13 +665,18 @@ export default function Page() {
                               <p className="book-content">{row.isbn}</p>
                             </div>
                           </div>
-                          <div className="flex justify-end ">
+                          <div className="flex justify-between gap-5">
+                            <AdminButton
+                              label="書評編集"
+                              className="review-edit-btn w-auto"
+                              onClick={() => handleBookReviewDetail(row.id)}
+                            />
                             <AdminButton
                               label="印刷プレビュー"
                               icon="material-symbols:print"
                               iconPosition="left"
                               className="print-preview-btn w-auto"
-                              onClick={handlePreview}
+                              onClick={() => handlePreview(row.id)}
                             />
                           </div>
                         </section>
@@ -390,64 +692,90 @@ export default function Page() {
 
       <div className="flex justify-end mr-8 my-5">
         <AdminButton
-          label="全件CSV出力"
+          label="選択したデータのCSV出力"
           icon="material-symbols:download"
           iconPosition="left"
           className="w-auto"
           onClick={handleCsvOutput}
         />
       </div>
-      {/* ページネーション */}
-      {displayCount !== "all" && (
-        <div className="flex items-center justify-center my-5 page-section">
+      <div className="flex items-center justify-center my-5 page-section">
+        <button
+          type="button"
+          onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          aria-label="前のページ"
+          className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}
+        >
           <Icon
             icon="weui:arrow-filled"
             rotate={2}
             width={20}
             className="page-arrow"
           ></Icon>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 1 ? "active" : ""}`}
-            onClick={() => setCurrentPage(1)}
-            aria-current={currentPage === 1 ? "page" : undefined}
-          >
-            1
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 2 ? "active" : ""}`}
-            onClick={() => setCurrentPage(2)}
-            aria-current={currentPage === 2 ? "page" : undefined}
-          >
-            2
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 3 ? "active" : ""}`}
-            onClick={() => setCurrentPage(3)}
-            aria-current={currentPage === 3 ? "page" : undefined}
-          >
-            3
-          </button>
-          <span className="px-4 py-1 page-number" aria-hidden="true">
-            ...
-          </span>
-          <button
-            type="button"
-            className={`px-4 py-1 page-number ${currentPage === 5 ? "active" : ""}`}
-            onClick={() => setCurrentPage(5)}
-            aria-current={currentPage === 5 ? "page" : undefined}
-          >
-            5
-          </button>
+        </button>
+        {(() => {
+          const pages: (number | string)[] = [];
+          if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+          } else {
+            pages.push(1);
+            if (currentPage <= 4) {
+              for (let i = 2; i <= 5; i++) pages.push(i);
+              pages.push("...");
+            } else if (currentPage >= totalPages - 3) {
+              pages.push("...");
+              for (let i = totalPages - 4; i <= totalPages - 1; i++)
+                pages.push(i);
+            } else {
+              pages.push("...");
+              for (let i = currentPage - 1; i <= currentPage + 1; i++)
+                pages.push(i);
+              pages.push("...");
+            }
+            pages.push(totalPages);
+          }
+
+          return pages.map((pageNum, index) =>
+            typeof pageNum === "number" ? (
+              <button
+                key={`page-${pageNum}`}
+                type="button"
+                className={`px-4 py-1 page-number ${currentPage === pageNum ? "active" : ""}`}
+                onClick={() => setCurrentPage(pageNum)}
+                aria-current={currentPage === pageNum ? "page" : undefined}
+              >
+                {pageNum}
+              </button>
+            ) : (
+              <span
+                key={`ellipsis-${index}`}
+                className="px-4 py-1 page-number"
+                aria-hidden="true"
+              >
+                {pageNum}
+              </span>
+            ),
+          );
+        })()}
+        <button
+          type="button"
+          onClick={() =>
+            currentPage < totalPages && setCurrentPage(currentPage + 1)
+          }
+          disabled={currentPage === totalPages}
+          aria-label="次のページ"
+          className={
+            currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+          }
+        >
           <Icon
             icon="weui:arrow-filled"
             width={20}
             className="page-arrow"
           ></Icon>
-        </div>
-      )}
+        </button>
+      </div>
       {/* モーダル */}
       <StatusEditModal
         isOpen={isStatusEditModalOpen}
@@ -457,7 +785,7 @@ export default function Page() {
       <CsvOutputModal
         isOpen={isCsvOutputModalOpen}
         onClose={closeModal}
-        data={displayedData}
+        data={selectedData}
       />
       <AllMessageSendModal
         isOpen={isAllMessageSendModalOpen}
@@ -470,5 +798,13 @@ export default function Page() {
         reviewId={selectedReviewId}
       />
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>読み込み中...</div>}>
+      <EventsDetailsContent />
+    </Suspense>
   );
 }

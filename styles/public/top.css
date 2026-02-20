@@ -410,6 +410,7 @@
   font-size: 28px;
   text-align: center;
   margin-bottom: 40px;
+  scroll-margin-top: 20px;
 }
 .text-red {
   color: var(--bunko-x-accent);
@@ -474,12 +475,28 @@
   margin-bottom: 40px;
 }
 
+@media (min-width: 1024px) {
+  .event-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 32px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .bunko-x__inner {
+    max-width: 900px;
+  }
+}
+
 .event-cards .event-card {
   font-family: sans-serif;
 }
 
 .bunko-x__all-events {
   text-align: center;
+  padding-top: 44px;
+  padding-bottom: 24px;
 }
 
 /* おしらせセクションのスタイル */
@@ -488,6 +505,38 @@
   background-color: #ffffff;
   color: #333;
   font-family: serif;
+}
+.news--about-bg {
+  position: relative;
+  overflow: hidden;
+}
+.news--about-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(140deg, rgba(247, 244, 234, 0.96), rgba(255, 255, 255, 0.92)),
+    url(/top/image.png);
+  background-size: cover, cover;
+  background-position: center, center;
+  opacity: 0.95;
+  z-index: 0;
+  transform: scale(1.04);
+}
+.news--about-bg::after {
+  content: "";
+  position: absolute;
+  inset: -20% -10% -10%;
+  background:
+    radial-gradient(420px 260px at 10% 20%, rgba(255, 217, 102, 0.22), transparent 70%),
+    radial-gradient(520px 320px at 90% 10%, rgba(48, 141, 159, 0.16), transparent 72%),
+    radial-gradient(480px 300px at 30% 90%, rgba(107, 139, 164, 0.12), transparent 74%);
+  z-index: 0;
+  pointer-events: none;
+}
+.news--about-bg .news__inner {
+  position: relative;
+  z-index: 1;
 }
 .news__inner {
   max-width: 600px;
@@ -559,7 +608,7 @@
   color: #666;
 }
 .news-item__badge {
-  background-color: #ff4d6d;
+  background-color: #36A8B1;
   color: white;
   font-size: 12px;
   padding: 2px 10px;
@@ -572,11 +621,13 @@
 }
 .news__button {
   text-align: center;
-  padding-bottom: 20px;
+  padding-top: 44px;
+  padding-bottom: 72px;
 }
 
 .donation-button {
-  padding-bottom: 80px;
+  padding-top: 44px;
+  padding-bottom: 112px;
   text-align: center;
 }
 
@@ -666,4 +717,36 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  background: #f39d0d;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 26px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+  z-index: 20;
+}
+.back-to-top:hover,
+.back-to-top:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.22);
+  outline: none;
+}
+.back-to-top--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
 }

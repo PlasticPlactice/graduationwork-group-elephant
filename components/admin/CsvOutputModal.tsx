@@ -1,5 +1,6 @@
 "use client";
 import { useCallback } from "react";
+import { Icon } from "@iconify/react";
 import AdminButton from "@/components/ui/admin-button";
 
 // 出力するデータの型定義
@@ -7,6 +8,12 @@ export interface CsvRecord {
   id: number;
   book_title: string;
   nickname: string;
+  author: string | null;
+  publishers: string | null;
+  isbn: string;
+  evaluations_status: number;
+  evaluations_count: number;
+  review: string;
   // 構造的部分型により、これ以外のプロパティを持っていても許容される
 }
 
@@ -25,13 +32,30 @@ export default function CsvOutputModal({
 }: CsvOutputModalProps) {
   // useCallbackで関数をメモ化
   const handleDownloadCsv = useCallback(() => {
-    const CSV_HEADER = "ID,書籍タイトル,ニックネーム\n";
+    const CSV_HEADER =
+      "ID,書籍タイトル,ニックネーム,著者,出版社,ISBN,ステータス,投票数,書評本文\n";
+
+    // ステータスのラベル変換用マッピング
+    const statusLabels: { [key: number]: string } = {
+      0: "評価前",
+      1: "一次通過",
+      2: "二次通過",
+      3: "三次通過",
+      4: "不採用",
+    };
 
     const csvBody = data
       .map((record) => {
         const escapedTitle = record.book_title.replace(/"/g, '""');
         const escapedNickname = record.nickname.replace(/"/g, '""');
-        return `${record.id},"${escapedTitle}","${escapedNickname}"`;
+        const escapedAuthor = (record.author || "").replace(/"/g, '""');
+        const escapedPublishers = (record.publishers || "").replace(/"/g, '""');
+        const escapedIsbn = record.isbn.replace(/"/g, '""');
+        const statusLabel = statusLabels[record.evaluations_status] || "不明";
+        const escapedReview = record.review
+          .replace(/"/g, '""')
+          .replace(/\n/g, " ");
+        return `${record.id},"${escapedTitle}","${escapedNickname}","${escapedAuthor}","${escapedPublishers}","${escapedIsbn}","${statusLabel}",${record.evaluations_count},"${escapedReview}"`;
       })
       .join("\n");
 
@@ -75,7 +99,12 @@ export default function CsvOutputModal({
         className="modal-content bg-white rounded-lg w-9/12 max-w-8xl max-h-[90vh] flex flex-col p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="modal-head text-center">CSV出力</h2>
+        <div className="flex justify-between items-center pb-3">
+          <h2 className="modal-head font-bold text-center">CSV出力</h2>
+          <button onClick={onClose} className="close-btn text-black">
+            <Icon icon="mdi:close" width={24} className="text-black" />
+          </button>
+        </div>
         <h3 className="modal-sub-head mt-3">CSV出力書評</h3>
 
         <div className="border p-3 overflow-auto h-64 mb-5">
@@ -88,13 +117,15 @@ export default function CsvOutputModal({
               </tr>
             </thead>
             <tbody className="border status-book-section">
-              {data.map((record) => (
-                <tr key={record.id} className="status-record text-center">
-                  <td>{record.id}</td>
-                  <td>{record.book_title}</td>
-                  <td>{record.nickname}</td>
-                </tr>
-              ))}
+              {data.map((record) => {
+                return (
+                  <tr key={record.id} className="status-record text-center">
+                    <td>{record.id}</td>
+                    <td>{record.book_title}</td>
+                    <td>{record.nickname}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

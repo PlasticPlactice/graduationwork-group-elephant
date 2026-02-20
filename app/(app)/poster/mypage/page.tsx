@@ -1,7 +1,10 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
+import { DEMO_MODE } from "@/lib/constants/demoMode";
 import { EventCard } from "@/components/features/EventCard";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,6 +16,7 @@ import { MassageModal } from "@/components/modals/MassageModal";
 import { AccountDeleteModal } from "@/components/modals/AccountDeleteModal";
 
 import Styles from "@/styles/app/poster.module.css";
+import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
 
 interface ProfileData {
   userId: number;
@@ -24,30 +28,46 @@ interface ProfileData {
   introduction: string;
 }
 
-type ReviewFilterTab = "all" | 1 | 2 | 3 | 4;
-type ReviewStatusCode = 1 | 2 | 3 | 4;
+interface EventData {
+  id: number;
+  title: string;
+  detail: string;
+  status: number;
+  first_voting_start_period: Timestamp;
+  first_voting_end_period: Timestamp;
+}
+
+type ReviewFilterTab = "all" | 0 | 4 | "passed";
+type ReviewStatusCode = 0 | 1 | 2 | 3;
 
 interface BookReviewData {
   id: number;
   book_title: string;
   evaluations_status: number;
+  public_flag: boolean;
+  draft_flag: boolean;
   review: string;
 }
 
 export default function MyPage() {
   const router = useRouter();
+  const { addToast } = useToast();
 
-  // 初期表示時にモーダルを表示
+  // 各モーダルの表示フラグ
   const [showModal, setShowModal] = useState(false);
-  // プロフィール編集、退会確認、DM（運営からのお知らせ）モーダルの表示
+  // 編集用モーダルやDMモーダルなどの表示状態
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showDMModal, setShowDMModal] = useState(false);
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const listTopRef = useRef<HTMLDivElement>(null);
 
-  // ユーザーデータ
+  // ユーザープロフィールデータ
   const [userData, setUserData] = useState<ProfileData | null>(null);
-  // ユーザの書評データ
+  // 書評データ
   const [bookReviewData, setBookReviewData] = useState<BookReviewData[]>([]);
+
+  // イベントデータ
+  const [eventData, setEventData] = useState<EventData[]>([]);
   // 未読メッセージデータ
   interface UnreadMessage {
     id: number;
@@ -60,6 +80,25 @@ export default function MyPage() {
   const [unreadMessage, setUnreadMessage] = useState<UnreadMessage | null>(
     null,
   );
+
+  // APIからデータを取得する関数群
+  const fetchEventList = useCallback(async () => {
+    try {
+      const res = await fetch("/api/events?status=1", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log("data" + JSON.stringify(data, null, 2));
+        setEventData(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch event data", error);
+    }
+  }, []);
 
   const fetchUserData = useCallback(async () => {
     try {
@@ -83,6 +122,7 @@ export default function MyPage() {
       });
       if (res.ok) {
         const data = await res.json();
+        console.log("data:" + JSON.stringify(data, null, 2));
         setBookReviewData(data);
       }
     } catch (error) {
@@ -90,7 +130,7 @@ export default function MyPage() {
     }
   }, []);
 
-  // 未読メッセージ取得
+  // 未読メッセージの取得
   const fetchUnreadMessage = useCallback(async () => {
     try {
       const res = await fetch("/api/user/messages/unread");
@@ -98,7 +138,7 @@ export default function MyPage() {
         const data = await res.json();
         if (data.unreadMessage) {
           setUnreadMessage(data.unreadMessage);
-          setShowModal(true); // 未読がある場合のみモーダルを開く
+          setShowModal(true); // 未読メッセージがあればモーダルを表示
         }
       }
     } catch (error) {
@@ -106,7 +146,7 @@ export default function MyPage() {
     }
   }, []);
 
-  // メッセージ既読化処理
+  // 未読メッセージを既読にする
   const handleConfirmRead = async () => {
     if (!unreadMessage) {
       setShowModal(false);
@@ -120,89 +160,94 @@ export default function MyPage() {
       setUnreadMessage(null);
     } catch (error) {
       console.error("Failed to mark as read:", error);
-      // エラーでもとりあえず閉じる（UX優先）
+      // エラー時はモーダルを閉じる
       setShowModal(false);
     }
   };
 
-  // 初回レンダリング時にデータを取得
+  // 初期データ読み込み（マウント時）
   useEffect(() => {
     fetchUserData();
     fetchBookReviewData();
     fetchUnreadMessage();
+    fetchEventList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const sampleEvents = [
-    {
-      title: "第1回 文庫Xイベント",
-      daysLeft: 10,
-      description: "投稿可能期間中です！投稿してみましょう！",
-      buttonText: "投稿へ",
-      href: "/post/barcode-scan",
-    },
-    {
-      title: "第2回 文庫Xイベント",
-      daysLeft: 15,
-      description: "投稿可能期間中です！投稿してみましょう！",
-      buttonText: "投稿へ",
-      href: "/post/barcode-scan",
-    },
-  ];
 
   const REVIEW_FILTER_TABS: {
     key: ReviewFilterTab;
     label: string;
   }[] = [
     { key: "all" as const, label: "全て" },
-    { key: 1, label: "下書き" },
-    { key: 2, label: "１次審査前" },
-    { key: 3, label: "審査中" },
-    { key: 4, label: "終了済み" },
+    { key: 0, label: "審査前" },
+    { key: "passed", label: "審査通過" },
   ];
 
   const REVIEW_STATUS_MAP = {
+    0: {
+      label: "審査前",
+      badgeType: "gray",
+      canEdit: true,
+    },
     1: {
+      label: "１次通過",
+      badgeType: "blue",
+      canEdit: false,
+    },
+    2: {
+      label: "２次通過",
+      badgeType: "blue",
+      canEdit: false,
+    },
+    3: {
+      label: "３次通過",
+      badgeType: "red",
+      canEdit: false,
+    },
+    4: {
       label: "下書き",
       badgeType: "gray",
       canEdit: true,
     },
-    2: {
-      label: "１次審査前",
-      badgeType: "red",
-      canEdit: true,
-    },
-    3: {
-      label: "審査中",
-      badgeType: "blue",
-      canEdit: false,
-    },
-    4: {
-      label: "終了",
-      badgeType: "gray",
-      canEdit: false,
-    },
   } as const;
 
-  // DB/APIの文字列・数値をUI用コード(1..4)へ正規化
-  const normalizeStatus = (val: number): ReviewStatusCode => {
-    return val === 1 || val === 2 || val === 3 || val === 4
-      ? (val as ReviewStatusCode)
-      : 2;
+  // HTMLタグを削除してプレーンテキストに変換
+  const stripHtmlTags = (html: string): string => {
+    return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ");
   };
 
-  // 表示用にデータを整形
+  // DB/APIの文字列・数値をUI用コード(0..3)へ正規化
+  const normalizeStatus = (val: number): ReviewStatusCode => {
+    return val === 0 || val === 1 || val === 2 || val === 3
+      ? (val as ReviewStatusCode)
+      : 0;
+  };
+
+  // 書評データをUI表示用に整形
   const uiReviews = bookReviewData.map((review) => {
+    if (review.draft_flag) {
+      return {
+        bookReviewId: review.id,
+        title: review.book_title,
+        status: REVIEW_STATUS_MAP[4].label,
+        evaluations_status: review.evaluations_status,
+        badgeType: REVIEW_STATUS_MAP[4].badgeType,
+        excerpt: stripHtmlTags(review.review),
+        buttonText: "編集する",
+        href: "/poster/edit",
+      };
+    }
+
     const code = normalizeStatus(review.evaluations_status);
     const status = REVIEW_STATUS_MAP[code];
 
     return {
       bookReviewId: review.id,
       title: review.book_title,
-      status: status?.label ?? "未分類",
+      status: status?.label ?? "未設定",
       evaluations_status: code,
       badgeType: status?.badgeType ?? "gray",
-      excerpt: review.review,
+      excerpt: stripHtmlTags(review.review),
       buttonText: status?.canEdit ? "編集する" : "編集不可",
       href: status?.canEdit ? "/poster/edit" : undefined,
     };
@@ -212,11 +257,20 @@ export default function MyPage() {
     useState<ReviewFilterTab>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(3);
 
   const filteredReviews = uiReviews.filter((review) => {
     if (activeFilterTab === "all") return true;
+    if (activeFilterTab === "passed")
+      return [1, 2, 3].includes(review.evaluations_status);
     return review.evaluations_status === activeFilterTab;
   });
+
+  useEffect(() => {
+    setDisplayLimit(3);
+  }, [activeFilterTab]);
+
+  const visibleReviews = filteredReviews.slice(0, displayLimit);
 
   const handleDeleteAccount = async () => {
     if (isDeleting) return;
@@ -228,26 +282,23 @@ export default function MyPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ reason: "ユーザーからの退会申請" }),
+        body: JSON.stringify({ reason: "ユーザー退会" }),
       });
 
       if (res.ok) {
-        // 退会成功
-        alert("退会処理が完了しました。ご利用ありがとうございました。");
-        // ログアウトしてトップページへ
         await signOut({ callbackUrl: "/" });
       } else {
         const data = await res.json();
-        alert(
-          data.message || "退会処理に失敗しました。もう一度お試しください。",
-        );
+        const msg =
+          data.message ||
+          "退会処理に失敗しました。時間をおいて再度お試しください。";
+        addToast({ type: "error", message: msg });
         setIsDeleting(false);
       }
     } catch (error) {
       console.error("Withdraw error:", error);
-      alert("退会処理中にエラーが発生しました。もう一度お試しください。");
-      setIsDeleting(false);
     } finally {
+      setIsDeleting(false);
       setShowDeleteModal(false);
     }
   };
@@ -263,35 +314,91 @@ export default function MyPage() {
     router.push("/post/edit");
   };
 
+  // 指定日までの日数を計算
+  function daysFromToday(dateString: string): number {
+    const today = new Date();
+    const target = new Date(dateString);
+
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
+    const targetStart = new Date(
+      target.getFullYear(),
+      target.getMonth(),
+      target.getDate(),
+    );
+
+    const diffMs = targetStart.getTime() - todayStart.getTime();
+    return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  }
+
   return (
     <>
-      {/* 1次審査通過モーダル */}
+      {/* 審査通過モーダル */}
       <ReviewPassedModal
         open={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={handleConfirmRead}
         message={unreadMessage?.message?.message}
       />
-      {/* 退会確認モーダル */}
+      {/* アカウント削除モーダル */}
       <AccountDeleteModal
         open={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteAccount}
         isLoading={isDeleting}
       />
-      <div className="min-h-screen bg-white px-4 py-4 box-border">
-        <div className="text-center mt-3 relative">
-          <h1 className="text-lg font-bold text-slate-900">マイページ</h1>
-          <div className="flex items-center justify-center gap-3 mt-1">
-            <div className="text-rose-500 font-bold">
-              {userData?.nickName || "ゲスト"}さん
+      <div
+        className="min-h-screen bg-white px-4 py-4 box-border"
+        style={{ "--color-main": "#36A8B1" } as CSSProperties}
+      >
+        <div className="mt-3 max-w-6xl mx-auto px-4 grid grid-cols-3 items-center gap-3">
+          <Link href="/" className="hidden md:block">
+            <div
+              className="flex items-center px-2 rounded shadow-md h-10 w-64"
+              style={{
+                backgroundColor: "var(--color-bg)",
+                border: "1px solid var(--color-main)",
+              }}
+            >
+              <Image
+                src="/layout/new_logo.png"
+                alt="logo"
+                width={32}
+                height={32}
+                className="ml-2"
+              />
+              <span
+                className="font-bold ml-2 whitespace-nowrap"
+                style={{ color: "var(--color-main)" }}
+              >
+                象と花ファンサイトへ
+                <span className="ml-2" aria-hidden="true">
+                  &gt;
+                </span>
+              </span>
             </div>
+          </Link>
+
+          <div className="col-start-2 text-center flex flex-col items-center">
+            <h1 className="text-lg font-bold text-slate-900 whitespace-nowrap">
+              マイページ
+            </h1>
+            <div className="mt-1">
+              <div className={`font-bold ${Styles.mainColor}`}>
+                {userData?.nickName || "ゲストさん"}
+              </div>
+            </div>
+            <div className="mt-3 hidden md:flex justify-center" />
           </div>
+
           <div
-            className="absolute right-3 top-2 flex items-center"
+            className="flex items-center justify-end w-auto md:w-64"
             aria-hidden="true"
           >
-            {/* SVG 封筒アイコン（大きめ） */}
+            {/* メッセージアイコン（SVG） */}
             <svg
               width="40"
               height="40"
@@ -318,37 +425,30 @@ export default function MyPage() {
             <MassageModal
               open={showDMModal}
               onClose={() => setShowDMModal(false)}
-              userName={userData?.nickName || "ゲスト"}
+              userName={userData?.nickName || "ゲストさん"}
             />
           </div>
         </div>
 
-        <div className="mb-1">
-          {/* <Link
-            href="/"
-            className="inline-block mt-6 ml-1 font-bold text-sky-500"
-            aria-label="ファンサイトのトップページへ移動"
-          >
-            <span className="mr-1" aria-hidden="true">
-              &lt;
-            </span>{" "}
-            ファンサイトはこちら
-          </Link> */}
+        <div className="mb-1 block md:hidden">
           <Link href="/">
             <div
-              className="flex items-center px-2 rounded shadow-md my-10"
-              style={{ backgroundColor: "var(--color-main)" }}
+              className="flex items-center px-2 rounded shadow-md my-10 md:hidden"
+              style={{
+                backgroundColor: "var(--color-bg)",
+                border: "1px solid var(--color-main)",
+              }}
             >
               <Image
-                src="/layout/logo_another.png"
+                src="/layout/new_logo.png"
                 alt="logo"
-                width={100}
-                height={40}
+                width={50}
+                height={50}
                 className="ml-3"
               />
               <span
                 className="font-bold ml-auto"
-                style={{ color: "var(--color-bg)" }}
+                style={{ color: "var(--color-main)" }}
               >
                 象と花ファンサイトへ
                 <span className="ml-4" aria-hidden="true">
@@ -359,41 +459,47 @@ export default function MyPage() {
           </Link>
         </div>
 
-        <div className="max-w-2xl mx-auto my-4">
-          <div className="flex items-center justify-center gap-4 my-6">
-            <div className="w-24 h-px bg-black" />
-            <h2 className="font-bold text-slate-900">投稿のイベント</h2>
-            <div className="w-24 h-px bg-black" />
+        <div className="max-w-6xl mx-auto my-4 lg:grid lg:grid-cols-2 lg:gap-10">
+          <div className="max-w-2xl mx-auto lg:mx-0">
+            <div className="flex items-center justify-center gap-4 my-6">
+              <div className="w-24 h-px bg-black" />
+              <h2 className="font-bold text-slate-900">開催中のイベント</h2>
+              <div className="w-24 h-px bg-black" />
+            </div>
+            <div className="flex flex-col gap-4">
+              {eventData.map((event, eventIndex) => (
+                <div key={eventIndex} className="max-w-2xl">
+                  <EventCard
+                    eventId={String(event.id)}
+                    title={event.title}
+                    href="/post/barcode-scan"
+                    daysLeft={daysFromToday(
+                      String(event.first_voting_end_period),
+                    )}
+                    detail={event.detail}
+                    buttonText="投稿する"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="flex flex-col gap-4">
-            {sampleEvents.map((event, eventIndex) => (
-              <div key={eventIndex} className="max-w-2xl">
-                <EventCard
-                  title={event.title}
-                  daysLeft={event.daysLeft}
-                  detail={event.description}
-                  buttonText={event.buttonText}
-                  href={event.href}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* あなたの書評セクション (イベントカードの次に表示) */}
-          <div className="max-w-2xl mx-auto my-3">
+          {/* あなたの書評セクション */}
+          <div className="max-w-2xl mx-auto my-3 lg:mx-0 lg:mt-0">
             <div className="text-center my-6">
-              <div className="flex items-center justify-center gap-4 mt-20">
+              <div className="flex items-center justify-center gap-4 mt-20 lg:mt-6">
                 <div className="w-24 h-px bg-black" />
                 <h2 className="font-bold text-slate-900">あなたの書評</h2>
                 <div className="w-24 h-px bg-black" />
               </div>
-              <div className="text-rose-500 text-sm mt-1 font-bold">
-                ※１次審査前のみ編集できます。
+              <div
+                className={`text-sm mt-1 mx-10 font-bold ${Styles.mainColor}`}
+              >
+                ※運営による審査（1次審査）が開始されるまで編集が可能です。
               </div>
             </div>
 
-            {/* tabs: use ul/li/a structure (参考) */}
+            {/* tabs: use ul/li/a structure */}
             <ul
               className="flex flex-wrap justify-center text-sm font-medium text-center border-b border-gray-500 my-3"
               role="tablist"
@@ -448,8 +554,17 @@ export default function MyPage() {
               ))}
             </ul>
 
-            <div className="flex flex-col gap-3">
-              {filteredReviews.map((review, reviewIndex) => (
+            <div
+              ref={listTopRef}
+              className={`flex flex-col gap-3 pb-2 ${
+                displayLimit > 3 ? "max-h-[600px] overflow-y-auto pr-2" : ""
+              }`}
+              style={{
+                scrollbarWidth: "thin",
+                scrollBehavior: "smooth",
+              }}
+            >
+              {visibleReviews.map((review, reviewIndex) => (
                 <div
                   key={reviewIndex}
                   className="border rounded-lg p-4 bg-white border-gray-500"
@@ -462,26 +577,36 @@ export default function MyPage() {
                       <span
                         className={`px-3 py-1 rounded-full font-bold text-sm flex-shrink-0 ${
                           review.badgeType === "red"
-                            ? "bg-rose-50 text-rose-600 border border-rose-100"
+                            ? "border"
                             : review.badgeType === "blue"
                               ? "bg-sky-50 text-sky-600 border border-sky-100"
                               : "bg-slate-100 text-slate-600 border border-slate-200"
                         }`}
+                        style={
+                          review.badgeType === "red"
+                            ? {
+                                backgroundColor: "var(--color-warning-bg)",
+                                color: "var(--color-main)",
+                                borderColor: "var(--color-main)",
+                              }
+                            : undefined
+                        }
                       >
                         {review.status}
                       </span>
                     </div>
 
-                    <div className="text-slate-500 text-sm leading-relaxed mt-2">
+                    <div className="text-slate-500 text-sm leading-relaxed mt-2 break-words line-clamp-3">
                       {review.excerpt}
                     </div>
 
-                    {/* 編集ボタンは要約の下に配置（カード下寄せ） */}
+                    {/* 編集ボタン */}
                     <div className="mt-4">
                       {review.href ? (
                         <button
                           type="button"
-                          className="w-full bg-rose-400 text-white px-3 py-2 rounded-md font-bold"
+                          className="w-full text-white px-3 py-2 rounded-md font-bold"
+                          style={{ backgroundColor: "var(--color-main)" }}
                           onClick={() => handleEditButton(review.bookReviewId)}
                         >
                           {review.buttonText}
@@ -499,8 +624,36 @@ export default function MyPage() {
                   </div>
                 </div>
               ))}
+
+              {filteredReviews.length > 3 && (
+                <button
+                  onClick={() => {
+                    // もし今が「全件表示」なら3に戻し、そうでなければ全件にする
+                    if (displayLimit >= filteredReviews.length) {
+                      setDisplayLimit(3);
+                      listTopRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                      });
+                    } else {
+                      setDisplayLimit(filteredReviews.length);
+                      setTimeout(() => {
+                        listTopRef.current?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        });
+                      }, 50);
+                    }
+                  }}
+                  className="py-3 mt-4 mb-3 text-slate-600 font-bold"
+                >
+                  {/* 表示数によってテキストを切り替え（三項演算子） */}
+                  {displayLimit >= filteredReviews.length
+                    ? "閉じる"
+                    : `すべて表示する (全${filteredReviews.length}件)`}
+                </button>
+              )}
             </div>
-            {/* マイページ下部のメニュー（添付画像のコンテンツ） */}
+            {/* プロフィール関連のリンク */}
             <div className="max-w-2xl mx-auto my-10">
               <ul
                 className="divide-y-2 bg-white overflow-hidden border-t-2 border-b-2"
@@ -515,7 +668,7 @@ export default function MyPage() {
                     onClick={() => setShowEditProfileModal(true)}
                     className={`${Styles.mypage__linkButton}`}
                   >
-                    プロフィールの編集
+                    プロフィール編集
                   </button>
                 </li>
                 {userData && (
@@ -531,9 +684,9 @@ export default function MyPage() {
                     href="/poster/mypage/password"
                     className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-sky-300"
                     style={{ color: "var(--color-text)" }}
-                    aria-label="パスワードの変更へ"
+                    aria-label="パスワード変更"
                   >
-                    パスワードの変更
+                    パスワード変更
                   </a>
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>
@@ -543,26 +696,36 @@ export default function MyPage() {
                       e.preventDefault();
                       signOut({ callbackUrl: "/poster/login" });
                     }}
-                    className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                    className="block text-center font-bold py-4 focus:outline-none focus:ring-2 focus:ring-slate-200"
                     aria-label="ログアウト"
-                    style={{ color: "red" }}
+                    style={{ color: "var(--color-main)" }}
                   >
                     ログアウト
                   </a>
                 </li>
                 <li style={{ borderColor: "var(--color-sub)" }}>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowDeleteModal(true);
-                    }}
-                    className="block text-center font-bold py-4 text-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-200"
-                    aria-label="退会手続きへ"
-                    style={{ color: "red" }}
-                  >
-                    退会する
-                  </a>
+                  {DEMO_MODE ? (
+                    <button
+                      type="button"
+                      disabled
+                      className={Styles.mypage__linkButton}
+                      aria-label="退会"
+                      aria-disabled={true}
+                      style={{ color: "var(--color-main)" }}
+                    >
+                      退会
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteModal(true)}
+                      className={Styles.mypage__linkButton}
+                      aria-label="退会"
+                      style={{ color: "var(--color-main)" }}
+                    >
+                      退会
+                    </button>
+                  )}
                 </li>
               </ul>
             </div>
