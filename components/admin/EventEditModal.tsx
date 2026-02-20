@@ -164,11 +164,11 @@ export default function EventEditModal({
               <Textbox
                 id="edit-event-title"
                 name="title"
-                className="w-full custom-input"
-                style={{ backgroundColor: "#F9FAFB" }}
-                placeholder="イベントのタイトルを入力"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                className="w-full event-custom-input"
+                style={{ backgroundColor: "#F9FAFB" }}
+                placeholder="イベントのタイトルを入力"
               />
             </div>
 
@@ -179,7 +179,7 @@ export default function EventEditModal({
               <p className="event-detail-text text-sm">
                 イベントの開催期間を決定します
               </p>
-              <div className="flex justify-between items-center">
+              <div className="flex gap-15 items-center">
                 <Textbox
                   id="edit-event-start-datetime"
                   name="event-start-datetime"
@@ -263,6 +263,23 @@ export default function EventEditModal({
             </div>
 
             <div className="my-4">
+              <label htmlFor="edit-event-remarks" className="text-xl block">
+                備考欄
+              </label>
+              <p className="event-detail-text text-sm">
+                イベントについての詳細を記入してください。
+                ※ユーザーには公開されません
+              </p>
+              <textarea
+                name="remarks"
+                className="w-full"
+                id="edit-event-remarks"
+                value={detail}
+                onChange={(e) => setDetail(e.target.value)}
+              ></textarea>
+            </div>
+
+            <div className="my-4">
               <label htmlFor="event-status" className="text-xl block">
                 ステータス
               </label>
@@ -320,7 +337,7 @@ export default function EventEditModal({
               <button type="button" className="cancel-btn" onClick={onClose}>
                 キャンセル
               </button>
-              <input type="submit" value="登録" className="reg-form-btn" />
+              <input type="submit" value="更新" className="reg-form-btn" />
             </div>
           </form>
         </div>
