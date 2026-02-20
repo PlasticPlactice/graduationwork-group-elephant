@@ -3,9 +3,8 @@
 import { Icon } from "@iconify/react";
 import Textbox from "@/components/ui/admin-textbox";
 import "@/styles/admin/events.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useToast } from "@/contexts/ToastContext";
-import { useRouter } from "next/navigation";
 import { validateEventDates } from "@/lib/validateEventDates";
 import { toISOStringFromLocal } from "@/lib/dateUtils";
 
@@ -20,8 +19,6 @@ export default function EventRegisterModal({
   onClose,
   onSuccess,
 }: EventRegisterModalProps) {
-  const router = useRouter();
-
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [startPeriod, setStartPeriod] = useState("");
@@ -248,7 +245,12 @@ export default function EventRegisterModal({
               <button type="button" className="cancel-btn" onClick={onClose}>
                 キャンセル
               </button>
-              <input type="submit" value="登録" className="reg-form-btn" />
+              <input
+                type="submit"
+                value="登録"
+                className="reg-form-btn"
+                disabled={submitting}
+              />
             </div>
           </form>
         </div>

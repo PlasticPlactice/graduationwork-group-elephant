@@ -9,7 +9,6 @@ import type { CSSProperties } from "react";
 import type { Html5Qrcode } from "html5-qrcode";
 
 import Modal from "@/app/(app)/Modal";
-import { title } from "process";
 
 const QR_REGION_ID = "barcode-scan-reader";
 
@@ -123,7 +122,7 @@ export default function BarcodeScanPage() {
         if (fetchId === fetchIdRef.current) setBookLoading(false);
       }
     },
-    [lastFetchedIsbn],
+    [lastFetchedIsbn, params?.id],
   );
 
   const handleConfirm = () => {
@@ -314,7 +313,9 @@ export default function BarcodeScanPage() {
         </div>
         <div>
           <p className={`text-center font-bold mb-4 ${Styles.text16px}`}>
-            読み取れない場合は下の入力欄から<br />ISBNコードを入力してください。
+            読み取れない場合は下の入力欄から
+            <br />
+            ISBNコードを入力してください。
           </p>
           <p className={`${Styles.mainColor} ${Styles.text12px}`}>
             ※ハイフンなしで入力してください。

@@ -103,7 +103,7 @@ export default function UserDetailModal({
       setOpenRows([]);
       setDisplayCount(2);
     }
-  }, [isOpen, userId]);
+  }, [isOpen, userId, addToast]);
 
   const toggleRow = (id: number) => {
     setOpenRows((prev) =>
@@ -165,7 +165,7 @@ export default function UserDetailModal({
       ? sortedBookReviews
       : sortedBookReviews.slice(0, displayCount);
 
-  console.log(displayedData);
+  // displayedData is used in rendering; no debug logging
 
   const handleUserExit = () => {
     if (!userId) return;

@@ -3,7 +3,7 @@
 import React from "react";
 import GenericError from "@/components/error/GenericError";
 
-export default function Test500Error({ error }: { error: Error }) {
+export default function Test500Error() {
   return (
     <GenericError
       title="サーバーエラーが発生しました"

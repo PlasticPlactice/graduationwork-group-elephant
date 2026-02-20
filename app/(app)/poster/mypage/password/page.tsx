@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DEMO_MODE } from "@/lib/constants/demoMode";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function PasswordChangePage() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -13,6 +14,7 @@ export default function PasswordChangePage() {
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { addToast } = useToast();
 
   const handleChangePassword = async () => {
     setError("");
@@ -20,12 +22,16 @@ export default function PasswordChangePage() {
 
     // バリデーション
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("すべてのフィールドを入力してください");
+      const msg = "すべてのフィールドを入力してください";
+      setError(msg);
+      addToast({ type: "error", message: msg });
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("新しいパスワードが一致しません");
+      const msg = "新しいパスワードが一致しません";
+      setError(msg);
+      addToast({ type: "error", message: msg });
       return;
     }
 
@@ -33,9 +39,10 @@ export default function PasswordChangePage() {
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
 
     if (!passwordComplexityRegex.test(newPassword)) {
-      setError(
-        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください",
-      );
+      const msg =
+        "パスワードは8文字以上で、英字・数字・記号をそれぞれ1文字以上含めてください";
+      setError(msg);
+      addToast({ type: "error", message: msg });
       return;
     }
 
@@ -63,11 +70,15 @@ export default function PasswordChangePage() {
           router.push("/poster/mypage");
         }, 2000);
       } else {
-        setError(data.message || "パスワード変更に失敗しました");
+        const msg = data.message || "パスワード変更に失敗しました";
+        setError(msg);
+        addToast({ type: "error", message: msg });
       }
     } catch (error) {
       console.error("Password change error:", error);
-      setError("エラーが発生しました。もう一度お試しください");
+      const msg = "エラーが発生しました。もう一度お試しください";
+      setError(msg);
+      addToast({ type: "error", message: msg });
     } finally {
       setIsLoading(false);
     }

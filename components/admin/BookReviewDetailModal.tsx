@@ -97,7 +97,7 @@ export default function BookReviewDetailModal({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, reviewId]);
+  }, [isOpen, reviewId, addToast]);
 
   useEffect(() => {
     if (!editor) return;

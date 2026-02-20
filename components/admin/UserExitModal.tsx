@@ -74,7 +74,7 @@ export default function UserExitModal({
     };
 
     fetchUser();
-  }, [isOpen, userId]);
+  }, [isOpen, userId, addToast]);
 
   const handleWithdraw = async () => {
     if (!userId) {

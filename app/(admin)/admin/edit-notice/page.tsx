@@ -86,12 +86,6 @@ function EditNoticeContent() {
   // アップロードファイル関連
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
-  const [existingThumbnailFileId, setExistingThumbnailFileId] = useState<
-    number | null
-  >(null);
-  const [existingThumbnailPath, setExistingThumbnailPath] = useState<
-    string | null
-  >(null);
   const [existingMainImagePath, setExistingMainImagePath] = useState<
     string | null
   >(null);
@@ -207,7 +201,7 @@ function EditNoticeContent() {
     };
 
     fetchNotification();
-  }, [notificationId, editor]);
+  }, [notificationId, editor, addToast]);
 
   // エディタのHTMLを同期
   useEffect(() => {
@@ -244,10 +238,10 @@ function EditNoticeContent() {
   ) => {
     const file = e.target.files?.[0];
     if (!file) {
-      // ファイルが選択されない場合、既存のサムネイルに戻す
-      if (existingThumbnailPath) {
+      // ファイルが選択されない場合、既存のサムネイル（main image）に戻す
+      if (existingMainImagePath) {
         setThumbnailFile(null);
-        setThumbnailPreview(existingThumbnailPath);
+        setThumbnailPreview(existingMainImagePath);
       } else {
         setThumbnailFile(null);
         setThumbnailPreview(null);
@@ -451,8 +445,7 @@ function EditNoticeContent() {
         (preview) => preview.file,
       );
       const totalFiles = (thumbnailFile ? 1 : 0) + filesNeedingUpload.length;
-      let uploadedThumbnailId: number | null = null;
-      let uploadedThumbnailPath: string | null = null;
+      let _uploadedThumbnailPath: string | null = null;
       const uploadedAttachmentIds: number[] = [];
       let uploadedCount = 0;
 
@@ -464,14 +457,12 @@ function EditNoticeContent() {
         }
         const result = await uploadFile(thumbnailFile);
         if (result !== null) {
-          uploadedThumbnailId = result.id;
-          uploadedThumbnailPath = result.data_path;
+          _uploadedThumbnailPath = result.data_path;
           setExistingMainImagePath(result.data_path);
-          console.log("Uploaded new thumbnail with ID:", result.id);
         }
         uploadedCount++;
-      } else if (existingThumbnailPath) {
-        // 既存のサムネイルを保持する場合、ここで処理
+      } else if (existingMainImagePath) {
+        // 既存のサムネイル（main image）を保持する場合、ここで処理
       }
 
       for (const preview of attachedFilePreviews) {
@@ -520,7 +511,7 @@ function EditNoticeContent() {
           : null,
         notification_type: notificationTypeInt,
         draft_flag: saveAsDraft,
-        main_image_path: uploadedThumbnailPath ?? existingMainImagePath,
+        main_image_path: _uploadedThumbnailPath ?? existingMainImagePath,
         fileIds: finalFileIds,
       };
 

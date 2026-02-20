@@ -2,12 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-type Params = {
-  params: {
-    id: string;
-  };
-};
+import type { BookReviewDetail } from "@/lib/types/bookReview";
 
 // 書評一つだけ取得
 export async function GET(
@@ -35,10 +30,12 @@ export async function GET(
       );
     }
 
-    const review = await prisma.bookReview.findFirst({
+    const userId = Number(session!.user!.id);
+
+    const review: BookReviewDetail | null = await prisma.bookReview.findFirst({
       where: {
         id: bookReviewId,
-        user_id: Number((session as any).user.id), // 他人のレビュー防止
+        user_id: userId, // 他人のレビュー防止
       },
     });
 
@@ -50,7 +47,7 @@ export async function GET(
     }
 
     return NextResponse.json(review);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Failed to fetch review" },
       { status: 500 },

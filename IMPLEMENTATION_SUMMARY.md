@@ -23,11 +23,17 @@
 
 ### 修正ファイル
 
-| ファイル                                   | 変更内容                                          |
-| ------------------------------------------ | ------------------------------------------------- |
-| `app/providers.tsx`                        | ToastProvider を統合                              |
-| `components/admin/StatusEditModal.tsx`     | alert() → useToast に置換（成功・失敗通知）       |
-| `components/admin/AllMessageSendModal.tsx` | alert() → useToast に置換（検証・成功・失敗通知） |
+| ファイル                                             | 変更内容                                              |
+| ---------------------------------------------------- | ----------------------------------------------------- |
+| `app/providers.tsx`                                  | ToastProvider を統合                                  |
+| `components/admin/StatusEditModal.tsx`               | alert() → useToast に置換（成功・失敗通知）           |
+| `components/admin/AllMessageSendModal.tsx`           | alert() → useToast に置換（検証・成功・失敗通知）     |
+| `components/modals/BookReviewDeleteConfirmModal.tsx` | alert() → useToast に置換（削除成功/失敗の通知）      |
+| `app/(app)/post/post/page.tsx`                       | 下書き保存で alert → useToast に置換（成功/失敗）     |
+| `app/(app)/post/post-confirm/page.tsx`               | 投稿作成／編集で alert → useToast に置換（成功/失敗） |
+| `app/(app)/post/post-confirm/page.tsx`               | 投稿作成/編集時に `public_flag` に応じて「公開/非公開/下書き」メッセージを表示 |
+| `app/(admin)/admin/register-notice/page.tsx`         | ファイルアップロード成功時に success トーストを追加 |
+| `app/(admin)/admin/edit-notice/page.tsx`             | ファイルアップロード成功時に success トーストを追加 |
 
 ## 主な機能
 

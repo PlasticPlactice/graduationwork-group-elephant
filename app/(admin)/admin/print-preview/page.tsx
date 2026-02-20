@@ -295,7 +295,7 @@ function PrintPreviewContent() {
     return () => {
       mounted = false;
     };
-  }, [reviewId]);
+  }, [reviewId, addToast]);
 
   const reviewText = useMemo(
     () => stripHtml(review?.review ?? ""),

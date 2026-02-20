@@ -108,7 +108,7 @@ export default function Page() {
         setIsLoading(false);
       }
     },
-    [sortBy, sortOrder, searchForm],
+    [sortBy, sortOrder, searchForm, addToast],
   );
 
   // 入力値の変更を処理
@@ -181,14 +181,12 @@ export default function Page() {
     return () => {
       window.clearTimeout(timeoutId);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortBy, sortOrder]);
+  }, [sortBy, sortOrder, fetchUsers, currentPage]);
 
   // 初期ロード
   useEffect(() => {
     fetchUsers(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchUsers]);
 
   const handleUserDetail = (userId: number) => {
     setSelectedUserId(userId);

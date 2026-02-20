@@ -18,7 +18,7 @@ type Term = {
 
 export default function Page() {
   const router = useRouter();
-  const [selectedTerm, setSelectedTerm] = useState<Term | null>(null);
+  // selectedTerm state removed — not used in UI
   const [currentTerm, setCurrentTerm] = useState<Term | null>(null);
   const [scheduledTerm, setScheduledTerm] = useState<Term | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,7 +44,6 @@ export default function Page() {
 
         setCurrentTerm(current || null);
         setScheduledTerm(scheduled || null);
-        setSelectedTerm(current || scheduled || null);
         // 成功時はトースト不要（以前のバナーは削除）
       } catch (err) {
         console.error("Error:", err);
@@ -55,7 +54,7 @@ export default function Page() {
     };
 
     fetchTerms();
-  }, []);
+  }, [addToast]);
 
   const handleRegister = () => {
     router.push("/admin/register-term");

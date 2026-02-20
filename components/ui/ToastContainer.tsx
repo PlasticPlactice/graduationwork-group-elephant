@@ -12,7 +12,7 @@ export function ToastContainerComponent() {
 
   return (
     <div
-      className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-md pointer-events-none"
+      className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-md pointer-events-none pb-0"
       role="region"
       aria-live="polite"
       aria-label="通知"
@@ -20,18 +20,18 @@ export function ToastContainerComponent() {
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`p-4 rounded-lg text-white pointer-events-auto animate-in fade-in slide-in-from-right-2 duration-300`}
+          className={`p-4 mb-0 rounded-lg text-white pointer-events-auto animate-in fade-in slide-in-from-right-2 duration-300`}
           role={toast.type === "error" ? "alert" : undefined}
           style={{
             backgroundColor: getBackgroundHex(toast.type),
             boxShadow: "none",
           }}
         >
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center justify-between gap-3">
             <p className="text-sm font-medium">{toast.message}</p>
             <button
               onClick={() => removeToast(toast.id)}
-              className="m-2 text-white hover:opacity-80 transition-opacity flex-shrink-0"
+              className="ml-2 text-white hover:opacity-80 transition-opacity flex-shrink-0"
               style={{
                 background: "transparent",
                 padding: 0,

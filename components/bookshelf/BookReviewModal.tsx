@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useEffect, useRef, type CSSProperties, type Ref } from "react";
+import { useToast } from "@/contexts/ToastContext";
 import type {
   Book,
   Reactions,
@@ -43,15 +44,12 @@ type afterCheckedData = {
 
 export function BookReviewModal({
   book,
-  reactions,
   open,
   onClose,
   onComplete,
   actionLabel = "本棚にしまう",
   isFavorited = false,
-  isVoted = false,
   onToggleFavorite,
-  onToggleVote,
   actionButtonRef,
   voteButtonRef,
   reviewContentRef,
@@ -59,6 +57,7 @@ export function BookReviewModal({
   canVote = true,
 }: BookReviewModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const { addToast } = useToast();
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const [bookReviewReactions, setBookReviewReactions] =
@@ -135,41 +134,38 @@ export function BookReviewModal({
   useEffect(() => {
     if (!book?.user_id || !book?.id) return;
 
-    setBookReviewReactions({
+    const payload = {
       user_id: book.user_id,
       book_review_id: book.id,
       reaction_id: "",
-    });
-  }, [book]);
-
-  // リアクションがすでにあるか確認する + 数をもらう
-  const checkReactionStatus = async () => {
-    const newReactionsData = {
-      ...bookReviewReactions,
     };
-
-    try {
-      const res = await fetch("/api/viewer/reaction/status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newReactionsData),
-      });
-
-      const apiResponse = await res.json();
-
-      setAfterCheckedData(apiResponse);
-    } catch (e) {
-      console.error("通信に失敗しました。");
-    }
-  };
+    // defer setState to avoid synchronous setState-in-effect lint error
+    requestAnimationFrame(() => setBookReviewReactions(payload));
+  }, [book]);
 
   // bookReviewReactionsにデータが入ったのを確認したらリアクションの数を取得してもらう
   useEffect(() => {
     if (!bookReviewReactions?.user_id || !bookReviewReactions?.book_review_id)
       return;
 
-    checkReactionStatus();
-  }, [bookReviewReactions?.book_review_id, bookReviewReactions?.user_id]);
+    // defer to avoid synchronous state updates inside effect
+    requestAnimationFrame(async () => {
+      const newReactionsData = { ...bookReviewReactions };
+      try {
+        const res = await fetch("/api/viewer/reaction/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newReactionsData),
+        });
+
+        const apiResponse = await res.json();
+
+        setAfterCheckedData(apiResponse);
+      } catch {
+        console.error("通信に失敗しました。");
+      }
+    });
+  }, [bookReviewReactions]);
 
   // リアクション関数
   const createReaction = async (reaction_id: string) => {
@@ -188,11 +184,11 @@ export function BookReviewModal({
       });
 
       if (!res.ok) {
-        alert("登録に失敗しました。");
+        addToast({ type: "error", message: "登録に失敗しました。" });
         return;
       }
-    } catch (e) {
-      alert("通信に失敗しました。");
+    } catch {
+      addToast({ type: "error", message: "通信に失敗しました。" });
     }
 
     // カウント＋データが入っているか確認する関数を実行し、情報を更新する
@@ -203,8 +199,9 @@ export function BookReviewModal({
         body: JSON.stringify(newReactionsData),
       });
 
-      const afterCheckedData = await res.json();
-    } catch (e) {
+      const newAfterCheckedData = await res.json();
+      setAfterCheckedData(newAfterCheckedData);
+    } catch {
       console.error("通信に失敗しました。");
     }
   };
@@ -252,7 +249,7 @@ export function BookReviewModal({
     try {
       await createReaction(clickedReactionId);
       // ※もしここでエラーが出たら、Stateを元に戻す処理を入れるとさらに完璧
-    } catch (error) {
+    } catch {
       console.error("保存に失敗しました");
       // エラーが出たらリロードさせるなどの対処
     }

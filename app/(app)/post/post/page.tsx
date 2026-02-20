@@ -3,7 +3,7 @@
 import Styles from "@/styles/app/poster.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+// Link removed as unused
 import {
   useState,
   useEffect,
@@ -14,6 +14,7 @@ import {
 import type { CSSProperties } from "react";
 import { preparePostConfirm } from "./actions";
 import { useActionState } from "react";
+import { useToast } from "@/contexts/ToastContext";
 // tiptapのimport
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -53,6 +54,7 @@ export default function PostPage() {
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   const [_state, formAction] = useActionState(preparePostConfirm, null);
+  const { addToast } = useToast();
   const [bookData, setBookData] = useState({
     isbn: "",
     title: "",
@@ -218,7 +220,10 @@ export default function PostPage() {
   // 書評確認画面へデータを送る
   const handleConfirm = () => {
     if (!editor) {
-      alert("エディターが初期化されていません。");
+      addToast({
+        type: "error",
+        message: "エディターが初期化されていません。",
+      });
       return;
     }
 
@@ -227,12 +232,12 @@ export default function PostPage() {
 
     // review フィールドとその他の必須フィールドを検証
     if (!currentHtml || currentHtml.trim() === "<p></p>") {
-      alert("書評を入力してください。");
+      addToast({ type: "error", message: "書評を入力してください。" });
       return;
     }
 
     if (!form.isbn) {
-      alert("本の情報が不足しています。");
+      addToast({ type: "error", message: "本の情報が不足しています。" });
       return;
     }
 
@@ -243,7 +248,7 @@ export default function PostPage() {
       !form.gender ||
       !form.self_introduction
     ) {
-      alert("プロフィール情報が不完全です。");
+      addToast({ type: "error", message: "プロフィール情報が不完全です。" });
       return;
     }
 
@@ -278,14 +283,18 @@ export default function PostPage() {
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         console.error("[Draft Register] API Error:", errorData);
-        alert(`下書き保存に失敗しました。${errorData.message || ""}`);
+        addToast({
+          type: "error",
+          message: `下書き保存に失敗しました。${errorData.message || ""}`,
+        });
         return;
       }
 
+      addToast({ type: "success", message: "下書きを保存しました" });
       router.push("/poster/mypage");
     } catch (e) {
       console.error("[Draft Register] Error:", e);
-      alert("通信に失敗しました。");
+      addToast({ type: "error", message: "通信に失敗しました。" });
     }
   };
 

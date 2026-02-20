@@ -1,10 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import {
-  logBatchInfo,
-  logBatchSuccess,
-  logBatchError,
-  logBatchWarn,
-} from "./logger";
+import { logBatchInfo, logBatchSuccess, logBatchError } from "./logger";
 
 /**
  * 公開終了日時に達したお知らせを自動で非公開にするバッチ処理

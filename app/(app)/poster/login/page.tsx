@@ -3,7 +3,7 @@
 import loginModule from "@/styles/app/login.module.css";
 import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
@@ -11,6 +11,34 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  useEffect(() => {
+    const paramError =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("error")
+        : null;
+    if (!paramError) return;
+
+    let errorMessage = "ログインに失敗しました。";
+    switch (paramError) {
+      case "DeletedUser":
+        errorMessage = "このアカウントは存在しません。";
+        break;
+      case "WithdrawnUser":
+        errorMessage = "このアカウントは退会済みです。";
+        break;
+      case "BannedUser":
+        errorMessage = "このアカウントは利用停止されています。";
+        break;
+      case "CredentialsSignin":
+        errorMessage = "アカウントIDまたはパスワードが正しくありません。";
+        break;
+      default:
+        errorMessage = `ログインに失敗しました: ${paramError}`;
+        break;
+    }
+    // Avoid synchronous setState inside useEffect to prevent cascading renders
+    setTimeout(() => setError(errorMessage), 0);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +97,9 @@ export default function LoginPage() {
 
   return (
     <div className={`${loginModule.loginTheme} ${loginModule.loginPage}`}>
-      <div className={`mb-2 ${Styles.posterContainer} ${loginModule.loginCard}`}>
+      <div
+        className={`mb-2 ${Styles.posterContainer} ${loginModule.loginCard}`}
+      >
         <div className="mt-4 mb-6 lg:mt-2 lg:mb-4">
           <Image
             src="/layout/new_logo.png"

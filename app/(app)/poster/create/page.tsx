@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCallback, useState, useMemo, useEffect } from "react";
 import { prefecturesList, iwateMunicipalities } from "@/lib/addressData";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
 import Link from "next/link";
 import TermsModal from "@/components/modals/TermsModal";
 import type { CurrentTermsResponse } from "@/lib/types/terms";
@@ -43,6 +44,7 @@ export default function CreateViewerPage() {
     hasSymbol: false,
   });
   const router = useRouter();
+  const { addToast } = useToast();
 
   // 利用規約を取得
   useEffect(() => {
@@ -161,13 +163,15 @@ export default function CreateViewerPage() {
         });
         router.push(`/poster/create-complete?${params.toString()}`);
       } else {
-        setErrors({ form: data.message || "登録に失敗しました" });
+        const msg = data.message || "登録に失敗しました";
+        setErrors({ form: msg });
+        addToast({ type: "error", message: msg });
       }
     } catch (error) {
       console.error("Registration failed:", error);
-      setErrors({
-        form: "エラーが発生しました。しばらくしてから再度お試しください。",
-      });
+      const msg = "エラーが発生しました。しばらくしてから再度お試しください。";
+      setErrors({ form: msg });
+      addToast({ type: "error", message: msg });
     }
   };
 

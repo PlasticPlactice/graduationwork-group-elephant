@@ -13,11 +13,13 @@ import CharacterCount from "@tiptap/extension-character-count";
 import { preparePostConfirm } from "./actions";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/contexts/ToastContext";
 
 import { BookReviewDeleteConfirmModal } from "@/components/modals/BookReviewDeleteConfirmModal";
 
 export default function PostPage() {
   const router = useRouter();
+  const { addToast } = useToast();
 
   useSession();
 
@@ -149,13 +151,13 @@ export default function PostPage() {
       });
 
       if (!res.ok) {
-        alert("下書きの登録に失敗しました。");
+        addToast({ type: "error", message: "下書きの登録に失敗しました。" });
         return;
       }
 
       router.push("/poster/mypage");
-    } catch (e) {
-      alert("通信に失敗しました。");
+    } catch {
+      addToast({ type: "error", message: "通信に失敗しました。" });
     }
   };
 
