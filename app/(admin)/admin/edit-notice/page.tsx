@@ -365,10 +365,6 @@ function EditNoticeContent() {
         );
       }
       const uploadedFile = await res.json();
-      addToast({
-        type: "success",
-        message: `ファイルをアップロードしました: ${uploadedFile.data_path}`,
-      });
       return { id: uploadedFile.id, data_path: uploadedFile.data_path };
     } catch (error: unknown) {
       const errorMessage =

@@ -128,6 +128,10 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  pages: {
+    signIn: "/poster/login",
+    error: "/auth/error",
+  },
   session: {
     strategy: "jwt",
   },
