@@ -5,17 +5,17 @@ import Styles from "@/styles/app/poster.module.css";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const [accountId, setAccountId] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const searchParams = useSearchParams();
-
   useEffect(() => {
-    const paramError = searchParams?.get?.("error");
+    const paramError =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("error")
+        : null;
     if (!paramError) return;
 
     let errorMessage = "ログインに失敗しました。";
@@ -36,8 +36,9 @@ export default function LoginPage() {
         errorMessage = `ログインに失敗しました: ${paramError}`;
         break;
     }
-    setError(errorMessage);
-  }, [searchParams]);
+    // Avoid synchronous setState inside useEffect to prevent cascading renders
+    setTimeout(() => setError(errorMessage), 0);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
