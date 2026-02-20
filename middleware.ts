@@ -12,8 +12,18 @@ export function middleware(request: NextRequest) {
 
   if (!hasSession) {
     const pathname = request.nextUrl.pathname;
+    // 未認証でもアクセスを許可する admin の公開パス
+    const publicAdminPaths = [
+      "/admin/password/reset",
+      "/admin/password/reset-request",
+    ];
 
-    // admin ページへのアクセス → /admin へリダイレクト
+    // admin の公開パスはリダイレクトせず許可
+    if (publicAdminPaths.some((p) => pathname.startsWith(p))) {
+      return NextResponse.next();
+    }
+
+    // admin ページへのアクセス（上記公開パスを除く） → /admin へリダイレクト
     if (pathname.startsWith("/admin")) {
       const signInUrl = new URL("/admin", request.url);
       signInUrl.searchParams.set("callbackUrl", pathname);
